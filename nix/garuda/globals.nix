@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 with lib;
 let
-  xslt_style = pkgs.runCommand "xslt_style-build" { } ''cp "${./static/style.xslt}" "$out"'';
+  xslt_style = ./static/style.xslt;
 in {
   options.garuda-lib = mkOption {
     type = types.attrs;

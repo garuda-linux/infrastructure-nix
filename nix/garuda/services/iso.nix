@@ -36,6 +36,8 @@ in {
       locations."/".extraConfig = ''
         xslt_stylesheet "${garuda-lib.xslt_style}";
       '';
+      useACMEHost = "garudalinux.org";
+      forceSSL = true;
     };
     networking.firewall.allowedTCPPorts = [ 80 443 ];
   };

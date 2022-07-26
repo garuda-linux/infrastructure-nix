@@ -1,5 +1,8 @@
 { pkgs, ... }: {
-  imports = [ ./users.nix ];
+  imports = [
+    ./users.nix
+    ./acme/acme.nix
+  ];
   networking.nameservers = [ "1.1.1.1" ];
 
   services.openssh.enable = true;
