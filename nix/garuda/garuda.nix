@@ -1,6 +1,6 @@
 { ... }: {
   imports = [
-    ./globals.nix
+    ./garuda-lib.nix
     ./common/common.nix
     ./services/services.nix
   ];

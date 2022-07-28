@@ -1,4 +1,4 @@
-{ pkgs, config, lib, ... }:
+{ pkgs, config, lib, garuda-lib, ... }:
 with lib; {
   config = mkIf config.services.nginx.enable {
     security.acme = {
@@ -11,7 +11,7 @@ with lib; {
         extraDomainNames = [ "*.garudalinux.org" "iso.builds.garudalinux.org" ];
         dnsProvider = "cloudflare";
         dnsPropagationCheck = true;
-        credentialsFile = ./cloudflare_key;
+        credentialsFile = garuda-lib.cloudflare_key;
       };
     };
   };
