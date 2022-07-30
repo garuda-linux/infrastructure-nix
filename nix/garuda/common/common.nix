@@ -1,7 +1,7 @@
-{ pkgs, lib, garuda-lib, ... }: {
+{ pkgs, lib, garuda-lib, config, ... }: {
   imports = [
     ./users.nix
-    ./acme/acme.nix
+    ./acme.nix
   ];
   networking.nameservers = [ "1.1.1.1" ];
 
@@ -17,9 +17,13 @@
 
   environment.systemPackages = [ pkgs.python3 pkgs.micro pkgs.htop pkgs.git ];
 
+  services.zerotierone.enable = true;
+  services.zerotierone.joinNetworks = [ garuda-lib.zerotier_network ];
+
   nix.gc = {
     automatic = true;
     dates = "weekly";
     options = "--delete-older-than 7d";
   };
+  nixpkgs.config.allowUnfree = true;
 }
