@@ -20,6 +20,8 @@
   services.zerotierone.enable = true;
   services.zerotierone.joinNetworks = [ garuda-lib.zerotier_network ];
 
+  services.garuda-monitoring.enable = true;
+
   nix.gc = {
     automatic = true;
     dates = "weekly";

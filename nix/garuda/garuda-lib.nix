@@ -10,6 +10,9 @@ in {
       cloudflare_key = ./secrets/cloudflare_key;
       meshagent_msh = ./secrets/meshagent.msh;
       zerotier_network = secrets.zerotier_network;
+      telegram = secrets.telegram;
+      netdata = secrets.netdata;
+      datadog = secrets.datadog;
     };
   };
   config._module.args.garuda-lib = config.garuda-lib;
