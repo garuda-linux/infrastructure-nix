@@ -1,28 +1,35 @@
 { lib, pkgs, config, garuda-lib, ... }:
 with lib;
-let cfg = config.services.garuda-iso;
+let
+  cfg = config.services.garuda-iso;
+  dockerfile = builtins.fetchTarball "https://gitlab.com/garuda-linux/tools/buildiso-docker/-/archive/master/buildiso-docker-master.tar.gz";
 in {
   options.services.garuda-iso = {
     enable = mkEnableOption "Garuda ISO builder";
   };
 
   config = mkIf cfg.enable {
-    virtualisation.oci-containers.containers = {
-      garuda-iso-autobuild = {
-        image = "registry.gitlab.com/garuda-linux/tools/buildiso-docker/master";
-        extraOptions = [ "--privileged" "--pull=always" ];
-        volumes = [
-          "/var/garuda/buildiso/cache/buildiso:/var/cache/garuda-tools/garuda-chroots/buildiso"
-          "/var/garuda/buildiso/cache/anacron:/var/spool/anacron"
-          "/var/cache/pacman/pkg/:/var/cache/pacman/pkg/"
-          "/var/garuda/buildiso/iso:/var/cache/garuda-tools/garuda-builds/iso/"
-          "/var/garuda/buildiso/logs:/var/cache/garuda-tools/garuda-logs/"
-        ];
-        cmd = [ "auto" ];
+    systemd.services.buildiso = {
+      wantedBy = [ "multi-user.target" ];
+      after = [ "docker.service" ];
+      description = "Garuda-tools buildiso docker service";
+      path = [ pkgs.docker ];
+      serviceConfig = {
+        ExecStart = pkgs.writeShellScript "execstart" ''
+          set -e
+          docker run --rm --privileged --name buildiso \
+            -v "/var/garuda/buildiso/cache/buildiso:/var/cache/garuda-tools/garuda-chroots/buildiso" \
+            -v "/var/garuda/buildiso/cache/anacron:/var/spool/anacron" \
+            -v "/var/cache/pacman/pkg/:/var/cache/pacman/pkg/" \
+            -v "/var/garuda/buildiso/iso:/var/cache/garuda-tools/garuda-builds/iso/" \
+            -v "/var/garuda/buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
+            "''$(docker build -q "${dockerfile}")" auto
+        '';
+        Restart = "on-failure";
+        RestartSec = "30";
       };
     };
     virtualisation.docker.enable = true;
-    virtualisation.oci-containers.backend = "docker";
 
     services.nginx.enable = true;
     services.nginx.virtualHosts."iso.builds.garudalinux.org" = {
