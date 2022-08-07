@@ -46,6 +46,24 @@ in {
       useACMEHost = "garudalinux.org";
       forceSSL = true;
     };
-    networking.firewall.allowedTCPPorts = [ 80 443 ];
+
+    services.rsyncd.enable = true;
+    services.rsyncd.settings = {
+      iso = {
+        path = "/var/garuda/buildiso/iso/";
+        comment = "ISO downloads";
+        "read only" = "yes";
+      };
+      global = {
+        gid = "nobody";
+        "max connections" = 80;
+        uid = "nobody";
+        "use chroot" = false;
+        "max verbosity" = 3;
+        "transfer logging" = true;
+      };
+    };
+
+    networking.firewall.allowedTCPPorts = [ 80 443 config.services.rsyncd.port ];
   };
 }
