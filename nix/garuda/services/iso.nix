@@ -33,16 +33,29 @@ in {
 
     services.nginx.enable = true;
     services.nginx.virtualHosts."iso.builds.garudalinux.org" = {
-      root = "/var/garuda/buildiso/iso";
       extraConfig = ''
         autoindex on;
         autoindex_format xml;
         xslt_string_param path $uri;
         xslt_string_param hostname "Garuda Linux ISO Builds";
       '';
-      locations."/".extraConfig = ''
-        xslt_stylesheet "${garuda-lib.xslt_style}";
-      '';
+      locations."/iso" = {
+        root = "/var/garuda/buildiso";
+        extraConfig = ''
+          xslt_stylesheet "${garuda-lib.xslt_style}";
+          if ($symlink_target_rel != "") {
+            rewrite ^ /iso/$symlink_target_rel redirect;
+          }
+          if ($arg_fosshost) {
+            rewrite ^/iso/(.*)$ https://mirrors.fossho.st/garuda/iso/$1? permanent;
+          }
+          if ($arg_sourceforge) {
+            rewrite ^/iso/(.*)$ https://sourceforge.net/projects/garuda-linux/files/$1? permanent;
+          }
+          break;
+        '';
+      };
+      locations."/".extraConfig = "return 301 https://builds.garudalinux.org$request_uri;";
       useACMEHost = "garudalinux.org";
       forceSSL = true;
     };

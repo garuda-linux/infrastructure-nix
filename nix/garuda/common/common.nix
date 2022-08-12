@@ -2,6 +2,7 @@
   imports = [
     ./users.nix
     ./acme.nix
+    ./nginx.nix
   ];
   networking.nameservers = [ "1.1.1.1" ];
 
