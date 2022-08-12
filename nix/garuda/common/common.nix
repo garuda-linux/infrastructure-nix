@@ -7,6 +7,8 @@
 
   services.openssh.enable = true;
   services.openssh.passwordAuthentication = false;
+  programs.mosh.enable = true;
+  environment.variables = { MOSH_SERVER_NETWORK_TMOUT="604800"; };
 
   services.garuda-meshagent.enable = lib.mkDefault true;
   services.garuda-meshagent.mshFile = garuda-lib.meshagent_msh;
