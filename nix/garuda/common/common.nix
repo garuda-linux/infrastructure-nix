@@ -24,6 +24,7 @@
   services.zerotierone.joinNetworks = [ garuda-lib.zerotier_network ];
 
   services.garuda-monitoring.enable = true;
+  services.garuda-monitoring.parent = "10.241.0.10";
 
   nix.gc = {
     automatic = true;

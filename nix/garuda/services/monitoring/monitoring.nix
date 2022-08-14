@@ -4,7 +4,7 @@ let cfg = config.services.garuda-monitoring;
 in {
   options.services.garuda-monitoring = {
     enable = mkEnableOption "Garuda monitoring stack";
-    
+    parent = mkOption { type = types.string; };
   };
 
   config = mkIf cfg.enable {
@@ -17,6 +17,32 @@ in {
         logs_config = {
             container_collect_all = true;
         };
+    };
+    services.netdata.enable = true;
+    services.netdata.config = {
+      global = {
+        "memory mode" = "none";
+        "update every" = "2";
+      };
+      web = {
+        "mode" = "none";
+      };
+    };
+    services.netdata.configDir = {
+      "stream.conf" = pkgs.writeText "stream.conf" ''
+[stream]
+    api key = ${garuda-lib.netdata.stream_token}
+    buffer size bytes = 15728640
+    destination = ${cfg.parent}
+    enable compression = yes
+    enabled = yes
+    timeout seconds = 360
+
+[logs]
+    debug log = none
+    error log = none
+    access log = none
+      '';
     };
 
 /*     virtualisation.oci-containers.containers = {
