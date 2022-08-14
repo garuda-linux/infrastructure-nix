@@ -4,7 +4,7 @@ let cfg = config.services.garuda-monitoring;
 in {
   options.services.garuda-monitoring = {
     enable = mkEnableOption "Garuda monitoring stack";
-    parent = mkOption { type = types.string; };
+    parent = mkOption { type = types.str; };
   };
 
   config = mkIf cfg.enable {
