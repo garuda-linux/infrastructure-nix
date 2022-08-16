@@ -49,6 +49,9 @@ in {
           if ($arg_fosshost) {
             rewrite ^/iso/(.*)$ https://mirrors.fossho.st/garuda/iso/$1? permanent;
           }
+          if ($arg_usa) {
+            rewrite ^/iso/(.*)$ https://us-ny-mirror.garudalinux.org/iso/$1? permanent;
+          }
           if ($arg_sourceforge) {
             rewrite ^/iso/(.*)$ https://sourceforge.net/projects/garuda-linux/files/$1? permanent;
           }
