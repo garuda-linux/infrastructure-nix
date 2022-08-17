@@ -1,0 +1,7 @@
+---
+- hosts: nix
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Update and build system
+      shell: nixos-rebuild switch --upgrade
