@@ -43,21 +43,13 @@ in {
     error log = none
     access log = none
       '';
+      "go.d/nginx.conf" = mkIf config.services.nginx.enable (pkgs.writeText "nginx.conf" ''
+jobs:
+  - name: local
+    url: http://localhost/nginx_status
+'');
     };
 
-/*     virtualisation.oci-containers.containers = {
-      deepfence_agent = {
-        image = "deepfenceio/deepfence_agent_ce:latest";
-        extraOptions = [ "--pull=always" "--pid=host" "--network=host" "--privileged=true" ];
-        volumes = [
-          "/sys/kernel/debug:/sys/kernel/debug:rw"
-          "/var/run/docker.sock:/var/run/docker.sock"
-          "/:/fenced/mnt/host/:ro"
-        ];
-      };
-    };
-    
-    virtualisation.docker.enable = true;
-    virtualisation.oci-containers.backend = "docker";*/
+    services.nginx.statusPage = true;
   };
 }
