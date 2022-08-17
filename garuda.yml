@@ -15,5 +15,11 @@
         src: "nix/garuda/"
         dest: /etc/nixos/garuda
         mode: preserve
+    - name: Copy secrets
+      copy:
+        src: "secrets/"
+        dest: /var/garuda/secrets
+        mode: 600
+        directory_mode: 600
 #    - name: Build system
 #      shell: nixos-rebuild switch

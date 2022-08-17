@@ -10,7 +10,7 @@ in {
   config = mkIf cfg.enable {
     services.datadog-agent.enable = true;
     services.datadog-agent.site = "datadoghq.com";
-    services.datadog-agent.apiKeyFile = pkgs.writeText "datadog-apikey" garuda-lib.datadog.api_key;
+    services.datadog-agent.apiKeyFile = garuda-lib.secrets.datadog.api_key;
     services.datadog-agent.enableLiveProcessCollection = true;
     services.datadog-agent.extraConfig = {
         logs_enabled = true;
@@ -31,7 +31,7 @@ in {
     services.netdata.configDir = {
       "stream.conf" = pkgs.writeText "stream.conf" ''
 [stream]
-    api key = ${garuda-lib.netdata.stream_token}
+    api key = ${garuda-lib.secrets.netdata.stream_token}
     buffer size bytes = 15728640
     destination = ${cfg.parent}
     enable compression = yes

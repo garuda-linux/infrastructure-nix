@@ -5,15 +5,20 @@ let
 in {
   options.garuda-lib = mkOption {
     type = types.attrs;
-    default = {
+    default = { };
+  };
+  config = {
+    _module.args.garuda-lib = config.garuda-lib;
+    # Defaults
+    garuda-lib = {
       xslt_style = ./static/style.xslt;
-      cloudflare_key = ./secrets/cloudflare_key;
-      meshagent_msh = ./secrets/meshagent.msh;
-      zerotier_network = secrets.zerotier_network;
-      telegram = secrets.telegram;
-      netdata = secrets.netdata;
-      datadog = secrets.datadog;
+      behind_proxy = false;
+      secrets = recursiveUpdate secrets {
+        cloudflare_key = "/var/garuda/secrets/cloudflare_key";
+        meshagent_msh = "/var/garuda/secrets/meshagent.msh";
+        buildiso_sshkey = "/var/garuda/secrets/buildiso_sshkey";
+        datadog.api_key = "/var/garuda/secrets/datadog_apikey";
+      };
     };
   };
-  config._module.args.garuda-lib = config.garuda-lib;
 }

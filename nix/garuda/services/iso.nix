@@ -23,6 +23,7 @@ in {
             -v "/var/cache/pacman/pkg/:/var/cache/pacman/pkg/" \
             -v "/var/garuda/buildiso/iso:/var/cache/garuda-tools/garuda-builds/iso/" \
             -v "/var/garuda/buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
+            -v "${garuda-lib.secrets.buildiso_sshkey}:/root/.ssh/id_ed25519" \
             "''$(docker build -q "${dockerfile}")" auto
         '';
         Restart = "on-failure";
@@ -59,8 +60,8 @@ in {
         '';
       };
       locations."/".extraConfig = "return 301 https://builds.garudalinux.org$request_uri;";
-      useACMEHost = "garudalinux.org";
-      forceSSL = true;
+      useACMEHost = if !garuda-lib.behind_proxy then "garudalinux.org" else null;
+      forceSSL = !garuda-lib.behind_proxy;
     };
 
     services.rsyncd.enable = true;

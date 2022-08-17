@@ -1,4 +1,4 @@
-{ lib, pkgs, config, garuda-lib, ... }:
+{ lib, pkgs, config, ... }:
 with lib;
 let
   cfg = config.services.garuda-meshagent;

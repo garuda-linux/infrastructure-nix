@@ -5,3 +5,4 @@ sftp_enabled = true
 
 [nix]
 iso
+esxi-iso
