@@ -6,6 +6,8 @@
   ];
   networking.nameservers = [ "1.1.1.1" ];
 
+  zramSwap.enable = true;
+
   services.openssh.enable = true;
   services.openssh.passwordAuthentication = false;
   programs.mosh.enable = true;
