@@ -20,7 +20,7 @@
   virtualisation.docker.autoPrune.enable = true;
   virtualisation.docker.autoPrune.flags = [ "-a" ];
 
-  environment.systemPackages = [ pkgs.python3 pkgs.micro pkgs.htop pkgs.git ];
+  environment.systemPackages = with pkgs; [ python3 micro htop git screen ];
 
   services.zerotierone.enable = true;
   services.zerotierone.joinNetworks = [ garuda-lib.secrets.zerotier_network ];
