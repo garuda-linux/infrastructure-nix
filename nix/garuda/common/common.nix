@@ -13,6 +13,10 @@
   programs.mosh.enable = true;
   environment.variables = { MOSH_SERVER_NETWORK_TMOUT="604800"; };
 
+  # TODO: Move this to a security.nix
+  # Timeout TTY after 1 hour
+  programs.bash.interactiveShellInit = ''if [[ $(tty) =~ /dev\/tty[1-6] ]]; then TMOUT=3600; fi'';
+
   services.garuda-meshagent.enable = lib.mkDefault true;
   services.garuda-meshagent.mshFile = garuda-lib.secrets.meshagent_msh;
   services.garuda-meshagent.agentBinary = builtins.fetchurl "https://mesh.garudalinux.org/meshagents?id=${if builtins.currentSystem == "aarch64-linux" then "26" else "6"}";
