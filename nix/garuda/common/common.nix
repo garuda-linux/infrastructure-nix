@@ -16,6 +16,7 @@
   # TODO: Move this to a security.nix
   # Timeout TTY after 1 hour
   programs.bash.interactiveShellInit = ''if [[ $(tty) =~ /dev\/tty[1-6] ]]; then TMOUT=3600; fi'';
+  console.keyMap = "de";
 
   services.garuda-meshagent.enable = lib.mkDefault true;
   services.garuda-meshagent.mshFile = garuda-lib.secrets.meshagent_msh;
