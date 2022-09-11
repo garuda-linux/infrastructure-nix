@@ -4,4 +4,6 @@
   become: true
   tasks:
     - name: Update and build system
-      shell: nixos-rebuild switch --upgrade
+      shell: nix flake update && nixos-rebuild switch
+      args:
+        chdir: /etc/nixos

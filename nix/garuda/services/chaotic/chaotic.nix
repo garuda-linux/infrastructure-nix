@@ -1,31 +1,23 @@
-{ lib, pkgs, config, garuda-lib, ... }:
+{ lib, pkgs, config, garuda-lib, src-repoctl, src-chaotic-toolbox, ... }:
 with lib;
 let
   cfg = config.services.chaotic;
-  toolbox_src = builtins.fetchGit {
-    url = "https://github.com/chaotic-aur/toolbox";
-    ref = "main";
-  };
   toolbox = pkgs.stdenv.mkDerivation {
-    src = toolbox_src;
+    src = src-chaotic-toolbox;
     name = "chaotic-toolbox";
     installFlags = "PREFIX=${placeholder "out"}";
     buildFlags = "PREFIX=${placeholder "out"}";
     patches = [ ./patch.diff ];
     postFixup = ''
-      "${pkgs.rsync}/bin/rsync" -a "${toolbox_src}/guest/" "$out/lib/chaotic/guest/"
+      "${pkgs.rsync}/bin/rsync" -a "${src-chaotic-toolbox}/guest/" "$out/lib/chaotic/guest/"
     '';
   };
   repoctl = pkgs.buildGoModule {
-    src = builtins.fetchGit {
-      url = "https://github.com/cassava/repoctl";
-      ref = "master";
-    };
+    src = src-repoctl;
     vendorSha256 = null;
     name = "repoctl";
     doCheck = false;
   };
-  unstable = import <nixos-unstable> {};
 in {
   options.services.chaotic = {
     enable = mkEnableOption "Chaotic AUR";
@@ -39,7 +31,7 @@ in {
     users.groups = {
       "chaotic_op" = { };
     };
-    environment.systemPackages = [ toolbox unstable.arch-install-scripts pkgs.git unstable.pacman repoctl ];
+    environment.systemPackages = [ toolbox pkgs.unstable.arch-install-scripts pkgs.git pkgs.unstable.pacman repoctl ];
     environment.etc = {
       "pacman.conf".text = ''
 [options]
@@ -100,6 +92,7 @@ Server = https://cdn-mirror.chaotic.cx/$repo/$arch
         owner = "root";
         group = "chaotic_op";
         source = "${toolbox}/bin/chaotic";
+        permissions = "u+rx,g+rx,o-rx";
       };
     };
   };

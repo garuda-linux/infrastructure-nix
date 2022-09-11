@@ -3,17 +3,10 @@
   become: true
   gather_facts: no
   tasks:
-    - name: Install configuration.nix file
-      template:
-        dest: /etc/nixos/configuration.nix
-        group: root
-        mode: 0644
-        owner: root
-        src: "nix/{{ inventory_hostname }}.nix.j2"
     - name: Copy static configurations to target directory
       copy:
-        src: "nix/garuda/"
-        dest: /etc/nixos/garuda
+        src: "nix/"
+        dest: /etc/nixos
         mode: preserve
     - name: Copy secrets
       copy:

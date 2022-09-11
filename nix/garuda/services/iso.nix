@@ -1,8 +1,7 @@
-{ lib, pkgs, config, garuda-lib, ... }:
+{ lib, pkgs, config, garuda-lib, src-buildiso, ... }:
 with lib;
 let
   cfg = config.services.garuda-iso;
-  dockerfile = builtins.fetchTarball "https://gitlab.com/garuda-linux/tools/buildiso-docker/-/archive/master/buildiso-docker-master.tar.gz";
   envfile = pkgs.writeText "iso-env" "TELEGRAM=tgram://${garuda-lib.secrets.telegram.token}/${garuda-lib.secrets.telegram.updates_channel}";
   buildiso_script = pkgs.writeScriptBin "buildiso" "docker exec -it buildiso bash";
 in {
@@ -27,7 +26,7 @@ in {
             -v "/var/garuda/buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
             -v "${garuda-lib.secrets.buildiso_sshkey}:/root/.ssh/id_ed25519" \
             -v "${envfile}:/var/cache/garuda-tools/garuda-builds/.env" \
-            "''$(docker build -q "${dockerfile}")" auto
+            "''$(docker build -q "${src-buildiso}")" auto
         '';
         Restart = "on-failure";
         RestartSec = "30";

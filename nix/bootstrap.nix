@@ -28,4 +28,5 @@
   networking.nameservers = [ "1.1.1.1" ];
   environment.systemPackages = [ pkgs.python3 ];
   system.stateVersion = "22.05";
+  nix.package = (import (builtins.fetchTarball https://github.com/nixos/nixpkgs/tarball/nixos-unstable) {}).nix;
 }

@@ -4,5 +4,5 @@ ansible_user = ansible
 sftp_enabled = true
 
 [nix]
-iso
+garuda-iso
 esxi-iso

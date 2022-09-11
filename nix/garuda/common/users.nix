@@ -1,8 +1,5 @@
-{ ... }:
-let
-  keys_nico = builtins.fetchurl "https://github.com/dr460nf1r3.keys";
-  keys_tne = builtins.fetchurl "https://github.com/justtne.keys";
-in {
+{ keys_nico, keys_tne, ... }:
+{
   users.users.ansible = {
     isNormalUser = true;
     home = "/home/ansible";
