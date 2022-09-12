@@ -1,4 +1,4 @@
-{ lib, pkgs, config, garuda-lib, src-buildiso, ... }:
+{ lib, pkgs, config, garuda-lib, sources, ... }:
 with lib;
 let
   cfg = config.services.garuda-iso;
@@ -26,7 +26,7 @@ in {
             -v "/var/garuda/buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
             -v "${garuda-lib.secrets.buildiso_sshkey}:/root/.ssh/id_ed25519" \
             -v "${envfile}:/var/cache/garuda-tools/garuda-builds/.env" \
-            "''$(docker build -q "${src-buildiso}")" auto
+            "''$(docker build -q "${sources.buildiso}")" auto
         '';
         Restart = "on-failure";
         RestartSec = "30";

@@ -11,19 +11,34 @@
 
     src-chaotic-toolbox = { url = "github:chaotic-aur/toolbox"; flake = false; };
     src-repoctl = { url = "github:cassava/repoctl"; flake = false; };
-    src-buildiso = { url = "https://gitlab.com/garuda-linux/tools/buildiso-docker/-/archive/master/buildiso-docker-master.tar.gz"; flake = false; };
+    src-buildiso = { url = "git+https://gitlab.com/garuda-linux/tools/buildiso-docker"; flake = false; };
   };
 
-  outputs = { self, nixos, nixos-unstable, ... }@attrs:
+  outputs = { nixos, nixos-unstable, ... }@attrs:
   let
       system = "x86_64-linux";
       overlay-unstable = final: prev: {
         unstable = nixos-unstable.legacyPackages.${prev.system};
       };
+      specialArgs = {
+        meshagent = {
+          x86_64 = attrs.meshagent_x86_64;
+          aarch64 = attrs.meshagent_aarch64;
+        };
+        sources = {
+          chaotic-toolbox = attrs.src-chaotic-toolbox;
+          repoctl = attrs.src-repoctl;
+          buildiso = attrs.src-buildiso;
+        };
+        keys = {
+          nico = attrs.keys_nico;
+          tne = attrs.keys_tne;
+        };
+      };
   in {
     nixosConfigurations."garuda-iso" = nixos.lib.nixosSystem {
       inherit system;
-      specialArgs = attrs;
+      specialArgs = specialArgs;
       modules = [
         # Overlays-module makes "pkgs.unstable" available in configuration.nix
         ({ config, pkgs, ... }: { nixpkgs.overlays = [ overlay-unstable ]; })
@@ -32,7 +47,7 @@
     };
     nixosConfigurations."esxi-iso" = nixos.lib.nixosSystem {
       inherit system;
-      specialArgs = attrs;
+      specialArgs = specialArgs;
       modules = [
         # Overlays-module makes "pkgs.unstable" available in configuration.nix
         ({ config, pkgs, ... }: { nixpkgs.overlays = [ overlay-unstable ]; })

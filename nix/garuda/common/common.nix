@@ -1,4 +1,4 @@
-{ pkgs, lib, garuda-lib, config, meshagent_x86_64, meshagent_aarch64, ... }: {
+{ pkgs, lib, garuda-lib, config, meshagent, ... }: {
   imports = [
     ./users.nix
     ./acme.nix
@@ -20,7 +20,7 @@
 
   services.garuda-meshagent.enable = lib.mkDefault true;
   services.garuda-meshagent.mshFile = garuda-lib.secrets.meshagent_msh;
-  services.garuda-meshagent.agentBinary = if pkgs.hostPlatform.system == "aarch64-linux" then meshagent_aarch64 else meshagent_x86_64;
+  services.garuda-meshagent.agentBinary = if pkgs.hostPlatform.system == "aarch64-linux" then meshagent.aarch64 else meshagent.x86_64;
 
   virtualisation.docker.autoPrune.enable = true;
   virtualisation.docker.autoPrune.flags = [ "-a" ];

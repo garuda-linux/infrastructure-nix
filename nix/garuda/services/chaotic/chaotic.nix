@@ -1,19 +1,19 @@
-{ lib, pkgs, config, garuda-lib, src-repoctl, src-chaotic-toolbox, ... }:
+{ lib, pkgs, config, garuda-lib, sources, ... }:
 with lib;
 let
   cfg = config.services.chaotic;
   toolbox = pkgs.stdenv.mkDerivation {
-    src = src-chaotic-toolbox;
+    src = sources.chaotic-toolbox;
     name = "chaotic-toolbox";
     installFlags = "PREFIX=${placeholder "out"}";
     buildFlags = "PREFIX=${placeholder "out"}";
     patches = [ ./patch.diff ];
     postFixup = ''
-      "${pkgs.rsync}/bin/rsync" -a "${src-chaotic-toolbox}/guest/" "$out/lib/chaotic/guest/"
+      "${pkgs.rsync}/bin/rsync" -a "${sources.chaotic-toolbox}/guest/" "$out/lib/chaotic/guest/"
     '';
   };
   repoctl = pkgs.buildGoModule {
-    src = src-repoctl;
+    src = sources.repoctl;
     vendorSha256 = null;
     name = "repoctl";
     doCheck = false;
@@ -37,22 +37,16 @@ in {
 [options]
 Architecture = x86_64
 SigLevel = Never
-
 [garuda]
 Include = /etc/pacman.d/chaotic-mirrorlist
-
 [core]
 Include = /etc/pacman.d/mirrorlist
-
 [extra]
 Include = /etc/pacman.d/mirrorlist
-
 [community]
 Include = /etc/pacman.d/mirrorlist
-
 [multilib]
 Include = /etc/pacman.d/mirrorlist
-
 [chaotic-aur]
 Include = /etc/pacman.d/chaotic-mirrorlist
       '';
