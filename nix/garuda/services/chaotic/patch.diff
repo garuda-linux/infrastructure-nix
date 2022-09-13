@@ -42,7 +42,7 @@ index bffa553..6ae611a 100644
  install-services: \
  	$(foreach s, $(ROUTINES), $(DESTDIR)/usr/lib/systemd/system/chaotic-${s}.service) \
 diff --git a/src/chaotic.sh b/src/chaotic.sh
-index 456af81..3695336 100755
+index 456af81..8a81100 100755
 --- a/src/chaotic.sh
 +++ b/src/chaotic.sh
 @@ -1,6 +1,8 @@
@@ -54,6 +54,18 @@ index 456af81..3695336 100755
  pushd() { command pushd "$@" >/dev/null; }
  popd() { command popd >/dev/null; }
  stee() { command tee "$@" >/dev/null; }
+diff --git a/src/lib/package-make.sh b/src/lib/package-make.sh
+index 88bfb21..b257468 100755
+--- a/src/lib/package-make.sh
++++ b/src/lib/package-make.sh
+@@ -97,6 +97,7 @@ function makepkg-systemd-nspawn() {
+     -u "root" \
+     --suppress-sync=true \
+     --capability=CAP_IPC_LOCK,CAP_SYS_NICE \
++    --bind-ro=/etc/hosts:/etc/hosts \
+     -D machine/root ${_CONTAINER_ARGS:-} \
+     "/home/main-builder/wizard.sh" "${@:2}" || local _BUILD_FAILED="$?"
+ 
 diff --git a/src/lib/package-prepare.sh b/src/lib/package-prepare.sh
 index 5d572af..5c9de02 100755
 --- a/src/lib/package-prepare.sh

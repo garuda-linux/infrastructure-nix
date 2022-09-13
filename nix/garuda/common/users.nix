@@ -10,13 +10,13 @@
   users.users.tne = {
     isNormalUser = true;
     home = "/home/tne";
-    extraGroups = [ "wheel" "docker" ];
+    extraGroups = [ "wheel" "docker" "chaotic_op" ];
     openssh.authorizedKeys.keyFiles = [ keys.tne ];
   };
   users.users.nico = {
     isNormalUser = true;
     home = "/home/nico";
-    extraGroups = [ "wheel" "docker" ];
+    extraGroups = [ "wheel" "docker" "chaotic_op" ];
     openssh.authorizedKeys.keyFiles = [ keys.nico ];
   };
 
