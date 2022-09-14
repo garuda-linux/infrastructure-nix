@@ -7,9 +7,9 @@ let
     name = "chaotic-toolbox";
     installFlags = "PREFIX=${placeholder "out"}";
     buildFlags = "PREFIX=${placeholder "out"}";
-    patches = [ ./patch.diff ];
+    patches = [ ./patch.diff ] ++ cfg.patches;
     postFixup = ''
-      "${pkgs.rsync}/bin/rsync" -a "${sources.chaotic-toolbox}/guest/" "$out/lib/chaotic/guest/"
+      "${pkgs.rsync}/bin/rsync" -a "${sources.chaotic-toolbox}/guest/bin/" "$out/lib/chaotic/guest/bin/"
     '';
   };
   repoctl = pkgs.buildGoModule {
@@ -42,6 +42,34 @@ in {
     extraConfig = mkOption {
       type = types.lines;
       default = "";
+    };
+    interfere = mkOption {
+      type = types.str;
+      default = "https://github.com/chaotic-aur/interfere";
+    };
+    packages = mkOption {
+      type = types.str;
+      default = "https://github.com/chaotic-aur/packages";
+    };
+    calendarmap = mkOption {
+      type = types.attrs;
+      description = "A list of systemd calendar values matching routine names.";
+      default = {
+        "morning" = "*-*-* 6:20:00";
+        "afternoon" = "*-*-* 12:20:00";
+        "midnight" = "*-*-* 00:20:00";
+        "nightly" = "*-*-* 19:20:00";
+        "hourly" = "hourly";
+      };
+    };
+    routines = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+    };
+    patches = mkOption {
+      type = types.listOf types.path;
+      description = "Any extra patches to be applied to the chaotic toolbox.";
+      default = [];
     };
   };
 
@@ -110,23 +138,52 @@ color = "auto"
 quiet = false
     '';
     };
-    systemd.services.chaotic-setup = {
-      wantedBy = [ "multi-user.target" ];
-      description = "Chaotic setup";
-      path = [ pkgs.git pkgs.pacman pkgs.gnupg ];
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = pkgs.writeShellScript "execstart" ''
-          set -e
-          if [ ! -d "/var/lib/chaotic" ]; then mkdir "/var/lib/chaotic"; fi
-          if [ ! -d "/var/lib/chaotic/packages" ]; then git clone "https://github.com/chaotic-aur/packages" /var/lib/chaotic/packages; fi
-          if [ ! -d "/var/lib/chaotic/interfere" ]; then git clone "https://github.com/chaotic-aur/interfere" /var/lib/chaotic/interfere; fi
-          if [ ! -d "/etc/pacman.d/gnupg" ]; then pacman-key --init; fi
-          mkdir -p "${repodir}/x86_64"
-          mkdir -p "${repodir}/logs"
-        '';
+    systemd.services = lib.mkMerge [
+      {
+        chaotic-setup = {
+          wantedBy = [ "multi-user.target" ];
+          description = "Chaotic setup";
+          path = [ pkgs.git pkgs.pacman pkgs.gnupg ];
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = pkgs.writeShellScript "execstart" ''
+              set -e
+              if [ ! -d "/var/lib/chaotic" ]; then mkdir "/var/lib/chaotic"; fi
+              if [ ! -d "/var/lib/chaotic/packages" ]; then git clone "${cfg.packages}" /var/lib/chaotic/packages; fi
+              if [ ! -d "/var/lib/chaotic/interfere" ]; then git clone "${cfg.interfere}" /var/lib/chaotic/interfere; fi
+              if [ ! -d "/etc/pacman.d/gnupg" ]; then pacman-key --init; fi
+              mkdir -p "${repodir}/x86_64"
+              mkdir -p "${repodir}/logs"
+            '';
+          };
+        };
+      } (builtins.listToAttrs (builtins.map (x: {
+        name = "chaotic-" + x;
+        value = {
+          description = "Chaotic's ${x} routine";
+          serviceConfig = {
+            User = "root";
+            Group = "chaotic_op";
+            WorkingDirectory = "/tmp";
+            ExecStart = "${toolbox}/bin/chaotic routine ${x}";
+            TimeoutStopSec = 86400;
+            TimeoutStopFailureMode = "abort";
+            WatchdogSignal = "SIGUSR1";
+            TimeoutAbortSec = 600;
+          };
+        };
+    }) cfg.routines)) ];
+    systemd.timers = builtins.listToAttrs (builtins.map (x: {
+      name = "chaotic-" + x;
+      value = {
+        description = "Chaotic's ${x} routine";
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+          OnCalendar = lib.attrByPath [ x ] (abort "Routine not defined in calendarmap") cfg.calendarmap;
+          Persistent = false;
+        };
       };
-    };
+    }) cfg.routines);
     security.wrappers = { 
       chaotic = { 
         setuid = true;
