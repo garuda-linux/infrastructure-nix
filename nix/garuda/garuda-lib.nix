@@ -18,6 +18,10 @@ in {
         meshagent_msh = "/var/garuda/secrets/meshagent.msh";
         buildiso_sshkey = "/var/garuda/secrets/buildiso_sshkey";
         datadog.api_key = "/var/garuda/secrets/datadog_apikey";
+        syncthing.esxi = {
+          key = "/var/garuda/secrets/syncthing/esxi-key.pem";
+          cert = "/var/garuda/secrets/syncthing/esxi-cert.pem";
+        };
       };
     };
   };

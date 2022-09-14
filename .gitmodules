@@ -1,0 +1,3 @@
+[submodule "secrets"]
+	path = secrets
+	url = https://gitlab.com/garuda-linux/infra-nix-secrets

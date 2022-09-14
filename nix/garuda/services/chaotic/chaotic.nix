@@ -71,6 +71,10 @@ in {
       description = "Any extra patches to be applied to the chaotic toolbox.";
       default = [];
     };
+    useACMEHost = mkOption {
+      type = types.str;
+      default = null;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -199,6 +203,7 @@ quiet = false
         autoindex on;
       '';
       root = cfg.repos-dir;
+      useACMEHost = cfg.useACMEHost;
     };
     networking.hosts = {
       "127.0.0.1" = [ cfg.host ];
