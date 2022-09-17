@@ -40,7 +40,6 @@
       inherit system;
       specialArgs = specialArgs;
       modules = [
-        # Overlays-module makes "pkgs.unstable" available in configuration.nix
         ({ config, pkgs, ... }: { nixpkgs.overlays = [ overlay-unstable ]; })
         ./iso.nix
       ];
@@ -49,9 +48,16 @@
       inherit system;
       specialArgs = specialArgs;
       modules = [
-        # Overlays-module makes "pkgs.unstable" available in configuration.nix
         ({ config, pkgs, ... }: { nixpkgs.overlays = [ overlay-unstable ]; })
         ./esxi-iso.nix
+      ];
+    };
+    nixosConfigurations."esxi-repo" = nixos.lib.nixosSystem {
+      inherit system;
+      specialArgs = specialArgs;
+      modules = [
+        ({ config, pkgs, ... }: { nixpkgs.overlays = [ overlay-unstable ]; })
+        ./esxi-repo.nix
       ];
     };
   };

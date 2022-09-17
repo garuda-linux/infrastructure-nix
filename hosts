@@ -6,3 +6,4 @@ sftp_enabled = true
 [nix]
 garuda-iso
 esxi-iso
+esxi-repo

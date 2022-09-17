@@ -4,16 +4,16 @@
     ./garuda/garuda.nix
   ];
 
-  networking.interfaces.ens18.ipv4.addresses = [ {
-    address = "78.129.140.86";
+  networking.interfaces.ens33.ipv4.addresses = [ {
+    address = "192.168.1.30";
     prefixLength = 24;
   } ];
-  networking.hostName = "garuda-test";
-  networking.defaultGateway = "78.129.140.1";
+  networking.hostName = "esxi-repo";
+  networking.defaultGateway = "192.168.1.1";
 
   services.chaotic.enable = true;
   services.chaotic.cluster-name = "garuda-repo";
-  services.chaotic.host = "repo2.garudalinux.org";
+  services.chaotic.host = "repo.garudalinux.org";
   services.chaotic.extraConfig = ''
 export CAUR_DEPLOY_LABEL="Maximus 🐉"
 export CAUR_TELEGRAM_TAG="@dr460nf1r3"
@@ -38,7 +38,7 @@ export CAUR_LOWER_PKGS+=(chaotic-mirrorlist chaotic-keyring)
     devices = {
       "builds.garudalinux.org" = {
         id = garuda-lib.secrets.syncthing.garuda-build;
-        addresses =  [ "dynamic, tcp://builds.garudalinux.org" ];
+        addresses =  [ "dynamic" "tcp://builds.garudalinux.org" ];
       };
     };
     folders = {
@@ -52,10 +52,23 @@ export CAUR_LOWER_PKGS+=(chaotic-mirrorlist chaotic-keyring)
     extraOptions = {
       gui = {
         apikey = "garudalinux";
+        insecureSkipHostcheck = true;
       };
     };
   };
 
+  services.cloudflared = {
+    enable = true;
+    ingress = {
+      "syncthing-esxi.garudalinux.net" = "http://localhost:8384";
+    };
+    tunnel-id = garuda-lib.secrets.cloudflared.esxi-repo.id;
+    tunnel-credentials = garuda-lib.secrets.cloudflared.esxi-repo.cred;
+  };
+
+  networking.firewall.allowedTCPPorts = [ 80 ];
+
+  # Auto reset syncthing stuff
   systemd.services.syncthing-reset = {
     serviceConfig.Type = "oneshot";
     script = ''
