@@ -7,6 +7,15 @@
   networking.nameservers = [ "1.1.1.1" ];
 
   zramSwap.enable = true;
+  services.earlyoom.enable = true;
+  services.earlyoom.freeSwapThreshold = 5;
+  services.earlyoom.freeMemThreshold = 5;
+
+  services.locate = {
+    enable = true;
+    locate = pkgs.plocate;
+    localuser = null;
+  };
 
   services.openssh.enable = true;
   services.openssh.passwordAuthentication = false;
@@ -35,10 +44,11 @@
 
   nix.gc = {
     automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 7d";
+    dates = "daily";
+    options = "--delete-older-than 2d";
   };
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.package = pkgs.unstable.nix;
+  documentation.nixos.enable = false;
 }
