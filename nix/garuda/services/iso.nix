@@ -47,7 +47,7 @@ in {
         extraConfig = ''
           xslt_stylesheet "${garuda-lib.xslt_style}";
           if ($symlink_target_rel != "") {
-            rewrite ^ /iso/$symlink_target_rel redirect;
+            rewrite ^ https://$server_name/iso/$symlink_target_rel redirect;
           }
           if ($arg_fosshost) {
             rewrite ^/iso/(.*)$ https://mirrors.fossho.st/garuda/iso/$1? permanent;
