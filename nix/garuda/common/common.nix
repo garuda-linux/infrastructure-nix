@@ -34,7 +34,7 @@
   virtualisation.docker.autoPrune.enable = true;
   virtualisation.docker.autoPrune.flags = [ "-a" ];
 
-  environment.systemPackages = with pkgs; [ python3 micro htop git screen ];
+  environment.systemPackages = with pkgs; [ python3 micro htop git screen tmux ];
 
   services.zerotierone.enable = true;
   services.zerotierone.joinNetworks = [ garuda-lib.secrets.zerotier_network ];

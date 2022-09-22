@@ -1,9 +1,9 @@
-{ keys, ... }:
+{ keys, lib, config,  ... }:
 {
   users.users.ansible = {
     isNormalUser = true;
     home = "/home/ansible";
-    extraGroups = [ "wheel" "docker" ];
+    extraGroups = [ "wheel" ];
     openssh.authorizedKeys.keyFiles = [ keys.nico keys.tne ];
   };
 
@@ -18,6 +18,13 @@
     home = "/home/nico";
     extraGroups = [ "wheel" "docker" "chaotic_op" ];
     openssh.authorizedKeys.keyFiles = [ keys.nico ];
+  };
+
+  users.users.technetium = lib.mkIf config.services.chaotic.enable {
+    isNormalUser = true;
+    home = "/home/technetium";
+    extraGroups = [ "chaotic_op" ];
+    openssh.authorizedKeys.keyFiles = [ keys.technetium1 keys.nico ];
   };
 
   security.sudo.extraRules = [{

@@ -72,7 +72,6 @@ in {
       default = [];
     };
     useACMEHost = mkOption {
-      type = types.str;
       default = null;
     };
   };

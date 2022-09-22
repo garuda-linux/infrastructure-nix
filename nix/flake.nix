@@ -8,6 +8,7 @@
 
     keys_nico = { url = "https://github.com/dr460nf1r3.keys"; flake = false; };
     keys_tne = { url = "https://github.com/justtne.keys"; flake = false; };
+    keys_technetium1 = { url = "https://github.com/Technetium1.keys"; flake = false; };
 
     src-chaotic-toolbox = { url = "github:chaotic-aur/toolbox"; flake = false; };
     src-repoctl = { url = "github:cassava/repoctl"; flake = false; };
@@ -33,6 +34,7 @@
         keys = {
           nico = attrs.keys_nico;
           tne = attrs.keys_tne;
+          technetium1 = attrs.keys_technetium1;
         };
       };
   in {
