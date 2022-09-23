@@ -8,22 +8,26 @@
   time.timeZone = "Europe/Berlin";
 
   zramSwap.enable = true;
-  services.earlyoom.enable = true;
-  services.earlyoom.freeSwapThreshold = 5;
-  services.earlyoom.freeMemThreshold = 5;
-
+  services.earlyoom = {
+    enable = true;
+    reeSwapThreshold = 5;
+    freeMemThreshold = 5;
+  };
   services.locate = {
     enable = true;
     locate = pkgs.plocate;
     localuser = null;
   };
-
   services.openssh.enable = true;
   services.openssh.passwordAuthentication = false;
   programs.mosh.enable = true;
   programs.tmux = {
-      enable = true;
       clock24 = true;
+      enable = true;
+      extraConfig = "set-option -g base-index 1\nset-window-option -g pane-base-index 1";
+      historyLimit = 10000; 
+      plugins = [ pkgs.tmuxPlugins.continuum ];
+      terminal = "screen-256color";
     };
   environment.variables = { MOSH_SERVER_NETWORK_TMOUT="604800"; };
 
@@ -32,6 +36,7 @@
   programs.bash.interactiveShellInit = ''if [[ $(tty) =~ /dev\/tty[1-6] ]]; then TMOUT=3600; fi'';
   programs.fish = {
       enable = true;
+      #shellAlises = 
       shellInit = "set fish_greeting";
   };
   console.keyMap = "de";
