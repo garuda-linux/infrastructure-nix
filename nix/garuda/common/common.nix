@@ -34,13 +34,15 @@
   virtualisation.docker.autoPrune.enable = true;
   virtualisation.docker.autoPrune.flags = [ "-a" ];
 
-  environment.systemPackages = with pkgs; [ python3 micro htop git screen tmux ];
+  environment.systemPackages = with pkgs; [ python3 micro htop git screen tmux ugrep ];
 
   services.zerotierone.enable = true;
   services.zerotierone.joinNetworks = [ garuda-lib.secrets.zerotier_network ];
 
   services.garuda-monitoring.enable = true;
   services.garuda-monitoring.parent = "10.241.0.10";
+
+  services.vnstat.enable = true; 
 
   nix.gc = {
     automatic = true;
