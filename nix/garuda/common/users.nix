@@ -1,12 +1,13 @@
-{ keys, lib, config,  ... }:
+{ keys, lib, config, pkgs, ... }:
 {
+  # Ansible user
   users.users.ansible = {
     isNormalUser = true;
     home = "/home/ansible";
     extraGroups = [ "wheel" ];
     openssh.authorizedKeys.keyFiles = [ keys.nico keys.tne ];
   };
-
+  # Admins
   users.users.tne = {
     isNormalUser = true;
     home = "/home/tne";
@@ -18,8 +19,9 @@
     home = "/home/nico";
     extraGroups = [ "wheel" "docker" "chaotic_op" ];
     openssh.authorizedKeys.keyFiles = [ keys.nico ];
+    shell = pkgs.fish;
   };
-
+  # Chaotic-AUR maintainers
   users.users.technetium = lib.mkIf config.services.chaotic.enable {
     isNormalUser = true;
     home = "/home/technetium";

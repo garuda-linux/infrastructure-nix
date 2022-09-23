@@ -5,6 +5,7 @@
     ./nginx.nix
   ];
   networking.nameservers = [ "1.1.1.1" ];
+  time.timeZone = "Europe/Berlin";
 
   zramSwap.enable = true;
   services.earlyoom.enable = true;
@@ -20,11 +21,19 @@
   services.openssh.enable = true;
   services.openssh.passwordAuthentication = false;
   programs.mosh.enable = true;
+  programs.tmux = {
+      enable = true;
+      clock24 = true;
+    };
   environment.variables = { MOSH_SERVER_NETWORK_TMOUT="604800"; };
 
   # TODO: Move this to a security.nix
   # Timeout TTY after 1 hour
   programs.bash.interactiveShellInit = ''if [[ $(tty) =~ /dev\/tty[1-6] ]]; then TMOUT=3600; fi'';
+  programs.fish = {
+      enable = true;
+      shellInit = "set fish_greeting";
+  };
   console.keyMap = "de";
 
   services.garuda-meshagent.enable = lib.mkDefault true;
@@ -34,7 +43,7 @@
   virtualisation.docker.autoPrune.enable = true;
   virtualisation.docker.autoPrune.flags = [ "-a" ];
 
-  environment.systemPackages = with pkgs; [ python3 micro htop git screen tmux ugrep ];
+  environment.systemPackages = with pkgs; [ python3 micro htop git screen ugrep ];
 
   services.zerotierone.enable = true;
   services.zerotierone.joinNetworks = [ garuda-lib.secrets.zerotier_network ];
