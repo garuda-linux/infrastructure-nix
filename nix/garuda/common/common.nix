@@ -3,14 +3,17 @@
     ./users.nix
     ./acme.nix
     ./nginx.nix
+    ./hardening.nix
   ];
   networking.nameservers = [ "1.1.1.1" ];
+  networking.useDHCP = false;
+
   time.timeZone = "Europe/Berlin";
 
   zramSwap.enable = true;
   services.earlyoom = {
     enable = true;
-    reeSwapThreshold = 5;
+    freeSwapThreshold = 5;
     freeMemThreshold = 5;
   };
   services.locate = {
@@ -19,12 +22,13 @@
     localuser = null;
   };
   services.openssh.enable = true;
-  services.openssh.passwordAuthentication = false;
+
   programs.mosh.enable = true;
   programs.tmux = {
       clock24 = true;
       enable = true;
-      extraConfig = "set-option -g base-index 1\nset-window-option -g pane-base-index 1";
+      extraConfig = "set-option -g base-index 1
+      set-window-option -g pane-base-index 1";
       historyLimit = 10000; 
       plugins = [ pkgs.tmuxPlugins.continuum ];
       terminal = "screen-256color";
@@ -48,7 +52,7 @@
   virtualisation.docker.autoPrune.enable = true;
   virtualisation.docker.autoPrune.flags = [ "-a" ];
 
-  environment.systemPackages = with pkgs; [ python3 micro htop git screen ugrep ];
+  environment.systemPackages = with pkgs; [ python3 micro htop btop git screen ugrep ];
 
   services.zerotierone.enable = true;
   services.zerotierone.joinNetworks = [ garuda-lib.secrets.zerotier_network ];
@@ -66,5 +70,5 @@
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.package = pkgs.unstable.nix;
-  documentation.nixos.enable = false;
+  documentation.man.enable = false;
 }

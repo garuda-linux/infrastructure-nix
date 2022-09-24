@@ -4,11 +4,18 @@
   gather_facts: no
   tasks:
     - name: Copy static configurations to target directory
-      copy:
+      synchronize:
         src: "nix/"
-        dest: /etc/nixos
-        mode: preserve
-    - name: Copy secrets
+        dest: /etc/nixos/
+        rsync_opts:
+          - "--exclude=garuda/secrets/"
+    - name: Copy buildtime secrets
+      copy:
+        src: "nix/garuda/secrets/"
+        dest: /etc/nixos/garuda/secrets
+        mode: '600'
+        directory_mode: '600'
+    - name: Copy runtime secrets
       copy:
         src: "secrets/"
         dest: /var/garuda/secrets

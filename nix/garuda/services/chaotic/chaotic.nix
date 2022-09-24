@@ -55,11 +55,12 @@ in {
       type = types.attrs;
       description = "A list of systemd calendar values matching routine names.";
       default = {
-        "morning" = "*-*-* 6:20:00";
-        "afternoon" = "*-*-* 12:20:00";
-        "midnight" = "*-*-* 00:20:00";
-        "nightly" = "*-*-* 19:20:00";
+        "morning" = "*-*-* 6:30:00";
+        "afternoon" = "*-*-* 12:30:00";
+        "midnight" = "*-*-* 00:30:00";
+        "nightly" = "*-*-* 19:30:00";
         "hourly" = "hourly";
+        "tkg-wine" = "*-*-* 15:30:00";
       };
     };
     routines = mkOption {
@@ -74,6 +75,7 @@ in {
     useACMEHost = mkOption {
       default = null;
     };
+    cluster = mkOption { default = false; };
   };
 
   config = mkIf cfg.enable {
@@ -196,15 +198,15 @@ quiet = false
         permissions = "u+rx,g+rx,o-rx";
       };
     };
-    services.nginx.enable = true;
-    services.nginx.virtualHosts.${cfg.host} = {
+    services.nginx.enable = !cfg.cluster;
+    services.nginx.virtualHosts.${cfg.host} = mkIf (!cfg.cluster) {
       extraConfig = ''
         autoindex on;
       '';
       root = cfg.repos-dir;
       useACMEHost = cfg.useACMEHost;
     };
-    networking.hosts = {
+    networking.hosts = mkIf (!cfg.cluster) {
       "127.0.0.1" = [ cfg.host ];
     };
   };

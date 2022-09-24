@@ -2,6 +2,7 @@
   imports = [
     ./hardware-configuration.nix
     ./garuda/garuda.nix
+    #<nixpkgs/nixos/modules/profiles/hardened.nix>
   ];
 
   networking.interfaces.ens18.ipv4.addresses = [ {

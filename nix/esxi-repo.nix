@@ -68,6 +68,9 @@ export CAUR_LOWER_PKGS+=(chaotic-mirrorlist chaotic-keyring)
 
   networking.firewall.allowedTCPPorts = [ 80 ];
 
+
+  virtualisation.vmware.guest.enable = true; 
+
   # Auto reset syncthing stuff
   systemd.services.syncthing-reset = {
     serviceConfig.Type = "oneshot";

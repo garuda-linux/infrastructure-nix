@@ -1,7 +1,11 @@
 {
+  description = "Garuda Linux infrastructure NixOS config"; 
+
   inputs = {
     nixos.url = "github:NixOS/nixpkgs/nixos-22.05";
     nixos-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    home-manager = { url = "github:nix-community/home-manager/release-22.05"; inputs.nixpkgs.follows = "nixos"; };
 
     meshagent_x86_64 = { url = "https://mesh.garudalinux.org/meshagents?id=6"; flake = false; };
     meshagent_aarch64 = { url = "https://mesh.garudalinux.org/meshagents?id=26"; flake = false; };
@@ -15,12 +19,9 @@
     src-buildiso = { url = "git+https://gitlab.com/garuda-linux/tools/buildiso-docker"; flake = false; };
   };
 
-  outputs = { nixos, nixos-unstable, ... }@attrs:
+  outputs = { nixos, nixos-unstable, home-manager, ... }@attrs:
   let
       system = "x86_64-linux";
-      overlay-unstable = final: prev: {
-        unstable = nixos-unstable.legacyPackages.${prev.system};
-      };
       specialArgs = {
         meshagent = {
           x86_64 = attrs.meshagent_x86_64;
@@ -37,29 +38,45 @@
           technetium1 = attrs.keys_technetium1;
         };
       };
+      overlay-unstable = ({ ... }: { nixpkgs.overlays = [ (final: prev: {
+        unstable = nixos-unstable.legacyPackages.${prev.system};
+      }) ]; });
+      defaultModules = [
+        "${nixos}/nixos/modules/profiles/hardened.nix"
+        overlay-unstable
+        home-manager.nixosModules.home-manager {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.nico = import ./garuda/home/nico.nix;
+        }
+      ];
   in {
     nixosConfigurations."garuda-iso" = nixos.lib.nixosSystem {
       inherit system;
       specialArgs = specialArgs;
-      modules = [
-        ({ config, pkgs, ... }: { nixpkgs.overlays = [ overlay-unstable ]; })
+      modules = defaultModules ++ [
         ./iso.nix
       ];
     };
     nixosConfigurations."esxi-iso" = nixos.lib.nixosSystem {
       inherit system;
       specialArgs = specialArgs;
-      modules = [
-        ({ config, pkgs, ... }: { nixpkgs.overlays = [ overlay-unstable ]; })
+      modules = defaultModules ++ [
         ./esxi-iso.nix
       ];
     };
     nixosConfigurations."esxi-repo" = nixos.lib.nixosSystem {
       inherit system;
       specialArgs = specialArgs;
-      modules = [
-        ({ config, pkgs, ... }: { nixpkgs.overlays = [ overlay-unstable ]; })
+      modules = defaultModules ++ [
         ./esxi-repo.nix
+      ];
+    };
+    nixosConfigurations."chaotic-dragon" = nixos.lib.nixosSystem {
+      inherit system;
+      specialArgs = specialArgs;
+      modules = defaultModules ++ [
+        ./chaotic-dragon.nix
       ];
     };
   };

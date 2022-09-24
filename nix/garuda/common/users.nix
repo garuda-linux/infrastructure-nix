@@ -28,7 +28,7 @@
     extraGroups = [ "chaotic_op" ];
     openssh.authorizedKeys.keyFiles = [ keys.technetium1 keys.nico ];
   };
-
+  # Sudo configuration
   security.sudo.extraRules = [{
     users = [ "ansible" "tne" "nico" ];
     commands = [{

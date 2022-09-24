@@ -1,12 +1,12 @@
 { pkgs, ... }: {
-  networking.interfaces.ens18.ipv4.addresses = [{
-    address = "78.129.140.86";
+  networking.hostName = "chaotic-dragon";
+  networking.interfaces."eth0".ipv4.addresses = [ {
+    address = "192.168.1.50";
     prefixLength = 24;
-  }];
-  networking.hostName = "garuda-iso";
-  networking.defaultGateway = "78.129.140.1";
+  } ];
+  networking.defaultGateway = "192.168.1.1";
 
-  imports = [ ./hardware-configuration.nix ];
+  imports = [ <nixpkgs/nixos/modules/virtualisation/lxc-container.nix> ];
   users.users.ansible = {
     isNormalUser = true;
     home = "/home/ansible";
