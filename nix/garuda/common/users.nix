@@ -1,5 +1,4 @@
-{ keys, lib, config, pkgs, ... }:
-{
+{ keys, lib, config, pkgs, ... }: {
   # Ansible user
   users.users.ansible = {
     isNormalUser = true;

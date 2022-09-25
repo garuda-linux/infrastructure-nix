@@ -3,7 +3,7 @@
 {
   # Add fancy MOTD to shell logins
   environment.interactiveShellInit = ''
-    motd
+    ${pkgs.fancy-motd}/bin/motd
 
     # Own additions
     echo -e ""

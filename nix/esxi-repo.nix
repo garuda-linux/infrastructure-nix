@@ -1,13 +1,10 @@
 { config, garuda-lib, pkgs, ... }: {
-  imports = [
-    ./hardware-configuration.nix
-    ./garuda/garuda.nix
-  ];
+  imports = [ ./hardware-configuration.nix ./garuda/garuda.nix ];
 
-  networking.interfaces.ens33.ipv4.addresses = [ {
+  networking.interfaces.ens33.ipv4.addresses = [{
     address = "192.168.1.30";
     prefixLength = 24;
-  } ];
+  }];
   networking.hostName = "esxi-repo";
   networking.defaultGateway = "192.168.1.1";
 
@@ -15,12 +12,12 @@
   services.chaotic.cluster-name = "garuda-repo";
   services.chaotic.host = "repo.garudalinux.org";
   services.chaotic.extraConfig = ''
-export CAUR_DEPLOY_LABEL="Maximus 🐉"
-export CAUR_TELEGRAM_TAG="@dr460nf1r3"
-export CAUR_SIGN_KEY=0706B90D37D9B881
-export CAUR_SIGN_USER=nico
-export CAUR_PACKAGER="Garuda Builder <team@garudalinux.org>"
-export CAUR_LOWER_PKGS+=(chaotic-mirrorlist chaotic-keyring)
+    export CAUR_DEPLOY_LABEL="Maximus 🐉"
+    export CAUR_TELEGRAM_TAG="@dr460nf1r3"
+    export CAUR_SIGN_KEY=0706B90D37D9B881
+    export CAUR_SIGN_USER=nico
+    export CAUR_PACKAGER="Garuda Builder <team@garudalinux.org>"
+    export CAUR_LOWER_PKGS+=(chaotic-mirrorlist chaotic-keyring)
   '';
   services.chaotic.db-name = "garuda";
   services.chaotic.routines = [ "hourly" ];
@@ -38,7 +35,7 @@ export CAUR_LOWER_PKGS+=(chaotic-mirrorlist chaotic-keyring)
     devices = {
       "builds.garudalinux.org" = {
         id = garuda-lib.secrets.syncthing.garuda-build;
-        addresses =  [ "dynamic" "tcp://builds.garudalinux.org" ];
+        addresses = [ "dynamic" "tcp://builds.garudalinux.org" ];
       };
     };
     folders = {
@@ -59,17 +56,14 @@ export CAUR_LOWER_PKGS+=(chaotic-mirrorlist chaotic-keyring)
 
   services.cloudflared = {
     enable = true;
-    ingress = {
-      "syncthing-esxi.garudalinux.net" = "http://localhost:8384";
-    };
+    ingress = { "syncthing-esxi.garudalinux.net" = "http://localhost:8384"; };
     tunnel-id = garuda-lib.secrets.cloudflared.esxi-repo.id;
     tunnel-credentials = garuda-lib.secrets.cloudflared.esxi-repo.cred;
   };
 
   networking.firewall.allowedTCPPorts = [ 80 ];
 
-
-  virtualisation.vmware.guest.enable = true; 
+  virtualisation.vmware.guest.enable = true;
 
   # Auto reset syncthing stuff
   systemd.services.syncthing-reset = {

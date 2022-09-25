@@ -2,8 +2,10 @@
 with lib;
 let
   cfg = config.services.garuda-iso;
-  envfile = pkgs.writeText "iso-env" "TELEGRAM=tgram://${garuda-lib.secrets.telegram.token}/${garuda-lib.secrets.telegram.updates_channel}";
-  buildiso_script = pkgs.writeScriptBin "buildiso" "docker exec -it buildiso bash";
+  envfile = pkgs.writeText "iso-env"
+    "TELEGRAM=tgram://${garuda-lib.secrets.telegram.token}/${garuda-lib.secrets.telegram.updates_channel}";
+  buildiso_script =
+    pkgs.writeScriptBin "buildiso" "docker exec -it buildiso bash";
 in {
   options.services.garuda-iso = {
     enable = mkEnableOption "Garuda ISO builder";
@@ -26,7 +28,7 @@ in {
             -v "/var/garuda/buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
             -v "${garuda-lib.secrets.buildiso_sshkey}:/root/.ssh/id_ed25519" \
             -v "${envfile}:/var/cache/garuda-tools/garuda-builds/.env" \
-            "''$(docker build -q "${sources.buildiso}")" auto
+            "$(docker build -q "${sources.buildiso}")" auto
         '';
         Restart = "on-failure";
         RestartSec = "30";
@@ -61,8 +63,10 @@ in {
           break;
         '';
       };
-      locations."/".extraConfig = "return 301 https://builds.garudalinux.org$request_uri;";
-      useACMEHost = if !garuda-lib.behind_proxy then "garudalinux.org" else null;
+      locations."/".extraConfig =
+        "return 301 https://builds.garudalinux.org$request_uri;";
+      useACMEHost =
+        if !garuda-lib.behind_proxy then "garudalinux.org" else null;
       forceSSL = !garuda-lib.behind_proxy;
     };
 
@@ -83,7 +87,8 @@ in {
       };
     };
 
-    networking.firewall.allowedTCPPorts = [ 80 443 config.services.rsyncd.port ];
+    networking.firewall.allowedTCPPorts =
+      [ 80 443 config.services.rsyncd.port ];
     environment.systemPackages = [ buildiso_script ];
   };
 }

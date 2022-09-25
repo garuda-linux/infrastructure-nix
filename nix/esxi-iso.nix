@@ -1,13 +1,10 @@
 { ... }: {
-  imports = [
-    ./hardware-configuration.nix
-    ./garuda/garuda.nix
-  ];
+  imports = [ ./hardware-configuration.nix ./garuda/garuda.nix ];
 
-  networking.interfaces.ens33.ipv4.addresses = [ {
+  networking.interfaces.ens33.ipv4.addresses = [{
     address = "192.168.1.60";
     prefixLength = 24;
-  } ];
+  }];
   networking.hostName = "esxi-iso";
   networking.defaultGateway = "192.168.1.1";
 

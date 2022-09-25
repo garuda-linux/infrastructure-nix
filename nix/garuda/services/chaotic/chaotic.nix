@@ -26,13 +26,12 @@ in {
       type = types.str;
       default = "chaotic-aur";
     };
-    cluster-name = mkOption {
-      type = types.str;
-    };
+    cluster-name = mkOption { type = types.str; };
     repos-dir = mkOption {
       type = types.str;
       default = "/srv/http/repos/";
-      description = "Where repos will be stored as well as the nginx webroot served.";
+      description =
+        "Where repos will be stored as well as the nginx webroot served.";
     };
     host = mkOption {
       type = types.str;
@@ -70,78 +69,82 @@ in {
     patches = mkOption {
       type = types.listOf types.path;
       description = "Any extra patches to be applied to the chaotic toolbox.";
-      default = [];
+      default = [ ];
     };
-    useACMEHost = mkOption {
-      default = null;
-    };
+    useACMEHost = mkOption { default = null; };
     cluster = mkOption { default = false; };
   };
 
   config = mkIf cfg.enable {
-    users.groups = {
-      "chaotic_op" = { };
-    };
-    environment.systemPackages = [ toolbox pkgs.unstable.arch-install-scripts pkgs.git pkgs.unstable.pacman repoctl pkgs.screen pkgs.gnupg ];
+    users.groups = { "chaotic_op" = { }; };
+    environment.systemPackages = [
+      toolbox
+      pkgs.unstable.arch-install-scripts
+      pkgs.git
+      pkgs.unstable.pacman
+      repoctl
+      pkgs.screen
+      pkgs.gnupg
+    ];
     environment.etc = {
       "pacman.conf".text = ''
-[options]
-Architecture = x86_64
-SigLevel = Never
-[garuda]
-Include = /etc/pacman.d/chaotic-mirrorlist
-[core]
-Include = /etc/pacman.d/mirrorlist
-[extra]
-Include = /etc/pacman.d/mirrorlist
-[community]
-Include = /etc/pacman.d/mirrorlist
-[multilib]
-Include = /etc/pacman.d/mirrorlist
-[chaotic-aur]
-Include = /etc/pacman.d/chaotic-mirrorlist
+        [options]
+        Architecture = x86_64
+        SigLevel = Never
+        [garuda]
+        Include = /etc/pacman.d/chaotic-mirrorlist
+        [core]
+        Include = /etc/pacman.d/mirrorlist
+        [extra]
+        Include = /etc/pacman.d/mirrorlist
+        [community]
+        Include = /etc/pacman.d/mirrorlist
+        [multilib]
+        Include = /etc/pacman.d/mirrorlist
+        [chaotic-aur]
+        Include = /etc/pacman.d/chaotic-mirrorlist
       '';
-    "pacman.d/mirrorlist".text = ''
-Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch
-Server = https://cloudflaremirrors.com/archlinux/$repo/os/$arch
-    '';
-    "pacman.d/chaotic-mirrorlist".text = ''
-# Automatic per-country routing of the mirrors below.
-Server = https://geo-mirror.chaotic.cx/$repo/$arch
+      "pacman.d/mirrorlist".text = ''
+        Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch
+        Server = https://cloudflaremirrors.com/archlinux/$repo/os/$arch
+      '';
+      "pacman.d/chaotic-mirrorlist".text = ''
+        # Automatic per-country routing of the mirrors below.
+        Server = https://geo-mirror.chaotic.cx/$repo/$arch
 
-# CDN (delayed syncing)
-# By: Fosshost
-Server = https://cdn-mirror.chaotic.cx/$repo/$arch
-    '';
-    "chaotic.conf".text = ''
-export CAUR_DB_NAME=${cfg.db-name}
-export CAUR_DEPLOY_PKGS=${repodir}/x86_64
-export CAUR_DEPLOY_LOGS=${repodir}/logs
-export CAUR_DEPLOY_LOGS_FILTERED=$CAUR_DEPLOY_LOGS/filtered
-export CAUR_DEPLOY_LAST=${repodir}/lastupdate
+        # CDN (delayed syncing)
+        # By: Fosshost
+        Server = https://cdn-mirror.chaotic.cx/$repo/$arch
+      '';
+      "chaotic.conf".text = ''
+        export CAUR_DB_NAME=${cfg.db-name}
+        export CAUR_DEPLOY_PKGS=${repodir}/x86_64
+        export CAUR_DEPLOY_LOGS=${repodir}/logs
+        export CAUR_DEPLOY_LOGS_FILTERED=$CAUR_DEPLOY_LOGS/filtered
+        export CAUR_DEPLOY_LAST=${repodir}/lastupdate
 
-export CAUR_URL=http://${cfg.host}/''${CAUR_DB_NAME}/x86_64
-export CAUR_FILL_DEST=http://${cfg.host}/''${CAUR_DB_NAME}/pkgs.files.txt
-export CAUR_CLUSTER_NAME=${cfg.cluster-name}
-export CAUR_ROUTINES=/var/cache/chaotic/routines
+        export CAUR_URL=http://${cfg.host}/''${CAUR_DB_NAME}/x86_64
+        export CAUR_FILL_DEST=http://${cfg.host}/''${CAUR_DB_NAME}/pkgs.files.txt
+        export CAUR_CLUSTER_NAME=${cfg.cluster-name}
+        export CAUR_ROUTINES=/var/cache/chaotic/routines
 
-export REPOCTL_CONFIG=/etc/xdg/repoctl/config.toml
-export CAUR_GPG_PATH="${pkgs.gnupg}/bin/gpg"
+        export REPOCTL_CONFIG=/etc/xdg/repoctl/config.toml
+        export CAUR_GPG_PATH="${pkgs.gnupg}/bin/gpg"
 
-${cfg.extraConfig}
+        ${cfg.extraConfig}
 
-renice -n 19 $$
-export TERM=screen
-    '';
-    "xdg/repoctl/config.toml".text = ''
-repo = "${repodir}/x86_64/${cfg.db-name}.db.tar.zst"
-backup = true
-backup_dir = "${repodir}/archive/"
-interactive = false
-columnate = false
-color = "auto"
-quiet = false
-    '';
+        renice -n 19 $$
+        export TERM=screen
+      '';
+      "xdg/repoctl/config.toml".text = ''
+        repo = "${repodir}/x86_64/${cfg.db-name}.db.tar.zst"
+        backup = true
+        backup_dir = "${repodir}/archive/"
+        interactive = false
+        columnate = false
+        color = "auto"
+        quiet = false
+      '';
     };
     systemd.services = lib.mkMerge [
       {
@@ -162,7 +165,8 @@ quiet = false
             '';
           };
         };
-      } (builtins.listToAttrs (builtins.map (x: {
+      }
+      (builtins.listToAttrs (builtins.map (x: {
         name = "chaotic-" + x;
         value = {
           description = "Chaotic's ${x} routine";
@@ -177,20 +181,23 @@ quiet = false
             TimeoutAbortSec = 600;
           };
         };
-    }) cfg.routines)) ];
+      }) cfg.routines))
+    ];
     systemd.timers = builtins.listToAttrs (builtins.map (x: {
       name = "chaotic-" + x;
       value = {
         description = "Chaotic's ${x} routine";
         wantedBy = [ "timers.target" ];
         timerConfig = {
-          OnCalendar = lib.attrByPath [ x ] (abort "Routine not defined in calendarmap") cfg.calendarmap;
+          OnCalendar =
+            lib.attrByPath [ x ] (abort "Routine not defined in calendarmap")
+            cfg.calendarmap;
           Persistent = false;
         };
       };
     }) cfg.routines);
-    security.wrappers = { 
-      chaotic = { 
+    security.wrappers = {
+      chaotic = {
         setuid = true;
         owner = "root";
         group = "chaotic_op";
@@ -206,8 +213,6 @@ quiet = false
       root = cfg.repos-dir;
       useACMEHost = cfg.useACMEHost;
     };
-    networking.hosts = mkIf (!cfg.cluster) {
-      "127.0.0.1" = [ cfg.host ];
-    };
+    networking.hosts = mkIf (!cfg.cluster) { "127.0.0.1" = [ cfg.host ]; };
   };
 }

@@ -1,19 +1,12 @@
-{ pkgs, lib, garuda-lib, config, meshagent, ... }: 
-{
-  imports = [
-    ./acme.nix
-    ./hardening.nix
-    ./motd.nix
-    ./nginx.nix
-    ./users.nix
-  ];
+{ pkgs, lib, garuda-lib, config, meshagent, ... }: {
+  imports = [ ./acme.nix ./hardening.nix ./motd.nix ./nginx.nix ./users.nix ];
 
   # Network stuff
   networking = {
     nameservers = [ "1.1.1.1" ];
     useDHCP = false;
     usePredictableInterfaceNames = true;
-  }; 
+  };
 
   # Locales & timezone
   time.timeZone = "Europe/Berlin";
@@ -37,28 +30,26 @@
   programs.mosh.enable = true;
   programs.fish = {
     enable = true;
-    shellAbbrs = 
-      {
-        "reb" = "sudo nixos-rebuild switch -L";
-        "roll" = "sudo nixos-rebuild switch --rollback";
-        "su" = "sudo su -";
-      };
-    shellAliases =
-      {
-        "su" = "sudo su -";
-        "egrep" = "egrep --color=auto";
-        "fgrep" = "fgrep --color=auto";
-        "dir" = "dir --color=auto";
-        "ip" = "ip --color=auto";
-        "vdir" = "vdir --color=auto";
-        "bat" = "bat --style header --style snip --style changes";
-        "ls" = "exa -al --color=always --group-directories-first --icons";
-        "psmem" = "ps auxf | sort -nr -k 4";
-        "psmem10" = "ps auxf | sort -nr -k 4 | head -1";
-        "tarnow" = "tar acf ";
-        "untar" = "tar zxvf ";
-        "wget" = "wget -c";
-      };
+    shellAbbrs = {
+      "reb" = "sudo nixos-rebuild switch -L";
+      "roll" = "sudo nixos-rebuild switch --rollback";
+      "su" = "sudo su -";
+    };
+    shellAliases = {
+      "su" = "sudo su -";
+      "egrep" = "egrep --color=auto";
+      "fgrep" = "fgrep --color=auto";
+      "dir" = "dir --color=auto";
+      "ip" = "ip --color=auto";
+      "vdir" = "vdir --color=auto";
+      "bat" = "bat --style header --style snip --style changes";
+      "ls" = "exa -al --color=always --group-directories-first --icons";
+      "psmem" = "ps auxf | sort -nr -k 4";
+      "psmem10" = "ps auxf | sort -nr -k 4 | head -1";
+      "tarnow" = "tar acf ";
+      "untar" = "tar zxvf ";
+      "wget" = "wget -c";
+    };
     shellInit = ''
       set fish_greeting
     '';
@@ -69,7 +60,10 @@
     vnstat.enable = true;
     openssh.enable = true;
     garuda-meshagent = {
-      agentBinary = if pkgs.hostPlatform.system == "aarch64-linux" then meshagent.aarch64 else meshagent.x86_64;
+      agentBinary = if pkgs.hostPlatform.system == "aarch64-linux" then
+        meshagent.aarch64
+      else
+        meshagent.x86_64;
       enable = lib.mkDefault true;
       mshFile = garuda-lib.secrets.meshagent_msh;
     };
@@ -104,7 +98,7 @@
     # Packages the system needs, individual user packages shall be put into home-manager configurations
     systemPackages = with pkgs; [ python3 micro htop git screen fancy-motd ];
     # Increase Mosh timeout
-    variables = { MOSH_SERVER_NETWORK_TMOUT="604800"; };
+    variables = { MOSH_SERVER_NETWORK_TMOUT = "604800"; };
   };
 
   # General nix settings

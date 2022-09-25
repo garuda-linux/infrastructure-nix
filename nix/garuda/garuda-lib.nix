@@ -1,7 +1,6 @@
 { config, lib, pkgs, ... }:
 with lib;
-let
-  secrets = builtins.fromJSON (builtins.readFile ./secrets/secrets.json);
+let secrets = builtins.fromJSON (builtins.readFile ./secrets/secrets.json);
 in {
   options.garuda-lib = mkOption {
     type = types.attrs;
@@ -22,7 +21,8 @@ in {
           key = "/var/garuda/secrets/syncthing/esxi-key.pem";
           cert = "/var/garuda/secrets/syncthing/esxi-cert.pem";
         };
-        cloudflared.esxi-repo.cred = "/var/garuda/secrets/cloudflared/esxi-repo.json";
+        cloudflared.esxi-repo.cred =
+          "/var/garuda/secrets/cloudflared/esxi-repo.json";
       };
     };
   };

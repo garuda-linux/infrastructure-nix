@@ -8,63 +8,55 @@
 
   # Personally used packages
   home.packages = with pkgs; [ btop nmap nettools bind whois traceroute lynis ];
-  
+
   # Application user configuration
   programs = {
     bash = {
-      enable = true; 
+      enable = true;
       initExtra = ''
         if [ "$SSH_CLIENT" != "" ] && [ -z "$TMUX" ]; then
           exec tmux
         fi
-        '';
+      '';
     };
     bat = {
       enable = true;
-      config = {
-        theme = "GitHub";
-      };
+      config = { theme = "GitHub"; };
     };
-   /* btop = {
-      enable = true;
-      settings = {
-        color_theme = "TTY";
-        theme_background = false;
-        proc_tree = true; 
-    }; */
+    /* btop = {
+         enable = true;
+         settings = {
+           color_theme = "TTY";
+           theme_background = false;
+           proc_tree = true;
+       };
+    */
     exa = {
       enable = true;
       enableAliases = true;
     };
-    fish = {
-      enable = true;
-    };
+    fish = { enable = true; };
     git = {
       enable = true;
       userEmail = "root@dr460nf1r3.org";
       userName = "Nico Jensch";
       extraConfig = {
-        core = {
-          editor = "micro";
-        };
-        pull = {
-          rebase = true;
-        };
-        init = {
-          defaultBranch = "main";
-        };
+        core = { editor = "micro"; };
+        pull = { rebase = true; };
+        init = { defaultBranch = "main"; };
       };
     };
-  /*  micro = {
-    enable = true; 
-    settings = ''
-      {
-      "autosu": true,
-      "colorscheme": "geany",
-      "mkparents": true
-      }
-    '';
-    }; */
+    /* micro = {
+       enable = true;
+       settings = ''
+         {
+         "autosu": true,
+         "colorscheme": "geany",
+         "mkparents": true
+         }
+       '';
+       };
+    */
     starship = {
       enable = true;
       settings = {
@@ -92,9 +84,7 @@
           map_symbol = true;
           disabled = false;
         };
-        sudo = {
-          disabled = false;
-        };
+        sudo = { disabled = false; };
         cmd_duration = {
           min_time = 1;
           format = "took [$duration]($style)";
@@ -109,16 +99,16 @@
       extraConfig = ''
         set -g @continuum-restore 'on'
         set -g @continuum-save-interval '60'
-        '';
+      '';
       historyLimit = 10000;
-      baseIndex = 1; 
+      baseIndex = 1;
       terminal = "screen-256color";
       shell = "${pkgs.fish}/bin/fish";
     };
   };
 
   # Services that should be running
-  services.gpg-agent = {                          
+  services.gpg-agent = {
     enable = true;
     defaultCacheTtl = 1800;
     enableSshSupport = true;
