@@ -101,6 +101,53 @@
   environment = {
     systemPackages = with pkgs; [ python3 micro htop git screen ];
     variables = { MOSH_SERVER_NETWORK_TMOUT="604800"; };
+    interactiveShellInit = ''
+      # Collect information
+      HOSTNAME=$(uname -n)
+      KERNEL=$(uname -r)
+      CPU=$(awk -F '[ :][ :]+' '/^model name/ { print $2; exit; }' /proc/cpuinfo)
+      ARCH=$(uname -m)
+      MEMORY1=$(free -t -m | grep "Mem" | awk '{print $6" MB";}')
+      MEMORY2=$(free -t -m | grep "Mem" | awk '{print $2" MB";}')
+      MEMPERCENT=$(free | awk '/Mem/{printf("%.2f% (Used) "), $3/$2*100}')
+
+      # System uptime
+      uptime=$(cat /proc/uptime | cut -f1 -d.)
+      upDays=$((uptime / 60 / 60 / 24))
+      upHours=$((uptime / 60 / 60 % 24))
+      upMins=$((uptime / 60 % 60))
+      upSecs=$((uptime % 60))
+
+      # System load
+      LOAD1=$(cat /proc/loadavg | awk {'print $1'})
+      LOAD5=$(cat /proc/loadavg | awk {'print $2'})
+      LOAD15=$(cat /proc/loadavg | awk {'print $3'})
+
+      # Color variables
+      W="\033[0m"
+      B="\033[01;36m"
+      R="\033[01;31m"
+      G="\033[01;32m"
+      N="\033[0m"
+
+      echo -e "$G---------------------------------------------------------------"
+      echo -e "$W    Hey there! You are logged into $B$A$HOSTNAME$W! 🦅         "
+      echo -e "$G---------------------------------------------------------------"
+      echo -e "$B       KERNEL $G:$W $KERNEL $ARCH                              "
+      echo -e "$B          CPU $G:$W $CPU                                       "
+      echo -e "$B       MEMORY $G:$W $MEMORY1 / $MEMORY2 - $MEMPERCENT          "
+      echo -e "$G---------------------------------------------------------------"
+      echo -e "$B     LOAD AVG $G:$W $LOAD1, $LOAD5, $LOAD15		              "
+      echo -e "$B       UPTIME $G:$W $upDays days $upHours hours $upMins minutes $upSecs seconds "
+      echo -e "$B        USERS $G:$W $(users | wc -w) user logged in 	          "
+      echo -e "$G---------------------------------------------------------------"
+      echo -e "$W               Please behave well and have fun!                "
+      echo -e "$W       In case of issues or questions contact Nico or TNE.     "
+      echo -e "$G---------------------------------------------------------------"
+      echo -e "$N"
+      sleep 3
+
+    '';
   };
 
   # General nix settings
