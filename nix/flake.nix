@@ -44,6 +44,10 @@
       url = "git+https://gitlab.com/garuda-linux/tools/buildiso-docker";
       flake = false;
     };
+    src-chaotic-mirror = {
+      url = "github:chaotic-aur/docker-mirror";
+      flake = false;
+    };
   };
 
   outputs = { nixos, nixos-unstable, home-manager, ... }@attrs:
@@ -58,6 +62,7 @@
           buildiso = attrs.src-buildiso;
           chaotic-toolbox = attrs.src-chaotic-toolbox;
           repoctl = attrs.src-repoctl;
+          chaotic-mirror = attrs.src-chaotic-mirror;
         };
         keys = {
           nico = attrs.keys_nico;

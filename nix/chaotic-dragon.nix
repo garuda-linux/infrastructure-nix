@@ -34,5 +34,9 @@
   services.chaotic.routines = [ "hourly" "nightly" "afternoon" "tkg-wine" ];
   services.chaotic.cluster = true;
 
+  #services.chaotic-mirror.enable = true;
+  #services.chaotic-mirror.email = "team@garudalinux.org";
+  #services.chaotic-mirror.domain = "chaotic.dr460nf1r3.org";
+
   system.stateVersion = "22.05";
 }

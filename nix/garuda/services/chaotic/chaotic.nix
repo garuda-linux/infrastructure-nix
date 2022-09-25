@@ -215,4 +215,5 @@ in {
     };
     networking.hosts = mkIf (!cfg.cluster) { "127.0.0.1" = [ cfg.host ]; };
   };
+  imports = [ ./chaotic-mirror.nix ];
 }
