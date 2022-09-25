@@ -5,70 +5,118 @@
     ./nginx.nix
     ./hardening.nix
   ];
-  networking.nameservers = [ "1.1.1.1" ];
-  networking.useDHCP = false;
 
+  # Network stuff
+  networking = {
+    nameservers = [ "1.1.1.1" ];
+    useDHCP = false;
+    usePredictableInterfaceNames = true;
+  }; 
+
+  # Locales & timezone
   time.timeZone = "Europe/Berlin";
-
-  zramSwap.enable = true;
-  services.earlyoom = {
-    enable = true;
-    freeSwapThreshold = 5;
-    freeMemThreshold = 5;
+  i18n = {
+    defaultLocale = "en_GB.UTF-8";
+    supportedLocales = [ "en_GB.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" ];
   };
-  services.locate = {
-    enable = true;
-    locate = pkgs.plocate;
-    localuser = null;
+  console = {
+    keyMap = "de";
+    font = "Lat2-Terminus18";
   };
-  services.openssh.enable = true;
 
+  # Home-manager configuration
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users.nico = import ../home/nico.nix;
+  };
+
+  # Programs & global config
   programs.mosh.enable = true;
-  programs.tmux = {
-      clock24 = true;
-      enable = true;
-      extraConfig = "set-option -g base-index 1
-      set-window-option -g pane-base-index 1";
-      historyLimit = 10000; 
-      plugins = [ pkgs.tmuxPlugins.continuum ];
-      terminal = "screen-256color";
-    };
-  environment.variables = { MOSH_SERVER_NETWORK_TMOUT="604800"; };
-
-  # TODO: Move this to a security.nix
-  # Timeout TTY after 1 hour
-  programs.bash.interactiveShellInit = ''if [[ $(tty) =~ /dev\/tty[1-6] ]]; then TMOUT=3600; fi'';
   programs.fish = {
+    enable = true;
+    shellAbbrs = 
+      {
+        "reb" = "sudo nixos-rebuild switch -L";
+        "roll" = "sudo nixos-rebuild switch --rollback";
+        "su" = "sudo su -";
+      };
+    shellAliases =
+      {
+        "su" = "sudo su -";
+        "egrep" = "egrep --color=auto";
+        "fgrep" = "fgrep --color=auto";
+        "dir" = "dir --color=auto";
+        "ip" = "ip --color=auto";
+        "vdir" = "vdir --color=auto";
+        "bat" = "bat --style header --style snip --style changes";
+        "ls" = "exa -al --color=always --group-directories-first --icons";
+        "psmem" = "ps auxf | sort -nr -k 4";
+        "psmem10" = "ps auxf | sort -nr -k 4 | head -1";
+        "tarnow" = "tar acf ";
+        "untar" = "tar zxvf ";
+        "wget" = "wget -c";
+      };
+    shellInit = ''
+      set fish_greeting
+    '';
+  };
+
+  # Services 
+  services = {
+    garuda-meshagent = {
+      enable = lib.mkDefault true;
+      mshFile = garuda-lib.secrets.meshagent_msh;
+      agentBinary = if pkgs.hostPlatform.system == "aarch64-linux" then meshagent.aarch64 else meshagent.x86_64;
+    };
+    zerotierone = {
       enable = true;
-      #shellAlises = 
-      shellInit = "set fish_greeting";
+      joinNetworks = [ garuda-lib.secrets.zerotier_network ];
+    };
+    garuda-monitoring = {
+      enable = true;
+      parent = "10.241.0.10";
+    };
+    vnstat.enable = true;
+    openssh.enable = true;
+    earlyoom = {
+      enable = true;
+      freeSwapThreshold = 5;
+      freeMemThreshold = 5;
+    };
+    locate = {
+      enable = true;
+      locate = pkgs.plocate;
+      localuser = null;
+    };
   };
-  console.keyMap = "de";
 
-  services.garuda-meshagent.enable = lib.mkDefault true;
-  services.garuda-meshagent.mshFile = garuda-lib.secrets.meshagent_msh;
-  services.garuda-meshagent.agentBinary = if pkgs.hostPlatform.system == "aarch64-linux" then meshagent.aarch64 else meshagent.x86_64;
-
-  virtualisation.docker.autoPrune.enable = true;
-  virtualisation.docker.autoPrune.flags = [ "-a" ];
-
-  environment.systemPackages = with pkgs; [ python3 micro htop btop git screen ugrep ];
-
-  services.zerotierone.enable = true;
-  services.zerotierone.joinNetworks = [ garuda-lib.secrets.zerotier_network ];
-
-  services.garuda-monitoring.enable = true;
-  services.garuda-monitoring.parent = "10.241.0.10";
-
-  services.vnstat.enable = true; 
-
-  nix.gc = {
-    automatic = true;
-    dates = "daily";
-    options = "--delete-older-than 2d";
+  # Docker
+  virtualisation.docker = {
+    autoPrune.enable = true;
+    autoPrune.flags = [ "-a" ];
   };
+
+  # Environment
+  environment = {
+    systemPackages = with pkgs; [ python3 micro htop btop git screen ugrep exa bat ];
+    variables = { MOSH_SERVER_NETWORK_TMOUT="604800"; };
+  };
+
+  # General nix settings
+  nix = {
+    gc = {
+      automatic = true;
+      dates = "daily";
+      options = "--delete-older-than 2d";
+    };
+    package = pkgs.unstable.nix;
+    settings.experimental-features = [ "nix-command" "flakes" ];
+  };
+
+  # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nix.package = pkgs.unstable.nix;
+
+  # Disable generation of manpages
   documentation.man.enable = false;
 }

@@ -19,7 +19,6 @@
     home = "/home/nico";
     extraGroups = [ "wheel" "docker" "chaotic_op" ];
     openssh.authorizedKeys.keyFiles = [ keys.nico ];
-    shell = pkgs.fish;
   };
   # Chaotic-AUR maintainers
   users.users.technetium = lib.mkIf config.services.chaotic.enable {

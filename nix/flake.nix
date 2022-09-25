@@ -44,11 +44,7 @@
       defaultModules = [
         "${nixos}/nixos/modules/profiles/hardened.nix"
         overlay-unstable
-        home-manager.nixosModules.home-manager {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          home-manager.users.nico = import ./garuda/home/nico.nix;
-        }
+        home-manager.nixosModules.home-manager
       ];
   in {
     nixosConfigurations."garuda-iso" = nixos.lib.nixosSystem {
