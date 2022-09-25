@@ -1,91 +1,126 @@
 { config, pkgs, lib, ... }:
 
 {
-  # Home Manager needs a bit of information about you and the
-  # paths it should manage.
+  # Always needed home-manager settings - don't touch!
   home.username = "nico";
   home.homeDirectory = "/home/nico";
-
-  # This value determines the Home Manager release that your
-  # configuration is compatible with. This helps avoid breakage
-  # when a new Home Manager release introduces backwards
-  # incompatible changes.
-  #
-  # You can update Home Manager without changing this value. See
-  # the Home Manager release notes for a list of state version
-  # changes in each release.
   home.stateVersion = "22.05";
 
-  #home.packages = [ pkgs.tmux ];
-
-  programs.starship = {
-    enable = true;
-    #settings = {
-    #  add_newline = false;
-    #  format = lib.concatStrings [
-    #    "$line_break"
-    #    "$package"
-    #    "$line_break"
-    #    "$character"
-    #  ];
-    #  scan_timeout = 10;
-    #  character = {
-    #    success_symbol = "➜";
-    #    error_symbol = "➜";
-    #  };
-    enableFishIntegration = true;
+  # Personally used packages
+  home.packages = with pkgs; [ btop nmap nettools bind whois traceroute lynis ];
+  
+  # Application user configuration
+  programs = {
+    bash = {
+      enable = true; 
+      initExtra = ''
+        if [ "$SSH_CLIENT" != "" ] && [ -z "$TMUX" ]; then
+          exec tmux
+        fi
+        '';
     };
-
-  programs.bash = {
+    bat = {
+      enable = true;
+      config = {
+        theme = "GitHub";
+      };
+    };
+   /* btop = {
+      enable = true;
+      settings = {
+        color_theme = "TTY";
+        theme_background = false;
+        proc_tree = true; 
+    }; */
+    exa = {
+      enable = true;
+      enableAliases = true;
+    };
+    fish = {
+      enable = true;
+    };
+    git = {
+      enable = true;
+      userEmail = "root@dr460nf1r3.org";
+      userName = "Nico Jensch";
+      extraConfig = {
+        core = {
+          editor = "micro";
+        };
+        pull = {
+          rebase = true;
+        };
+        init = {
+          defaultBranch = "main";
+        };
+      };
+    };
+  /*  micro = {
     enable = true; 
-    initExtra = ''
-      if [ "$SSH_CLIENT" != "" ] && [ -z "$TMUX" ]; then
-        exec tmux
-      fi
-      '';
-  };
-   programs.tmux = {
+    settings = ''
+      {
+      "autosu": true,
+      "colorscheme": "geany",
+      "mkparents": true
+      }
+    '';
+    }; */
+    starship = {
+      enable = true;
+      settings = {
+        username = {
+          format = " [$user]($style)@";
+          style_user = "bold red";
+          style_root = "bold red";
+          show_always = true;
+        };
+        hostname = {
+          format = "[$hostname]($style) in ";
+          style = "bold dimmed red";
+          trim_at = "-";
+          ssh_only = false;
+          disabled = false;
+        };
+        scan_timeout = 10;
+        directory = {
+          style = "purple";
+          truncation_length = 0;
+          truncate_to_repo = true;
+          truncation_symbol = "repo: ";
+        };
+        status = {
+          map_symbol = true;
+          disabled = false;
+        };
+        sudo = {
+          disabled = false;
+        };
+        cmd_duration = {
+          min_time = 1;
+          format = "took [$duration]($style)";
+          disabled = false;
+        };
+      };
+    };
+    tmux = {
       clock24 = true;
       enable = true;
-      plugins = [ pkgs.tmuxPlugins.continuum ];
+      plugins = with pkgs; [ tmuxPlugins.continuum ];
+      extraConfig = ''
+        set -g @continuum-restore 'on'
+        set -g @continuum-save-interval '60'
+        '';
       historyLimit = 10000;
       baseIndex = 1; 
       terminal = "screen-256color";
       shell = "${pkgs.fish}/bin/fish";
-  }; 
-
-  programs.fish = {
-    enable = true;
-  };
-
-  programs.git = {
-    enable = true;
-    userEmail = "root@dr460nf1r3.org";
-    userName = "Nico Jensch";
-    extraConfig = {
-      core = {
-        editor = "micro";
-      };
-      pull = {
-        rebase = true;
-      };
-      init = {
-        defaultBranch = "main";
-      };
     };
   };
 
+  # Services that should be running
   services.gpg-agent = {                          
     enable = true;
     defaultCacheTtl = 1800;
     enableSshSupport = true;
   };
-/*   programs.micro.enable = true; 
-  programs.micro.settings = ''
-  {
-   "autosu": true,
-   "colorscheme": "geany",
-   "mkparents": true
-  }
-  ''; */
 }

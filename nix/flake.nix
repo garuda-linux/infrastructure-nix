@@ -28,14 +28,14 @@
           aarch64 = attrs.meshagent_aarch64;
         };
         sources = {
+          buildiso = attrs.src-buildiso;
           chaotic-toolbox = attrs.src-chaotic-toolbox;
           repoctl = attrs.src-repoctl;
-          buildiso = attrs.src-buildiso;
         };
         keys = {
           nico = attrs.keys_nico;
-          tne = attrs.keys_tne;
           technetium1 = attrs.keys_technetium1;
+          tne = attrs.keys_tne;
         };
       };
       overlay-unstable = ({ ... }: { nixpkgs.overlays = [ (final: prev: {
@@ -43,8 +43,8 @@
       }) ]; });
       defaultModules = [
         "${nixos}/nixos/modules/profiles/hardened.nix"
-        overlay-unstable
         home-manager.nixosModules.home-manager
+        overlay-unstable
       ];
   in {
     nixosConfigurations."garuda-iso" = nixos.lib.nixosSystem {

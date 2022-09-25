@@ -64,10 +64,12 @@
 
   # Services 
   services = {
+    vnstat.enable = true;
+    openssh.enable = true;
     garuda-meshagent = {
+      agentBinary = if pkgs.hostPlatform.system == "aarch64-linux" then meshagent.aarch64 else meshagent.x86_64;
       enable = lib.mkDefault true;
       mshFile = garuda-lib.secrets.meshagent_msh;
-      agentBinary = if pkgs.hostPlatform.system == "aarch64-linux" then meshagent.aarch64 else meshagent.x86_64;
     };
     zerotierone = {
       enable = true;
@@ -77,17 +79,15 @@
       enable = true;
       parent = "10.241.0.10";
     };
-    vnstat.enable = true;
-    openssh.enable = true;
     earlyoom = {
       enable = true;
-      freeSwapThreshold = 5;
       freeMemThreshold = 5;
+      freeSwapThreshold = 5;
     };
     locate = {
       enable = true;
-      locate = pkgs.plocate;
       localuser = null;
+      locate = pkgs.plocate;
     };
   };
 
@@ -99,7 +99,7 @@
 
   # Environment
   environment = {
-    systemPackages = with pkgs; [ python3 micro htop btop git screen ugrep exa bat ];
+    systemPackages = with pkgs; [ python3 micro htop git screen ];
     variables = { MOSH_SERVER_NETWORK_TMOUT="604800"; };
   };
 
