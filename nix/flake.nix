@@ -31,6 +31,11 @@
       url = "https://github.com/Technetium1.keys";
       flake = false;
     };
+    keys_alexjp = {
+      url = "https://github.com/alexjp.keys";
+      flake = false;
+    };
+
 
     src-chaotic-toolbox = {
       url = "github:chaotic-aur/toolbox";
