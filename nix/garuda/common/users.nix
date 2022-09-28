@@ -26,7 +26,13 @@
     extraGroups = [ "chaotic_op" ];
     openssh.authorizedKeys.keyFiles = [ keys.technetium1 keys.nico ];
   };
-  # Sudo configuration
+  users.users.alexjp = lib.mkIf config.services.chaotic.enable {
+    isNormalUser = true;
+    home = "/home/alexjp";
+    extraGroups = [ "chaotic_op" ];
+    openssh.authorizedKeys.keyFiles = [ keys.alexjp keys.nico ];
+  };
+   # Sudo configuration
   security.sudo.extraRules = [{
     users = [ "ansible" "tne" "nico" ];
     commands = [{
