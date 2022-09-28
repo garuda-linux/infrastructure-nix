@@ -70,6 +70,7 @@
           chaotic-mirror = attrs.src-chaotic-mirror;
         };
         keys = {
+          alexjp = attr.keys_alexjp; 
           nico = attrs.keys_nico;
           technetium1 = attrs.keys_technetium1;
           tne = attrs.keys_tne;
