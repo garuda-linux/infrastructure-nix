@@ -24,13 +24,13 @@
     isNormalUser = true;
     home = "/home/technetium";
     extraGroups = [ "chaotic_op" ];
-    openssh.authorizedKeys.keyFiles = [ keys.technetium1 keys.nico ];
+    openssh.authorizedKeys.keyFiles = [ keys.technetium1 ];
   };
   users.users.alexjp = lib.mkIf config.services.chaotic.enable {
     isNormalUser = true;
     home = "/home/alexjp";
     extraGroups = [ "chaotic_op" ];
-    openssh.authorizedKeys.keyFiles = [ keys.alexjp keys.nico ];
+    openssh.authorizedKeys.keyFiles = [ keys.alexjp ];
   };
    # Sudo configuration
   security.sudo.extraRules = [{
