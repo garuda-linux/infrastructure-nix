@@ -2,12 +2,11 @@
   description = "Garuda Linux infrastructure NixOS config";
 
   inputs = {
-    nixos.url = "github:NixOS/nixpkgs/nixos-22.05";
     nixos-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-22.05";
-      inputs.nixpkgs.follows = "nixos";
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixos-unstable";
     };
 
     meshagent_x86_64 = {
@@ -55,8 +54,9 @@
     };
   };
 
-  outputs = { nixos, nixos-unstable, home-manager, ... }@attrs:
+  outputs = { nixos-unstable, home-manager, ... }@attrs:
     let
+      nixos = nixos-unstable;
       system = "x86_64-linux";
       specialArgs = {
         meshagent = {
