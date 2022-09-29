@@ -115,6 +115,16 @@
     settings.experimental-features = [ "nix-command" "flakes" ];
   };
 
+  systemd.services.nix-clean-result = {
+    serviceConfig.Type = "oneshot";
+    description = "Auto clean all result symlinks created by nixos-rebuild test";
+    script = ''
+      "${config.nix.package.out}/bin/nix-store" --gc --print-roots | "${pkgs.gawk}/bin/awk" 'match($0, /^(.*\/result) -> \/nix\/store\/[^-]+-nixos-system/, a) { print a[1] }' | xargs -d\\n rm
+    '';
+    before = [ "nix-gc.service" ];
+    wantedBy = [ "nix-gc.service" ];
+  };
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
