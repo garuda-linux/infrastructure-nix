@@ -8,16 +8,6 @@ in {
   };
 
   config = mkIf cfg.enable {
-    services.datadog-agent.enable = true;
-    services.datadog-agent.site = "datadoghq.com";
-    services.datadog-agent.apiKeyFile = garuda-lib.secrets.datadog.api_key;
-    services.datadog-agent.enableLiveProcessCollection = true;
-    services.datadog-agent.extraConfig = {
-        logs_enabled = true;
-        logs_config = {
-            container_collect_all = true;
-        };
-    };
     services.netdata.enable = true;
     services.netdata.config = {
       global = {
