@@ -24,6 +24,7 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     users.nico = import ../home/nico.nix;
+    users.alexjp = lib.mkIf config.services.chaotic.enable (import ../home/alexjp.nix);
   };
 
   # Programs & global config
