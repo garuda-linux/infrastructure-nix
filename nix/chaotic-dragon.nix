@@ -1,6 +1,7 @@
 { config, garuda-lib, pkgs, ... }: {
   imports = [ ./garuda/garuda.nix ];
 
+  # Base configuration
   networking.hostName = "chaotic-dragon";
   networking.interfaces."eth0".ipv4.addresses = [{
     address = "192.168.1.50";
@@ -13,6 +14,7 @@
   boot.isContainer = true;
   systemd.enableUnifiedCgroupHierarchy = false;
 
+  # Enable Chaotic-AUR building
   services.chaotic.enable = true;
   services.chaotic.cluster-name = "garuda-repo";
   services.chaotic.host = "repo.garudalinux.org";
@@ -34,9 +36,10 @@
   services.chaotic.routines = [ "hourly" "nightly" "afternoon" "tkg-wine" ];
   services.chaotic.cluster = true;
 
-  #services.chaotic-mirror.enable = true;
-  #services.chaotic-mirror.email = "team@garudalinux.org";
-  #services.chaotic-mirror.domain = "chaotic.dr460nf1r3.org";
+  # Chaotic-AUR mirror
+  services.chaotic-mirror.enable = true;
+  services.chaotic-mirror.email = "team@garudalinux.org";
+  services.chaotic-mirror.domain = "chaotic.dr460nf1r3.org";
 
   system.stateVersion = "22.05";
 }

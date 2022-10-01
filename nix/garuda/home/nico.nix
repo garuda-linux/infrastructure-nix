@@ -95,11 +95,4 @@
       shell = "${pkgs.fish}/bin/fish";
     };
   };
-
-  # Services that should be running
-  services.gpg-agent = {
-    enable = true;
-    defaultCacheTtl = 1800;
-    enableSshSupport = true;
-  };
 }

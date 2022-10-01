@@ -37,19 +37,20 @@
       "su" = "sudo su -";
     };
     shellAliases = {
-      "su" = "sudo su -";
+      "bat" = "bat --style header --style snip --style changes";
+      "dir" = "dir --color=auto";
       "egrep" = "egrep --color=auto";
       "fgrep" = "fgrep --color=auto";
-      "dir" = "dir --color=auto";
       "ip" = "ip --color=auto";
-      "vdir" = "vdir --color=auto";
-      "bat" = "bat --style header --style snip --style changes";
       "ls" = "exa -al --color=always --group-directories-first --icons";
       "micro" = "micro -colorscheme geany -autosu true -mkparents true";
       "psmem" = "ps auxf | sort -nr -k 4";
       "psmem10" = "ps auxf | sort -nr -k 4 | head -1";
+      "su" = "sudo su -";
+      "sudo micro" = "micro -colorscheme geany -autosu true -mkparents true";
       "tarnow" = "tar acf ";
       "untar" = "tar zxvf ";
+      "vdir" = "vdir --color=auto";
       "wget" = "wget -c";
     };
     shellInit = ''

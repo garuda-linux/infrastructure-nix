@@ -1,6 +1,7 @@
 { config, garuda-lib, pkgs, ... }: {
   imports = [ ./hardware-configuration.nix ./garuda/garuda.nix ];
 
+  # Base configuration
   networking.interfaces.ens33.ipv4.addresses = [{
     address = "192.168.1.30";
     prefixLength = 24;
@@ -8,6 +9,7 @@
   networking.hostName = "esxi-repo";
   networking.defaultGateway = "192.168.1.1";
 
+  # Enable Chaotic-AUR building
   services.chaotic.enable = true;
   services.chaotic.cluster-name = "garuda-repo";
   services.chaotic.host = "repo.garudalinux.org";
@@ -24,6 +26,7 @@
   services.chaotic.patches = [ ./garuda/services/chaotic/garuda.diff ];
   services.chaotic.useACMEHost = "garudalinux.org";
 
+  # Special Syncthing configuration allowing to push to main node
   services.syncthing = {
     enable = true;
     overrideDevices = true;
@@ -54,6 +57,7 @@
     };
   };
 
+  # Cloudflared access to Syncthing webinterface
   services.cloudflared = {
     enable = true;
     ingress = { "syncthing-esxi.garudalinux.net" = "http://localhost:8384"; };
@@ -61,8 +65,10 @@
     tunnel-credentials = garuda-lib.secrets.cloudflared.esxi-repo.cred;
   };
 
+  # Allow proxy_passing local mirror
   networking.firewall.allowedTCPPorts = [ 80 ];
 
+  # This machine runs in VMWare, thus we need its tools
   virtualisation.vmware.guest.enable = true;
 
   # Auto reset syncthing stuff
