@@ -45,6 +45,7 @@
       "vdir" = "vdir --color=auto";
       "bat" = "bat --style header --style snip --style changes";
       "ls" = "exa -al --color=always --group-directories-first --icons";
+      "micro" = "micro -colorscheme geany -autosu true -mkparents true";
       "psmem" = "ps auxf | sort -nr -k 4";
       "psmem10" = "ps auxf | sort -nr -k 4 | head -1";
       "tarnow" = "tar acf ";

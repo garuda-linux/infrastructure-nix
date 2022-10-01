@@ -23,14 +23,14 @@
       enable = true;
       config = { theme = "GitHub"; };
     };
-    /* btop = {
-         enable = true;
-         settings = {
-           color_theme = "TTY";
-           theme_background = false;
-           proc_tree = true;
-       };
-    */
+    btop = {
+      enable = true;
+      settings = {
+        color_theme = "TTY";
+        theme_background = false;
+        proc_tree = true;
+      };
+    };  
     exa = {
       enable = true;
       enableAliases = true;
@@ -46,17 +46,6 @@
         init = { defaultBranch = "main"; };
       };
     };
-    /* micro = {
-       enable = true;
-       settings = ''
-         {
-         "autosu": true,
-         "colorscheme": "geany",
-         "mkparents": true
-         }
-       '';
-       };
-    */
     starship = {
       enable = true;
       settings = {
