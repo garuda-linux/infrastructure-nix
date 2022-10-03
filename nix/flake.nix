@@ -45,7 +45,7 @@
       flake = false;
     };
     src-buildiso = {
-      url = "git+https://gitlab.com/garuda-linux/tools/buildiso-docker";
+      url = "gitlab:garuda-linux%2Ftools/buildiso-docker";
       flake = false;
     };
     src-chaotic-mirror = {

@@ -12,5 +12,7 @@
   networking.hostName = "garuda-iso";
   networking.defaultGateway = "78.129.140.1";
 
+  virtualisation.docker.enable = true;
+
   system.stateVersion = "22.05";
 }
