@@ -47,7 +47,6 @@
       "psmem" = "ps auxf | sort -nr -k 4";
       "psmem10" = "ps auxf | sort -nr -k 4 | head -1";
       "su" = "sudo su -";
-      "sudo micro" = "micro -colorscheme geany -autosu true -mkparents true";
       "tarnow" = "tar acf ";
       "untar" = "tar zxvf ";
       "vdir" = "vdir --color=auto";
