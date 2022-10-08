@@ -16,12 +16,20 @@ in {
         cloudflare_key = "/var/garuda/secrets/cloudflare_key";
         meshagent_msh = "/var/garuda/secrets/meshagent.msh";
         buildiso_sshkey = "/var/garuda/secrets/buildiso_sshkey";
-        syncthing.esxi = {
-          key = "/var/garuda/secrets/syncthing/esxi-key.pem";
-          cert = "/var/garuda/secrets/syncthing/esxi-cert.pem";
+        syncthing = {
+          esxi = {
+            key = "/var/garuda/secrets/syncthing/esxi-key.pem";
+            cert = "/var/garuda/secrets/syncthing/esxi-cert.pem";
+          };
+          garuda-build = {
+            key = "/var/garuda/secrets/syncthing/garuda-build-key.pem";
+            cert = "/var/garuda/secrets/syncthing/garuda-build-cert.pem";
+          };
         };
-        cloudflared.esxi-repo.cred =
-          "/var/garuda/secrets/cloudflared/esxi-repo.json";
+        cloudflared = {
+          esxi-repo.cred = "/var/garuda/secrets/cloudflared/esxi-repo.json";
+          garuda-build.cred = "/var/garuda/secrets/cloudflared/garuda-build.json";
+        };
       };
     };
   };

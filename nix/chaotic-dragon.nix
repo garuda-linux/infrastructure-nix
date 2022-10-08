@@ -31,6 +31,7 @@
 
     export CAUR_REPOCTL_DB_URL=https://builds.garudalinux.org/repos/chaotic-aur/x86_64/chaotic-aur.db.tar.zst
     export CAUR_REPOCTL_DB_FILE=/tmp/chaotic/db.tar.zst
+    export REPOCTL_CONFIG=/etc/xdg/repoctl/config_auto.toml
   '';
   services.chaotic.db-name = "chaotic-aur";
   services.chaotic.routines = [ "hourly" "nightly" "afternoon" "tkg-wine" ];

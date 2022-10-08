@@ -18,6 +18,17 @@ let
     name = "repoctl";
     doCheck = false;
   };
+  telegram-send = pkgs.python3.pkgs.buildPythonApplication rec {
+    pname = "telegram-send";
+    version = "0.25";
+
+    src = pkgs.python3.pkgs.fetchPypi {
+      inherit pname version;
+      sha256 = "sha256-5s2gAaieHNAjF/zQRWKIoM3VqlaXDexvvYOtmvHbBaw=";
+    };
+
+    propagatedBuildInputs = with pkgs.python3.pkgs; [ appdirs colorama python-telegram-bot ];
+  };
   repodir = "${cfg.repos-dir}/${cfg.db-name}";
 in {
   options.services.chaotic = {
@@ -59,6 +70,8 @@ in {
         "midnight" = "*-*-* 00:30:00";
         "nightly" = "*-*-* 19:30:00";
         "hourly" = "hourly";
+        "hourly.1" = "*-*-* 01,03,05,07,09,11,13,15,17,19,21,23:00:00";
+        "hourly.2" = "*-*-* 00,02,04,06,08,10,12,14,16,18,20,22:00:00";
         "tkg-wine" = "*-*-* 15:30:00";
       };
     };
@@ -85,6 +98,7 @@ in {
       repoctl
       pkgs.screen
       pkgs.gnupg
+      telegram-send
     ];
     environment.etc = {
       "pacman.conf".text = ''

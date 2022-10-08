@@ -35,7 +35,6 @@
       flake = false;
     };
 
-
     src-chaotic-toolbox = {
       url = "github:chaotic-aur/toolbox";
       flake = false;
@@ -93,6 +92,11 @@
         inherit system;
         specialArgs = specialArgs;
         modules = defaultModules ++ [ ./iso.nix ];
+      };
+      nixosConfigurations."garuda-build" = nixos.lib.nixosSystem {
+        inherit system;
+        specialArgs = specialArgs;
+        modules = defaultModules ++ [ ./garuda-build.nix ];
       };
       nixosConfigurations."esxi-iso" = nixos.lib.nixosSystem {
         inherit system;

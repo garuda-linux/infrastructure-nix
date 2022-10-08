@@ -37,7 +37,7 @@
     key = garuda-lib.secrets.syncthing.esxi.key;
     devices = {
       "builds.garudalinux.org" = {
-        id = garuda-lib.secrets.syncthing.garuda-build;
+        id = garuda-lib.secrets.syncthing.garuda-build.id;
         addresses = [ "dynamic" "tcp://builds.garudalinux.org" ];
       };
     };
