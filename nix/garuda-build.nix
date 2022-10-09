@@ -97,9 +97,19 @@ export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
         "builds.garudalinux.org" = {
           addSSL = true;
           extraConfig = ''
+            # Our beautiful autoindex theme
             autoindex_format xml;
             xslt_string_param path $uri;
             xslt_string_param hostname "Chaotic-AUR main node - Temeraire";
+
+            # Security
+            add_header X-XSS-Protection          "1; mode=block" always;
+            add_header X-Content-Type-Options    "nosniff" always;
+            add_header Referrer-Policy           "no-referrer-when-downgrade" always;
+            add_header Content-Security-Policy   "default-src 'self' http: https: data: blob: 'unsafe-inline'; frame-ancestors 'self';" always;
+            add_header Permissions-Policy        "interest-cohort=()" always;
+
+            # Locations
             location ~* ^.+\.log {
                 default_type text/plain;
             }
@@ -117,6 +127,7 @@ export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
                 }
             }
           '';
+          http3 = true;
           root = lib.mkForce "/srv/http/";
         };
         "cf-builds.garudalinux.org" = {
@@ -143,14 +154,11 @@ export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
                 return 301 https://builds.garudalinux.org$request_uri;
             }
           '';
+          http3 = true;
           root = lib.mkForce "/srv/http/";
           useACMEHost = "garudalinux.org";
         };
     };
-    
-    # All the stuff we had in conf.d before (still needs adjustments -> nginx.nix )
-    recommendedGzipSettings = true; 
-    recommendedTlsSettings = true;
   };
 
   # Explicitly open our firewall ports - HTTPS & rsyncd
