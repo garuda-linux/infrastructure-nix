@@ -72,19 +72,16 @@ export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
 
   # Chaotic-AUR builders need to upload their packages
   users.users.ufscar_hpc = {
-    createHome = false;
     extraGroups = [ "chaotic_op" ];
     isNormalUser = true;
     openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFslN7a613H3hztK/yzHE4ZBOJ4448+EN867Y/IDpAfc u726578@c6.cluster.infra.ufscar.br" ];
   };
   users.users.catbuilder = {
-    createHome = false;
     extraGroups = [ "chaotic_op" ];
     isNormalUser = true;
     openssh.authorizedKeys.keys = [ "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCYCCLcCdqM3mOde62AaiU6eoi4f1uqAuArjwLsUvqhdgvqn8CddQuYUIKsJJ4Mvl0MTSi2HwMZgBf/psWS+BrHVaOUZ2ymsvvdzenLvmjFSXmuB/LyI9+WElKwq1QMJ9b+uqdASEvdV6sGZovRpylxwaftzm/E/4DAyV3i8+1iKpcSJK1JZ2052gvuojhRTAuCbEAkL3eu8MRoVqzpWuHYe658P48WtDLp3rba2Y+EMtl5ZXcz3Qvrf9CIX+enXo2LD+xJd9BFrrJiAHrY436aBF+tCdLVUdO6YiwC8WatRTJDCXdjpW4vlUvQnBaA2bwUSahrG2Cn0Ro82GMowmlCu1KqL3hOCgYLGuOAIWuNAKPvPzWYhuISMh8y9W/boK7h16B0H3I2pj28fOiKbze5LgHe6g4UJ5Qqb5UuBmTY7eylAZKmj+OAB67Tmgc/dErw2AW0mbukFSUZmpsMyuTRCumALq7swSY6U06hRKVWHN6InXT0xbBguct2SpSnW0c= root@CatBuilder" ];
   };
   users.users.chaotic-dragon = {
-    createHome = false;
     extraGroups = [ "chaotic_op" ];
     isNormalUser = true;
     openssh.authorizedKeys.keys = [ "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCTqJlh6PsBq99zTdsXhdi6qj4lMA699YLEeJSYonj6J84BL+tWIESWc5arJl/4PEPo6k09uYTQqJDwhAGMD2wXebsyrysqfWH/XzG14flzhiUPkdNj0r1u4uypZ8sFdEMarBL+lw6AKPgjZMQMiOfT38EV3wLQESvDt7VSqgadHzfBkJZhw5sAZHSnJJNxvEwICaut9YpVinPjns99PgJFwDXrba4sOA+gxpStOy3/jouGgRWKwkhLv2FhUPIYDS9+IuZ2DRlcr8SQo54GZjmb/piM7QH3jk6ipsGqMwPVxomPNBtArO7As2oFQNcrVdlUnckiT/BeTeR43TP0psefJvD8BTafNHi2y4mVCF+YgqJqwusXxyA5dysoJhxH93wUgq4y//jQos+UP++7Ynv1HkLOUcwHv+orAdQ/ol59tbSnQT9LXmbm5IkQ9q4rJ/ETiqygoS/izD7VPeY3Sb3iNpYY8eHKgT8fFKXNoKC8gI2731lqN56dK1ir37Ur42V8QrEzhIZppElX6AI56BgzZUVxkpFFsUv6p651LD1QnOCGDk6xJa+kyuuZLO59yZye8oQGEAKk7iyDo3OyHOcfBrTuQLmMAbYeNk4A5uY2cifGDz71V3LiHkkryY/KXq9eVWttkTgos29O5MkcZ03Q9Z7I5T3VYo8aglSWlSOEnw== root@chaotic-dragon" ];
@@ -98,6 +95,8 @@ export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
           addSSL = true;
           extraConfig = ''
             # Our beautiful autoindex theme
+            autoindex on;
+            autoindex_exact_size off;
             autoindex_format xml;
             xslt_string_param path $uri;
             xslt_string_param hostname "Chaotic-AUR main node - Temeraire";
@@ -156,7 +155,7 @@ export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
             }
           '';
           http3 = true;
-          root = lib.mkForce "/srv/http/";
+          root = "/srv/http/";
           useACMEHost = "garudalinux.org";
         };
     };

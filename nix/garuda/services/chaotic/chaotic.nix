@@ -137,8 +137,10 @@ in {
         export CAUR_DEPLOY_LOGS_FILTERED=$CAUR_DEPLOY_LOGS/filtered
         export CAUR_DEPLOY_LAST=${repodir}/lastupdate
 
+        ${optionalString (!cfg.cluster) ''
         export CAUR_URL=http://${cfg.host}/''${CAUR_DB_NAME}/x86_64
         export CAUR_FILL_DEST=http://${cfg.host}/''${CAUR_DB_NAME}/pkgs.files.txt
+        ''}
         export CAUR_CLUSTER_NAME=${cfg.cluster-name}
         export CAUR_ROUTINES=/var/cache/chaotic/routines
 
@@ -223,6 +225,7 @@ in {
     services.nginx.virtualHosts.${cfg.host} = mkIf (!cfg.cluster) {
       extraConfig = ''
         autoindex on;
+        autoindex_exact_size off;
       '';
       root = cfg.repos-dir;
       useACMEHost = cfg.useACMEHost;
