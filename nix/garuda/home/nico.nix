@@ -15,7 +15,7 @@
       enable = true;
       initExtra = ''
         if [ "$SSH_CLIENT" != "" ] && [ -z "$TMUX" ]; then
-          exec tmux
+          tmux attach || tmux >/dev/null 2>&1
         fi
       '';
     };
@@ -27,8 +27,8 @@
       enable = true;
       settings = {
         color_theme = "TTY";
-        theme_background = false;
         proc_tree = true;
+        theme_background = false;
       };
     };  
     exa = {
@@ -38,61 +38,63 @@
     fish = { enable = true; };
     git = {
       enable = true;
-      userEmail = "root@dr460nf1r3.org";
-      userName = "Nico Jensch";
       extraConfig = {
         core = { editor = "micro"; };
-        pull = { rebase = true; };
         init = { defaultBranch = "main"; };
+        pull = { rebase = true; };
       };
+      userEmail = "root@dr460nf1r3.org";
+      userName = "Nico Jensch";
     };
     starship = {
       enable = true;
       settings = {
         username = {
           format = " [$user]($style)@";
-          style_user = "bold red";
-          style_root = "bold red";
           show_always = true;
+          style_root = "bold red";
+          style_user = "bold red";
         };
         hostname = {
+          disabled = false;
           format = "[$hostname]($style) in ";
+          ssh_only = false;
           style = "bold dimmed red";
           trim_at = "-";
-          ssh_only = false;
-          disabled = false;
         };
         scan_timeout = 10;
         directory = {
           style = "purple";
-          truncation_length = 0;
           truncate_to_repo = true;
+          truncation_length = 0;
           truncation_symbol = "repo: ";
         };
         status = {
-          map_symbol = true;
           disabled = false;
+          map_symbol = true;
         };
         sudo = { disabled = false; };
         cmd_duration = {
-          min_time = 1;
-          format = "took [$duration]($style)";
           disabled = false;
+          format = "took [$duration]($style)";
+          min_time = 1;
         };
       };
     };
     tmux = {
+      baseIndex = 1;
       clock24 = true;
       enable = true;
-      plugins = with pkgs; [ tmuxPlugins.continuum ];
       extraConfig = ''
         set -g @continuum-restore 'on'
         set -g @continuum-save-interval '60'
       '';
       historyLimit = 10000;
-      baseIndex = 1;
-      terminal = "screen-256color";
+      newSession = true;
+      plugins = with pkgs; [ tmuxPlugins.continuum ];
+      sensibleOnTop = false;
       shell = "${pkgs.fish}/bin/fish";
+      terminal = "screen-256color";
     };
   };
 }
