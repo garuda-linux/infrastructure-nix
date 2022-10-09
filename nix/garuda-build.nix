@@ -16,7 +16,8 @@
   # Enable Chaotic-AUR building
   services.chaotic.enable = true;
   services.chaotic.cluster-name = "garuda-cluster";
-  services.chaotic.host = "builds.garudalinux.org";
+  # Let nginx set itself up for this local domain
+  services.chaotic.host = "local.chaotic.invalid";
   services.chaotic.extraConfig = ''
 export CAUR_SIGN_KEY=BF773B6877808D28
 export CAUR_SIGN_USER=root
@@ -29,7 +30,6 @@ export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
   '';
   services.chaotic.db-name = "chaotic-aur";
   services.chaotic.routines = [ "hourly.1" "hourly.2" "afternoon" "nightly" "morning" ];
-  services.chaotic.useACMEHost = "garudalinux.org";
 
   # Special Syncthing configuration allowing to push to main node
   services.syncthing = {
@@ -128,7 +128,8 @@ export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
             }
           '';
           http3 = true;
-          root = lib.mkForce "/srv/http/";
+          root = "/srv/http/";
+          useACMEHost = "garudalinux.org";
         };
         "cf-builds.garudalinux.org" = {
           addSSL = true;
