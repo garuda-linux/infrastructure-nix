@@ -25,6 +25,7 @@
     export CAUR_SIGN_USER=root
     export CAUR_PACKAGER="Nico Jensch <dr460nf1r3@chaotic.cx>"
     export CAUR_TYPE=cluster
+    export CAUR_URL="https://builds.garudalinux.org/repos/chaotic-aur/x86_64"
 
     export CAUR_DEPLOY_LABEL="Chaotic Dragon 🐉"
     export CAUR_TELEGRAM_TAG="@dr460nf1r3"

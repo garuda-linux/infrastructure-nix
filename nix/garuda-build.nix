@@ -23,7 +23,6 @@ export CAUR_SIGN_KEY=BF773B6877808D28
 export CAUR_SIGN_USER=root
 export CAUR_PACKAGER="Nico Jensch <dr460nf1r3@chaotic.cx>"
 export CAUR_TYPE=primary
-export CAUR_URL=https://builds.garudalinux.org/repos/chaotic-aur/x86_64
 export CAUR_DEPLOY_LABEL="Temeraire 🐉"
 export CAUR_TELEGRAM_TAG="@dr460nf1r3"
 export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
@@ -163,6 +162,7 @@ export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
 
   # Explicitly open our firewall ports - HTTPS & rsyncd
   networking.firewall.allowedTCPPorts = [ 80 443 config.services.rsyncd.port ];
+  networking.firewall.allowedUDPPorts = [ 443 ];
 
   # Our rsyncd server
   services.rsyncd = {
