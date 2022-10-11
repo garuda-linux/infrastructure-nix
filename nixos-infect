@@ -6,7 +6,8 @@ set -e -o pipefail
 
 makeConf() {
   if isEFI; then
-    bootcfg=$(cat << EOF
+    bootcfg=$(
+      cat <<EOF
   boot.loader.grub = {
     efiSupport = true;
     efiInstallAsRemovable = true;
@@ -14,16 +15,17 @@ makeConf() {
   };
   fileSystems."/boot" = { device = "$esp"; fsType = "vfat"; };
 EOF
-)
+    )
   else
-    bootcfg=$(cat << EOF
+    bootcfg=$(
+      cat <<EOF
   boot.loader.grub.device = "$grubdev";
 EOF
-)
+    )
   fi
 
   # If you rerun this later, be sure to prune the filesSystems attr
-  cat > /etc/nixos/hardware-configuration.nix << EOF
+  cat >/etc/nixos/hardware-configuration.nix <<EOF
 { modulesPath, ... }:
 {
   imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
@@ -48,12 +50,12 @@ makeNetworkingConf() {
   gateway6=$(ip -6 route show dev "$eth0_name" | grep default | sed -r 's|default via ([0-9a-f:]+).*|\1|' || true)
   ether0=$(ip address show dev "$eth0_name" | grep link/ether | sed -r 's|.*link/ether ([0-9a-f:]+) .*|\1|')
 
-  eth1_name=$(ip address show | grep '^3:' | awk -F': ' '{print $2}')||true
-  if [ -n "$eth1_name" ];then
+  eth1_name=$(ip address show | grep '^3:' | awk -F': ' '{print $2}') || true
+  if [ -n "$eth1_name" ]; then
     eth1_ip4s=$(ip address show dev "$eth1_name" | grep 'inet ' | sed -r 's|.*inet ([0-9.]+)/([0-9]+).*|{ address="\1"; prefixLength=\2; }|')
     eth1_ip6s=$(ip address show dev "$eth1_name" | grep 'inet6 ' | sed -r 's|.*inet6 ([0-9a-f:]+)/([0-9]+).*|{ address="\1"; prefixLength=\2; }|' || '')
     ether1=$(ip address show dev "$eth1_name" | grep link/ether | sed -r 's|.*link/ether ([0-9a-f:]+) .*|\1|')
-    interfaces1=<< EOF
+    interfaces1= <<EOF
       $eth1_name = {
         ipv4.addresses = [$(for a in "${eth1_ip4s[@]}"; do echo -n "
           $a"; done)
@@ -71,14 +73,14 @@ EOF
   readarray nameservers < <(grep ^nameserver /etc/resolv.conf | sed -r \
     -e 's/^nameserver[[:space:]]+([0-9.a-fA-F:]+).*/"\1"/' \
     -e 's/127[0-9.]+/8.8.8.8/' \
-    -e 's/::1/8.8.8.8/' )
+    -e 's/::1/8.8.8.8/')
 
   if [[ "$eth0_name" = eth* ]]; then
     predictable_inames="usePredictableInterfaceNames = lib.mkForce false;"
   else
     predictable_inames="usePredictableInterfaceNames = lib.mkForce true;"
   fi
-  cat > /etc/nixos/networking.nix << EOF
+  cat >/etc/nixos/networking.nix <<EOF
 { lib, ... }: {
   # This file was populated at runtime with the networking
   # details gathered from the active system.
@@ -119,14 +121,14 @@ checkExistingSwap() {
     if [[ "$SWAP_DEVICE" == "/dev/"* ]]; then
       zramswap=false
       swapcfg="swapDevices = [ { device = \"${SWAP_DEVICE}\"; } ];"
-      NO_SWAP=true 
+      NO_SWAP=true
     fi
   fi
 }
 
 makeSwap() {
   swapFile=$(mktemp /tmp/nixos-infect.XXXXX.swp)
-  dd if=/dev/zero "of=$swapFile" bs=1M count=$((1*1024))
+  dd if=/dev/zero "of=$swapFile" bs=1M count=$((1 * 1024))
   chmod 0600 "$swapFile"
   mkswap "$swapFile"
   swapon -v "$swapFile"
@@ -145,11 +147,14 @@ findESP() {
   esp=""
   for d in /boot/EFI /boot/efi /boot; do
     [[ ! -d "$d" ]] && continue
-    [[ "$d" == "$(df "$d" --output=target | sed 1d)" ]] \
-      && esp="$(df "$d" --output=source | sed 1d)" \
-      && break
+    [[ "$d" == "$(df "$d" --output=target | sed 1d)" ]] &&
+      esp="$(df "$d" --output=source | sed 1d)" &&
+      break
   done
-  [[ -z "$esp" ]] && { echo "ERROR: No ESP mount point found"; return 1; }
+  [[ -z "$esp" ]] && {
+    echo "ERROR: No ESP mount point found"
+    return 1
+  }
   for uuid in /dev/disk/by-uuid/*; do
     [[ $(readlink -f "$uuid") == "$esp" ]] && echo $uuid && return 0
   done
@@ -160,7 +165,7 @@ prepareEnv() {
   if isEFI; then
     esp="$(findESP)"
   else
-    for grubdev in /dev/vda /dev/sda /dev/xvda /dev/nvme0n1 ; do [[ -e $grubdev ]] && break; done
+    for grubdev in /dev/vda /dev/sda /dev/xvda /dev/nvme0n1; do [[ -e $grubdev ]] && break; done
   fi
 
   # Retrieve root fs block device
@@ -180,60 +185,90 @@ prepareEnv() {
 
 fakeCurlUsingWget() {
   # Use adapted wget if curl is missing
-  which wget && { \
+  which wget && {
     curl() {
       eval "wget $(
-        (local isStdout=1
-        for arg in "$@"; do
-          case "$arg" in
+        (
+          local isStdout=1
+          for arg in "$@"; do
+            case "$arg" in
             "-o")
-              echo "-O";
+              echo "-O"
               isStdout=0
               ;;
             "-O")
               isStdout=0
               ;;
-            "-L")
-              ;;
+            "-L") ;;
+
             *)
               echo "$arg"
               ;;
-          esac
-        done;
-        [[ $isStdout -eq 1 ]] && echo "-O-"
-        )| tr '\n' ' '
+            esac
+          done
+          [[ $isStdout -eq 1 ]] && echo "-O-"
+        ) | tr '\n' ' '
       )"
-    }; export -f curl; }
+    }
+    export -f curl
+  }
 }
 
 req() {
-  type "$1" > /dev/null 2>&1 || which "$1" > /dev/null 2>&1
+  type "$1" >/dev/null 2>&1 || which "$1" >/dev/null 2>&1
 }
 
 checkEnv() {
-  [[ "$(whoami)" == "root" ]] || { echo "ERROR: Must run as root"; return 1; }
+  [[ "$(whoami)" == "root" ]] || {
+    echo "ERROR: Must run as root"
+    return 1
+  }
 
   # Perform some easy fixups before checking
   # TODO prevent multiple calls to apt-get update
   (which dnf && dnf install -y perl-Digest-SHA) || true # Fedora 24
-  which bzcat || (which yum && yum install -y bzip2) \
-              || (which apt-get && apt-get update && apt-get install -y bzip2) \
-              || true
-  which xzcat || (which yum && yum install -y xz-utils) \
-              || (which apt-get && apt-get update && apt-get install -y xz-utils) \
-              || true
-  which curl  || fakeCurlUsingWget \
-              || (which apt-get && apt-get update && apt-get install -y curl) \
-              || true
+  which bzcat || (which yum && yum install -y bzip2) ||
+    (which apt-get && apt-get update && apt-get install -y bzip2) ||
+    true
+  which xzcat || (which yum && yum install -y xz-utils) ||
+    (which apt-get && apt-get update && apt-get install -y xz-utils) ||
+    true
+  which curl || fakeCurlUsingWget ||
+    (which apt-get && apt-get update && apt-get install -y curl) ||
+    true
 
-  req curl || req wget || { echo "ERROR: Missing both curl and wget";  return 1; }
-  req bzcat            || { echo "ERROR: Missing bzcat";               return 1; }
-  req xzcat            || { echo "ERROR: Missing xzcat";               return 1; }
-  req groupadd         || { echo "ERROR: Missing groupadd";            return 1; }
-  req useradd          || { echo "ERROR: Missing useradd";             return 1; }
-  req ip               || { echo "ERROR: Missing ip";                  return 1; }
-  req awk              || { echo "ERROR: Missing awk";                 return 1; }
-  req cut || req df    || { echo "ERROR: Missing coreutils (cut, df)"; return 1; }
+  req curl || req wget || {
+    echo "ERROR: Missing both curl and wget"
+    return 1
+  }
+  req bzcat || {
+    echo "ERROR: Missing bzcat"
+    return 1
+  }
+  req xzcat || {
+    echo "ERROR: Missing xzcat"
+    return 1
+  }
+  req groupadd || {
+    echo "ERROR: Missing groupadd"
+    return 1
+  }
+  req useradd || {
+    echo "ERROR: Missing useradd"
+    return 1
+  }
+  req ip || {
+    echo "ERROR: Missing ip"
+    return 1
+  }
+  req awk || {
+    echo "ERROR: Missing awk"
+    return 1
+  }
+  req cut || req df || {
+    echo "ERROR: Missing coreutils (cut, df)"
+    return 1
+  }
 }
 
 infect() {
@@ -270,19 +305,23 @@ infect() {
   /nix/var/nix/profiles/system/sw/bin/nix-collect-garbage
 
   # Reify resolv.conf
-  [[ -L /etc/resolv.conf ]] && mv -v /etc/resolv.conf /etc/resolv.conf.lnk && cat /etc/resolv.conf.lnk > /etc/resolv.conf
+  [[ -L /etc/resolv.conf ]] && mv -v /etc/resolv.conf /etc/resolv.conf.lnk && cat /etc/resolv.conf.lnk >/etc/resolv.conf
 
   # Stage the Nix coup d'état
   touch /etc/NIXOS
-  echo etc/nixos                  >> /etc/NIXOS_LUSTRATE
-  echo etc/resolv.conf            >> /etc/NIXOS_LUSTRATE
-  echo root/.nix-defexpr/channels >> /etc/NIXOS_LUSTRATE
-  (cd / && ls etc/ssh/ssh_host_*_key* || true) >> /etc/NIXOS_LUSTRATE
+  echo etc/nixos >>/etc/NIXOS_LUSTRATE
+  echo etc/resolv.conf >>/etc/NIXOS_LUSTRATE
+  echo root/.nix-defexpr/channels >>/etc/NIXOS_LUSTRATE
+  (cd / && ls etc/ssh/ssh_host_*_key* || true) >>/etc/NIXOS_LUSTRATE
 
   rm -rf /boot.bak
   isEFI && umount "$esp"
 
-  mv -v /boot /boot.bak || { cp -a /boot /book.bak ; rm -rf /boot/* ; umount /boot ; }
+  mv -v /boot /boot.bak || {
+    cp -a /boot /book.bak
+    rm -rf /boot/*
+    umount /boot
+  }
   if isEFI; then
     mkdir -p /boot
     mount "$esp" /boot
@@ -297,10 +336,10 @@ checkEnv
 prepareEnv
 checkExistingSwap
 if [[ -z "$NO_SWAP" ]]; then
-    makeSwap # smallest (512MB) droplet needs extra memory!
+  makeSwap # smallest (512MB) droplet needs extra memory!
 fi
 makeConf
 infect
 if [[ -z "$NO_SWAP" ]]; then
-    removeSwap
+  removeSwap
 fi

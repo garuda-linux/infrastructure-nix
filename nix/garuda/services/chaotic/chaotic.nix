@@ -27,7 +27,11 @@ let
       sha256 = "sha256-5s2gAaieHNAjF/zQRWKIoM3VqlaXDexvvYOtmvHbBaw=";
     };
 
-    propagatedBuildInputs = with pkgs.python3.pkgs; [ appdirs colorama python-telegram-bot ];
+    propagatedBuildInputs = with pkgs.python3.pkgs; [
+      appdirs
+      colorama
+      python-telegram-bot
+    ];
   };
   repodir = "${cfg.repos-dir}/${cfg.db-name}";
 in {
@@ -138,8 +142,8 @@ in {
         export CAUR_DEPLOY_LAST=${repodir}/lastupdate
 
         ${optionalString (!cfg.cluster) ''
-        export CAUR_URL=http://${cfg.host}/''${CAUR_DB_NAME}/x86_64
-        export CAUR_FILL_DEST=http://${cfg.host}/''${CAUR_DB_NAME}/pkgs.files.txt
+          export CAUR_URL=http://${cfg.host}/''${CAUR_DB_NAME}/x86_64
+          export CAUR_FILL_DEST=http://${cfg.host}/''${CAUR_DB_NAME}/pkgs.files.txt
         ''}
         export CAUR_CLUSTER_NAME=${cfg.cluster-name}
         export CAUR_ROUTINES=/var/cache/chaotic/routines

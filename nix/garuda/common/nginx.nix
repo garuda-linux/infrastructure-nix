@@ -17,7 +17,8 @@
 
   # Upstream resolvers
   services.nginx.resolver = {
-    addresses =  [ "1.1.1.1" "1.0.0.1" "[2606:4700:4700::1111]" "[2606:4700:4700::1001]" ];
+    addresses =
+      [ "1.1.1.1" "1.0.0.1" "[2606:4700:4700::1111]" "[2606:4700:4700::1001]" ];
     valid = "60s";
   };
 
@@ -49,7 +50,7 @@
     log_format              custom '"$http_referer" "$http_user_agent" '
                             '$remote_addr - $remote_user [$time_local] '
                             '"$request" $status $body_bytes_sent';
-    
+
     # Brotli compression
     brotli                  on;
     brotli_comp_level       6;

@@ -28,7 +28,8 @@ in {
         };
         cloudflared = {
           esxi-repo.cred = "/var/garuda/secrets/cloudflared/esxi-repo.json";
-          garuda-build.cred = "/var/garuda/secrets/cloudflared/garuda-build.json";
+          garuda-build.cred =
+            "/var/garuda/secrets/cloudflared/garuda-build.json";
         };
       };
     };

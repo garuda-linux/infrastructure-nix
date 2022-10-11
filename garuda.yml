@@ -13,13 +13,13 @@
       copy:
         src: "nix/garuda/secrets/"
         dest: /etc/nixos/garuda/secrets
-        mode: '600'
-        directory_mode: '600'
+        mode: "600"
+        directory_mode: "600"
     - name: Copy runtime secrets
       copy:
         src: "secrets/"
         dest: /var/garuda/secrets
-        mode: '600'
-        directory_mode: '600'
+        mode: "600"
+        directory_mode: "600"
 #    - name: Build system
 #      shell: nixos-rebuild switch

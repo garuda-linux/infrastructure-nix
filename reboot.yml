@@ -5,4 +5,4 @@
     - name: Reboot all servers
       reboot:
         search_paths:
-        - '/run/current-system/sw/bin'
+          - "/run/current-system/sw/bin"
