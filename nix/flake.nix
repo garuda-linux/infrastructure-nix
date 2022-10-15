@@ -108,6 +108,11 @@
         specialArgs = specialArgs;
         modules = defaultModules ++ [ ./esxi-repo.nix ];
       };
+      nixosConfigurations."backup-dragon" = nixos.lib.nixosSystem {
+        inherit system;
+        specialArgs = specialArgs;
+        modules = defaultModules ++ [ ./backup-dragon.nix ];
+      };
       nixosConfigurations."chaotic-dragon" = nixos.lib.nixosSystem {
         inherit system;
         specialArgs = specialArgs;
