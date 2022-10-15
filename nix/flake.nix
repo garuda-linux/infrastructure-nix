@@ -9,6 +9,10 @@
       inputs.nixpkgs.follows = "nixos-unstable";
     };
 
+    simple-nixos-mailserver = {
+      url = "gitlab:simple-nixos-mailserver/nixos-mailserver";
+    };
+
     meshagent_x86_64 = {
       url = "https://mesh.garudalinux.org/meshagents?id=6";
       flake = false;
@@ -117,6 +121,11 @@
         inherit system;
         specialArgs = specialArgs;
         modules = defaultModules ++ [ ./chaotic-dragon.nix ];
+      };
+      nixosConfigurations."web-dragon" = nixos.lib.nixosSystem {
+        inherit system;
+        specialArgs = specialArgs;
+        modules = defaultModules ++ [ ./web-dragon.nix ];
       };
     };
 }

@@ -33,6 +33,7 @@
   programs.fish = {
     enable = true;
     shellAbbrs = {
+      "docker" = "sudo docker";
       "reb" = "sudo nixos-rebuild switch -L";
       "roll" = "sudo nixos-rebuild switch --rollback";
       "su" = "sudo su -";

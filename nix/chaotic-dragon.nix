@@ -12,7 +12,7 @@
   # LXC support
   boot.loader.initScript.enable = true;
   boot.isContainer = true;
-  systemd.enableUnifiedCgroupHierarchy = false;
+  systemd.enableUnifiedCgroupHierarchy = true;
 
   # Openssh HPN for the performance gains while uploading packages
   programs.ssh.package = pkgs.openssh_hpn;
