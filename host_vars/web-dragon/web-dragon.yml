@@ -1,0 +1,4 @@
+# Base values
+actual_hostname: web-dragon
+ansible_host: 89.58.13.188
+ansible_port: 6666
