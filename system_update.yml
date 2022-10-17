@@ -3,7 +3,20 @@
   gather_facts: no
   become: true
   tasks:
-    - name: Update and build system
-      shell: nix flake update && nixos-rebuild switch
+    - name: Update nix flake
+      shell: nix flake update
       args:
         chdir: /etc/nixos
+      run_once: true
+    - name: Download flake lock to repo
+      fetch:
+        src: "/etc/nixos/flake.lock"
+        dest: "nix/flake.lock"
+        flat: true
+      run_once: true
+    - name: Upload flake lock to hosts
+      synchronize:
+        src: "nix/flake.lock"
+        dest: "/etc/nixos/flake.lock"
+    - name: Update and build system
+      shell: nixos-rebuild switch

@@ -4,7 +4,6 @@ ansible_user = ansible
 sftp_enabled = true
 
 [nix]
-backup-dragon
 chaotic-dragon
 esxi-iso
 esxi-repo

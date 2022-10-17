@@ -9,17 +9,23 @@
         dest: /etc/nixos/
         rsync_opts:
           - "--exclude=garuda/secrets/"
+    - name: Decrypt secrets
+      local_action:
+        module: copy
+        src: "secrets/secrets/"
+        dest: "secrets/decrypted/"
+        mode: '700'
+        directory_mode: '700'
+      run_once: true
+      become: false
     - name: Copy buildtime secrets
-      copy:
-        src: "nix/garuda/secrets/"
-        dest: /etc/nixos/garuda/secrets
-        mode: "600"
-        directory_mode: "600"
+      synchronize:
+        src: "secrets/decrypted/buildtime.json"
+        dest: /etc/nixos/garuda/secrets/secrets.json
     - name: Copy runtime secrets
-      copy:
-        src: "secrets/"
-        dest: /var/garuda/secrets
-        mode: "600"
-        directory_mode: "600"
-#    - name: Build system
-#      shell: nixos-rebuild switch
+      synchronize:
+        src: "secrets/decrypted/"
+        dest: "/var/garuda/secrets/"
+        delete: yes
+        rsync_opts:
+          - "--exclude=garuda/buildtime.json"

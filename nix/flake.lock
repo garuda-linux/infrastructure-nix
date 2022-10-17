@@ -1,0 +1,210 @@
+{
+  "nodes": {
+    "home-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "nixos-unstable"
+        ],
+        "utils": "utils"
+      },
+      "locked": {
+        "lastModified": 1665991686,
+        "narHash": "sha256-VbhugQ+NhybgCfU1gpbEQ6QFYrVQ3jRioYIYFVZ+KPs=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "e901c8d86082be74a8be70773bbb6d401ff21e49",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "keys_alexjp": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-DDxLdRwfZnJYBhzj5lmduESAl/GYfYWROXenDD2Fb38=",
+        "type": "file",
+        "url": "https://github.com/alexjp.keys"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/alexjp.keys"
+      }
+    },
+    "keys_nico": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-bjGTTIvcY63ND86cV15JJIhbH0rPmqkTZaWQFTTQME8=",
+        "type": "file",
+        "url": "https://github.com/dr460nf1r3.keys"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/dr460nf1r3.keys"
+      }
+    },
+    "keys_technetium1": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-d6PFL1WTyfee09ykY1oWnX+7nGhEfPZn4aSQouAS42c=",
+        "type": "file",
+        "url": "https://github.com/Technetium1.keys"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/Technetium1.keys"
+      }
+    },
+    "keys_tne": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-5+km8r1tnw99bAJKQjDt7S1cx53Ov7GO+eF8LZv3Uzk=",
+        "type": "file",
+        "url": "https://github.com/justtne.keys"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/justtne.keys"
+      }
+    },
+    "meshagent_aarch64": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-Mp9V3paDGp5k1Y6zYR8GjKSltfsyFFB3jkrMuUwCyT0=",
+        "type": "file",
+        "url": "https://mesh.garudalinux.org/meshagents?id=26"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://mesh.garudalinux.org/meshagents?id=26"
+      }
+    },
+    "meshagent_x86_64": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-DtSnncTt587S5EtyJMmbw8O5hZIJ43MPaJuvBpitrrk=",
+        "type": "file",
+        "url": "https://mesh.garudalinux.org/meshagents?id=6"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://mesh.garudalinux.org/meshagents?id=6"
+      }
+    },
+    "nixos-unstable": {
+      "locked": {
+        "lastModified": 1665940183,
+        "narHash": "sha256-cPe3F7CtnxU9YbJpc3Adl4d9kX+turqTv5FxM98i8vg=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "104e8082de1b20f9d0e1f05b1028795ed0e0e4bc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "home-manager": "home-manager",
+        "keys_alexjp": "keys_alexjp",
+        "keys_nico": "keys_nico",
+        "keys_technetium1": "keys_technetium1",
+        "keys_tne": "keys_tne",
+        "meshagent_aarch64": "meshagent_aarch64",
+        "meshagent_x86_64": "meshagent_x86_64",
+        "nixos-unstable": "nixos-unstable",
+        "src-buildiso": "src-buildiso",
+        "src-chaotic-mirror": "src-chaotic-mirror",
+        "src-chaotic-toolbox": "src-chaotic-toolbox",
+        "src-repoctl": "src-repoctl"
+      }
+    },
+    "src-buildiso": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1656303524,
+        "narHash": "sha256-MPlTGH4+uXZ+lcsn46Xd2o1lQRPW5dffRVYmHGlA+f4=",
+        "owner": "garuda-linux%2Ftools",
+        "repo": "buildiso-docker",
+        "rev": "031f2326358c521a8f7b3ee7e7abfbe3cfda9a01",
+        "type": "gitlab"
+      },
+      "original": {
+        "owner": "garuda-linux%2Ftools",
+        "repo": "buildiso-docker",
+        "type": "gitlab"
+      }
+    },
+    "src-chaotic-mirror": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1663585174,
+        "narHash": "sha256-PekQYLWYH052zO2rb/afauEc829LW2H5FXgowxgX6FE=",
+        "owner": "chaotic-aur",
+        "repo": "docker-mirror",
+        "rev": "803cdd50ab8eeb99a317e81b19f100031b32d2aa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "chaotic-aur",
+        "repo": "docker-mirror",
+        "type": "github"
+      }
+    },
+    "src-chaotic-toolbox": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1665593260,
+        "narHash": "sha256-+fKU4Oas9sASqgDK7kqbtVV6xXLjHBtncPvR9aaF4To=",
+        "owner": "chaotic-aur",
+        "repo": "toolbox",
+        "rev": "01743c64d90fc775ea25420cbdcde9bb15874fc2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "chaotic-aur",
+        "repo": "toolbox",
+        "type": "github"
+      }
+    },
+    "src-repoctl": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1665410540,
+        "narHash": "sha256-hxWwyD6UHE8SSIooEQB5+dHGLgmv1bJ3G64PmKgKg58=",
+        "owner": "cassava",
+        "repo": "repoctl",
+        "rev": "86faed1474e9d8fed9b10a9b8864316e34066d6a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cassava",
+        "repo": "repoctl",
+        "type": "github"
+      }
+    },
+    "utils": {
+      "locked": {
+        "lastModified": 1659877975,
+        "narHash": "sha256-zllb8aq3YO3h8B/U0/J1WBgAL8EX5yWf5pMj3G0NAmc=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "c0e246b9b83f637f4681389ecabcb2681b4f3af0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

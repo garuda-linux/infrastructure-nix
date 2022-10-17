@@ -9,10 +9,6 @@
       inputs.nixpkgs.follows = "nixos-unstable";
     };
 
-    simple-nixos-mailserver = {
-      url = "gitlab:simple-nixos-mailserver/nixos-mailserver";
-    };
-
     meshagent_x86_64 = {
       url = "https://mesh.garudalinux.org/meshagents?id=6";
       flake = false;

@@ -16,7 +16,6 @@
   };
   console = {
     keyMap = "de";
-    font = "Lat2-Terminus18";
   };
 
   boot.cleanTmpDir = true;
