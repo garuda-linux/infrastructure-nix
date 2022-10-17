@@ -19,6 +19,8 @@
     font = "Lat2-Terminus18";
   };
 
+  boot.cleanTmpDir = true;
+
   # Home-manager configuration
   home-manager = {
     useGlobalPkgs = true;
@@ -113,8 +115,6 @@
       dates = "daily";
       options = "--delete-older-than 2d";
     };
-    # Idk what this does
-    package = pkgs.unstable.nix;
     # Allow using flakes
     settings.experimental-features = [ "nix-command" "flakes" ];
   };

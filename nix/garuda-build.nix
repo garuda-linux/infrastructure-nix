@@ -199,5 +199,9 @@
     };
   };
 
+  systemd.tmpfiles.rules = [
+    "d /srv/http/iso 1555 root root"
+  ];
+
   system.stateVersion = "22.05";
 }
