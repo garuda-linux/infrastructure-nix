@@ -4,10 +4,10 @@ let
     addSSL = true;
     extraConfig = ''
       location / {
+        access_log off;
         proxy_buffering off;
         proxy_pass http://localhost:8082;
         proxy_set_header Host $host;
-        access_log off;
         }
     '';
     http3 = true;
@@ -29,6 +29,22 @@ in {
   boot.isContainer = true;
   systemd.enableUnifiedCgroupHierarchy = false;
 
+  # Configure backups to backup-dragon
+  services.borgbackup.jobs = {
+    backupToBackupDragon = {
+      paths = [ "/var/garuda/docker-compose-runner/web-dragon" ];
+      doInit = true;
+      repo =  "borg@192.168.1.70:." ;
+      encryption = {
+        mode = "repokey-blake2";
+        passCommand = "cat /var/garuda/secrets/backup/repo_key";
+      };
+      environment = { BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_web-dragon"; };
+      compression = "auto,zstd";
+      startAt = "daily";
+    };
+  };
+
   # Enable our docker-compose stack
   services.docker-compose-runner.web-dragon = {
     source = ./docker-compose/web-dragon;
@@ -46,13 +62,13 @@ in {
         addSSL = true;
         extraConfig = ''
           location / {
+            access_log off;
             proxy_buffering off;
             proxy_http_version 1.1;
             proxy_pass http://localhost:3001;
             proxy_set_header Connection "";
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $remote_addr;
-            access_log off;
           }
         '';
         http3 = true;
@@ -62,11 +78,11 @@ in {
         addSSL = true;
         extraConfig = ''
           location / {
+            access_log off;
             proxy_pass http://localhost:8081;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Scheme $scheme;
-            access_log off;
           }
         '';
         http3 = true;
@@ -76,11 +92,11 @@ in {
         addSSL = true;
         extraConfig = ''
           location / {
+            access_log off;
             proxy_pass http://localhost:3000;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Scheme $scheme;
-            access_log off;
           }
         '';
         http3 = true;
@@ -90,11 +106,11 @@ in {
         addSSL = true;
         extraConfig = ''
           location / {
+            access_log off;
             proxy_pass http://localhost:8888;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Scheme $scheme;
-            access_log off;
           }
         '';
         http3 = true;
@@ -104,11 +120,11 @@ in {
         addSSL = true;
         extraConfig = ''
           location / {
+            access_log off;
             proxy_pass http://localhost:8083;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Scheme $scheme;
-            access_log off;
           }
         '';
         http3 = true;
@@ -118,11 +134,11 @@ in {
         addSSL = true;
         extraConfig = ''
           location / {
+            access_log off;
             proxy_pass http://localhost:10407;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Scheme $scheme;
-            access_log off;
           }
         '';
         http3 = true;
@@ -132,8 +148,8 @@ in {
         addSSL = true;
         extraConfig = ''
           location / {
-            proxy_pass http://192.168.1.50:80;
             proxy_max_temp_file_size 0;
+            proxy_pass http://192.168.1.50:80;
             proxy_redirect off;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-Host $server_name;
@@ -142,6 +158,88 @@ in {
         http3 = true;
         useACMEHost = "dr460nf1r3.org";
       };
+      "search.dr460nf1r3.org" = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            access_log off;
+            proxy_pass http://localhost:5000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Host $server_name;
+          }
+        '';
+        http3 = true;
+        useACMEHost = "dr460nf1r3.org";  
+      };
+      "searx.dr460nf1r3.org" = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            access_log off;
+            proxy_pass http://localhost:8084;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Host $server_name;
+          }
+        '';
+        http3 = true;
+        useACMEHost = "dr460nf1r3.org";
+      };
+      "translate.dr460nf1r3.org" = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            access_log off;
+            proxy_pass http://localhost:3000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Scheme $scheme;
+          }
+        '';
+        http3 = true;
+        useACMEHost = "dr460nf1r3.org";
+      };
+      "twitter.dr460nf1r3.org" = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            access_log off;
+            proxy_pass http://localhost:8888;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Scheme $scheme;
+          }
+        '';
+        http3 = true;
+        useACMEHost = "dr460nf1r3.org";
+      };
+      "reddit.dr460nf1r3.org" = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            access_log off;
+            proxy_pass http://localhost:8083;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Scheme $scheme;
+          }
+        '';
+        http3 = true;
+        useACMEHost = "dr460nf1r3.org";
+      };
+      "insta.dr460nf1r3.org" = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            access_log off;
+            proxy_pass http://localhost:10407;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Scheme $scheme;
+          }
+        '';
+        http3 = true;
+        useACMEHost = "dr460nf1r3.org";
+      }; 
     };
   };
   system.stateVersion = "22.05";
