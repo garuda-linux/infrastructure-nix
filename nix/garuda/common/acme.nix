@@ -13,6 +13,12 @@ with lib; {
         dnsPropagationCheck = true;
         credentialsFile = garuda-lib.secrets.cloudflare_key;
       };
+      certs."dr460nf1r3.org" = {
+        extraDomainNames = [ "*.dr460nf1r3.org" ];
+        dnsProvider = "cloudflare";
+        dnsPropagationCheck = true;
+        credentialsFile = garuda-lib.secrets.cloudflare_key;
+      };
     };
   };
 }

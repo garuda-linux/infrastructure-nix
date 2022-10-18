@@ -128,6 +128,20 @@ in {
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
+      "chaotic.dr460nf1r3.org" = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            proxy_pass http://192.168.1.50:80;
+            proxy_max_temp_file_size 0;
+            proxy_redirect off;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-Host $server_name;
+          }
+        '';
+        http3 = true;
+        useACMEHost = "dr460nf1r3.org";
+      };
     };
   };
   system.stateVersion = "22.05";
