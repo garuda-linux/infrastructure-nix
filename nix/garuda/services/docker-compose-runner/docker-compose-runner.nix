@@ -31,9 +31,6 @@ in {
             set -e
             mkdir "$out"
             sed -r 's/(^\s+restart:\s*)(unless-stopped|always)(\s*($|#))/\1on-failure\3/g' "$src/docker-compose.yml" > "$out/docker-compose.yml"
-            ${optionalString (value.envfile != null) ''
-              cp "${value.envfile}" "$out/.env"
-            ''}
             rsync -a "$src/" "$out"
           '';
           system = pkgs.hostPlatform.system;
@@ -45,9 +42,13 @@ in {
       path = [ pkgs.rsync pkgs.docker-compose pkgs.docker pkgs.bash ];
       serviceConfig = {
         ExecStart = pkgs.writeShellScript ("execstart-docker-compose-runner-" + name) ''
-          set -ex
+          set -e
           mkdir -p "${statepath}"
           rsync -a --no-owner --size-only "${output}/" "${statepath}"
+          ${optionalString (value.envfile != null) ''
+              cp "${value.envfile}" "${statepath}/.env"
+              chmod 600 "${statepath}/.env"
+          ''}
           cd "${statepath}"
           docker-compose up
         '';
