@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, lib, config, ... }: {
 
   # The Nginx QUIC package with Perl & Brotli modules
   services.nginx.package = pkgs.nginxQuic.override ({ withPerl = true; });
@@ -66,4 +66,10 @@
   # security.dhparams.enable = true;
   # security.dhparams.defaultBitSize = 3072;
   # services.nginx.sslDhparam = "/var/lib/dhparams/nginx.pem";
+
+  # Need to explicitly open our web server ports
+  networking.firewall = lib.mkIf config.services.nginx.enable {
+    allowedTCPPorts = [ 80 443 ];
+    allowedUDPPorts = [ 443 ];
+  };
 }

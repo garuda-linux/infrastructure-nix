@@ -88,7 +88,7 @@ in {
     };
 
     networking.firewall.allowedTCPPorts =
-      [ 80 443 config.services.rsyncd.port ];
+      [ config.services.rsyncd.port ];
     environment.systemPackages = [ buildiso_script ];
   };
 }

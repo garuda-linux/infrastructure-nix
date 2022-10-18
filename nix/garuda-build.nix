@@ -168,8 +168,7 @@
   };
 
   # Explicitly open our firewall ports - HTTPS & rsyncd
-  networking.firewall.allowedTCPPorts = [ 80 443 config.services.rsyncd.port ];
-  networking.firewall.allowedUDPPorts = [ 443 ];
+  networking.firewall.allowedTCPPorts = [ config.services.rsyncd.port ];
 
   # Our rsyncd server
   services.rsyncd = {

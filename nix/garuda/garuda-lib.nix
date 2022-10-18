@@ -31,6 +31,9 @@ in {
           garuda-build.cred =
             "/var/garuda/secrets/cloudflared/garuda-build.json";
         };
+        docker-compose = {
+          web-dragon = "/var/garuda/secrets/docker-compose/web-dragon.env";
+        };
       };
     };
   };

@@ -1,4 +1,19 @@
-{ ... }: {
+{ garuda-lib, ... }: 
+let
+  piped = {
+    addSSL = true;
+    extraConfig = ''
+      location / {
+        proxy_buffering off;
+        proxy_pass http://localhost:8082;
+        proxy_set_header Host $host;
+        access_log off;
+        }
+    '';
+    http3 = true;
+    useACMEHost = "garudalinux.org";
+  };
+in {
   imports = [ ./garuda/garuda.nix ];
 
   # Base configuration
@@ -14,32 +29,106 @@
   boot.isContainer = true;
   systemd.enableUnifiedCgroupHierarchy = false;
 
-  # mailserver = {
-  #   domains = "no-host.org";
-  #   enable = true;
-  #   loginAccounts.nico = {
-  #     catchAll = "dr460nf1r3.org";
-  #     hashedPassword =
-  #       "$2y$10$kij/H2PcG7SI6rxRxJhhlO7WNmYqaTLu/US0PB4q7hEQ05tWkqoYS";
-  #     name = "Nico Jensch";
-  #   };
-  #   extraVirtualAliases = {
-  #     "postmaster@garudalinux.org" = "team@garudalinux.org";
-  #     "admin@garudalinux.org" = "team@garudalinux.org";
-  #     "root@garudalinux.org" = "team@garudalinux.org";
-  #   };
-  #   #forwards = {
-  #   #};
-  #   fqdn = "mail.garudalinux.org";
-  #   indexDir = "/var/index";
-  #   rebootAfterKernelUpgrade.enable = true;
-  #   sendingFqdn = "dr460nf1r3.org";
-  #   useFsLayout = true;
-  #   certificateDomains = "no-host.org";
-  #   dkimKeyBits = 3072;
-  #   monitoring.alertAddress = "security@dr460nf1r3.org";
-  #   monitoring.enable = true;
-  #};
+  # Enable our docker-compose stack
+  services.docker-compose-runner.web-dragon = {
+    source = ./docker-compose/web-dragon;
+    envfile = garuda-lib.secrets.docker-compose.web-dragon;
+  };
 
+  # Reverse proxy for our docker-compose stack
+  services.nginx = {
+    enable = true;
+    virtualHosts = {
+      "piped.garudalinux.org" = piped; 
+      "piped-api.garudalinux.org" = piped;
+      "piped-proxy.garudalinux.org" = piped;
+      "invidious.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            proxy_buffering off;
+            proxy_http_version 1.1;
+            proxy_pass http://localhost:3001;
+            proxy_set_header Connection "";
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            access_log off;
+          }
+        '';
+        http3 = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "teddit.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            proxy_pass http://localhost:8081;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Scheme $scheme;
+            access_log off;
+          }
+        '';
+        http3 = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "lingva.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            proxy_pass http://localhost:3000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Scheme $scheme;
+            access_log off;
+          }
+        '';
+        http3 = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "nitter.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            proxy_pass http://localhost:8888;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Scheme $scheme;
+            access_log off;
+          }
+        '';
+        http3 = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "libreddit.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            proxy_pass http://localhost:8083;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Scheme $scheme;
+            access_log off;
+          }
+        '';
+        http3 = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "bibliogram.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            proxy_pass http://localhost:10407;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Scheme $scheme;
+            access_log off;
+          }
+        '';
+        http3 = true;
+        useACMEHost = "garudalinux.org";
+      };
+    };
+  };
   system.stateVersion = "22.05";
 }
