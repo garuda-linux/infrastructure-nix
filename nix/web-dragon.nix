@@ -176,9 +176,7 @@ in {
         extraConfig = ''
           location / {
             access_log off;
-            proxy_pass http://localhost:8084;
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-Host $server_name;
+            return 301 https://searx.garudalinux.org/$request_uri;
           }
         '';
         http3 = true;
@@ -239,7 +237,7 @@ in {
         '';
         http3 = true;
         useACMEHost = "dr460nf1r3.org";
-      }; 
+      };
     };
   };
   system.stateVersion = "22.05";
