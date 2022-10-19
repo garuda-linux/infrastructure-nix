@@ -44,5 +44,13 @@
   services.chaotic-mirror.email = "team@garudalinux.org";
   services.chaotic-mirror.domain = "chaotic.dr460nf1r3.org";
 
+  # Cloudflared access to Syncthing webinterface
+  services.cloudflared = {
+    enable = true;
+    ingress = { "syncthing-dragon.garudalinux.net" = "http://localhost:8384"; };
+    tunnel-id = garuda-lib.secrets.cloudflared.chaotic-dragon.id;
+    tunnel-credentials = garuda-lib.secrets.cloudflared.chaotic-dragon.cred;
+  };
+
   system.stateVersion = "22.05";
 }

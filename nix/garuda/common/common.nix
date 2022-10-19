@@ -14,9 +14,7 @@
     defaultLocale = "en_GB.UTF-8";
     supportedLocales = [ "en_GB.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" ];
   };
-  console = {
-    keyMap = "de";
-  };
+  console = { keyMap = "de"; };
 
   boot.cleanTmpDir = true;
 
@@ -117,6 +115,9 @@
     # Allow using flakes
     settings.experimental-features = [ "nix-command" "flakes" ];
   };
+
+  # Make cloudflared happy (https://github.com/lucas-clemente/quic-go/wiki/UDP-Receive-Buffer-Size)
+  boot.kernel.sysctl = { "net.core.rmem_max" = 2500000; };
 
   systemd.services.nix-clean-result = {
     serviceConfig.Type = "oneshot";

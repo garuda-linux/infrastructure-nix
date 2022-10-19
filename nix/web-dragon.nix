@@ -1,4 +1,4 @@
-{ garuda-lib, ... }: 
+{ garuda-lib, ... }:
 let
   piped = {
     addSSL = true;
@@ -34,12 +34,14 @@ in {
     backupToBackupDragon = {
       paths = [ "/var/garuda/docker-compose-runner/web-dragon" ];
       doInit = true;
-      repo =  "borg@192.168.1.70:." ;
+      repo = "borg@192.168.1.70:.";
       encryption = {
         mode = "repokey-blake2";
         passCommand = "cat /var/garuda/secrets/backup/repo_key";
       };
-      environment = { BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_web-dragon"; };
+      environment = {
+        BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_web-dragon";
+      };
       compression = "auto,zstd";
       startAt = "daily";
     };
@@ -55,7 +57,7 @@ in {
   services.nginx = {
     enable = true;
     virtualHosts = {
-      "piped.garudalinux.org" = piped; 
+      "piped.garudalinux.org" = piped;
       "piped-api.garudalinux.org" = piped;
       "piped-proxy.garudalinux.org" = piped;
       "invidious.garudalinux.org" = {
@@ -169,7 +171,7 @@ in {
           }
         '';
         http3 = true;
-        useACMEHost = "dr460nf1r3.org";  
+        useACMEHost = "dr460nf1r3.org";
       };
       "searx.dr460nf1r3.org" = {
         addSSL = true;

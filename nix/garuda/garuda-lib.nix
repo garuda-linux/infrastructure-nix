@@ -30,6 +30,10 @@ in {
           esxi-repo.cred = "/var/garuda/secrets/cloudflared/esxi-repo.json";
           garuda-build.cred =
             "/var/garuda/secrets/cloudflared/garuda-build.json";
+          monitor-dragon.cred =
+            "/var/garuda/secrets/cloudflared/monitor-dragon.json";
+          chaotic-dragon.cred =
+            "/var/garuda/secrets/cloudflared/chaotic-dragon.json";
         };
         docker-compose = {
           web-dragon = "/var/garuda/secrets/docker-compose/web-dragon.env";

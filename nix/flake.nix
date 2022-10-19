@@ -123,5 +123,10 @@
         specialArgs = specialArgs;
         modules = defaultModules ++ [ ./web-dragon.nix ];
       };
+      nixosConfigurations."monitor-dragon" = nixos.lib.nixosSystem {
+        inherit system;
+        specialArgs = specialArgs;
+        modules = defaultModules ++ [ ./monitor-dragon.nix ];
+      };
     };
 }

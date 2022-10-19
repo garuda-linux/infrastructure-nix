@@ -1,0 +1,4 @@
+# Base values
+actual_hostname: oracle-dragon
+ansible_host: 130.61.110.231
+ansible_port: 22
