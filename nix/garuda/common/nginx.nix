@@ -12,15 +12,22 @@
   # Statuspage for Netdata to consume
   services.nginx.statusPage = true;
 
-  # Reload on configuration change
-  services.nginx.enableReload = true;
-
   # Upstream resolvers
   services.nginx.resolver = {
     addresses =
       [ "1.1.1.1" "1.0.0.1" "[2606:4700:4700::1111]" "[2606:4700:4700::1001]" ];
     valid = "60s";
   };
+
+  # Global Nginx configuration
+  services.nginx.appendConfig = ''
+    worker_processes auto;
+  '';
+
+  # Adapt worker_connections to allow more concurrent connections
+  services.nginx.eventsConfig = ''
+    worker_connections 1024;
+  '';
 
   # Correctly map symlinks
   services.nginx.appendHttpConfig = ''
