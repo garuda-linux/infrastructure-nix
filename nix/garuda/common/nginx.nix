@@ -60,6 +60,10 @@
                             application/x-font-ttf application/x-javascript application/xhtml+xml application/xml
                             font/eot font/opentype font/otf font/truetype image/svg+xml image/vnd.microsoft.icon
                             image/x-icon image/x-win-bitmap text/css text/javascript text/plain text/xml;
+    
+    # Tune worker settings
+    worker_processes        auto;
+    worker_connections      1024;
   '';
 
   # Diffie-Hellman parameter for DHE ciphersuites - need to figure out why nginx.pem isn't generated anymore after rebuild
