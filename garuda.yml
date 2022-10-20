@@ -22,6 +22,8 @@
       synchronize:
         src: "secrets/decrypted/buildtime.json"
         dest: /etc/nixos/garuda/secrets/secrets.json
+        rsync_opts:
+          - "--mkpath"
     - name: Copy runtime secrets
       synchronize:
         src: "secrets/decrypted/"

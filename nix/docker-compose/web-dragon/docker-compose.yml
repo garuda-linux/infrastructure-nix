@@ -4,7 +4,7 @@ services:
     image: spikecodes/libreddit:latest
     container_name: libreddit
     environment:
-      LIBREDDIT_DEFAULT_AUTOPLAY_VIDEOS: True
+      LIBREDDIT_DEFAULT_AUTOPLAY_VIDEOS: "true"
       LIBREDDIT_DEFAULT_FRONT_PAGE: popular
       LIBREDDIT_DEFAULT_SHOW_NSFW: True
       LIBREDDIT_DEFAULT_THEME: dracula
@@ -102,7 +102,7 @@ services:
     image: thedaviddelta/lingva-translate:latest
     container_name: lingva
     environment:
-      DARK_THEME: True
+      DARK_THEME: "true"
       DEFAULT_SOURCE_LANG: auto
       DEFAULT_TARGET_LANG: en
       SITE_DOMAIN: lingva.garudalinux.org
@@ -120,7 +120,7 @@ services:
       DOMAIN: teddit.garudalinux.org
       REDIS_HOST: teddit_redis
       THEME: dark
-      TRUST_PROXY: True
+      TRUST_PROXY: "true"
     ports:
       - "127.0.0.1:8081:8080"
     mem_limit: 1024m
@@ -133,7 +133,7 @@ services:
           "--no-verbose",
           "--tries=1",
           "--spider",
-          "http://localhost:8080/about"
+          "http://127.0.0.1:8080/about"
         ]
       interval: 1m
       timeout: 3s

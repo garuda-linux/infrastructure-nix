@@ -1,19 +1,5 @@
 { garuda-lib, ... }:
-let
-  piped = {
-    addSSL = true;
-    extraConfig = ''
-      location / {
-        access_log off;
-        proxy_buffering off;
-        proxy_pass http://localhost:8082;
-        proxy_set_header Host $host;
-        }
-    '';
-    http3 = true;
-    useACMEHost = "garudalinux.org";
-  };
-in {
+{
   imports = [ ./garuda/garuda.nix ];
 
   # Base configuration
@@ -57,9 +43,20 @@ in {
   services.nginx = {
     enable = true;
     virtualHosts = {
-      "piped.garudalinux.org" = piped;
-      "piped-api.garudalinux.org" = piped;
-      "piped-proxy.garudalinux.org" = piped;
+      "piped.garudalinux.org" = {
+        serverAliases = [ "piped-api.garudalinux.org" "piped-proxy.garudalinux.org" ];
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            access_log off;
+            proxy_buffering off;
+            proxy_pass http://127.0.0.1:8082;
+            proxy_set_header Host $host;
+            }
+        '';
+        http3 = true;
+        useACMEHost = "garudalinux.org";
+      };
       "invidious.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
@@ -67,7 +64,7 @@ in {
             access_log off;
             proxy_buffering off;
             proxy_http_version 1.1;
-            proxy_pass http://localhost:3001;
+            proxy_pass http://127.0.0.1:3001;
             proxy_set_header Connection "";
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $remote_addr;
@@ -81,7 +78,7 @@ in {
         extraConfig = ''
           location / {
             access_log off;
-            proxy_pass http://localhost:8081;
+            proxy_pass http://127.0.0.1:8081;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Scheme $scheme;
@@ -95,7 +92,7 @@ in {
         extraConfig = ''
           location / {
             access_log off;
-            proxy_pass http://localhost:3000;
+            proxy_pass http://127.0.0.1:3000;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Scheme $scheme;
@@ -109,7 +106,7 @@ in {
         extraConfig = ''
           location / {
             access_log off;
-            proxy_pass http://localhost:8888;
+            proxy_pass http://127.0.0.1:8888;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Scheme $scheme;
@@ -123,7 +120,7 @@ in {
         extraConfig = ''
           location / {
             access_log off;
-            proxy_pass http://localhost:8083;
+            proxy_pass http://127.0.0.1:8083;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Scheme $scheme;
@@ -137,7 +134,7 @@ in {
         extraConfig = ''
           location / {
             access_log off;
-            proxy_pass http://localhost:10407;
+            proxy_pass http://127.0.0.1:10407;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Scheme $scheme;
@@ -165,7 +162,7 @@ in {
         extraConfig = ''
           location / {
             access_log off;
-            proxy_pass http://localhost:5000;
+            proxy_pass http://127.0.0.1:5000;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-Host $server_name;
           }
@@ -189,7 +186,7 @@ in {
         extraConfig = ''
           location / {
             access_log off;
-            proxy_pass http://localhost:3000;
+            proxy_pass http://127.0.0.1:3000;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Scheme $scheme;
@@ -203,7 +200,7 @@ in {
         extraConfig = ''
           location / {
             access_log off;
-            proxy_pass http://localhost:8888;
+            proxy_pass http://127.0.0.1:8888;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Scheme $scheme;
@@ -217,7 +214,7 @@ in {
         extraConfig = ''
           location / {
             access_log off;
-            proxy_pass http://localhost:8083;
+            proxy_pass http://127.0.0.1:8083;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Scheme $scheme;
@@ -231,7 +228,7 @@ in {
         extraConfig = ''
           location / {
             access_log off;
-            proxy_pass http://localhost:10407;
+            proxy_pass http://127.0.0.1:10407;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Scheme $scheme;
