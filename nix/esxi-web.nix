@@ -12,9 +12,8 @@
   # Configure backups to backup-dragon
   services.borgbackup.jobs = {
     backupToBackupDragon = {
-      paths = [ "/var/garuda/docker-compose-runner/esxi-web" ];
+      compression = "auto,zstd";
       doInit = true;
-      repo = "borg@89.58.13.188:.";
       encryption = {
         mode = "repokey-blake2";
         passCommand = "cat /var/garuda/secrets/backup/repo_key";
@@ -22,7 +21,14 @@
       environment = {
         BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_esxi-web -p 666";
       };
-      compression = "auto,zstd";
+      paths = [ "/var/garuda/docker-compose-runner/esxi-web" ];
+      prune = {
+        within = "1d";
+        daily = 7;
+        weekly = 2;
+        monthly = 1;
+      };
+      repo = "borg@89.58.13.188:.";
       startAt = "daily";
     };
   };
