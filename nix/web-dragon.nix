@@ -18,19 +18,24 @@
   # Configure backups to backup-dragon
   services.borgbackup.jobs = {
     backupToBackupDragon = {
-      paths = [ "/var/garuda/docker-compose-runner/web-dragon" ];
+      compression = "auto,zstd";
       doInit = true;
-      repo = "borg@192.168.1.70:.";
       encryption = {
         mode = "repokey-blake2";
         passCommand = "cat /var/garuda/secrets/backup/repo_key";
       };
       environment = {
-        BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_web-dragon";
+        BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_web-dragon -p 666";
       };
-      compression = "auto,zstd";
+      paths = [ "/var/garuda/docker-compose-runner/web-dragon" ];
+      prune = {
+        within = "1d";
+        daily = 7;
+        weekly = 2;
+        monthly = 1;
+      };
+      repo = "borg@89.58.13.188:.";
       startAt = "daily";
-    };
   };
 
   # Enable our docker-compose stack
