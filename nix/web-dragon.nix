@@ -28,7 +28,7 @@
         BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_web-dragon -p 666";
       };
       paths = [ "/var/garuda/docker-compose-runner/web-dragon" ];
-      prune = {
+      prune.keep = {
         within = "1d";
         daily = 7;
         weekly = 2;
@@ -36,6 +36,7 @@
       };
       repo = "borg@89.58.13.188:.";
       startAt = "daily";
+    };
   };
 
   # Enable our docker-compose stack

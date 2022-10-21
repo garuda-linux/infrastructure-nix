@@ -22,7 +22,7 @@
         BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_esxi-web -p 666";
       };
       paths = [ "/var/garuda/docker-compose-runner/esxi-web" ];
-      prune = {
+      prune.keep = {
         within = "1d";
         daily = 7;
         weekly = 2;
