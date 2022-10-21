@@ -1,4 +1,4 @@
 # Base values
 actual_hostname: monitor-dragon
 ansible_host: 89.58.13.188
-ansible_port: 666
+ansible_port: 6969
