@@ -17,8 +17,8 @@
     bash = {
       enable = true;
       initExtra = ''
-        if [ "$SSH_CLIENT" != "" ] && [ -z "$TMUX" ]; then
-          tmux attach || tmux >/dev/null 2>&1
+        if [ "$SSH_CLIENT" != "" ]; then
+          exec tmux
         fi
       '';
     };
@@ -38,7 +38,12 @@
       enable = true;
       enableAliases = true;
     };
-    fish = { enable = true; };
+    fish = { 
+      enable = true;
+      shellInit = ''
+        ${pkgs.fancy-motd}/bin/motd
+      ''; 
+    };
     git = {
       enable = true;
       extraConfig = {
@@ -89,15 +94,12 @@
       clock24 = true;
       enable = true;
       extraConfig = ''
-        set -g @continuum-restore 'on'
-        set -g @continuum-save-interval '60'
+        set-option -ga terminal-overrides ",*256col*:Tc,alacritty:Tc"
       '';
       historyLimit = 10000;
       newSession = true;
-      plugins = with pkgs; [ tmuxPlugins.continuum ];
       sensibleOnTop = false;
       shell = "${pkgs.fish}/bin/fish";
-      terminal = "screen-256color";
     };
   };
 }

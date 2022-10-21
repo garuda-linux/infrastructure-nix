@@ -1,16 +1,13 @@
 { pkgs, ... }:
 let
   initscript = pkgs.writeShellScript "motdscript" ''
-    ${pkgs.fancy-motd}/bin/motd
+    if [ $USER != nico ]; then
+      ${pkgs.fancy-motd}/bin/motd
 
-    # Own additions
-    echo -e ""
-    echo -e "                 Please behave well and have fun! 🦅               "
-    echo -e "         In case of issues or questions contact Nico or TNE.       "
-
-    # Nico wants to actually have a look at it before tmux kills it
-    if [[ $USER = nico ]]; then
-      sleep 4
+      # Own additions
+      echo -e ""
+      echo -e "                 Please behave well and have fun! 🦅               "
+      echo -e "         In case of issues or questions contact Nico or TNE.       "
     fi
   '';
 in {
