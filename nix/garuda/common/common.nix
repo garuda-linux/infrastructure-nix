@@ -3,9 +3,17 @@
 
   # Network stuff
   networking = {
-    nameservers = [ "1.1.1.1" ];
+    nameservers =
+      [ "1.1.1.2" "1.0.0.2" "2606:4700:4700::1112" "2606:4700:4700::1002" ];
     useDHCP = false;
     usePredictableInterfaceNames = true;
+  };
+
+  ## Enable BBR & cake
+  boot.kernelModules = [ "tcp_bbr" ];
+  boot.kernel.sysctl = {
+    "net.ipv4.tcp_congestion_control" = "bbr";
+    "net.core.default_qdisc" = "cake";
   };
 
   # Locales & timezone
@@ -106,6 +114,10 @@
 
   # General nix settings
   nix = {
+    # Do garbage collections whenever there is less than 1GB free space left
+    extraOptions = ''
+      min-free = ${toString (1024 * 1024 * 1024)}
+    '';
     # Do daily garbage collections
     gc = {
       automatic = true;
