@@ -36,8 +36,9 @@ in {
             "/var/garuda/secrets/cloudflared/chaotic-dragon.json";
         };
         docker-compose = {
-          web-dragon = "/var/garuda/secrets/docker-compose/web-dragon.env";
+          esxi-cloud = "/var/garuda/secrets/docker-compose/esxi-cloud.env";
           esxi-web = "/var/garuda/secrets/docker-compose/esxi-web.env";
+          web-dragon = "/var/garuda/secrets/docker-compose/web-dragon.env";
         };
       };
     };
