@@ -170,7 +170,7 @@
           "/" = { tryFiles = "/status.html /status.html"; };
           "=/status.html" = {
             extraConfig = "expires 30d;";
-            root = "/var/garuda/docker-compose-runner/esxi-web/website";
+            root = "/var/garuda/docker-compose-runner/esxi-web/www";
           };
         };
         http3 = true;
@@ -182,7 +182,7 @@
           "/" = { tryFiles = "/stats.html /stats.html"; };
           "=/stats.html" = {
             extraConfig = "expires 30d;";
-            root = "/var/garuda/docker-compose-runner/esxi-web/website";
+            root = "/var/garuda/docker-compose-runner/esxi-web/www";
           };
         };
         http3 = true;
