@@ -6,12 +6,6 @@
 
   # Disable root login & password authentication on sshd
   services.openssh = {
-    extraConfig = ''
-      AllowAgentForwarding no
-      AllowStreamLocalForwarding no
-      AllowTcpForwarding yes
-      X11Forwarding no
-    '';
     passwordAuthentication = false;
     permitRootLogin = "no";
   };
