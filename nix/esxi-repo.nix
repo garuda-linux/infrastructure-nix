@@ -9,6 +9,9 @@
   networking.hostName = "esxi-repo";
   networking.defaultGateway = "192.168.1.1";
 
+  # This is on an ESXi, therefore we need the guest tools
+  virtualisation.vmware.guest.headless = true;
+
   # Enable Chaotic-AUR building
   services.chaotic.enable = true;
   services.chaotic.cluster-name = "garuda-repo";

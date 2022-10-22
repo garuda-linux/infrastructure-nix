@@ -9,6 +9,9 @@
   }];
   networking.defaultGateway = "192.168.1.1";
 
+  # This is on an ESXi, therefore we need the guest tools
+  virtualisation.vmware.guest.headless = true;
+
   # Configure backups to backup-dragon
   services.borgbackup.jobs = {
     backupToBackupDragon = {
