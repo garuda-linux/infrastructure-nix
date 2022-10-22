@@ -37,6 +37,7 @@ in {
         };
         docker-compose = {
           web-dragon = "/var/garuda/secrets/docker-compose/web-dragon.env";
+          esxi-web = "/var/garuda/secrets/docker-compose/esxi-web.env";
         };
       };
     };

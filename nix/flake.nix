@@ -128,5 +128,10 @@
         specialArgs = specialArgs;
         modules = defaultModules ++ [ ./monitor-dragon.nix ];
       };
+      nixosConfigurations."esxi-web" = nixos.lib.nixosSystem {
+        inherit system;
+        specialArgs = specialArgs;
+        modules = defaultModules ++ [ ./esxi-web.nix ];
+      };
     };
 }

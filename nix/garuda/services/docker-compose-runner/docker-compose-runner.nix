@@ -50,7 +50,7 @@ in {
               chmod 600 "${statepath}/.env"
           ''}
           cd "${statepath}"
-          docker-compose up
+          docker-compose up --remove-orphans
         '';
         ExecStopPost = pkgs.writeShellScript ("execstop-docker-compose-runner-" + name) ''
           set -e
