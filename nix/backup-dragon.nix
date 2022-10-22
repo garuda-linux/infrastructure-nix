@@ -1,5 +1,5 @@
 { ... }: {
-  imports = [ ./garuda/garuda.nix ];
+  imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
 
   # Base configuration
   networking.hostName = "backup-dragon";
@@ -8,11 +8,6 @@
     prefixLength = 24;
   }];
   networking.defaultGateway = "192.168.1.1";
-
-  # LXC support
-  boot.loader.initScript.enable = true;
-  boot.isContainer = true;
-  systemd.enableUnifiedCgroupHierarchy = false;
 
   # Enable borg repositories
   services.borgbackup.repos = {

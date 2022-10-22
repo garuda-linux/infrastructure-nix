@@ -1,5 +1,5 @@
 { garuda-lib, ... }: {
-  imports = [ ./garuda/garuda.nix ];
+  imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
 
   # Base configuration
   networking.defaultGateway = "192.168.1.1";
@@ -8,11 +8,6 @@
     address = "192.168.1.60";
     prefixLength = 24;
   }];
-
-  # LXC support
-  boot.isContainer = true;
-  boot.loader.initScript.enable = true;
-  systemd.enableUnifiedCgroupHierarchy = false;
 
   # Configure backups to backup-dragon
   services.borgbackup.jobs = {

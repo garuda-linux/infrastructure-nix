@@ -1,5 +1,5 @@
 { config, garuda-lib, pkgs, ... }: {
-  imports = [ ./hardware-configuration.nix ./garuda/garuda.nix ];
+  imports = [ ./hardware-configuration.nix ./garuda/garuda.nix ./garuda/common/esxi.nix ];
 
   # Base configuration
   networking.interfaces.ens33.ipv4.addresses = [{
@@ -8,9 +8,6 @@
   }];
   networking.hostName = "esxi-repo";
   networking.defaultGateway = "192.168.1.1";
-
-  # This is on an ESXi, therefore we need the guest tools
-  virtualisation.vmware.guest.headless = true;
 
   # Enable Chaotic-AUR building
   services.chaotic.enable = true;

@@ -1,5 +1,5 @@
-{ garuda-lib, ... }: {
-  imports = [ ./garuda/garuda.nix ./hardware-configuration.nix ];
+{ garuda-lib, sources, ... }: {
+  imports = [ ./garuda/garuda.nix ./hardware-configuration.nix ./garuda/common/esxi.nix ];
 
   # Base configuration
   networking.hostName = "esxi-web";
@@ -8,8 +8,6 @@
     prefixLength = 24;
   }];
   networking.defaultGateway = "192.168.1.1";
-
-  # This is on an ESXi, therefore we need the guest tools
 
   # Configure backups to backup-dragon
   services.borgbackup.jobs = {
@@ -50,7 +48,7 @@
         locations = {
           "/" = {
             index = "index.html";
-            root = "/var/garuda/docker-compose-runner/esxi-web/website";
+            root = sources.garuda-website;
           };
           "/discord" = {
             extraConfig = "expires 12h;";
@@ -172,7 +170,7 @@
           "/" = { tryFiles = "/status.html /status.html"; };
           "=/status.html" = {
             extraConfig = "expires 30d;";
-            root = "/var/garuda/docker-compose-runner/esxi-web/www";
+            root = "${sources.garuda-website}/internal";
           };
         };
         http3 = true;
@@ -184,7 +182,7 @@
           "/" = { tryFiles = "/stats.html /stats.html"; };
           "=/stats.html" = {
             extraConfig = "expires 30d;";
-            root = "/var/garuda/docker-compose-runner/esxi-web/www";
+            root = "${sources.garuda-website}/internal";
           };
         };
         http3 = true;

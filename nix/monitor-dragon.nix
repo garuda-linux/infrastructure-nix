@@ -1,5 +1,5 @@
 { pkgs, garuda-lib, lib, ... }: {
-  imports = [ ./garuda/garuda.nix ];
+  imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
 
   # Base configuration
   networking.hostName = "monitor-dragon";
@@ -8,11 +8,6 @@
     prefixLength = 24;
   }];
   networking.defaultGateway = "192.168.1.1";
-
-  # LXC support
-  boot.loader.initScript.enable = true;
-  boot.isContainer = true;
-  systemd.enableUnifiedCgroupHierarchy = false;
 
   # Need to turn regular monitoring off to avoid conflicts
   services.garuda-monitoring.enable = lib.mkForce false;

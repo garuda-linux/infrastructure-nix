@@ -1,5 +1,5 @@
 { config, garuda-lib, pkgs, ... }: {
-  imports = [ ./garuda/garuda.nix ];
+  imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
 
   # Base configuration
   networking.hostName = "chaotic-dragon";
@@ -10,8 +10,6 @@
   networking.defaultGateway = "192.168.1.1";
 
   # LXC support
-  boot.loader.initScript.enable = true;
-  boot.isContainer = true;
   systemd.enableUnifiedCgroupHierarchy = true;
 
   # Openssh HPN for the performance gains while uploading packages

@@ -1,5 +1,5 @@
 { garuda-lib, ... }: {
-  imports = [ ./garuda/garuda.nix ./hardware-configuration.nix ];
+  imports = [ ./garuda/garuda.nix ./hardware-configuration.nix ./garuda/common/esxi.nix ];
 
   # Base configuration
   networking.hostName = "esxi-forum";
@@ -8,9 +8,6 @@
     prefixLength = 24;
   }];
   networking.defaultGateway = "192.168.1.1";
-
-  # This is on an ESXi, therefore we need the guest tools
-  virtualisation.vmware.guest.headless = true;
 
   # Configure backups to backup-dragon
   services.borgbackup.jobs = {
