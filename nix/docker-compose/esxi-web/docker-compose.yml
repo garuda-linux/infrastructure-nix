@@ -47,7 +47,7 @@ services:
       BIND_ADDRESS: 0.0.0.0:8080
       BASE_URL: https://searx.garudalinux.org/
       MORTY_URL: https://searx.garudalinux.org/morty/
-      MORTY_KEY: ${SX_MORTY_KEY:--?err}
+      MORTY_KEY: ${SX_MORTY_KEY:-?err}
     cap_drop:
       - ALL
     cap_add:

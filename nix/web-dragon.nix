@@ -1,18 +1,17 @@
-{ garuda-lib, ... }:
-{
+{ garuda-lib, ... }: {
   imports = [ ./garuda/garuda.nix ];
 
   # Base configuration
+  networking.defaultGateway = "192.168.1.1";
   networking.hostName = "web-dragon";
   networking.interfaces.eth0.ipv4.addresses = [{
     address = "192.168.1.60";
     prefixLength = 24;
   }];
-  networking.defaultGateway = "192.168.1.1";
 
   # LXC support
-  boot.loader.initScript.enable = true;
   boot.isContainer = true;
+  boot.loader.initScript.enable = true;
   systemd.enableUnifiedCgroupHierarchy = false;
 
   # Configure backups to backup-dragon
@@ -29,10 +28,10 @@
       };
       paths = [ "/var/garuda/docker-compose-runner/web-dragon" ];
       prune.keep = {
-        within = "1d";
         daily = 7;
-        weekly = 2;
         monthly = 1;
+        weekly = 2;
+        within = "1d";
       };
       repo = "borg@89.58.13.188:.";
       startAt = "daily";
@@ -41,8 +40,8 @@
 
   # Enable our docker-compose stack
   services.docker-compose-runner.web-dragon = {
-    source = ./docker-compose/web-dragon;
     envfile = garuda-lib.secrets.docker-compose.web-dragon;
+    source = ./docker-compose/web-dragon;
   };
 
   # Reverse proxy for our docker-compose stack
@@ -50,197 +49,163 @@
     enable = true;
     virtualHosts = {
       "piped.garudalinux.org" = {
-        serverAliases = [ "piped-api.garudalinux.org" "piped-proxy.garudalinux.org" ];
         addSSL = true;
-        extraConfig = ''
-          location / {
-            access_log off;
-            proxy_buffering off;
-            proxy_pass http://127.0.0.1:8082;
-            proxy_set_header Host $host;
-            }
-        '';
+        extraConfig = "access_log off;";
         http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = ''
+              access_log off;
+              proxy_buffering off;
+            '';
+            proxyPass = "http://127.0.0.1:8082";
+          };
+        };
+        serverAliases =
+          [ "piped-api.garudalinux.org" "piped-proxy.garudalinux.org" ];
         useACMEHost = "garudalinux.org";
       };
       "invidious.garudalinux.org" = {
         addSSL = true;
-        extraConfig = ''
-          location / {
-            access_log off;
-            proxy_buffering off;
-            proxy_http_version 1.1;
-            proxy_pass http://127.0.0.1:3001;
-            proxy_set_header Connection "";
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-For $remote_addr;
-          }
-        '';
         http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = ''
+              access_log off;
+              proxy_buffering off;
+              proxy_set_header Connection "";
+              proxy_http_version 1.1;
+            '';
+            proxyPass = "http://127.0.0.1:3001";
+          };
+        };
         useACMEHost = "garudalinux.org";
       };
       "teddit.garudalinux.org" = {
         addSSL = true;
-        extraConfig = ''
-          location / {
-            access_log off;
-            proxy_pass http://127.0.0.1:8081;
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Scheme $scheme;
-          }
-        '';
         http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = "access_log off;";
+            proxyPass = "http://127.0.0.1:8081";
+          };
+        };
         useACMEHost = "garudalinux.org";
       };
       "lingva.garudalinux.org" = {
         addSSL = true;
-        extraConfig = ''
-          location / {
-            access_log off;
-            proxy_pass http://127.0.0.1:3000;
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Scheme $scheme;
-          }
-        '';
         http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = "access_log off;";
+            proxyPass = "http://127.0.0.1:3000";
+          };
+        };
         useACMEHost = "garudalinux.org";
       };
       "nitter.garudalinux.org" = {
         addSSL = true;
-        extraConfig = ''
-          location / {
-            access_log off;
-            proxy_pass http://127.0.0.1:8888;
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Scheme $scheme;
-          }
-        '';
         http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = "access_log off;";
+            proxyPass = "http://127.0.0.1:8888";
+          };
+        };
         useACMEHost = "garudalinux.org";
       };
       "libreddit.garudalinux.org" = {
         addSSL = true;
-        extraConfig = ''
-          location / {
-            access_log off;
-            proxy_pass http://127.0.0.1:8083;
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Scheme $scheme;
-          }
-        '';
         http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = "access_log off;";
+            proxyPass = "http://127.0.0.1:8083";
+          };
+        };
         useACMEHost = "garudalinux.org";
       };
       "bibliogram.garudalinux.org" = {
         addSSL = true;
-        extraConfig = ''
-          location / {
-            access_log off;
-            proxy_pass http://127.0.0.1:10407;
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Scheme $scheme;
-          }
-        '';
         http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = "access_log off;";
+            proxyPass = "http://127.0.0.1:10407";
+          };
+        };
         useACMEHost = "garudalinux.org";
       };
       "chaotic.dr460nf1r3.org" = {
         addSSL = true;
-        extraConfig = ''
-          location / {
-            proxy_max_temp_file_size 0;
-            proxy_pass http://192.168.1.50:80;
-            proxy_redirect off;
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-Host $server_name;
-          }
-        '';
         http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = "proxy_max_temp_file_size 0;";
+            proxyPass = "http://192.168.1.50:80";
+          };
+        };
         useACMEHost = "dr460nf1r3.org";
       };
       "search.dr460nf1r3.org" = {
         addSSL = true;
-        extraConfig = ''
-          location / {
-            access_log off;
-            proxy_pass http://127.0.0.1:5000;
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-Host $server_name;
-          }
-        '';
         http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = "access_log off;";
+            proxyPass = "http://127.0.0.1:5000";
+          };
+        };
         useACMEHost = "dr460nf1r3.org";
       };
       "searx.dr460nf1r3.org" = {
         addSSL = true;
-        extraConfig = ''
-          location / {
-            access_log off;
-            return 301 https://searx.garudalinux.org/$request_uri;
-          }
-        '';
+        globalRedirect = "searx.garudalinux.org";
         http3 = true;
         useACMEHost = "dr460nf1r3.org";
       };
       "translate.dr460nf1r3.org" = {
         addSSL = true;
-        extraConfig = ''
-          location / {
-            access_log off;
-            proxy_pass http://127.0.0.1:3000;
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Scheme $scheme;
-          }
-        '';
         http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = "access_log off;";
+            proxyPass = "http://127.0.0.1:3000";
+          };
+        };
         useACMEHost = "dr460nf1r3.org";
       };
       "twitter.dr460nf1r3.org" = {
         addSSL = true;
-        extraConfig = ''
-          location / {
-            access_log off;
-            proxy_pass http://127.0.0.1:8888;
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Scheme $scheme;
-          }
-        '';
         http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = "access_log off;";
+            proxyPass = "http://127.0.0.1:8888";
+          };
+        };
         useACMEHost = "dr460nf1r3.org";
       };
       "reddit.dr460nf1r3.org" = {
         addSSL = true;
-        extraConfig = ''
-          location / {
-            access_log off;
-            proxy_pass http://127.0.0.1:8083;
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Scheme $scheme;
-          }
-        '';
         http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = "access_log off;";
+            proxyPass = "http://127.0.0.1:8083";
+          };
+        };
         useACMEHost = "dr460nf1r3.org";
       };
       "insta.dr460nf1r3.org" = {
         addSSL = true;
-        extraConfig = ''
-          location / {
-            access_log off;
-            proxy_pass http://127.0.0.1:10407;
-            proxy_set_header Host $host;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Scheme $scheme;
-          }
-        '';
         http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = "access_log off;";
+            proxyPass = "http://127.0.0.1:10407";
+          };
+        };
         useACMEHost = "dr460nf1r3.org";
       };
     };
