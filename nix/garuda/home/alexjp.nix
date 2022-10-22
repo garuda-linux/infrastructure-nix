@@ -9,9 +9,6 @@
   # Personally used packages
   home.packages = with pkgs; [ neovim ];
 
-  # Workaround for https://github.com/NixOS/nixpkgs/issues/196651
-  manual.manpages.enable = false;
-
   # Application user configuration
   programs = {
     bash = {
