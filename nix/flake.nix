@@ -51,6 +51,10 @@
       url = "github:chaotic-aur/docker-mirror";
       flake = false;
     };
+    src-garuda-website = {
+      url = "gitlab:garuda-linux%2Fwebsite/garuda";
+      flake = false;
+    };
   };
 
   outputs = { nixos-unstable, home-manager, ... }@attrs:
@@ -67,6 +71,7 @@
           chaotic-toolbox = attrs.src-chaotic-toolbox;
           repoctl = attrs.src-repoctl;
           chaotic-mirror = attrs.src-chaotic-mirror;
+          garuda-website = attrs.src-garuda-website;
         };
         keys = {
           alexjp = attrs.keys_alexjp;

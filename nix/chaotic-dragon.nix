@@ -1,4 +1,4 @@
-{ config, garuda-lib, pkgs, ... }: {
+{ config, lib, garuda-lib, pkgs, ... }: {
   imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
 
   # Base configuration
@@ -10,7 +10,7 @@
   networking.defaultGateway = "192.168.1.1";
 
   # LXC support
-  systemd.enableUnifiedCgroupHierarchy = true;
+  systemd.enableUnifiedCgroupHierarchy = lib.mkForce true;
 
   # Openssh HPN for the performance gains while uploading packages
   programs.ssh.package = pkgs.openssh_hpn;
