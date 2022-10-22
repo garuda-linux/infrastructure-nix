@@ -16,9 +16,15 @@
 
   # Enable borg repositories
   services.borgbackup.repos = {
+    esxi-cloud = {
+      authorizedKeys = [
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC1/X4im25wbEN1Y6f3Qh2KkzNn7jFlDCRYmWFNUsypM10WRQsa6sdCg7Yr/H0crl0wgp7W2Et2D8QZCobPaR0yy5cYmpi4bd2VSulRA07O9YZd6CjcapfTlCCETZdjf8gc3jcElYY9jHypY+vzK+UDI/bLRFxlVkJTkFBWeEC4PsS3YJvVmE62pl7QGsoHk8LoZe87b/0FxIvQ5NfgbcWMOWQCTahFKxZL+K/DCLcU0LYi1NocoCUANjlHHXpgd8NbH1bcMc0aCvl6s48ItwM2FnRnCmjCFCC0cjaDYaTs2h8En9dkl4dxNnowjoo0ohUKS9ffcLz6wxDnygqH8CXHsNTg/II2k1uLzhLKymiMjhhphqB1bj6eMBeQP59/b/9sv7XyPoSxN+/ITZRLNPWKQjHgFTpONOeOgmZpbIn0q+anp5dBCHodWK7ap5+C+g0Afbg6tRsAQuezj42jANwA8R9F8wwrAhjeWiQQWcuuuybjN1m2fU/OLpG/W8s+KQE= nico@esxi-cloud"
+      ];
+      path = "/backups/esxi-cloud";
+    };
     esxi-web = {
       authorizedKeys = [
-        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDNY3T1S+bknnfCpBKRtq+j40qFkmhpCBMRd9XkqsEXIaOhRyFLp69S+POOxRETFA5ai5N1Sx/IMCbJ1r3xrU85U6a4qXi84jwlmvVNAjbMWXA+yAV5kYmV2WwHezOL0i0O8Qz9SBH4NYqBRvJqZpETt/cF8Ykt65mOMxg9JR3GFlkbcgOmw1oRzzCTZkvSw7jrleeRmLdRd++ujOfcwzcUngSDKktesRcPuzxjIIX3Mz2HH0246Ot8zqXFwIpl0A1Z6lE7baYRdqmPw6J80kWtxCmDkSKeWRS6tX7HKViIMAlS63+lSU7/KakLISTO0P6qXiX39KC0EJX04iAA6Y1MXbSafTjxl55vASZTAYsZh34FMlT58qBhhgi8lVvK3SkJm8vOHNhpny5WPZbAjao7IdWmzCKZusvpyAnSDU05NM4YZPNgXyITDQjIX8w0HVykrommgZyP6wg/fwvBHyoC0SEMCyAndXeG2dLLJmsvSJbp+I5KPTWIhePRkMi8A2c="
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDWb3ksITQ3csSBnwNQ20xbwk6aSga80OFN1N8MilcpIdHj+T8JkSuma+vumSHcFaAU1esocEEcwLnXbeOnq1WuNF/wohXR1qOiFX9WiSG6imSXvPG4x4sdMqe2iGLxxCx7rtjo7Ty6hmwVNLikuAUraXcnBmruMEQllRWh+hw41Mmrp7RVAXPxZ34qOEySkA3AuiFdefc+z17PIjDWQlCNypNfvNgoDUgFZ/xkgJX5v6mJj286idEARjUFClB9+u1yBBkhyiWdHVEbf3ZEiAX+PNm05/eQ0dTsFKJxNrR94uKNmvidUQiL/HEMpegGR1KtBWmwq4liGWt+k1PjSvGhYs4ceflh+R+OZjLtJGFeaLK7JEwrYFXtkr+MF4NwGdDuvNhUScDqEPm0Oab1b38FrHRZxS6tA2q8p1fAn0gs4+5C8oM9yXgsBNoG4QX7EBqG2V79siNZ6C66NJRLzlPGqwardKS7+ZR+QTOdoLa/LGHOUWbpZ9sD8K6hAIb/tVE= nico@esxi-web"
       ];
       path = "/backups/esxi-web";
     };
