@@ -14,8 +14,8 @@
         module: copy
         src: "secrets/secrets/"
         dest: "secrets/decrypted/"
-        mode: '700'
-        directory_mode: '700'
+        mode: "700"
+        directory_mode: "700"
       run_once: true
       become: false
     - name: Copy buildtime secrets
