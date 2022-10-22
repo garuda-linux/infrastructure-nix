@@ -138,5 +138,10 @@
         specialArgs = specialArgs;
         modules = defaultModules ++ [ ./esxi-cloud.nix ];
       };
+      nixosConfigurations."esxi-forum" = nixos.lib.nixosSystem {
+        inherit system;
+        specialArgs = specialArgs;
+        modules = defaultModules ++ [ ./esxi-forum.nix ];
+      };
     };
 }

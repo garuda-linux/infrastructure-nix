@@ -7,6 +7,7 @@ sftp_enabled = true
 backup-dragon
 chaotic-dragon
 esxi-cloud
+esxi-forum
 esxi-iso
 esxi-repo
 esxi-web

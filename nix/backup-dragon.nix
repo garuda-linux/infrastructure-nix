@@ -22,6 +22,12 @@
       ];
       path = "/backups/esxi-cloud";
     };
+    esxi-forum = {
+      authorizedKeys = [
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCepbnSOD52/9m2vhS8gpK9bb6R0mHNs3HJ98dscC3GIr9t6NaMno9ZljQPJN+srKUX5GmLnLk7UQj3N1hn1ptP6xCbBpy7/3PTb1dnbHjHa3EcLU4NC3MuKKyN4JZDD9nSqC90J2mVGI0JtM7JN+KoJ0YiTV1aAaNnmzmXu0bpf2vdt/wjr2TevhpLx053LxE4JxLDVcTV59yF6KJW9/X5OaNE3JjSaHLbb8ZeJHDXHlwtd5D+5NDqYJzcHjBmlfO18JzJbQbyYIN/NNNSxIjaAgqxOIm/uGhgvAWT1RIqqqmiiBna82gwBdFQIbgOFW2bzQ7WE5TBlTa0ySCBCXJR8GvAIwx0/ggoFwjIcD6Mviy1YKevWHJ1bDLMU98o/J7cNwvXrCuVsYq+EF8kCtvUsnS5NZ6sUt4+RwttQeyVNRD5AAevvmR+gtGdFzTpWt2qZxGnGLv50qy2Ba6TWGsGtWNLxcGY1qiLLHKBNujSdedh6+i07EjaoKPgWR/raF8= nico@esxi-forum"
+      ];
+      path = "/backups/esxi-forum";
+    };
     esxi-web = {
       authorizedKeys = [
         "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDWb3ksITQ3csSBnwNQ20xbwk6aSga80OFN1N8MilcpIdHj+T8JkSuma+vumSHcFaAU1esocEEcwLnXbeOnq1WuNF/wohXR1qOiFX9WiSG6imSXvPG4x4sdMqe2iGLxxCx7rtjo7Ty6hmwVNLikuAUraXcnBmruMEQllRWh+hw41Mmrp7RVAXPxZ34qOEySkA3AuiFdefc+z17PIjDWQlCNypNfvNgoDUgFZ/xkgJX5v6mJj286idEARjUFClB9+u1yBBkhyiWdHVEbf3ZEiAX+PNm05/eQ0dTsFKJxNrR94uKNmvidUQiL/HEMpegGR1KtBWmwq4liGWt+k1PjSvGhYs4ceflh+R+OZjLtJGFeaLK7JEwrYFXtkr+MF4NwGdDuvNhUScDqEPm0Oab1b38FrHRZxS6tA2q8p1fAn0gs4+5C8oM9yXgsBNoG4QX7EBqG2V79siNZ6C66NJRLzlPGqwardKS7+ZR+QTOdoLa/LGHOUWbpZ9sD8K6hAIb/tVE= nico@esxi-web"
