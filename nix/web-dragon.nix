@@ -50,17 +50,15 @@
     virtualHosts = {
       "piped.garudalinux.org" = {
         addSSL = true;
-        extraConfig = "access_log off;";
+        extraConfig = ''
+          location / {
+            access_log off;
+            proxy_buffering off;
+            proxy_pass http://127.0.0.1:8082;
+            proxy_set_header Host $host;
+            }
+        '';
         http3 = true;
-        locations = {
-          "/" = {
-            extraConfig = ''
-              access_log off;
-              proxy_buffering off;
-            '';
-            proxyPass = "http://127.0.0.1:8082";
-          };
-        };
         serverAliases =
           [ "piped-api.garudalinux.org" "piped-proxy.garudalinux.org" ];
         useACMEHost = "garudalinux.org";
