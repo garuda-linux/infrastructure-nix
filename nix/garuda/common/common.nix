@@ -3,8 +3,7 @@
 
   # Network stuff
   networking = {
-    nameservers =
-      [ "1.1.1.2" "1.0.0.2" "2606:4700:4700::1112" "2606:4700:4700::1002" ];
+    nameservers = [ "1.1.1.1" ];
     useDHCP = false;
     usePredictableInterfaceNames = true;
   };
