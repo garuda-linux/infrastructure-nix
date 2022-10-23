@@ -1,10 +1,14 @@
 { garuda-lib, sources, ... }: {
-  imports = [ ./garuda/garuda.nix ./hardware-configuration.nix ./garuda/common/esxi.nix ];
+  imports = [
+    ./garuda/garuda.nix
+    ./hardware-configuration.nix
+    ./garuda/common/esxi.nix
+  ];
 
   # Base configuration
   networking.hostName = "esxi-web";
   networking.interfaces.eth0.ipv4.addresses = [{
-    address = "192.168.1.50";
+    address = "192.168.1.20";
     prefixLength = 24;
   }];
   networking.defaultGateway = "192.168.1.1";
@@ -38,6 +42,9 @@
     source = ./docker-compose/esxi-web;
     envfile = garuda-lib.secrets.docker-compose.esxi-web;
   };
+
+  # MongoDB port is being forwarded to this VM
+  networking.firewall = { allowedTCPPorts = [ 27017 ]; };
 
   # Reverse proxy for our docker-compose stack
   services.nginx = {
@@ -76,9 +83,12 @@
               proxy_max_temp_file_size              2048M;
               proxy_request_buffering               off;
 
-              # Needed to actually forward the real IPs 
+              # Allow accessing through trusted domain
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
               set_real_ip_from      172.0.0.0/16;
             '';
+            proxyPass = "https://192.168.1.40:443";
           };
           "/.well-known/carddav" = {
             extraConfig = "expires 12h;";

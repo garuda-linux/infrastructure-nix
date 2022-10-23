@@ -1,4 +1,4 @@
 # Base values
 actual_hostname: esxi-web
 ansible_host: 65.108.140.36
-ansible_port: 225
+ansible_port: 222
