@@ -83,6 +83,9 @@
               proxy_max_temp_file_size              2048M;
               proxy_request_buffering               off;
 
+              # HSTS headers
+              add_header Strict-Transport-Security "max-age=31536000; includeSubdomains; preload" always;
+
               # Allow accessing through trusted domain
               proxy_set_header Host $host;
               proxy_set_header X-Real-IP $remote_addr;
