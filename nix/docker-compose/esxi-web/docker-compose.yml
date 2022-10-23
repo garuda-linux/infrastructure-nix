@@ -68,7 +68,7 @@ services:
       - "127.0.0.1:3000:3000"
     command: -timeout 6 -ipv6
     environment:
-      MORTY_KEY: ${MORTY_KEY:-?err}
+      MORTY_KEY: ${SX_MORTY_KEY:-?err}
       MORTY_ADDRESS: 0.0.0.0:3000
     logging:
       driver: none

@@ -51,60 +51,9 @@ template = "bootstrap-dark"
 ; a session cookie to store the choice until the browser is closed.
 languageselection = false
 
-; set the language your installs defaults to, defaults to English
-; if this is set and language selection is disabled, this will be the only language
-; languagedefault = "en"
-
-; (optional) URL shortener address to offer after a new paste is created
-; it is suggested to only use this with self-hosted shorteners as this will leak
-; the pastes encryption key
-; urlshortener = "https://shortener.example.com/api?link="
-
 ; (optional) Let users create a QR code for sharing the paste URL with one click.
 ; It works both when a new paste is created and when you view a paste.
-; qrcode = true
-
-; (optional) IP based icons are a weak mechanism to detect if a comment was from
-; a different user when the same username was used in a comment. It might be
-; used to get the IP of a non anonymous comment poster if the server salt is
-; leaked and a SHA256 HMAC rainbow table is generated for all (relevant) IPs.
-; Can be set to one these values: "none" / "vizhash" / "identicon" (default).
-; icon = "none"
-
-; Content Security Policy headers allow a website to restrict what sources are
-; allowed to be accessed in its context. You need to change this if you added
-; custom scripts from third-party domains to your templates, e.g. tracking
-; scripts or run your site behind certain DDoS-protection services.
-; Check the documentation at https://content-security-policy.com/
-; Notes:
-; - If you use a bootstrap theme, you can remove the allow-popups from the
-;   sandbox restrictions.
-; - By default this disallows to load images from third-party servers, e.g. when
-;   they are embedded in pastes. If you wish to allow that, you can adjust the
-;   policy here. See https://github.com/PrivateBin/PrivateBin/wiki/FAQ#why-does-not-it-load-embedded-images
-;   for details.
-; - The 'unsafe-eval' is used in two cases; to check if the browser supports
-;   async functions and display an error if not and for Chrome to enable
-;   webassembly support (used for zlib compression). You can remove it if Chrome
-;   doesn't need to be supported and old browsers don't need to be warned.
-; cspheader = "default-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'; connect-src * blob:; script-src 'self' 'unsafe-eval'; style-src 'self'; font-src 'self'; frame-ancestors 'none'; img-src 'self' data: blob:; media-src blob:; object-src blob:; sandbox allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads"
-
-; stay compatible with PrivateBin Alpha 0.19, less secure
-; if enabled will use base64.js version 1.7 instead of 2.1.9 and sha1 instead of
-; sha256 in HMAC for the deletion token
-; zerobincompatibility = false
-
-; Enable or disable the warning message when the site is served over an insecure
-; connection (insecure HTTP instead of HTTPS), defaults to true.
-; Secure transport methods like Tor and I2P domains are automatically whitelisted.
-; It is **strongly discouraged** to disable this.
-; See https://github.com/PrivateBin/PrivateBin/wiki/FAQ#why-does-it-show-me-an-error-about-an-insecure-connection for more information.
-; httpwarning = true
-
-; Pick compression algorithm or disable it. Only applies to pastes/comments
-; created after changing the setting.
-; Can be set to one these values: "none" / "zlib" (default).
-; compression = "zlib"
+qrcode = true
 
 [expire]
 ; expire value that is selected per default
@@ -135,22 +84,6 @@ markdown = "Markdown"
 ; Set this to 0 to disable rate limiting.
 limit = 10
 
-; (optional) Set IPs addresses (v4 or v6) or subnets (CIDR) which are exempted
-; from the rate-limit. Invalid IPs will be ignored. If multiple values are to
-; be exempted, the list needs to be comma separated. Leave unset to disable
-; exemptions.
-; exempted = "1.2.3.4,10.10.10/24"
-
-; (optional) If you want only some source IP addresses (v4 or v6) or subnets
-; (CIDR) to be allowed to create pastes, set these here. Invalid IPs will be
-; ignored. If multiple values are to be exempted, the list needs to be comma
-; separated. Leave unset to allow anyone to create pastes.
-; creators = "1.2.3.4,10.10.10/24"
-
-; (optional) if your website runs behind a reverse proxy or load balancer,
-; set the HTTP header containing the visitors IP address, i.e. X_FORWARDED_FOR
-; header = "X_FORWARDED_FOR"
-
 [purge]
 ; minimum time limit between two purgings of expired pastes, it is only
 ; triggered when pastes are created
@@ -168,29 +101,3 @@ batchsize = 10
 class = Filesystem
 [model_options]
 dir = PATH "data"
-
-;[model]
-; example of a Google Cloud Storage configuration
-;class = GoogleCloudStorage
-;[model_options]
-;bucket = "my-private-bin"
-;prefix = "pastes"
-
-;[model]
-; example of DB configuration for MySQL
-;class = Database
-;[model_options]
-;dsn = "mysql:host=localhost;dbname=privatebin;charset=UTF8"
-;tbl = "privatebin_"	; table prefix
-;usr = "privatebin"
-;pwd = "Z3r0P4ss"
-;opt[12] = true	  ; PDO::ATTR_PERSISTENT
-
-;[model]
-; example of DB configuration for SQLite
-;class = Database
-;[model_options]
-;dsn = "sqlite:" PATH "data/db.sq3"
-;usr = null
-;pwd = null
-;opt[12] = true	; PDO::ATTR_PERSISTENT
