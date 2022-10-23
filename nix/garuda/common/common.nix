@@ -6,6 +6,18 @@
     nameservers = [ "1.1.1.1" ];
     useDHCP = false;
     usePredictableInterfaceNames = true;
+    firewall.trustedInterfaces = [ garuda-lib.secrets.zerotier.interface ];
+  };
+  services.avahi = {
+    enable = true;
+    nssmdns = true;
+    openFirewall = false;
+    publish = {
+      enable = true;
+      domain = true;
+      addresses = true;
+    };
+    interfaces = [ garuda-lib.secrets.zerotier.interface ];
   };
 
   ## Enable BBR & cake
@@ -79,7 +91,7 @@
     };
     zerotierone = {
       enable = true;
-      joinNetworks = [ garuda-lib.secrets.zerotier_network ];
+      joinNetworks = [ garuda-lib.secrets.zerotier.network ];
     };
     garuda-monitoring = {
       enable = true;

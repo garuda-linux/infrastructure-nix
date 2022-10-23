@@ -43,12 +43,6 @@
     '';
   };
 
-  # Required in order to let streaming connect to the parent
-  networking.firewall.interfaces."ztnfabfexz" = {
-    allowedTCPPorts = [ 19999 ];
-    allowedUDPPorts = [ 19999 ];
-  };
-
   # Make the Netdata parent node available via Cloudflared
   services.cloudflared = {
     enable = true;
