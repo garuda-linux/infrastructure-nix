@@ -138,6 +138,11 @@
         specialArgs = specialArgs;
         modules = defaultModules ++ [ ./esxi-web.nix ];
       };
+      nixosConfigurations."esxi-web-two" = nixos.lib.nixosSystem {
+        inherit system;
+        specialArgs = specialArgs;
+        modules = defaultModules ++ [ ./esxi-web-two.nix ];
+      };
       nixosConfigurations."esxi-cloud" = nixos.lib.nixosSystem {
         inherit system;
         specialArgs = specialArgs;

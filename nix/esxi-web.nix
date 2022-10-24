@@ -1,8 +1,8 @@
 { garuda-lib, sources, ... }: {
   imports = [
+    ./garuda/common/esxi.nix
     ./garuda/garuda.nix
     ./hardware-configuration.nix
-    ./garuda/common/esxi.nix
   ];
 
   # Base configuration
@@ -45,6 +45,17 @@
 
   # MongoDB port is being forwarded to this VM
   networking.firewall = { allowedTCPPorts = [ 27017 ]; };
+
+  # Cloudflared access to Meshcentral webinterface
+  services.cloudflared = {
+    enable = true;
+    ingress = {
+      "mesh.garudalinux.net" = "http://127.0.0.1:80";
+      "matrixadmin.garudalinux.net" = "http://esxi-web-two.local:8081";
+    };
+    tunnel-id = garuda-lib.secrets.cloudflared.esxi-web.id;
+    tunnel-credentials = garuda-lib.secrets.cloudflared.esxi-web.cred;
+  };
 
   # Reverse proxy for our docker-compose stack
   services.nginx = {
@@ -119,6 +130,28 @@
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
+      "mesh.garudalinux.net" = {
+        locations = {
+          "/" = {
+            extraConfig = ''
+              proxy_send_timeout 330s;
+              proxy_read_timeout 330s;
+              proxy_set_header Connection $http_connection;
+              proxy_set_header Upgrade $http_upgrade;
+
+              allow 127.0.0.1;
+              deny all;
+
+              set $delimeter "";
+              if ($is_args) {
+                set $delimeter "&";
+              }
+              set $args "$args''${delimeter}user=cfaccess&pass=${garuda-lib.secrets.meshcentral.cfaccess-user}";
+              proxy_pass http://esxi-web-two.local:22260;
+            '';
+          };
+        };
+      };
       "search.garudalinux.org" = {
         addSSL = true;
         extraConfig = "access_log off;";
@@ -148,7 +181,7 @@
       };
       "start.garudalinux.org" = {
         addSSL = true;
-        locations = { "/" = { proxyPass = "http://127.0.0.1:8083"; }; };
+        locations = { "/" = { proxyPass = "http://127.0.0.1:8084"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
@@ -208,11 +241,66 @@
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
-      "iso-builds.garudalinux.org" = {
+      "iso.builds.garudalinux.org" = {
         addSSL = true;
         extraConfig = "proxy_buffering off;";
         locations = { "/" = { proxyPass = "http://192.168.1.60:80"; }; };
         http3 = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "element.garudalinux.org" = {
+        addSSL = true;
+        locations = { "/" = { proxyPass = "http://esxi-web-two.local:8080"; }; };
+        http3 = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "wiki.garudalinux.org" = {
+        addSSL = true;
+        locations = { "/" = { proxyPass = "http://esxi-web-two.local:3000"; }; };
+        http3 = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "mesh.garudalinux.org" = {
+        addSSL = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://esxi-web-two.local:22260";
+            extraConfig = '' 
+              proxy_http_version 1.1;
+              proxy_read_timeout 330s;
+              proxy_send_timeout 330s;
+              proxy_set_header Connection $http_connection;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Host $host:$server_port;
+              proxy_set_header X-Forwarded-Proto $scheme;
+            '';
+          };
+        };
+        http3 = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "matrix.garudalinux.org" = {
+        listen = [
+          {
+            addr = "0.0.0.0";
+            port = 443;
+            ssl = true;
+          }
+          {
+            addr = "0.0.0.0";
+            port = 8448;
+            ssl = true;
+          }
+        ];
+        locations = {
+          "/" = {
+            extraConfig = "client_max_body_size 50M;";
+            proxyPass = "http://esxi-web-two.local:8008";
+          };
+        };
+        http3 = true;
+        addSSL = true;
         useACMEHost = "garudalinux.org";
       };
     };

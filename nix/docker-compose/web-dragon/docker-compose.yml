@@ -11,8 +11,6 @@ services:
       LIBREDDIT_DEFAULT_USE_HLS: True
     ports:
       - "127.0.0.1:8083:8080"
-    mem_limit: 512m
-    memswap_limit: 512m
     restart: always
 
   # Whoogle search engine
@@ -48,8 +46,6 @@ services:
       WHOOGLE_CONFIG_VIEW_IMAGE: 1
       WHOOGLE_RESULTS_PER_PAGE: 30
     pids_limit: 100
-    mem_limit: 512mb
-    memswap_limit: 512mb
     restart: always
 
   # Twitter frontend
@@ -63,12 +59,10 @@ services:
     depends_on:
       - nitter_redis
     healthcheck:
-      test: wget -nv --tries=1 --spider http://127.0.0.1:8080/Jack/status/20 || exit 1
+      test: wget -nv --tries=1 --spider http://127.0.0.1:8888/Jack/status/20 || exit 1
       interval: 30s
       timeout: 5s
       retries: 2
-    mem_limit: 512m
-    memswap_limit: 512m
     restart: always
 
   nitter_redis:
@@ -94,8 +88,6 @@ services:
       - "./bibliogram/db:/app/db"
     ports:
       - "127.0.0.1:10407:10407"
-    mem_limit: 512m
-    memswap_limit: 512m
     restart: always
 
   # Lingva
@@ -124,8 +116,6 @@ services:
       TRUST_PROXY: "true"
     ports:
       - "127.0.0.1:8081:8080"
-    mem_limit: 1024m
-    memswap_limit: 1024m
     healthcheck:
       test:
         [
@@ -134,7 +124,7 @@ services:
           "--no-verbose",
           "--tries=1",
           "--spider",
-          "http://127.0.0.1:8080/about"
+          "http://127.0.0.1:8081/about"
         ]
       interval: 1m
       timeout: 3s
@@ -146,8 +136,6 @@ services:
     command: redis-server
     environment:
       REDIS_REPLICATION_MODE: master
-    mem_limit: 512m
-    memswap_limit: 512m
     restart: always
 
   # Invious YouTube frontend
@@ -181,10 +169,8 @@ services:
         use_quic: true
     ports:
       - "127.0.0.1:3001:3000"
-    mem_limit: 8196m
-    memswap_limit: 8196m
     healthcheck:
-      test: wget -nv --tries=1 --spider http://127.0.0.1:3000/api/v1/comments/jNQXAC9IVRw || exit 1
+      test: wget -nv --tries=1 --spider http://127.0.0.1:3001/api/v1/comments/jNQXAC9IVRw || exit 1
       interval: 30s
       timeout: 5s
       retries: 2
@@ -201,8 +187,6 @@ services:
       POSTGRES_DB: invidious
       POSTGRES_USER: kemal
       POSTGRES_PASSWORD: "${INVIDIOUS_DB_PASSWORD:?err}"
-    mem_limit: 512m
-    memswap_limit: 512m
     healthcheck:
       test:
         [
@@ -219,8 +203,6 @@ services:
       - piped_postgres
     volumes:
       - ./piped/config.properties:/app/config.properties:ro
-    mem_limit: 8196m
-    memswap_limit: 8196m
     restart: always
 
   piped_frontend:
@@ -229,8 +211,6 @@ services:
     entrypoint: ash -c 'sed -i s/pipedapi.kavin.rocks/piped-api.garudalinux.org/g /usr/share/nginx/html/assets/* && /docker-entrypoint.sh && nginx -g "daemon off;"'
     depends_on:
       - piped_backend
-    mem_limit: 1024m
-    memswap_limit: 1024m
     restart: always
 
   piped_nginx:
@@ -249,8 +229,6 @@ services:
       - ytproxy:/var/run/ytproxy
     ports:
       - "127.0.0.1:8082:80"
-    mem_limit: 1024m
-    memswap_limit: 1024m
     restart: always
 
   piped_postgres:
@@ -258,8 +236,6 @@ services:
     container_name: piped_postgres
     volumes:
       - ./piped/db:/var/lib/postgresql/data
-    mem_limit: 512m
-    memswap_limit: 512m
     environment:
       POSTGRES_DB: piped
       POSTGRES_PASSWORD: "${INVIDIOUS_DB_PASSWORD:?err}"
@@ -271,8 +247,6 @@ services:
     container_name: ytproxy
     volumes:
       - ytproxy:/app/socket
-    mem_limit: 512m
-    memswap_limit: 512m
     restart: always
 
 volumes:

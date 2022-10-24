@@ -27,9 +27,6 @@ services:
       WHOOGLE_CONFIG_VIEW_IMAGE: 1
       WHOOGLE_RESULTS_PER_PAGE: 15
     pids_limit: 50
-    mem_limit: 1024mb
-    memswap_limit: 1024mb
-    cpus: 1.0
     restart: always
 
   # Searxng search engine
@@ -56,9 +53,6 @@ services:
       - SETGID
       - SETUID
       - DAC_OVERRIDE
-    mem_limit: 1.8g
-    mem_reservation: 500m
-    cpus: 1.0
     restart: always
 
   morty:
@@ -75,8 +69,6 @@ services:
     read_only: true
     cap_drop:
       - ALL
-    mem_limit: 20m
-    cpus: 0.2
     restart: always
 
   filtron:
@@ -91,8 +83,6 @@ services:
     read_only: true
     cap_drop:
       - ALL
-    mem_limit: 15m
-    cpus: 0.2
     restart: always
 
   # Firefox syncserver
@@ -111,9 +101,6 @@ services:
       FF_SYNCSERVER_SECRET: ${FF_SYNCSERVER_SECRET:-?err}
       FF_SYNCSERVER_SQLURI: sqlite:////data/syncserver.db
       TZ: Europe/Berlin
-    mem_limit: 100m
-    mem_reservation: 50m
-    cpus: 0.2
     restart: always
 
   # Web IRC access
@@ -124,9 +111,6 @@ services:
       - "./thelounge:/var/opt/thelounge"
     ports:
       - 127.0.0.1:9000:9000
-    mem_limit: 80m
-    mem_reservation: 30m
-    cpus: 0.2
     restart: always
 
   # Password vault
@@ -138,6 +122,7 @@ services:
     ports:
       - 127.0.0.1:8082:80
     environment:
+      ADMIN_TOKEN: ${BW_ADMIN_TOKEN:-?err}
       DOMAIN: https://bitwarden.garudalinux.org
       SIGNUPS_ALLOWED: True
       SMTP_FROM: noreply@garudalinux.org
@@ -148,11 +133,7 @@ services:
       SMTP_USERNAME: noreply@garudalinux.org
       WEBSOCKET_ENABLED: True
       YUBICO_CLIENT_ID: ${BW_YUBICO_CLIENT_ID:-?err}
-      ADMIN_TOKEN: ${BW_YUBICO_ADMIN_TOKEN:-?err}
       YUBICO_SECRET_KEY: ${BW_YUBICO_ADMIN_SECRET:-?err}
-    mem_limit: 512m
-    mem_reservation: 10m
-    cpus: 0.2
     restart: always
 
   # Secure pastebin
@@ -164,9 +145,6 @@ services:
       - "./configs/privatebin.cfg.php:/srv/cfg/conf.php"
     ports:
       - 127.0.0.1:8083:8080
-    mem_limit: 80m
-    mem_reservation: 40m
-    cpus: 0.2
     restart: always
 
   # Garuda startpage
@@ -177,8 +155,6 @@ services:
       - "./startpage:/www/assets"
     ports:
       - 127.0.0.1:8084:8080
-    mem_limit: 10m
-    cpus: 0.1
     restart: always
 
   # MongoDB instance
@@ -192,9 +168,6 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-?err}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-?err}
-    mem_limit: 500m
-    mem_reservation: 150m
-    cpus: 2.0
     restart: always
 
   # MongoDB admin interface

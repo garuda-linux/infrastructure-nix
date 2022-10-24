@@ -29,6 +29,12 @@
       ];
       path = "/backups/esxi-web";
     };
+    esxi-web-two = {
+      authorizedKeys = [
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCl4E6Tj7HEdyyHUM5O33INPY4OxZIjxwt12iXKAjKROfecXm4o3skqPMx+ORfMMn02IQyyJ62kvCu+/ZNHBNHHPi7ii6LsIKLB6RCcEfS8ZcyzVw/LXoi2U46aQollzEQoQuJ89ewVFBVFQF3V7RD1uVTdiStWAhv2XGtGGp58L9HlrwUwLhnmPuILn2IsS/uDcuypklWRzACmEjlA/CmKaB9ON0JBOI6kfAygAOLYOWm5ysZYQlMt29qzWoQrxixe0//Vq7rdpLdB/s2qS2O1GvlDxS8puqIlHvy/iQnGUmskPiWnCgVZtlF5stQxUKVpjIaTfL++4100Ac5PCKynDCC6B/BMQHDITjv7LO/aFUHI1q1LeMJnEhhmafOo93mMFqw4IflXeb6RjdVJDvin6pAK7ijatHSC7ZS4Ho75sinLbWV0r8qTd229eJEfGUnjAvlP/Eo2+LdWpBDYfqWgqJfIV0rBFENdUfvekLkws9C2ASjNswZ0124ZWwIFwSM= nico@esxi-web-two"
+      ];
+      path = "/backups/esxi-web-two";
+    };
     web-dragon = {
       authorizedKeys = [
         "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDK+o9S0fmC5zqV24hVgOWKmDVW18S/FTaIGnLtHFF5dHgGmwCsyv/ERFfG5cHv7obMNWV5mrHXIHMTEvowO1r0RzWWy8gMwfoQkhXvohXdMMZXy7jslnYfYWuLxCV//ZvL+0jy6Q8Sidi/yA49jTYYf4pO86lgxKTXTWS/aIXwRn7UY+CDA1u0T6RtonwGwx18hHkMhqb1QgyFpSgT9bgZO7tfaOwr3KvPwk3XbCozYUsPKLKmDXayIivdGPedDWRmJrZd2rUBDVHGHMFvGv8si1xGTCp7ockTsXKLfOVVeiCv6pV2/Nn/Ky0jvrGeLQmqchzK/NkBsLymsH2TX+XmiyEzm1fwtSWG4zG659R0wphzo+g4jMWIqyVb7x2kRTTY2lDC6r5dhWkSemhSI/J5t96mr03cpT14qpVRE8YjL1VqMuw5d6yq++OMF7o183xD3e3s3E2OzY/3DyDtAA5tWKlVg2dNAiO+1YZsDaoLGn5GQeGXgLBjCM2AzPRma+E="

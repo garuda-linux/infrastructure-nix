@@ -19,4 +19,4 @@
         src: "nix/flake.lock"
         dest: "/etc/nixos/flake.lock"
     - name: Update and build system
-      shell: nixos-rebuild switch
+      shell: nixos-rebuild boot

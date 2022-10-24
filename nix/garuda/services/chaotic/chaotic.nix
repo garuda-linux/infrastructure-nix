@@ -153,7 +153,7 @@ in {
 
         ${cfg.extraConfig}
 
-        renice -n 19 $$
+        renice -n 19 $$ >/dev/null
         export TERM=screen
       '';
       "xdg/repoctl/config.toml".text = ''

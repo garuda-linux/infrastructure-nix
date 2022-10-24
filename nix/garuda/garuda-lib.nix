@@ -28,6 +28,7 @@ in {
         };
         cloudflared = {
           esxi-repo.cred = "/var/garuda/secrets/cloudflared/esxi-repo.json";
+          esxi-web.cred = "/var/garuda/secrets/cloudflared/esxi-web.json";
           garuda-build.cred =
             "/var/garuda/secrets/cloudflared/garuda-build.json";
           monitor-dragon.cred =
@@ -38,6 +39,7 @@ in {
         docker-compose = {
           esxi-cloud = "/var/garuda/secrets/docker-compose/esxi-cloud.env";
           esxi-web = "/var/garuda/secrets/docker-compose/esxi-web.env";
+          esxi-web-two = "/var/garuda/secrets/docker-compose/esxi-web-two.env";
           web-dragon = "/var/garuda/secrets/docker-compose/web-dragon.env";
         };
       };

@@ -1,0 +1,60 @@
+version: "3.7"
+services:
+  # Garuda wiki
+  wikijs_app:
+    image: requarks/wiki:latest
+    container_name: wikijs_app
+    volumes:
+      - "./wikijs/assets:/wiki/assets/favicons"
+    ports:
+      - 3000:3000
+    environment:
+      DB_TYPE: postgres
+      DB_HOST: 172.17.0.1
+      DB_PORT: 5432
+      DB_USER: wikijs
+      DB_PASS: wikijs
+      DB_NAME: wikijs
+    restart: always
+
+  # Matrix homeserver
+  matrix:
+    image: matrixdotorg/synapse:latest
+    container_name: matrix
+    volumes:
+      - "./matrix/matrix:/data"
+    ports:
+      - 8008:8008
+    restart: always
+
+  # Matrix web client
+  matrix_web:
+    image: vectorim/element-web
+    container_name: element_web
+    depends_on:
+      - matrix
+    volumes:
+      - "./matrix/element/config.json:/app/config.json"
+    ports:
+      - 8080:80
+    restart: always
+
+  # Admin interface for Matrix
+  matrix_admin:
+    image: awesometechnologies/synapse-admin:latest
+    container_name: matrix_admin
+    depends_on:
+      - matrix
+    ports:
+      - 8081:80
+    restart: always
+
+  # Matrix to IRC/Discord/Telegram relay
+  matterbridge:
+    image: 42wim/matterbridge:stable
+    container_name: matterbridge
+    depends_on:
+      - matrix
+    volumes:
+      - "./matterbridge/matterbridge.toml:/etc/matterbridge/matterbridge.toml:ro"
+    restart: always

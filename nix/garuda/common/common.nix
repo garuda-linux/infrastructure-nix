@@ -51,7 +51,6 @@
   programs.fish = {
     enable = true;
     shellAbbrs = {
-      "docker" = "sudo docker";
       "reb" = "sudo nixos-rebuild switch -L";
       "roll" = "sudo nixos-rebuild switch --rollback";
       "su" = "sudo su -";
@@ -95,7 +94,7 @@
     };
     garuda-monitoring = {
       enable = true;
-      parent = "10.241.0.10";
+      parent = "monitor-dragon.local";
     };
     earlyoom = {
       enable = true;
@@ -147,7 +146,7 @@
     description =
       "Auto clean all result symlinks created by nixos-rebuild test";
     script = ''
-      "${config.nix.package.out}/bin/nix-store" --gc --print-roots | "${pkgs.gawk}/bin/awk" 'match($0, /^(.*\/result) -> \/nix\/store\/[^-]+-nixos-system/, a) { print a[1] }' | xargs -d\\n rm
+      "${config.nix.package.out}/bin/nix-store" --gc --print-roots | "${pkgs.gawk}/bin/awk" 'match($0, /^(.*\/result) -> \/nix\/store\/[^-]+-nixos-system/, a) { print a[1] }' | xargs -r -d\\n rm
     '';
     before = [ "nix-gc.service" ];
     wantedBy = [ "nix-gc.service" ];

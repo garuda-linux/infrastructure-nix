@@ -1,12 +1,16 @@
 { ... }: {
-  imports = [ ./hardware-configuration.nix ./garuda/garuda.nix ./garuda/common/esxi.nix ];
+  imports = [
+    ./garuda/common/esxi.nix
+    ./garuda/garuda.nix
+    ./hardware-configuration.nix
+  ];
 
   # Base configuration
+  networking.hostName = "esxi-iso";
   networking.interfaces.ens33.ipv4.addresses = [{
     address = "192.168.1.60";
     prefixLength = 24;
   }];
-  networking.hostName = "esxi-iso";
   networking.defaultGateway = "192.168.1.1";
 
   # Lets build Garuda isos here

@@ -1,5 +1,9 @@
 { garuda-lib, ... }: {
-  imports = [ ./garuda/garuda.nix ./hardware-configuration.nix ./garuda/common/esxi.nix ];
+  imports = [
+    ./garuda/common/esxi.nix
+    ./garuda/garuda.nix
+    ./hardware-configuration.nix
+  ];
 
   # Base configuration
   networking.hostName = "esxi-forum";
