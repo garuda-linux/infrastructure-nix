@@ -50,5 +50,10 @@
     };
   };
 
+  # Create a backup group to allow rsync'ing backups to offsite locations
+  users.groups.backup = {
+    members = [ "sgs" ];
+  };
+
   system.stateVersion = "22.05";
 }
