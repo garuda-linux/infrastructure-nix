@@ -14,6 +14,7 @@ in {
         "memory mode" = "none";
         "update every" = "2";
       };
+      ml = { "enabled" = "yes"; };
       web = { "mode" = "none"; };
     };
     services.netdata.configDir = {
