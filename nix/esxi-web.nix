@@ -256,7 +256,7 @@
       };
       "wiki.garudalinux.org" = {
         addSSL = true;
-        locations = { "/" = { proxyPass = "http://esxi-web-two.local:3000"; }; };
+        locations = { "/" = { proxyPass = "http://esxi-web-two.local:3001"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
