@@ -9,7 +9,6 @@ in {
 
   config = mkIf cfg.enable {
     services.netdata.enable = true;
-    services.netdata.python.extraPackages = ps: [ ps.psycopg2 ];
     services.netdata.config = {
       global = {
         "memory mode" = "none";
@@ -41,8 +40,11 @@ in {
         '');
     };
 
+    # Extra Python & system packages required for Netdata to function
+    services.netdata.python.extraPackages = ps: [ ps.psycopg2 ];
     systemd.services.netdata = { path = (with pkgs; [ jq ]); };
 
+    # Let Netdata poll Nginx' status page 
     services.nginx.statusPage = true;
   };
 }

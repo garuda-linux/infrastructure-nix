@@ -1,4 +1,4 @@
-{ garuda-lib, sources, ... }: {
+{ garuda-lib, sources, pkgs, ... }: {
   imports = [
     ./garuda/common/esxi.nix
     ./garuda/garuda.nix
@@ -304,6 +304,13 @@
         useACMEHost = "garudalinux.org";
       };
     };
+  };
+
+  services.netdata.configDir = {
+      "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
+        - name: main
+          path: /var/log/nginx/*
+      '';
   };
 
   system.stateVersion = "22.05";
