@@ -7,7 +7,7 @@ services:
     volumes:
       - "./wikijs/assets:/wiki/assets/favicons"
     ports:
-      - 3000:3000
+      - 3001:3000
     environment:
       DB_TYPE: postgres
       DB_HOST: 172.17.0.1
@@ -92,7 +92,7 @@ services:
           'wget -q --spider --proxy=off localhost:3000/health || exit 1'
         ]
     ports:
-      - '127.0.0.1:3001:3000'
+      - '127.0.0.1:3000:3000'
     depends_on:
       - mastodon_redis
     volumes:
