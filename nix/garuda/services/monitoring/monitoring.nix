@@ -9,6 +9,7 @@ in {
 
   config = mkIf cfg.enable {
     services.netdata.enable = true;
+    services.netdata.python.extraPackages = ps: [ ps.psycopg2 ];
     services.netdata.config = {
       global = {
         "memory mode" = "none";
@@ -39,6 +40,8 @@ in {
               url: http://localhost/nginx_status
         '');
     };
+
+    systemd.services.netdata = { path = (with pkgs; [ jq ]); };
 
     services.nginx.statusPage = true;
   };
