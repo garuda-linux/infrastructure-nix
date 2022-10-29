@@ -1,4 +1,4 @@
-{ garuda-lib, sources, ... }: {
+{ garuda-lib, sources, pkgs, ... }: {
   imports = [
     ./garuda/common/esxi.nix
     ./garuda/garuda.nix
@@ -256,7 +256,7 @@
       };
       "wiki.garudalinux.org" = {
         addSSL = true;
-        locations = { "/" = { proxyPass = "http://esxi-web-two.local:3000"; }; };
+        locations = { "/" = { proxyPass = "http://esxi-web-two.local:3001"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
@@ -304,6 +304,13 @@
         useACMEHost = "garudalinux.org";
       };
     };
+  };
+
+  services.netdata.configDir = {
+      "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
+        - name: main
+          path: /var/log/nginx/*
+      '';
   };
 
   system.stateVersion = "22.05";

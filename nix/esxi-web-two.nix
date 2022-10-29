@@ -69,9 +69,7 @@
       GRANT pg_monitor TO netdata;
     '';
     authentication = "host all all 172.16.0.0/12 md5";
-    settings = {
-      listen_addresses = lib.mkForce "localhost, 172.17.0.1";
-    };
+    settings = { listen_addresses = lib.mkForce "localhost, 172.17.0.1"; };
   };
   # We need to wait for the 172.17.0.1 docker0 interface to be created.
   systemd.services.postgresql.after = [ "docker.service" ];
@@ -85,16 +83,16 @@
 
   # Meshcentral for easy remote access
   # manual installation as Nix version is outdated
-  environment.systemPackages = [ pkgs.nodejs ];
+  # Also adding in a Python module needed for monitoring our PostgreSQL database via Netdata
+  environment.systemPackages = with pkgs; [ python310Packages.psycopg2 nodejs ];
   systemd.services.meshcentral = {
     wantedBy = [ "multi-user.target" ];
     after = [ "network-online.target" ];
-    environment = {
-      "NODE_ENV" = "production";
-    };
+    environment = { "NODE_ENV" = "production"; };
     path = [ pkgs.nodejs ];
     serviceConfig = {
-      ExecStart = ''"${pkgs.nodejs}/bin/node" /opt/meshcentral/node_modules/meshcentral'';
+      ExecStart =
+        ''"${pkgs.nodejs}/bin/node" /opt/meshcentral/node_modules/meshcentral'';
       Group = "meshcentral";
       PrivateTmp = "true";
       Restart = "always";
@@ -103,9 +101,9 @@
       WorkingDirectory = "/opt/meshcentral";
     };
   };
-  
+
   # Create Meshcentral user and group for the service to use
-  users.groups.meshcentral = {};
+  users.groups.meshcentral = { };
   users.users.meshcentral = {
     home = "/opt/meshcentral";
     group = "meshcentral";
@@ -113,8 +111,10 @@
   };
 
   # Open up ports for Meshcentral, Matrix & Wiki so ports can be forwarded and Nginx proxy
-  # Yes, we are forwarding the database here (5432), there is no way around this. I have made sure the DB is only listening on internal ports however.
-  networking.firewall.allowedTCPPorts = [ 3000 8008 8080 8081 22260 22261 5432 ];
+  # Yes, we are forwarding the database here (5432), there is no way around this. 
+  # I have made sure the DB is only listening on internal ports however.
+  networking.firewall.allowedTCPPorts =
+    [ 3000 8008 8080 8081 22260 22261 5432 ];
 
   system.stateVersion = "22.05";
 }
