@@ -55,5 +55,20 @@
     members = [ "sgs" ];
   };
 
+  # Borg applies 0600 permissions on repositories by default, it needs to be at least
+  # accessible by the backup group though in order for offsite backups to succeed
+  # this might not be a fancy solution but works for now
+  systemd.services.borg-repo-permissions = {
+    serviceConfig.Type = "oneshot";
+    script = ''
+      find /backups -type d -exec chmod 770 {} \;
+      find /backups -type f -exec sudo chmod 660 {} \;
+    '';
+  };
+  systemd.timers.borg-repo-permissions = {
+    wantedBy = [ "timers.target" ];
+    timerConfig.OnCalendar = [ "hourly" ];
+  };
+
   system.stateVersion = "22.05";
 }
