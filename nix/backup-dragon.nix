@@ -9,7 +9,7 @@
   }];
   networking.defaultGateway = "192.168.1.1";
 
-  # Enable borg repositories
+  # Enable borg repositories, making them accessible by the borg user and people belonging to the backup group
   services.borgbackup.repos = {
     esxi-cloud = {
       authorizedKeys = [
@@ -74,7 +74,7 @@
     serviceConfig.Type = "oneshot";
     script = ''
       find /backups -type d -exec chmod 770 {} \;
-      find /backups -type f -exec sudo chmod 660 {} \;
+      find /backups -type f -exec chmod 660 {} \;
     '';
   };
   systemd.timers.borg-repo-permissions = {
