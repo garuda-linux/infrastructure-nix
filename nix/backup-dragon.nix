@@ -73,8 +73,8 @@
   systemd.services.borg-repo-permissions = {
     serviceConfig.Type = "oneshot";
     script = ''
-      find /backups -type d -exec chmod 770 {} \;
-      find /backups -type f -exec chmod 660 {} \;
+      find /backups -type d -exec chmod -v 770 {} \;
+      find /backups -type f -exec chmod -v 660 {} \;
     '';
   };
   systemd.timers.borg-repo-permissions = {
