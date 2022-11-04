@@ -27,6 +27,20 @@ services:
       - 8008:8008
     restart: always
 
+  mautrix-telegram:
+    image: dock.mau.dev/mautrix/telegram
+    container_name: mautrix-telegram
+    volumes:
+      - "./matrix/mautrix-telegram:/data"
+    restart: always
+
+  matrix-appservice-discord:
+    build: https://github.com/matrix-org/matrix-appservice-discord.git#develop
+    container_name: matrix-appservice-discord
+    volumes:
+      - "./matrix/matrix-appservice-discord:/data"
+    restart: always
+
   # Matrix web client
   matrix_web:
     image: vectorim/element-web

@@ -49,11 +49,19 @@
   # Our Postgres database
   services.postgresql = {
     enable = true;
-    ensureDatabases = [ "meshcentral" "wikijs" "synapse" ];
+    ensureDatabases = [ "meshcentral" "wikijs" "synapse" "matrix-telegram" "matrix-discord" "matrix-irc" ];
     ensureUsers = [
       {
         name = "synapse";
         ensurePermissions = { "DATABASE synapse" = "ALL PRIVILEGES"; };
+      }
+      {
+        name = "matrix-bridges";
+        ensurePermissions = {
+          "DATABASE \"matrix-telegram\"" = "ALL PRIVILEGES";
+          "DATABASE \"matrix-discord\"" = "ALL PRIVILEGES";
+          "DATABASE \"matrix-irc\"" = "ALL PRIVILEGES";
+        };
       }
       {
         name = "meshcentral";

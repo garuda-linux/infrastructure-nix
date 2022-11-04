@@ -65,5 +65,6 @@ in {
       };
     })) cfg;
     virtualisation.docker.enable = mkIf (cfg != {}) true;
+    environment.systemPackages = mkIf (cfg != {}) [ pkgs.docker-compose ];
   };
 }
