@@ -236,8 +236,15 @@
       };
       "forum.garudalinux.org" = {
         addSSL = true;
-        extraConfig = "client_max_body_size  100M;";
+        extraConfig = "client_max_body_size 100M;";
         locations = { "/" = { proxyPass = "http://192.168.1.70:80"; }; };
+        http3 = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "social.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = "client_max_body_size 100M;";
+        locations = { "/" = { proxyPass = "https://192.168.1.50:443"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };

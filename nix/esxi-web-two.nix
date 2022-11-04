@@ -118,6 +118,29 @@
     isNormalUser = true;
   };
 
+  # Our Mastodon
+  services.mastodon = {
+    configureNginx = true;
+    enable = true;
+    localDomain = "social.garudalinux.org";
+    smtp = {
+      authenticate = true;
+      fromAddress = "mastodon.garudalinux.org";
+      host = "mail.garudalinux.org";
+      port = 587;
+      user = "mastodon@garudalinux.org";
+    };
+    trustedProxy = "192.168.1.50";
+  };
+
+  security.acme = {
+    acceptTerms = true;
+    defaults = {
+      group = "nginx";
+      email = "team@garudalinux.org";
+    };
+  };
+
   # Open up ports for Meshcentral, Matrix & Wiki so ports can be forwarded and Nginx proxy
   # Yes, we are forwarding the database here (5432), there is no way around this. 
   # I have made sure the DB is only listening on internal ports however.

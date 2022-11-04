@@ -32,11 +32,29 @@ in {
             error log = none
             access log = none
       '';
+      "go.d.conf" = pkgs.writeText "go.d.conf" ''
+        enabled: yes
+        modules:
+          nginx: yes
+          postgres: yes
+          vsphere: yes
+          web_log: yes
+      '';
+      "python.d.conf" = pkgs.writeText "python.d.conf" ''
+        postgres: no
+        web_log: no
+      '';
       "go.d/nginx.conf" = mkIf config.services.nginx.enable
         (pkgs.writeText "nginx.conf" ''
           jobs:
             - name: local
               url: http://localhost/nginx_status
+        '');
+      "go.d/postgres.conf" = mkIf config.services.postgresql.enable
+        (pkgs.writeText "postgres.conf" ''
+          jobs:
+            - name: web-two
+              dsn: 'postgres://netdata:netdata@127.0.0.1:5432/'
         '');
     };
 
