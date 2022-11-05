@@ -38,7 +38,7 @@ services:
       - morty
     command: -f
     volumes:
-      - "./searxng:/etc/searxng:rw"
+      - "./searxng:/etc/searxng:ro"
     ports:
       - 127.0.0.1:8080:8080
     environment:
