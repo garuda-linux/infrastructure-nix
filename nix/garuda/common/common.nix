@@ -17,6 +17,7 @@
       domain = true;
       addresses = true;
     };
+    ipv6 = false;
     interfaces = [ garuda-lib.secrets.zerotier.interface ];
   };
 
