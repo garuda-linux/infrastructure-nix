@@ -125,8 +125,9 @@
     localDomain = "social.garudalinux.org";
     smtp = {
       authenticate = true;
-      fromAddress = "mastodon.garudalinux.org";
-      host = "mail.garudalinux.org";
+      fromAddress = "mastodon@garudalinux.org";
+      host = "smtp.garudalinux.org";
+      passwordFile = "/var/lib/mastodon/secrets/smtp-password";
       port = 587;
       user = "mastodon@garudalinux.org";
     };
