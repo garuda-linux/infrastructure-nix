@@ -118,7 +118,7 @@
   # Environment
   environment = {
     # Packages the system needs, individual user packages shall be put into home-manager configurations
-    systemPackages = with pkgs; [ python3 micro htop git screen fancy-motd ugrep killall ];
+    systemPackages = with pkgs; [ python3 micro htop git screen fancy-motd ugrep killall wget ];
     # Increase Mosh timeout
     variables = { MOSH_SERVER_NETWORK_TMOUT = "604800"; };
   };

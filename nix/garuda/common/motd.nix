@@ -9,6 +9,7 @@ let
       echo -e "                 Please behave well and have fun! 🦅               "
       echo -e "         In case of issues or questions contact Nico or TNE.       "
     fi
+    HISTCONTROL=ignoreboth
   '';
 in {
   # Add fancy MOTD to shell logins

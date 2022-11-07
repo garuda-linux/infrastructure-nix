@@ -244,7 +244,16 @@
       "social.garudalinux.org" = {
         addSSL = true;
         extraConfig = "client_max_body_size 100M;";
-        locations = { "/" = { proxyPass = "https://192.168.1.50:443"; }; };
+        locations = {
+          "/" = {
+            proxyPass = "https://192.168.1.50:443";
+            proxyWebsockets = true;
+            extraConfig = ''
+              proxy_set_header Host social.garudalinux.org;
+              proxy_set_header X-Forwarded-For $remote_addr;
+            '';
+          };
+        };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
