@@ -133,6 +133,7 @@
     };
     extraConfig = {
       "LOCAL_DOMAIN" = "garudalinux.org";
+      "SMTP_DOMAIN" = "social.garudalinux.org";
       "WEB_DOMAIN" = "social.garudalinux.org";
     };
     trustedProxy = "192.168.1.50";
