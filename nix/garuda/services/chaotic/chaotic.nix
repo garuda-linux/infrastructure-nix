@@ -235,6 +235,27 @@ in {
       useACMEHost = cfg.useACMEHost;
     };
     networking.hosts = mkIf (!cfg.cluster) { "127.0.0.1" = [ cfg.host ]; };
+    
+    # Handy aliases for our maintainers
+    programs.bash = {
+      interactiveShellInit = ''
+        cb () {
+          cg $@ && cmkd $@;
+        }
+      '';
+      shellAliases = {
+        "cg" = "chaotic get ";
+        "cmkd" = "chaotic -j12 mkd ";
+        "crm" = "chaotic rm ";
+      };
+    };
+    programs.fish = {
+      shellAbbrs = {
+        "cg" = "chaotic get ";
+        "cmkd" = "chaotic -j12 mkd ";
+        "crm" = "chaotic rm ";
+      };
+    };
   };
   imports = [ ./chaotic-mirror.nix ];
 }

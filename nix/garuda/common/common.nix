@@ -49,9 +49,27 @@
 
   # Programs & global config
   programs.mosh.enable = true;
+  programs.bash.shellAliases = {
+    "bat" = "bat --style header --style snip --style changes";
+    "cls" = "clear";
+    "dir" = "dir --color=auto";
+    "egrep" = "egrep --color=auto";
+    "fgrep" = "fgrep --color=auto";
+    "ip" = "ip --color=auto";
+    "ls" = "exa -al --color=always --group-directories-first --icons";
+    "micro" = "micro -colorscheme geany -autosu true -mkparents true";
+    "psmem" = "ps auxf | sort -nr -k 4";
+    "psmem10" = "ps auxf | sort -nr -k 4 | head -1";
+    "su" = "sudo su -";
+    "tarnow" = "tar acf ";
+    "untar" = "tar zxvf ";
+    "vdir" = "vdir --color=auto";
+    "wget" = "wget -c";
+  };
   programs.fish = {
     enable = true;
     shellAbbrs = {
+      "cls" = "clear";
       "reb" = "sudo nixos-rebuild switch -L";
       "roll" = "sudo nixos-rebuild switch --rollback";
       "su" = "sudo su -";
@@ -66,7 +84,6 @@
       "micro" = "micro -colorscheme geany -autosu true -mkparents true";
       "psmem" = "ps auxf | sort -nr -k 4";
       "psmem10" = "ps auxf | sort -nr -k 4 | head -1";
-      "su" = "sudo su -";
       "tarnow" = "tar acf ";
       "untar" = "tar zxvf ";
       "vdir" = "vdir --color=auto";
@@ -118,7 +135,17 @@
   # Environment
   environment = {
     # Packages the system needs, individual user packages shall be put into home-manager configurations
-    systemPackages = with pkgs; [ python3 micro htop git screen fancy-motd ugrep killall wget ];
+    systemPackages = with pkgs; [
+      python3
+      micro
+      htop
+      git
+      screen
+      fancy-motd
+      ugrep
+      killall
+      wget
+    ];
     # Increase Mosh timeout
     variables = { MOSH_SERVER_NETWORK_TMOUT = "604800"; };
   };
