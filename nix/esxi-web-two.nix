@@ -145,10 +145,13 @@
     };
     trustedProxy = "192.168.1.50";
   };
-  services.nginx.virtualHosts."social.garudalinux.org".enableACME =
-    lib.mkForce false;
-  services.nginx.virtualHosts."social.garudalinux.org".useACMEHost =
-    "garudalinux.org";
+  services.nginx.virtualHosts."social.garudalinux.org" = {
+    enableACME = lib.mkForce false;
+    extraConfig = ''
+      set_real_ip_from 192.168.1.20;
+    '';
+    useACMEHost = "garudalinux.org";
+  };
 
   # Open up ports for Meshcentral, Matrix & Wiki so ports can be forwarded and Nginx proxy
   # Yes, we are forwarding the database here (5432), there is no way around this. 

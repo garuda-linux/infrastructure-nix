@@ -55,6 +55,10 @@
       url = "gitlab:garuda-linux%2Fwebsite/garuda";
       flake = false;
     };
+    src-cloudflare-ipv4 = {
+      url = "https://www.cloudflare.com/ips-v4";
+      flake = false;
+    };
   };
 
   outputs = { nixos-unstable, home-manager, ... }@attrs:
@@ -68,10 +72,11 @@
         };
         sources = {
           buildiso = attrs.src-buildiso;
-          chaotic-toolbox = attrs.src-chaotic-toolbox;
-          repoctl = attrs.src-repoctl;
           chaotic-mirror = attrs.src-chaotic-mirror;
+          chaotic-toolbox = attrs.src-chaotic-toolbox;
+          cloudflare-ipv4 = attrs.src-cloudflare-ipv4;
           garuda-website = attrs.src-garuda-website;
+          repoctl = attrs.src-repoctl;
         };
         keys = {
           alexjp = attrs.keys_alexjp;
