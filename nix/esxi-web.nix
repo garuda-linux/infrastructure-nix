@@ -99,6 +99,7 @@
           "/" = {
             extraConfig = ''
               # Increase our buffer size to allow bigger up- & downloads
+              client_max_body_size                  2048M;
               proxy_max_temp_file_size              2048M;
               proxy_request_buffering               off;
 

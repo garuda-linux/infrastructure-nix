@@ -136,14 +136,15 @@
   environment = {
     # Packages the system needs, individual user packages shall be put into home-manager configurations
     systemPackages = with pkgs; [
-      python3
-      micro
-      htop
-      git
-      screen
+      exa
       fancy-motd
-      ugrep
+      git
+      htop
       killall
+      micro
+      python3
+      screen
+      ugrep
       wget
     ];
     # Increase Mosh timeout
