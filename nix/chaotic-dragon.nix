@@ -12,9 +12,6 @@
   # LXC support
   systemd.enableUnifiedCgroupHierarchy = lib.mkForce true;
 
-  # Openssh HPN for the performance gains while uploading packages
-  programs.ssh.package = pkgs.openssh_hpn;
-
   # Enable Chaotic-AUR building
   services.chaotic.enable = true;
   services.chaotic.cluster-name = "dragon-cluster";
