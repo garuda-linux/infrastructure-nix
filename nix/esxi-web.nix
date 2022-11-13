@@ -1,5 +1,4 @@
-{ garuda-lib, lib, sources, pkgs, ... }:
-{
+{ garuda-lib, lib, sources, pkgs, ... }: {
   imports = [
     ./garuda/common/esxi.nix
     ./garuda/garuda.nix
@@ -64,6 +63,10 @@
     virtualHosts = {
       "garudalinux.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = {
           "/" = {
             index = "index.html";
@@ -88,6 +91,10 @@
       };
       "cloud.garudalinux.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = {
           "/" = {
             extraConfig = ''
@@ -132,6 +139,10 @@
         useACMEHost = "garudalinux.org";
       };
       "mesh.garudalinux.net" = {
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = {
           "/" = {
             extraConfig = ''
@@ -155,21 +166,33 @@
       };
       "search.garudalinux.org" = {
         addSSL = true;
-        extraConfig = "access_log off;";
+        extraConfig = ''
+          access_log off;
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = { "/" = { proxyPass = "http://127.0.0.1:5000"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
       "searx.garudalinux.org" = {
         addSSL = true;
-        extraConfig = "access_log off;";
+        extraConfig = ''
+          access_log off;
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = { "/" = { proxyPass = "http://127.0.0.1:8080"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
       "ffsync.garudalinux.org" = {
         addSSL = true;
-        extraConfig = "access_log off;";
+        extraConfig = ''
+          access_log off;
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = { "/" = { proxyPass = "http://127.0.0.1:5001"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
@@ -194,13 +217,21 @@
       };
       "bin.garudalinux.org" = {
         addSSL = true;
-        extraConfig = "access_log off;";
+        extraConfig = ''
+          access_log off;
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = { "/" = { proxyPass = "http://127.0.0.1:8083"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
       "bitwarden.garudalinux.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = {
           "/" = {
             proxyPass = "http://127.0.0.1:8082";
@@ -213,6 +244,10 @@
       };
       "status.garudalinux.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = {
           "/" = { tryFiles = "/status.html /status.html"; };
           "=/status.html" = {
@@ -225,6 +260,10 @@
       };
       "stats.garudalinux.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = {
           "/" = { tryFiles = "/stats.html /stats.html"; };
           "=/stats.html" = {
@@ -237,14 +276,22 @@
       };
       "forum.garudalinux.org" = {
         addSSL = true;
-        extraConfig = "client_max_body_size 100M;";
+        extraConfig = ''
+          client_max_body_size 100M;
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = { "/" = { proxyPass = "http://192.168.1.70:80"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
       "social.garudalinux.org" = {
         addSSL = true;
-        extraConfig = "client_max_body_size 100M;";
+        extraConfig = ''
+          client_max_body_size 100M;
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = {
           "/" = {
             proxyPass = "https://192.168.1.50:443";
@@ -259,13 +306,21 @@
       };
       "iso.builds.garudalinux.org" = {
         addSSL = true;
-        extraConfig = "proxy_buffering off;";
+        extraConfig = ''
+          proxy_buffering off;
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = { "/" = { proxyPass = "http://192.168.1.60:80"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
       "element.garudalinux.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = {
           "/" = { proxyPass = "http://esxi-web-two.local:8080"; };
         };
@@ -274,6 +329,10 @@
       };
       "wiki.garudalinux.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = {
           "/" = { proxyPass = "http://esxi-web-two.local:3001"; };
         };
@@ -282,6 +341,10 @@
       };
       "mesh.garudalinux.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         locations = {
           "/" = {
             proxyPass = "http://esxi-web-two.local:22260";

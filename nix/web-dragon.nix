@@ -48,6 +48,8 @@
         extraConfig = ''
           location / {
             access_log off;
+            ${garuda-lib.setRealIpFromConfig}
+            real_ip_header CF-Connecting-IP;
             proxy_buffering off;
             proxy_pass http://127.0.0.1:8082;
             proxy_set_header Host $host;
@@ -60,6 +62,10 @@
       };
       "invidious.garudalinux.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         http3 = true;
         locations = {
           "/" = {
@@ -76,6 +82,10 @@
       };
       "teddit.garudalinux.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         http3 = true;
         locations = {
           "/" = {
@@ -87,6 +97,10 @@
       };
       "lingva.garudalinux.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         http3 = true;
         locations = {
           "/" = {
@@ -98,6 +112,10 @@
       };
       "nitter.garudalinux.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         http3 = true;
         locations = {
           "/" = {
@@ -109,6 +127,10 @@
       };
       "libreddit.garudalinux.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         http3 = true;
         locations = {
           "/" = {
@@ -120,6 +142,10 @@
       };
       "bibliogram.garudalinux.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         http3 = true;
         locations = {
           "/" = {
@@ -131,6 +157,10 @@
       };
       "chaotic.dr460nf1r3.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         http3 = true;
         locations = {
           "/" = {
@@ -142,6 +172,10 @@
       };
       "search.dr460nf1r3.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         http3 = true;
         locations = {
           "/" = {
@@ -153,12 +187,20 @@
       };
       "searx.dr460nf1r3.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         globalRedirect = "searx.garudalinux.org";
         http3 = true;
         useACMEHost = "dr460nf1r3.org";
       };
       "translate.dr460nf1r3.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         http3 = true;
         locations = {
           "/" = {
@@ -170,6 +212,10 @@
       };
       "twitter.dr460nf1r3.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         http3 = true;
         locations = {
           "/" = {
@@ -181,6 +227,10 @@
       };
       "reddit.dr460nf1r3.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         http3 = true;
         locations = {
           "/" = {
@@ -192,6 +242,10 @@
       };
       "insta.dr460nf1r3.org" = {
         addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
         http3 = true;
         locations = {
           "/" = {
