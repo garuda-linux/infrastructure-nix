@@ -8,11 +8,11 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1667708081,
-        "narHash": "sha256-FChEy05x4ed/pttjfTeKxjPCnHknMYrUtDyBiYbreT4=",
+        "lastModified": 1667981810,
+        "narHash": "sha256-p27zd5M+OkfND46gzbGkaHlNBZsYe95M48OJuFeuuSY=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "1ef0da321217c6c19b7a30509631c080a19321e5",
+        "rev": "6ce3493a3c5c6a8f4cfa6f5f88723272e0cfd335",
         "type": "github"
       },
       "original": {
@@ -95,11 +95,11 @@
     },
     "nixos-unstable": {
       "locked": {
-        "lastModified": 1666447894,
-        "narHash": "sha256-i9WHX4w/et4qPMzEXd9POmnO0/bthjr7R4cblKNHGms=",
+        "lastModified": 1668087632,
+        "narHash": "sha256-T/cUx44aYDuLMFfaiVpMdTjL4kpG7bh0VkN6JEM78/E=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "95aeaf83c247b8f5aa561684317ecd860476fcd6",
+        "rev": "5f588eb4a958f1a526ed8da02d6ea1bea0047b9f",
         "type": "github"
       },
       "original": {
@@ -122,6 +122,7 @@
         "src-buildiso": "src-buildiso",
         "src-chaotic-mirror": "src-chaotic-mirror",
         "src-chaotic-toolbox": "src-chaotic-toolbox",
+        "src-cloudflare-ipv4": "src-cloudflare-ipv4",
         "src-garuda-website": "src-garuda-website",
         "src-repoctl": "src-repoctl"
       }
@@ -174,14 +175,26 @@
         "type": "github"
       }
     },
+    "src-cloudflare-ipv4": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-V4dThTb8iw02hjngubVtSJbEeWgOS1e/ODt1fLjLZvk=",
+        "type": "file",
+        "url": "https://www.cloudflare.com/ips-v4"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://www.cloudflare.com/ips-v4"
+      }
+    },
     "src-garuda-website": {
       "flake": false,
       "locked": {
-        "lastModified": 1666464489,
-        "narHash": "sha256-tEIWGuJLwHWMVhqMj+SD54FcJWbW283G8AFeAZbY5u0=",
+        "lastModified": 1668057582,
+        "narHash": "sha256-kHVlR9J40KOx79SPXadMo+GNWeWbpZiGQIfMD07mIqE=",
         "owner": "garuda-linux%2Fwebsite",
         "repo": "garuda",
-        "rev": "66d1fa13a5c5372fcd57ef05fd3e50083a82f869",
+        "rev": "26814103bb9cab2c034c65607c37fcba15fe2f0e",
         "type": "gitlab"
       },
       "original": {

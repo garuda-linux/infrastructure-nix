@@ -4,4 +4,4 @@
   gather_facts: no
   tasks:
     - name: Collect garbage
-      shell: systemctl start --wait nix-gc.service
+      shell: systemctl start --wait nix-clean-result.service && nix-collect-garbage -d
