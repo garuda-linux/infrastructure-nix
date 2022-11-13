@@ -49,7 +49,14 @@
   # Our Postgres database
   services.postgresql = {
     enable = true;
-    ensureDatabases = [ "meshcentral" "wikijs" "synapse" "matrix-telegram" "matrix-discord" "matrix-irc" ];
+    ensureDatabases = [
+      "meshcentral"
+      "wikijs"
+      "synapse"
+      "matrix-telegram"
+      "matrix-discord"
+      "matrix-irc"
+    ];
     ensureUsers = [
       {
         name = "synapse";
@@ -125,11 +132,11 @@
     localDomain = "social.garudalinux.org";
     smtp = {
       authenticate = true;
-      fromAddress = "mastodon@garudalinux.org";
+      fromAddress = "noreply@garudalinux.org";
       host = "smtp.garudalinux.org";
       passwordFile = "/var/lib/mastodon/secrets/smtp-password";
       port = 587;
-      user = "mastodon@garudalinux.org";
+      user = "noreply@garudalinux.org";
     };
     extraConfig = {
       "LOCAL_DOMAIN" = "garudalinux.org";
@@ -138,8 +145,14 @@
     };
     trustedProxy = "192.168.1.50";
   };
-  services.nginx.virtualHosts."social.garudalinux.org".enableACME = lib.mkForce false;
-  services.nginx.virtualHosts."social.garudalinux.org".useACMEHost = "garudalinux.org";
+  services.nginx.virtualHosts."social.garudalinux.org" = {
+    enableACME = lib.mkForce false;
+    extraConfig = ''
+      ${garuda-lib.setRealIpFromConfig}
+      real_ip_header CF-Connecting-IP;
+    '';
+    useACMEHost = "garudalinux.org";
+  };
 
   # Open up ports for Meshcentral, Matrix & Wiki so ports can be forwarded and Nginx proxy
   # Yes, we are forwarding the database here (5432), there is no way around this. 

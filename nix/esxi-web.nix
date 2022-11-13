@@ -1,4 +1,5 @@
-{ garuda-lib, sources, pkgs, ... }: {
+{ garuda-lib, lib, sources, pkgs, ... }:
+{
   imports = [
     ./garuda/common/esxi.nix
     ./garuda/garuda.nix
@@ -250,7 +251,6 @@
             proxyWebsockets = true;
             extraConfig = ''
               proxy_set_header Host social.garudalinux.org;
-              proxy_set_header X-Forwarded-For $remote_addr;
             '';
           };
         };
@@ -266,13 +266,17 @@
       };
       "element.garudalinux.org" = {
         addSSL = true;
-        locations = { "/" = { proxyPass = "http://esxi-web-two.local:8080"; }; };
+        locations = {
+          "/" = { proxyPass = "http://esxi-web-two.local:8080"; };
+        };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
       "wiki.garudalinux.org" = {
         addSSL = true;
-        locations = { "/" = { proxyPass = "http://esxi-web-two.local:3001"; }; };
+        locations = {
+          "/" = { proxyPass = "http://esxi-web-two.local:3001"; };
+        };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
@@ -281,7 +285,7 @@
         locations = {
           "/" = {
             proxyPass = "http://esxi-web-two.local:22260";
-            extraConfig = '' 
+            extraConfig = ''
               proxy_http_version 1.1;
               proxy_read_timeout 330s;
               proxy_send_timeout 330s;
@@ -323,10 +327,10 @@
   };
 
   services.netdata.configDir = {
-      "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
-        - name: main
-          path: /var/log/nginx/*
-      '';
+    "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
+      - name: main
+        path: /var/log/nginx/*
+    '';
   };
 
   system.stateVersion = "22.05";
