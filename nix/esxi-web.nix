@@ -1,11 +1,5 @@
 { garuda-lib, lib, sources, pkgs, ... }:
-
-let
-  setRealIpFromConfig = lib.concatMapStrings (ip: ''
-    set_real_ip_from ${ip};
-  '')
-    (lib.strings.splitString "\n" (builtins.readFile sources.cloudflare-ipv4));
-in {
+{
   imports = [
     ./garuda/common/esxi.nix
     ./garuda/garuda.nix
@@ -256,10 +250,7 @@ in {
             proxyPass = "https://192.168.1.50:443";
             proxyWebsockets = true;
             extraConfig = ''
-              ${setRealIpFromConfig}
-              real_ip_header CF-Connecting-IP;
               proxy_set_header Host social.garudalinux.org;
-              proxy_set_header X-Forwarded-For $remote_addr;
             '';
           };
         };

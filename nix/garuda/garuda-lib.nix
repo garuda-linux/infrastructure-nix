@@ -1,6 +1,10 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, sources, ... }:
 with lib;
-let secrets = builtins.fromJSON (builtins.readFile ./secrets/secrets.json);
+let
+  secrets = builtins.fromJSON (builtins.readFile ./secrets/secrets.json);
+  setRealIpFromConfig = lib.concatMapStrings (ip: ''
+    set_real_ip_from ${ip};
+  '') (lib.strings.splitString "\n" (builtins.readFile sources.cloudflare-ipv4));
 in {
   options.garuda-lib = mkOption {
     type = types.attrs;
@@ -12,6 +16,7 @@ in {
     garuda-lib = {
       xslt_style = ./static/style.xslt;
       behind_proxy = false;
+      inherit setRealIpFromConfig;
       secrets = recursiveUpdate secrets {
         cloudflare_key = "/var/garuda/secrets/cloudflare_key";
         meshagent_msh = "/var/garuda/secrets/meshagent.msh";

@@ -148,7 +148,8 @@
   services.nginx.virtualHosts."social.garudalinux.org" = {
     enableACME = lib.mkForce false;
     extraConfig = ''
-      set_real_ip_from 192.168.1.20;
+      ${garuda-lib.setRealIpFromConfig}
+      real_ip_header CF-Connecting-IP;
     '';
     useACMEHost = "garudalinux.org";
   };
