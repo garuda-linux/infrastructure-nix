@@ -53,7 +53,9 @@
             proxy_buffering off;
             proxy_pass http://127.0.0.1:8082;
             proxy_set_header Host $host;
-            }
+            proxy_hide_header Access-Control-Allow-Origin;
+            add_header Access-Control-Allow-Origin "https://piped.garudalinux.org" always;
+          }
         '';
         http3 = true;
         serverAliases =

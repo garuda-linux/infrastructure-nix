@@ -26,7 +26,7 @@ in {
             -v "/var/cache/pacman/pkg/:/var/cache/pacman/pkg/" \
             -v "/var/garuda/buildiso/iso:/var/cache/garuda-tools/garuda-builds/iso/" \
             -v "/var/garuda/buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
-            -v "${garuda-lib.secrets.buildiso_sshkey}:/root/.ssh/id_ed25519" \
+            -v "${garuda-lib.secrets.ssh.team.private}:/root/.ssh/id_ed25519" \
             -v "${envfile}:/var/cache/garuda-tools/garuda-builds/.env" \
             "$(docker build -q "${sources.buildiso}")" auto
         '';

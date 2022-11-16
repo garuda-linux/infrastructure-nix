@@ -18,9 +18,9 @@ in {
       behind_proxy = false;
       inherit setRealIpFromConfig;
       secrets = recursiveUpdate secrets {
+        cachix = "/var/garuda/secrets/cachix";
         cloudflare_key = "/var/garuda/secrets/cloudflare_key";
         meshagent_msh = "/var/garuda/secrets/meshagent.msh";
-        buildiso_sshkey = "/var/garuda/secrets/buildiso_sshkey";
         syncthing = {
           esxi = {
             key = "/var/garuda/secrets/syncthing/esxi-key.pem";
@@ -46,6 +46,11 @@ in {
           esxi-web = "/var/garuda/secrets/docker-compose/esxi-web.env";
           esxi-web-two = "/var/garuda/secrets/docker-compose/esxi-web-two.env";
           web-dragon = "/var/garuda/secrets/docker-compose/web-dragon.env";
+        };
+        ssh = {
+          team = {
+            private = "/var/garuda/secrets/buildiso_sshkey";
+          };
         };
       };
     };

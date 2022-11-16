@@ -1,5 +1,5 @@
 { pkgs, lib, garuda-lib, config, meshagent, ... }: {
-  imports = [ ./acme.nix ./hardening.nix ./motd.nix ./nginx.nix ./users.nix ];
+  imports = [ ./acme.nix ./hardening.nix ./motd.nix ./nginx.nix ./users.nix ./remote-build.nix ];
 
   # Network stuff
   networking = {
@@ -27,6 +27,8 @@
     "net.ipv4.tcp_congestion_control" = "bbr";
     "net.core.default_qdisc" = "cake";
   };
+  # Mount root as shared
+  boot.specialFileSystems."/run".options = [ "rshared" ];
 
   # Locales & timezone
   time.timeZone = "Europe/Berlin";
@@ -125,6 +127,10 @@
       locate = pkgs.plocate;
     };
   };
+  services.zerotierone.package = pkgs.zerotierone.overrideAttrs (finalAttrs: previousAttrs: {
+    requiredSystemFeatures = [ "big-parallel" ];
+    doCheck = false;
+  });
 
   # Docker
   virtualisation.docker = {
@@ -163,9 +169,23 @@
       dates = "daily";
       options = "--delete-older-than 2d";
     };
-    # Allow using flakes
-    settings.experimental-features = [ "nix-command" "flakes" ];
+    settings = {
+      # Allow using flakes
+      experimental-features = [ "nix-command" "flakes" ];
+      auto-optimise-store = true;
+      substituters = [ "https://garuda-linux.cachix.org" ];
+      trusted-public-keys = [ "garuda-linux.cachix.org-1:tWw7YBE6qZae0L6BbyNrHo8G8L4sHu5QoDp0OXv70bg=" ];
+    };
+    package = pkgs.nix.overrideAttrs (finalAttrs: previousAttrs: {
+      doCheck = false;
+      doInstallCheck = false;
+      requiredSystemFeatures = [ "big-parallel" ];
+      enableParallelBuilding = true;
+      patches = previousAttrs.patches ++
+        [ (pkgs.fetchpatch { url = "https://github.com/NixOS/nix/commit/7e162c69fe6cbfb929b5356a7df9de5c25c22565.patch"; hash = "sha256-8DX4spZOvgg5214HZdaUrFv4jkYEQhjckxOSiAkC0Cg="; } ) ];
+    });
   };
+  services.garuda-nix-builder.host = "10.241.138.117";
 
   # Make cloudflared happy (https://github.com/lucas-clemente/quic-go/wiki/UDP-Receive-Buffer-Size)
   boot.kernel.sysctl = { "net.core.rmem_max" = 2500000; };
