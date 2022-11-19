@@ -36,7 +36,6 @@ services:
     depends_on:
       - filtron
       - morty
-    command: -f
     volumes:
       - "./searxng:/etc/searxng"
     ports:
