@@ -58,7 +58,7 @@ qrcode = true
 [expire]
 ; expire value that is selected per default
 ; make sure the value exists in [expire_options]
-default = "1week"
+default = "never"
 
 [expire_options]
 ; Set each one of these to the number of seconds in the expiration period,
