@@ -8,11 +8,11 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1668332334,
-        "narHash": "sha256-YT1qcE/MCqBO1Bi/Yr6GcFpNKsvmzrBKh8juyXDbxQc=",
+        "lastModified": 1668788863,
+        "narHash": "sha256-FsdUG+YkRX7JZKZm6T44J2h+0pXB1sWA9AobyiozFK0=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "bc90de24d898655542589237cc0a6ada7564cb6c",
+        "rev": "948d1f8a5cef55a281d4f5d17f3b79df6c82fce1",
         "type": "github"
       },
       "original": {
@@ -95,11 +95,11 @@
     },
     "nixos-unstable": {
       "locked": {
-        "lastModified": 1668417584,
-        "narHash": "sha256-yeuEyxKPwsm5fIHN49L/syn9g5coxnPp3GsVquhrv5A=",
+        "lastModified": 1668765800,
+        "narHash": "sha256-rC40+/W6Hio7b/RsY8SvQPKNx4WqNcTgfYv8cUMAvJk=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "013fcdd106823416918004bb684c3c186d3c460f",
+        "rev": "52b2ac8ae18bbad4374ff0dd5aeee0fdf1aea739",
         "type": "github"
       },
       "original": {
@@ -130,11 +130,11 @@
     "src-buildiso": {
       "flake": false,
       "locked": {
-        "lastModified": 1667779885,
-        "narHash": "sha256-XGECWmJ8w1dcMirrjEyNsedQrkrIMxbZnGVJQYTfHYk=",
+        "lastModified": 1668818963,
+        "narHash": "sha256-/Wtyk4C1pbUS/twigyks4sNwJ3KaBJkmefrTi/OddTk=",
         "owner": "garuda-linux%2Ftools",
         "repo": "buildiso-docker",
-        "rev": "be19643c96687dd6bf15f61348bd5dc6d1db7085",
+        "rev": "072828223e10642edcdb853bc6d0d14cd9f74dfe",
         "type": "gitlab"
       },
       "original": {
