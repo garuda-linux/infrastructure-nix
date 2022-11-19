@@ -87,6 +87,7 @@
           };
         };
         http3 = true;
+        serverAliases = [ "www.garudalinux.org" ];
         useACMEHost = "garudalinux.org";
       };
       "cloud.garudalinux.org" = {
