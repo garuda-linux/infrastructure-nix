@@ -3,7 +3,6 @@
   # The Nginx QUIC package with Perl & Brotli modules
   services.nginx.package = pkgs.nginxQuic.override ({
     withPerl = true;
-    requiredSystemFeatures = [ "big-parallel" ];
     doCheck = false;
   });
   services.nginx.additionalModules = with pkgs; [ nginxModules.brotli ];

@@ -9,6 +9,9 @@
   networking.hostName = "garuda-build";
   networking.defaultGateway = "216.158.66.97";
 
+  # Openssh HPN for the performance gains
+  programs.ssh.package = pkgs.openssh_hpn;
+
   # Enable Chaotic-AUR building
   services.chaotic.enable = true;
   services.chaotic.cluster-name = "garuda-cluster";

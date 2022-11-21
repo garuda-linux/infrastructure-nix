@@ -82,8 +82,5 @@
     timerConfig.OnCalendar = [ "hourly" ];
   };
 
-  # This server handles all nix derivation builds
-  services.garuda-nix-builder.isBuilder = true;
-
   system.stateVersion = "22.05";
 }

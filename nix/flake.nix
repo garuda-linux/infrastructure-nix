@@ -163,5 +163,10 @@
         specialArgs = specialArgs;
         modules = defaultModules ++ [ ./oracle-dragon.nix ];
       };
+      nixosConfigurations."cachix" = nixos.lib.nixosSystem {
+        inherit system;
+        specialArgs = specialArgs;
+        modules = defaultModules ++ [ ./cachix.nix ];
+      };
     };
 }

@@ -8,7 +8,15 @@
   services.openssh = {
     passwordAuthentication = false;
     permitRootLogin = "no";
+    extraConfig = ''
+      LoginGraceTime 15
+      ChallengeResponseAuthentication no
+      MaxStartups 30:30:60
+    '';
   };
+
+  # Default configured for ssh
+  services.fail2ban.enable = true;
 
   # The hardening profile enables Apparmor by default, we don't want this to happen
   security.apparmor.enable = false;

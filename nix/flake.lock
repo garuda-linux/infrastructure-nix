@@ -8,11 +8,11 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1668788863,
-        "narHash": "sha256-FsdUG+YkRX7JZKZm6T44J2h+0pXB1sWA9AobyiozFK0=",
+        "lastModified": 1668900402,
+        "narHash": "sha256-IhVlueHoQNoN0SOHZIceKU3LyEL00g2ei0aUlaNypbQ=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "948d1f8a5cef55a281d4f5d17f3b79df6c82fce1",
+        "rev": "c0f9cbcf93ca22e4f0ca66843be61a4bdf6f0a44",
         "type": "github"
       },
       "original": {
@@ -95,11 +95,11 @@
     },
     "nixos-unstable": {
       "locked": {
-        "lastModified": 1668765800,
-        "narHash": "sha256-rC40+/W6Hio7b/RsY8SvQPKNx4WqNcTgfYv8cUMAvJk=",
+        "lastModified": 1668905981,
+        "narHash": "sha256-RBQa/+9Uk1eFTqIOXBSBezlEbA3v5OkgP+qptQs1OxY=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "52b2ac8ae18bbad4374ff0dd5aeee0fdf1aea739",
+        "rev": "690ffff026b4e635b46f69002c0f4e81c65dfc2e",
         "type": "github"
       },
       "original": {
@@ -190,11 +190,11 @@
     "src-garuda-website": {
       "flake": false,
       "locked": {
-        "lastModified": 1668057582,
-        "narHash": "sha256-kHVlR9J40KOx79SPXadMo+GNWeWbpZiGQIfMD07mIqE=",
+        "lastModified": 1668965270,
+        "narHash": "sha256-zFJLcEjyJz8NU+wXT0OaQu86PSYK/pMKVkVIrY3CqDc=",
         "owner": "garuda-linux%2Fwebsite",
         "repo": "garuda",
-        "rev": "26814103bb9cab2c034c65607c37fcba15fe2f0e",
+        "rev": "7da123912fdc20231db41f4af7b7f5b1f4dd34a0",
         "type": "gitlab"
       },
       "original": {
