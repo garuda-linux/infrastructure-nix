@@ -1,4 +1,6 @@
 { pkgs, ... }: {
+  imports = [ ./hardware-configuration.nix ];
+
   networking.hostName = "esxi-monitor";
   networking.interfaces."eth0".ipv4.addresses = [{
     address = "192.168.1.80";
@@ -6,7 +8,6 @@
   }];
   networking.defaultGateway = "192.168.1.1";
 
-  imports = [ <nixpkgs/nixos/modules/virtualisation/lxc-container.nix> ];
   users.users.ansible = {
     isNormalUser = true;
     home = "/home/ansible";
@@ -27,7 +28,12 @@
   }];
   networking.nameservers = [ "1.1.1.1" ];
   environment.systemPackages = [ pkgs.python3 pkgs.git ];
-  system.stateVersion = "22.05";
+  system.stateVersion = "22.11";
+
+  systemd.tmpfiles.rules = [
+    "d /var/garuda 1555 root root"
+  ];
+
   nix.package = (import (builtins.fetchTarball
     "https://github.com/nixos/nixpkgs/tarball/nixos-unstable") { }).nix;
 }
