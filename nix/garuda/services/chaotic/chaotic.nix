@@ -245,14 +245,14 @@ in {
       '';
       shellAliases = {
         "cg" = "chaotic get";
-        "cmkd" = "chaotic -j12 mkd";
+        "cmkd" = "chaotic -j 12 mkd";
         "crm" = "chaotic rm";
       };
     };
     programs.fish = {
       shellAbbrs = {
         "cg" = "chaotic get";
-        "cmkd" = "chaotic -j12 mkd";
+        "cmkd" = "chaotic -j 12 mkd";
         "crm" = "chaotic rm";
       };
     };
