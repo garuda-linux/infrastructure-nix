@@ -9,6 +9,7 @@
     passwordAuthentication = false;
     permitRootLogin = "no";
     extraConfig = ''
+      ClientAliveInterval 600
       LoginGraceTime 15
       ChallengeResponseAuthentication no
       MaxStartups 30:30:60
