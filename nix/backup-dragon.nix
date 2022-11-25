@@ -62,10 +62,11 @@
     };
   };
 
+  # Set borg user home to prevent prune failures (would otherwise fail due to being located in /var/empty w/o rw permissions)
+  users.users.borg.home = "/backups";
+
   # Create a backup group to allow rsync'ing backups to offsite locations
-  users.groups.backup = {
-    members = [ "sgs" ];
-  };
+  users.groups.backup = { members = [ "sgs" ]; };
 
   # Borg applies 0600 permissions on repositories by default, it needs to be at least
   # accessible by the backup group though in order for offsite backups to succeed
