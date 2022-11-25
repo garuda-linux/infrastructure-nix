@@ -85,6 +85,14 @@
               rewrite ^/os/garuda-update/backuprepo/(.*)$ https://geo-mirror.chaotic.cx/chaotic-aur/$1 redirect;
             '';
           };
+          "/os/garuda-update/remote-update" = {
+            extraConfig = "expires 12h;";
+            return = "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update";
+          };
+          "/.well-known/webfinger" = {
+            extraConfig = "expires 12h;";
+            return = "301 https://social.garudalinux.org$request_uri";
+          };
         };
         http3 = true;
         serverAliases = [ "www.garudalinux.org" ];
@@ -301,6 +309,25 @@
             extraConfig = ''
               proxy_set_header Host social.garudalinux.org;
             '';
+          };
+        };
+        http3 = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "social-video.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          client_max_body_size 100M;
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+          location ~* .(mp4|webm)$ {
+            proxy_pass https://192.168.1.50:443;
+            proxy_set_header Host social.garudalinux.org;
+          }
+        '';
+        locations = {
+          "/" = {
+            return = "301 https://social.garudalinux.org$request_uri";
           };
         };
         http3 = true;
