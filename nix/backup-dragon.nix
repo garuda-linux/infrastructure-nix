@@ -1,4 +1,4 @@
-{ ... }: {
+{ pkgs, ... }: {
   imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
 
   # Base configuration
@@ -81,6 +81,34 @@
   systemd.timers.borg-repo-permissions = {
     wantedBy = [ "timers.target" ];
     timerConfig.OnCalendar = [ "hourly" ];
+  };
+  # Regularly compacting the repo seems to be required in order for repos to not grow indefinitely in size
+  systemd.services.borg-repo-compact = {
+    path = [ pkgs.borgbackup ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      cd /backups
+      for folder in $(ls); do
+        pushd $folder
+          if [ $folder == sgs-artwork ]; then 
+            for artwork in $(ls); do
+              pushd $artwork
+                borg compact .
+              popd
+            done
+          else borg compact .
+          fi
+        popd
+      done 
+    '';
+    serviceConfig = {
+      User = "borg";
+      Group = "backup";
+    };
+  };
+  systemd.timers.borg-repo-compact = {
+    wantedBy = [ "timers.target" ];
+    timerConfig.OnCalendar = [ "daily" ];
   };
 
   system.stateVersion = "22.05";
