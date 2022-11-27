@@ -8,11 +8,11 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1668900402,
-        "narHash": "sha256-IhVlueHoQNoN0SOHZIceKU3LyEL00g2ei0aUlaNypbQ=",
+        "lastModified": 1669510155,
+        "narHash": "sha256-PS2WdRXujfxH9PuH0w8aRmrEQ+Toz3RqGlp0mXQRGio=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "c0f9cbcf93ca22e4f0ca66843be61a4bdf6f0a44",
+        "rev": "e999dfe7cba2e1fd59ab135e7496545bd4f82b76",
         "type": "github"
       },
       "original": {
@@ -72,7 +72,7 @@
     "meshagent_aarch64": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-Mp9V3paDGp5k1Y6zYR8GjKSltfsyFFB3jkrMuUwCyT0=",
+        "narHash": "sha256-uosckZolm8bp5Pc8pP8ii5huPRtaziyCuEfdH63WWkA=",
         "type": "file",
         "url": "https://mesh.garudalinux.org/meshagents?id=26"
       },
@@ -84,7 +84,7 @@
     "meshagent_x86_64": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-DtSnncTt587S5EtyJMmbw8O5hZIJ43MPaJuvBpitrrk=",
+        "narHash": "sha256-hudCG5sGwmwwf2Oijh/9UG02M7w2J9ZAshLB4tJtrCQ=",
         "type": "file",
         "url": "https://mesh.garudalinux.org/meshagents?id=6"
       },
@@ -95,11 +95,11 @@
     },
     "nixos-unstable": {
       "locked": {
-        "lastModified": 1668905981,
-        "narHash": "sha256-RBQa/+9Uk1eFTqIOXBSBezlEbA3v5OkgP+qptQs1OxY=",
+        "lastModified": 1669411043,
+        "narHash": "sha256-LfPd3+EY+jaIHTRIEOUtHXuanxm59YKgUacmSzaqMLc=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "690ffff026b4e635b46f69002c0f4e81c65dfc2e",
+        "rev": "5dc7114b7b256d217fe7752f1614be2514e61bb8",
         "type": "github"
       },
       "original": {
@@ -146,11 +146,11 @@
     "src-chaotic-mirror": {
       "flake": false,
       "locked": {
-        "lastModified": 1667153081,
-        "narHash": "sha256-H1gn7JugUHxwhgcJhDjwMEmZstF0sEpV9noP50TIChY=",
+        "lastModified": 1669507602,
+        "narHash": "sha256-Sb9V81t0cyXR+2SEsuz/wrx3oy16yU74CU64jfW2S3g=",
         "owner": "chaotic-aur",
         "repo": "docker-mirror",
-        "rev": "43c3d6443855b9676f1ef13b458eb372c4fe3e59",
+        "rev": "52bf440b58ec44722d701b4dcfbd2af578c80a6e",
         "type": "github"
       },
       "original": {
@@ -162,11 +162,11 @@
     "src-chaotic-toolbox": {
       "flake": false,
       "locked": {
-        "lastModified": 1667868546,
-        "narHash": "sha256-5ej5i3nLFeJV/m9FLRvWoJdxMz914TIGMuyhhfqSgvI=",
+        "lastModified": 1669284730,
+        "narHash": "sha256-fsP4fAKspg4sA2rMJ7RYzxIGecGREhEqXuJJLCTEEDY=",
         "owner": "chaotic-aur",
         "repo": "toolbox",
-        "rev": "0a089047b5b5054a8f3d33d2ba109499fcbe5325",
+        "rev": "037efe5d443c755e0b8f635f909e97e01540f8b7",
         "type": "github"
       },
       "original": {

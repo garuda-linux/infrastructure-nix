@@ -99,7 +99,10 @@
   # Services 
   services = {
     vnstat.enable = true;
-    openssh.enable = true;
+    openssh = {
+      enable = true;
+      startWhenNeeded = true;
+    };
     garuda-meshagent = {
       agentBinary = if pkgs.hostPlatform.system == "aarch64-linux" then
         meshagent.aarch64

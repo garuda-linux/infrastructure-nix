@@ -13,6 +13,7 @@
       LoginGraceTime 15
       ChallengeResponseAuthentication no
       MaxStartups 30:30:60
+      Protocol 2
     '';
   };
 
