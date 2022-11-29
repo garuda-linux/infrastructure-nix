@@ -310,6 +310,17 @@
               proxy_set_header Host social.garudalinux.org;
             '';
           };
+          "/.well-known/webfinger" = {
+            proxyPass = "https://192.168.1.50:443";
+            proxyWebsockets = true;
+            extraConfig = ''
+              proxy_set_header Host social.garudalinux.org;
+              if ($args ~* "resource=acct:(.*)@(chaotic.cx|social.garudalinux.org)$") {
+                set $w1 $1;
+                rewrite .* /.well-known/webfinger?resource=acct:$w1@garudalinux.org? break;
+              }
+            '';
+          };
         };
         http3 = true;
         useACMEHost = "garudalinux.org";
