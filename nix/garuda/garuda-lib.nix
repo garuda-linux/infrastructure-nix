@@ -23,19 +23,19 @@ in {
         meshagent_msh = "/var/garuda/secrets/meshagent.msh";
         syncthing = {
           esxi = {
-            key = "/var/garuda/secrets/syncthing/esxi-key.pem";
-            cert = "/var/garuda/secrets/syncthing/esxi-cert.pem";
+            key = "/var/garuda/secrets/syncthing/esxi-repo-key.pem";
+            cert = "/var/garuda/secrets/syncthing/esxi-repo-cert.pem";
           };
-          garuda-build = {
-            key = "/var/garuda/secrets/syncthing/garuda-build-key.pem";
-            cert = "/var/garuda/secrets/syncthing/garuda-build-cert.pem";
+          esxi-build = {
+            key = "/var/garuda/secrets/syncthing/esxi-build-key.pem";
+            cert = "/var/garuda/secrets/syncthing/esxi-build-cert.pem";
           };
         };
         cloudflared = {
           esxi-repo.cred = "/var/garuda/secrets/cloudflared/esxi-repo.json";
           esxi-web.cred = "/var/garuda/secrets/cloudflared/esxi-web.json";
-          garuda-build.cred =
-            "/var/garuda/secrets/cloudflared/garuda-build.json";
+          esxi-build.cred =
+            "/var/garuda/secrets/cloudflared/esxi-build.json";
           monitor-dragon.cred =
             "/var/garuda/secrets/cloudflared/monitor-dragon.json";
           chaotic-dragon.cred =

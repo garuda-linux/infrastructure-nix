@@ -108,10 +108,10 @@
         specialArgs = specialArgs;
         modules = defaultModules ++ [ ./garuda-build.nix ];
       };
-      nixosConfigurations."esxi-iso" = nixos.lib.nixosSystem {
+      nixosConfigurations."esxi-build" = nixos.lib.nixosSystem {
         inherit system;
         specialArgs = specialArgs;
-        modules = defaultModules ++ [ ./esxi-iso.nix ];
+        modules = defaultModules ++ [ ./esxi-build.nix ];
       };
       nixosConfigurations."esxi-repo" = nixos.lib.nixosSystem {
         inherit system;

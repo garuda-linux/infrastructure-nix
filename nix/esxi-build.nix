@@ -6,7 +6,7 @@
   ];
 
   # Base configuration
-  networking.hostName = "esxi-iso";
+  networking.hostName = "esxi-build";
   networking.interfaces.ens33.ipv4.addresses = [{
     address = "192.168.1.60";
     prefixLength = 24;
@@ -45,8 +45,8 @@
     enable = true;
     openDefaultPorts = true;
     configDir = config.services.syncthing.dataDir;
-    cert = garuda-lib.secrets.syncthing.garuda-build.cert;
-    key = garuda-lib.secrets.syncthing.garuda-build.key;
+    cert = garuda-lib.secrets.syncthing.esxi-build.cert;
+    key = garuda-lib.secrets.syncthing.esxi-build.key;
     overrideFolders = false;
     overrideDevices = false;
     user = "root";
@@ -63,8 +63,8 @@
   services.cloudflared = {
     enable = true;
     ingress = { "syncthing-build.garudalinux.net" = "http://localhost:8384"; };
-    tunnel-id = garuda-lib.secrets.cloudflared.garuda-build.id;
-    tunnel-credentials = garuda-lib.secrets.cloudflared.garuda-build.cred;
+    tunnel-id = garuda-lib.secrets.cloudflared.esxi-build.id;
+    tunnel-credentials = garuda-lib.secrets.cloudflared.esxi-build.cred;
   };
 
   # Auto reset syncthing stuff
