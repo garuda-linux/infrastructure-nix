@@ -170,6 +170,7 @@ in {
       {
         chaotic-setup = {
           wantedBy = [ "multi-user.target" ];
+          after = [ "network-online.target" ];
           description = "Chaotic setup";
           path = [ pkgs.git pkgs.pacman pkgs.gnupg ];
           serviceConfig = {

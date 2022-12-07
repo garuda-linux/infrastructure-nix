@@ -27,8 +27,8 @@
     "net.ipv4.tcp_congestion_control" = "bbr";
     "net.core.default_qdisc" = "cake";
   };
-  # Mount root as shared
-  boot.specialFileSystems."/run".options = [ "rshared" ];
+  # Mount /run as shared for systemd-nspawn
+  boot.specialFileSystems."/run".options = lib.mkIf (!config.boot.isContainer) [ "rshared" ];
 
   # Locales & timezone
   time.timeZone = "Europe/Berlin";
