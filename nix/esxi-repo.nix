@@ -1,13 +1,15 @@
 { config, garuda-lib, pkgs, ... }: {
   imports = [
-    ./garuda/common/esxi.nix
     ./garuda/garuda.nix
-    ./hardware-configuration.nix
   ];
+
+  # This is a container!
+  boot.isContainer = true;
+  boot.loader.initScript.enable = true;
 
   # Base configuration
   networking.hostName = "esxi-repo";
-  networking.interfaces.ens33.ipv4.addresses = [{
+  networking.interfaces.ens35.ipv4.addresses = [{
     address = "192.168.1.30";
     prefixLength = 24;
   }];
@@ -30,62 +32,5 @@
   services.chaotic.patches = [ ./garuda/services/chaotic/garuda.diff ];
   services.chaotic.useACMEHost = "garudalinux.org";
 
-  # Special Syncthing configuration allowing to push to main node
-  services.syncthing = {
-    enable = true;
-    overrideDevices = true;
-    overrideFolders = true;
-    openDefaultPorts = true;
-    configDir = config.services.syncthing.dataDir;
-    cert = garuda-lib.secrets.syncthing.esxi.cert;
-    key = garuda-lib.secrets.syncthing.esxi.key;
-    devices = {
-      "builds.garudalinux.org" = {
-        id = garuda-lib.secrets.syncthing.garuda-build.id;
-        addresses = [ "dynamic" "tcp://builds.garudalinux.org" ];
-      };
-    };
-    folders = {
-      "garuda" = {
-        path = "/srv/http/repos/garuda";
-        id = garuda-lib.secrets.syncthing.folders.garuda;
-        devices = [ "builds.garudalinux.org" ];
-        type = "sendonly";
-      };
-    };
-    extraOptions = {
-      gui = {
-        apikey = "garudalinux";
-        insecureSkipHostcheck = true;
-      };
-    };
-  };
-
-  # Cloudflared access to Syncthing webinterface
-  services.cloudflared = {
-    enable = true;
-    ingress = { "syncthing-esxi.garudalinux.net" = "http://localhost:8384"; };
-    tunnel-id = garuda-lib.secrets.cloudflared.esxi-repo.id;
-    tunnel-credentials = garuda-lib.secrets.cloudflared.esxi-repo.cred;
-  };
-
-  # Allow proxy_passing local mirror
-  networking.firewall.allowedTCPPorts = [ 80 ];
-
-  # This machine runs in VMWare, thus we need its tools
-  virtualisation.vmware.guest.enable = true;
-
-  # Auto reset syncthing stuff
-  systemd.services.syncthing-reset = {
-    serviceConfig.Type = "oneshot";
-    script = ''
-      "${pkgs.curl}/bin/curl" -X POST -H "X-API-Key: garudalinux" http://localhost:8384/rest/db/override?folder=${garuda-lib.secrets.syncthing.folders.garuda}
-    '';
-  };
-  systemd.timers.syncthing-reset = {
-    wantedBy = [ "timers.target" ];
-    timerConfig.OnCalendar = [ "hourly" ];
-  };
-
-  system.stateVersion = "22.05";
+  system.stateVersion = "22.11";
 }

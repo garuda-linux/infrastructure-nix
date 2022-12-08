@@ -207,5 +207,26 @@
     "d /srv/http/iso 1555 root root"
   ];
 
+  systemd.nspawn.esxi-repo = {
+    enable = true;
+    execConfig = {
+      Boot = "yes";
+      ResolvConf = "off";
+      PrivateUsers = 0;
+      Capability = "all";
+    };
+    filesConfig = {
+      Bind = [ "/srv/http/repos/garuda:/srv/http/repos/garuda" "/var/cache/pacman/pkg:/var/cache/pacman/pkg" ];
+    };
+    networkConfig = {
+      Interface = "ens35";
+    };
+  };
+  systemd.units."systemd-nspawn@esxi-repo.service" = {
+    overrideStrategy = "asDropin";
+    wantedBy = [ "machines.target" ];
+    enable = true;
+  };
+
   system.stateVersion = "22.05";
 }
