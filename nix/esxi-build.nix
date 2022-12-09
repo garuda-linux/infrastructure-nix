@@ -216,7 +216,7 @@
       Capability = "all";
     };
     filesConfig = {
-      Bind = [ "/srv/http/repos/garuda:/srv/http/repos/garuda" "/var/cache/pacman/pkg:/var/cache/pacman/pkg" ];
+      Bind = [ "/srv/http/repos/garuda:/srv/http/repos/garuda" "/var/cache/pacman/pkg:/var/cache/pacman/pkg" "/var/cache/chaotic/packages:/var/cache/chaotic/packages" ];
     };
     networkConfig = {
       Interface = "ens35";
