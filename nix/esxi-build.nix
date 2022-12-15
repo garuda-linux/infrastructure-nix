@@ -222,9 +222,10 @@
       Interface = "ens35";
     };
   };
-  systemd.units."systemd-nspawn@esxi-repo.service" = {
+  systemd.services."systemd-nspawn@esxi-repo" = {
     overrideStrategy = "asDropin";
     wantedBy = [ "machines.target" ];
+    environment = { SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1"; };
     enable = true;
   };
 
