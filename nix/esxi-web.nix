@@ -47,7 +47,7 @@
   networking.firewall = { allowedTCPPorts = [ 27017 ]; };
 
   # Cloudflared access to Meshcentral webinterface
-  services.cloudflared = {
+  services.garuda-cloudflared = {
     enable = true;
     ingress = {
       "mesh.garudalinux.net" = "http://127.0.0.1:80";

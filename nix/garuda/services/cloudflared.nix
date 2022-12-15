@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 with lib;
 let
-  cfg = config.services.cloudflared;
+  cfg = config.services.garuda-cloudflared;
   ingress_lines = concatStringsSep "\n" (mapAttrsToList (hostname: target:
     "  " + ''
       - hostname: ${hostname}
@@ -15,7 +15,7 @@ let
       - service: http_status:404
   '';
 in {
-  options.services.cloudflared = {
+  options.services.garuda-cloudflared = {
     enable = mkEnableOption "Garuda Meshagent";
     ingress = mkOption { type = types.attrs; };
     tunnel-credentials = mkOption { type = types.path; };
@@ -23,7 +23,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    systemd.services.cloudflared = {
+    systemd.services.garuda-cloudflared = {
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
       serviceConfig = {

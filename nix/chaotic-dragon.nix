@@ -43,7 +43,7 @@
   services.chaotic-mirror.domain = "chaotic.dr460nf1r3.org";
 
   # Cloudflared access to Syncthing webinterface
-  services.cloudflared = {
+  services.garuda-cloudflared = {
     enable = true;
     ingress = { "syncthing-dragon.garudalinux.net" = "http://localhost:8384"; };
     tunnel-id = garuda-lib.secrets.cloudflared.chaotic-dragon.id;
