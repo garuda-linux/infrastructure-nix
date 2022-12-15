@@ -41,6 +41,24 @@
       SEND_TELEGRAM="YES"
       TELEGRAM_BOT_TOKEN=${garuda-lib.secrets.telegram.token}
     '';
+    # Silence annoying Netdata warnings which are expected due to this being a builder
+    "health.d/cpu.conf" = pkgs.writeText "cpu.conf" ''
+      template: 10min_cpu_usage
+      on: system.cpu
+      class: Utilization
+      type: System
+      component: CPU
+      os: linux
+      hosts: *
+      lookup: average -10m unaligned of user,system,softirq,irq,guest
+      units: %
+      every: 1m
+      warn: $this > (($status >= $WARNING)  ? (75) : (85))
+      crit: $this > (($status == $CRITICAL) ? (85) : (95))
+      delay: down 15m multiplier 1.5 max 1h
+      info: average CPU utilization over the last 10 minutes (excluding iowait, nice and steal)
+      to: silent
+      '';
   };
 
   # Make the Netdata parent node available via Cloudflared
