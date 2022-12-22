@@ -59,6 +59,23 @@
       info: average CPU utilization over the last 10 minutes (excluding iowait, nice and steal)
       to: silent
       '';
+    "health.d/cgroups.conf" = pkgs.writeText "cgroups.conf" ''
+      template: cgroup_10min_cpu_usage
+      on: cgroup.cpu_limit
+      class: Utilization
+      type: Cgroups
+      component: CPU
+      os: linux
+      hosts: *
+      lookup: average -10m unaligned
+      units: %
+      every: 1m
+      warn: $this > (($status >= $WARNING)  ? (75) : (85))
+      crit: $this > (($status == $CRITICAL) ? (85) : (95))
+      delay: down 15m multiplier 1.5 max 1h
+      info: average cgroup CPU utilization over the last 10 minutes
+      to: silent
+      '';
   };
 
   # Make the Netdata parent node available via Cloudflared
