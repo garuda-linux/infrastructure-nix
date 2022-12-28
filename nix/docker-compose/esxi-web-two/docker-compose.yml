@@ -33,6 +33,10 @@ services:
     volumes:
       - "./matrix/mautrix-telegram:/data"
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "! (grep -q 'System clock is wrong, set time offset to' /tmp/debug.log && rm /tmp/debug.log && kill -SIGINT 1)"]
+      interval: 1m
+      timeout: 10s
 
   matrix-appservice-discord:
     build: https://github.com/matrix-org/matrix-appservice-discord.git#develop
