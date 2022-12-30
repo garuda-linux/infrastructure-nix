@@ -76,6 +76,24 @@
       info: average cgroup CPU utilization over the last 10 minutes
       to: silent
       '';
+    "health.d/net.conf" = pkgs.writeText "net.conf" ''
+      template: 1m_sent_traffic_overflow
+      on: net.net
+      class: Workload
+      type: System
+      component: Network
+      os: linux
+      hosts: *
+      families: *
+      lookup: average -1m unaligned absolute of sent
+      calc: ($interface_speed > 0) ? ($this * 100 / ($interface_speed)) : ( nan )
+      units: %
+      every: 10s
+      warn: $this > (($status >= $WARNING)  ? (85) : (90))
+      delay: up 1m down 1m multiplier 1.5 max 1h
+      info: average outbound utilization for the network interface $family over the last minute
+      to: silent
+      '';
   };
 
   # Make the Netdata parent node available via Cloudflared
