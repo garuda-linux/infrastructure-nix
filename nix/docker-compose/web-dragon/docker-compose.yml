@@ -80,16 +80,6 @@ services:
       retries: 2
     restart: always
 
-  # Bibliogram
-  bibliogram:
-    image: quay.io/pussthecatorg/bibliogram:latest
-    container_name: bibliogram
-    volumes:
-      - "./bibliogram/db:/app/db"
-    ports:
-      - "127.0.0.1:10407:10407"
-    restart: always
-
   # Lingva
   lingva:
     image: thedaviddelta/lingva-translate:latest

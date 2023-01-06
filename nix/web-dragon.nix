@@ -167,21 +167,6 @@
         };
         useACMEHost = "garudalinux.org";
       };
-      "bibliogram.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            extraConfig = "access_log off;";
-            proxyPass = "http://127.0.0.1:10407";
-          };
-        };
-        useACMEHost = "garudalinux.org";
-      };
       "chaotic.dr460nf1r3.org" = {
         addSSL = true;
         extraConfig = ''
