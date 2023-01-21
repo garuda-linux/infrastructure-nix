@@ -28,7 +28,7 @@
         weekly = 2;
         within = "1d";
       };
-      repo = "borg@89.58.13.188:.";
+      repo = "borg@192.168.1.70:.";
       startAt = "daily";
     };
   };
