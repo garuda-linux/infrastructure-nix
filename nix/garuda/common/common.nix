@@ -148,6 +148,7 @@
       exa
       fancy-motd
       git
+      goaccess
       htop
       jq
       killall
