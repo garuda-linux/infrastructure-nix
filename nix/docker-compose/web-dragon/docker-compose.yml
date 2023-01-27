@@ -30,13 +30,11 @@ services:
     ports:
       - "127.0.0.1:5000:5000"
     environment:
-      WHOOGLE_ALT_IG: insta.dr460nf1r3.org
       WHOOGLE_ALT_RD: reddit.dr460nf1r3.org
       WHOOGLE_ALT_TL: translate.dr460nf1r3.org
       WHOOGLE_ALT_TW: twitter.dr460nf1r3.org
       WHOOGLE_ALT_YT: piped.garudalinux.org
       WHOOGLE_AUTOCOMPLETE: 1
-      WHOOGLE_CONFIG_ALTS: 1
       WHOOGLE_CONFIG_LANGUAGE: lang_en
       WHOOGLE_CONFIG_NEW_TAB: 1
       WHOOGLE_CONFIG_SEARCH_LANGUAGE: lang_en

@@ -17,7 +17,6 @@ services:
       - 127.0.0.1:5000:5000
     environment:
       WHOOGLE_AUTOCOMPLETE: 1
-      WHOOGLE_CONFIG_ALTS: 1
       WHOOGLE_CONFIG_LANGUAGE: lang_en
       WHOOGLE_CONFIG_NEW_TAB: 1
       WHOOGLE_CONFIG_SEARCH_LANGUAGE: lang_en
