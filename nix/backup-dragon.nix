@@ -66,7 +66,7 @@
   users.users.borg.home = "/backups";
 
   # Create a backup group to allow rsync'ing backups to offsite locations
-  users.groups.backup = { members = [ "sgs" ]; };
+  users.groups.backup = { members = [ "sgs" "nico" ]; };
 
   # Borg applies 0600 permissions on repositories by default, it needs to be at least
   # accessible by the backup group though in order for offsite backups to succeed
