@@ -1,7 +1,7 @@
 services:
   # Reddit frontend
   libreddit:
-    image: spikecodes/libreddit:latest
+    image: libreddit/libreddit:latest
     container_name: libreddit
     environment:
       LIBREDDIT_DEFAULT_AUTOPLAY_VIDEOS: "true"
