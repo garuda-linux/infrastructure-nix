@@ -39,31 +39,6 @@
     source = ./docker-compose/web-dragon;
   };
 
-  # Dirty fix for Piped / Invidious becoming broken after some time
-  systemd.services = {
-    restart-piped = {
-      description = "Automatic restart of the Piped instance";
-      path = [ pkgs.docker ];
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = pkgs.writeShellScript "execstart" ''
-          docker restart piped_backend invidious
-        '';
-        wantedBy = [ "multi-user.target" ];
-      };
-    };
-  };
-  systemd.timers = {
-    restart-piped = {
-      description = "Automatic restart of the Piped instance";
-      timerConfig = {
-        OnCalendar = "daily";
-        unit = "restart-piped.service";
-      };
-      wantedBy = [ "timers.target" ];
-    };
-  };
-
   # Reverse proxy for our docker-compose stack
   services.nginx = {
     enable = true;
