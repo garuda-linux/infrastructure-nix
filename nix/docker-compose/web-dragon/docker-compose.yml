@@ -207,14 +207,14 @@ services:
     depends_on:
       - piped_backend
       - piped_frontend
-      - ytproxy
+      - piped_proxy
     volumes:
       - ./piped/config/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./piped/config/pipedapi.conf:/etc/nginx/conf.d/pipedapi.conf:ro
       - ./piped/config/pipedproxy.conf:/etc/nginx/conf.d/pipedproxy.conf:ro
       - ./piped/config/pipedfrontend.conf:/etc/nginx/conf.d/pipedfrontend.conf:ro
       - ./piped/config/ytproxy.conf:/etc/nginx/snippets/ytproxy.conf:ro
-      - ytproxy:/var/run/ytproxy
+      - piped_proxy:/var/run/ytproxy
     ports:
       - "127.0.0.1:8082:80"
     restart: always
@@ -230,12 +230,14 @@ services:
       POSTGRES_USER: piped
     restart: always
 
-  ytproxy:
-    image: 1337kavin/ytproxy:latest
-    container_name: ytproxy
+  piped_proxy:
+    image: 1337kavin/piped-proxy:latest
+    container_name: piped_proxy
+    environment:
+      - UDS=1
     volumes:
-      - ytproxy:/app/socket
+      - piped_proxy:/app/socket
     restart: always
 
 volumes:
-  ytproxy: null
+  piped_proxy: null
