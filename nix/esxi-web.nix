@@ -428,12 +428,6 @@
         addSSL = true;
         useACMEHost = "garudalinux.org";
       };
-      "status.chaotic.cx" = {
-        addSSL = true;
-        globalRedirect = "uptimes.chaotic.cx";
-        http3 = true;
-        useACMEHost = "garudalinux.org";
-      };
     };
   };
 

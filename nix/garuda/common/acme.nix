@@ -19,12 +19,6 @@ with lib; {
         dnsPropagationCheck = true;
         credentialsFile = garuda-lib.secrets.cloudflare_key;
       };
-      certs."chaotic.cx" = {
-        extraDomainNames = [ "*.chaotic.cx" ];
-        dnsProvider = "cloudflare";
-        dnsPropagationCheck = true;
-        credentialsFile = garuda-lib.secrets.cloudflare_key;
-      };
     };
   };
 }
