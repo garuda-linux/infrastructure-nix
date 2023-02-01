@@ -231,10 +231,10 @@ services:
     restart: always
 
   piped_proxy:
-    image: 1337kavin/piped-proxy:latest
+    image: 1337kavin/ytproxy:latest
     container_name: piped_proxy
-    environment:
-      - UDS=1
+    #environment:
+    #  - UDS=1
     volumes:
       - piped_proxy:/app/socket
     restart: always
