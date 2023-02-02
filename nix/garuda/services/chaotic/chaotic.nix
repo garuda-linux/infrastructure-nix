@@ -30,7 +30,8 @@ let
     propagatedBuildInputs = with pkgs.python3.pkgs; [
       appdirs
       colorama
-      python-telegram-bot
+      # Pinned python-telegram-bot 13.15
+      (callPackage (builtins.fetchurl { url = "https://raw.githubusercontent.com/NixOS/nixpkgs/a0389fe5c691f80bb794a0aa9731d5e4ad6752ac/pkgs/development/python-modules/python-telegram-bot/default.nix"; sha256 = "sha256:1xz49dzydfyv1xksm8apj9v6r2px15339xznkr8zqjgzzhvarjbg";}) {})
     ];
   };
   repodir = "${cfg.repos-dir}/${cfg.db-name}";
