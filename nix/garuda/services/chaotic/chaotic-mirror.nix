@@ -34,7 +34,7 @@ in {
     systemd.services.chaotic-mirror = {
       wantedBy = [ "multi-user.target" ];
       description = "Start the chaotic-aur mirror";
-      path = [ pkgs.rsync pkgs.docker-compose pkgs.docker pkgs.bash ];
+      path = with pkgs; [ rsync docker-compose docker bash gawk ];
       serviceConfig = {
         CacheDirectory = "chaotic-mirror";
         CacheDirectoryMode = "0755";
