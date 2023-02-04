@@ -121,11 +121,6 @@
           add_header Referrer-Policy           "no-referrer-when-downgrade" always;
           add_header Content-Security-Policy   "default-src 'self' http: https: data: blob: 'unsafe-inline'; frame-ancestors 'self';" always;
           add_header Permissions-Policy        "interest-cohort=()" always;
-          
-          # We had tons of HEAD request spams requesting the same file over and over again
-          if ($request_method = HEAD) {
-              return 444;
-          }
 
           # Locations
           location ~* ^.+\.log {
@@ -150,11 +145,6 @@
       };
       "cf-builds.garudalinux.org" = {
         extraConfig = ''
-          # We had tons of HEAD request spams requesting the same file over and over again
-          if ($request_method = HEAD) {
-              return 444;
-          }
-
           location ~* /repos/(chaotic-aur|garuda)/x86_64/(?!.*(chaotic-aur|garuda)\.(db|files)).+\.tar.* {
               add_header Cache-Control "max-age=150, stale-while-revalidate=150, stale-if-error=86400";
           }
