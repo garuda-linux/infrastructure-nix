@@ -6,8 +6,6 @@
 
   # Disable root login & password authentication on sshd
   services.openssh = {
-    passwordAuthentication = false;
-    permitRootLogin = "no";
     extraConfig = ''
       ClientAliveInterval 600
       LoginGraceTime 15
@@ -15,6 +13,10 @@
       MaxStartups 30:30:60
       Protocol 2
     '';
+    settings = {
+      PermitRootLogin = "no";
+      PasswordAuthentication = false;
+    };
   };
 
   # Default configured for ssh
