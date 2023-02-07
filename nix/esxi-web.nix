@@ -89,6 +89,10 @@
             extraConfig = "expires 12h;";
             return = "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update";
           };
+          "/os/garuda-update/garuda-hotfixes-version" = {
+            extraConfig = "expires 5m;";
+            return = "200 '1'";
+          };
           "/.well-known/webfinger" = {
             extraConfig = "expires 12h;";
             return = "301 https://social.garudalinux.org$request_uri";
