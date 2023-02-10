@@ -203,4 +203,14 @@
 
   # Disable generation of manpages
   documentation.man.enable = false;
+
+  # Print a diff when running system updates
+  system.activationScripts.diff = ''
+    if [[ -e /run/current-system ]]; then
+      ${pkgs.nix}/bin/nix store diff-closures /run/current-system "$systemConfig"
+    fi
+  '';
+
+  # No need for sound on a server
+  sound.enable = false;
 }
