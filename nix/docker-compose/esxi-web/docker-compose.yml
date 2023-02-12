@@ -124,7 +124,7 @@ services:
       DOMAIN: https://bitwarden.garudalinux.org
       SIGNUPS_ALLOWED: True
       SMTP_FROM: noreply@garudalinux.org
-      SMTP_HOST: smtp.garudalinux.org
+      SMTP_HOST: mail.garudalinux.org
       SMTP_PASSWORD: ${BW_SMTP_PASSWORD:-?err}
       SMTP_PORT: 587
       SMTP_SSL: False

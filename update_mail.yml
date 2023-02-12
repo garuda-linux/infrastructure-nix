@@ -1,0 +1,9 @@
+---
+- hosts: debian
+  gather_facts: yes
+  become: true
+    - name: Update APT packages
+      apt:
+        upgrade: dist
+        update_cache: yes
+        autoclean: yes
