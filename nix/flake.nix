@@ -77,6 +77,7 @@
           cloudflare-ipv4 = attrs.src-cloudflare-ipv4;
           garuda-website = attrs.src-garuda-website;
           repoctl = attrs.src-repoctl;
+          nixpkgs = nixos-unstable;
         };
         keys = {
           alexjp = attrs.keys_alexjp;

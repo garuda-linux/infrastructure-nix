@@ -1,4 +1,4 @@
-{ pkgs, lib, garuda-lib, config, meshagent, ... }: {
+{ pkgs, lib, garuda-lib, config, meshagent, sources, ... }: {
   imports = [ ./acme.nix ./hardening.nix ./motd.nix ./nginx.nix ./users.nix ];
 
   # Network stuff
@@ -182,6 +182,7 @@
       trusted-public-keys = [ "garuda-linux.cachix.org-1:tWw7YBE6qZae0L6BbyNrHo8G8L4sHu5QoDp0OXv70bg=" ];
       builders-use-substitutes = true;
     };
+    nixPath = [ "nixpkgs=${sources.nixpkgs}" ];
   };
 
   # Make cloudflared happy (https://github.com/lucas-clemente/quic-go/wiki/UDP-Receive-Buffer-Size)

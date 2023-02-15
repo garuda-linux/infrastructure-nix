@@ -203,10 +203,6 @@
     };
   };
 
-  systemd.tmpfiles.rules = [
-    "d /srv/http/iso 1555 root root"
-  ];
-
   # This is a containerized version of our esxi-repo configuration
   systemd.nspawn.esxi-repo = {
     enable = true;
