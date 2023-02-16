@@ -1,0 +1,11 @@
+diff --git a/guest/etc/pacman.conf b/guest/etc/pacman.conf
+index 4b0e304..307b3f9 100644
+--- a/guest/etc/pacman.conf
++++ b/guest/etc/pacman.conf
+@@ -98,3 +98,6 @@ Include = /etc/pacman.d/mirrorlist
+ #[custom]
+ #SigLevel = Optional TrustAll
+ #Server = file:///home/custompkgs
++
++[chaotic-aur-kde]
++Include = /etc/pacman.d/chaotic-mirrorlist

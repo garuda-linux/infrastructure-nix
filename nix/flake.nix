@@ -139,6 +139,11 @@
         specialArgs = specialArgs;
         modules = defaultModules ++ [ ./monitor-dragon.nix ];
       };
+      nixosConfigurations."kde-dragon" = nixos.lib.nixosSystem {
+        inherit system;
+        specialArgs = specialArgs;
+        modules = defaultModules ++ [ ./kde-dragon.nix ];
+      };
       nixosConfigurations."esxi-web" = nixos.lib.nixosSystem {
         inherit system;
         specialArgs = specialArgs;

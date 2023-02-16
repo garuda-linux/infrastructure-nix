@@ -1,0 +1,4 @@
+# Base values
+actual_hostname: kde-dragon
+ansible_host: 89.58.13.188
+ansible_port: 400
