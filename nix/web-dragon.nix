@@ -33,6 +33,7 @@
     };
   };
 
+  # Netdata would not send data via Zerotier, hence we access the local IP (same host)
   services.netdata.configDir = lib.mkForce {
     "go.d.conf" = pkgs.writeText "go.d.conf" ''
       enabled: yes
