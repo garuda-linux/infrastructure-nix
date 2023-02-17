@@ -94,6 +94,23 @@
       info: average outbound utilization for the network interface $family over the last minute
       to: silent
       '';
+    "health.d/load.conf" = pkgs.writeText "net.conf" ''
+      alarm: load_average_15
+      on: system.load
+      class: Utilization
+      type: System
+      component: Load
+      os: linux
+      hosts: *
+      lookup: max -1m unaligned of load15
+      calc: ($load_cpu_number == nan) ? (nan) : ($this)
+      units: load
+      every: 1m
+      warn: ($this * 100 / $load_cpu_number) > (($status >= $WARNING) ? 175 : 200)
+      delay: down 15m multiplier 1.5 max 1h
+      info: system fifteen-minute load average
+      to: silent
+      '';
   };
 
   # Make the Netdata parent node available via Cloudflared
