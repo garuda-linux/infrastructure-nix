@@ -20,12 +20,12 @@
       "page cache size" = "3072";
       "update every" = "2";
     };
-    web = { "bind to" = "localhost monitor-dragon.local"; };
+    web = { "bind to" = "localhost monitor-dragon.local 192.168.1.80"; };
   };
   services.netdata.configDir = {
     "stream.conf" = pkgs.writeText "stream.conf" ''
       [${garuda-lib.secrets.netdata.stream_token}]
-          allow from = 10.*
+          allow from = *
           default memory node = dbengine
           enable compression = yes
           enabled = yes
@@ -58,7 +58,7 @@
       delay: down 15m multiplier 1.5 max 1h
       info: average CPU utilization over the last 10 minutes (excluding iowait, nice and steal)
       to: silent
-      '';
+    '';
     "health.d/cgroups.conf" = pkgs.writeText "cgroups.conf" ''
       template: cgroup_10min_cpu_usage
       on: cgroup.cpu_limit
@@ -75,7 +75,7 @@
       delay: down 15m multiplier 1.5 max 1h
       info: average cgroup CPU utilization over the last 10 minutes
       to: silent
-      '';
+    '';
     "health.d/net.conf" = pkgs.writeText "net.conf" ''
       template: 1m_sent_traffic_overflow
       on: net.net
@@ -93,7 +93,7 @@
       delay: up 1m down 1m multiplier 1.5 max 1h
       info: average outbound utilization for the network interface $family over the last minute
       to: silent
-      '';
+    '';
     "health.d/load.conf" = pkgs.writeText "net.conf" ''
       alarm: load_average_15
       on: system.load
@@ -110,7 +110,13 @@
       delay: down 15m multiplier 1.5 max 1h
       info: system fifteen-minute load average
       to: silent
-      '';
+    '';
+  };
+
+  # Allow web-dragon to send data
+  networking.firewall = {
+    allowedTCPPorts = [ 19999 ];
+    allowedUDPPorts = [ 19999 ];
   };
 
   # Make the Netdata parent node available via Cloudflared
