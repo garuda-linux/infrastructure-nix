@@ -3,11 +3,13 @@
 
   # Network stuff
   networking = {
+    enableIPv6 = false;
     nameservers = [ "1.1.1.1" ];
     useDHCP = false;
     usePredictableInterfaceNames = true;
     firewall.trustedInterfaces = [ garuda-lib.secrets.zerotier.interface ];
   };
+  # Make every host accessible via hostname
   services.avahi = {
     enable = true;
     nssmdns = true;
