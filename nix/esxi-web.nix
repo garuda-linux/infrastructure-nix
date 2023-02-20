@@ -7,7 +7,7 @@
 
   # Base configuration
   networking.hostName = "esxi-web";
-  networking.interfaces.eth0.ipv4.addresses = [{
+  networking.interfaces.ens33.ipv4.addresses = [{
     address = "192.168.1.20";
     prefixLength = 24;
   }];

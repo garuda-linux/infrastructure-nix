@@ -15,6 +15,7 @@
     home = "/home/tne";
     isNormalUser = true;
     openssh.authorizedKeys.keyFiles = [ keys.tne ];
+    passwordFile = "/var/garuda/secrets/pass/tne";
   };
   users.users.nico = {
     extraGroups = [ "wheel" "docker" "chaotic_op" ];
