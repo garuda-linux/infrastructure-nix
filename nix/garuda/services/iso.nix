@@ -60,6 +60,9 @@ in {
           if ($arg_sourceforge) {
             rewrite ^/iso/(.*)$ https://sourceforge.net/projects/garuda-linux/files/$1? permanent;
           }
+          if ($arg_osdn) {
+            rewrite ^/iso/(.*)$ https://osdn.net/projects/garuda-linux/storage/$1? permanent;
+          }
           break;
         '';
       };

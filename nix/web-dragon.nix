@@ -33,41 +33,6 @@
     };
   };
 
-  # Netdata would not send data via Zerotier, hence we access the local IP (same host)
-  services.netdata.configDir = lib.mkForce {
-    "go.d.conf" = pkgs.writeText "go.d.conf" ''
-      enabled: yes
-      modules:
-        nginx: yes
-        postgres: yes
-        vsphere: yes
-        web_log: yes
-    '';
-    "python.d.conf" = pkgs.writeText "python.d.conf" ''
-      postgres: no
-      web_log: no
-    '';
-    "go.d/nginx.conf" = (pkgs.writeText "nginx.conf" ''
-      jobs:
-        - name: local
-          url: http://localhost/nginx_status
-    '');
-    "stream.conf" = pkgs.writeText "stream.conf" ''
-      [stream]
-          api key = ${garuda-lib.secrets.netdata.stream_token}
-          buffer size bytes = 15728640
-          destination = 192.168.1.80
-          enable compression = yes
-          enabled = yes
-          timeout seconds = 360
-
-      [logs]
-          debug log = none
-          error log = none
-          access log = none
-    '';
-  };
-
   # Enable our docker-compose stack
   services.docker-compose-runner.web-dragon = {
     envfile = garuda-lib.secrets.docker-compose.web-dragon;

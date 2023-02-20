@@ -18,8 +18,7 @@
   # Upstream resolvers
   services.nginx.resolver = {
     addresses =
-      [ "1.1.1.1" "1.0.0.1" ];
-    ipv6 = false;
+      [ "1.1.1.1" "1.0.0.1" "[2606:4700:4700::1111]" "[2606:4700:4700::1001]" ];
     valid = "60s";
   };
 

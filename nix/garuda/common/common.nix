@@ -3,25 +3,27 @@
 
   # Network stuff
   networking = {
-    enableIPv6 = false;
     nameservers = [ "1.1.1.1" ];
     useDHCP = false;
     usePredictableInterfaceNames = true;
     firewall.trustedInterfaces = [ garuda-lib.secrets.zerotier.interface ];
+    useHostResolvConf = false;
+    useNetworkd = true;
   };
-  # Make every host accessible via hostname
-  services.avahi = {
-    enable = true;
-    nssmdns = true;
-    openFirewall = false;
-    publish = {
-      enable = true;
-      domain = true;
-      addresses = true;
+  systemd.network = {
+    networks = {
+      "${garuda-lib.secrets.zerotier.interface}" = {
+        name = "${garuda-lib.secrets.zerotier.interface}";
+        networkConfig = {
+          MulticastDNS = true;
+          LinkLocalAddressing = "no";
+          KeepConfiguration = true;
+        };
+      };
     };
-    ipv6 = false;
-    interfaces = [ garuda-lib.secrets.zerotier.interface ];
   };
+  services.resolved.enable = true;
+  services.resolved.extraConfig = "MulticastDNS=true";
 
   ## Enable BBR & cake
   boot.kernelModules = [ "tcp_bbr" ];

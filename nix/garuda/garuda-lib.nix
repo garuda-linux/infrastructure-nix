@@ -50,7 +50,7 @@ in {
         };
         ssh = {
           team = {
-            private = "/var/garuda/secrets/buildiso_sshkey";
+            private = "/var/garuda/secrets/team_sshkey";
           };
         };
       };
