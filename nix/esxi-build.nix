@@ -71,7 +71,7 @@
   systemd.services.syncthing-reset = {
     serviceConfig.Type = "oneshot";
     script = ''
-      "${pkgs.curl}/bin/curl" -X POST -H "X-API-Key: garudalinux" http://localhost:8384/rest/db/override?folder=${garuda-lib.secrets.syncthing.folders.garuda}
+      "${pkgs.curl}/bin/curl" -X POST -H "X-API-Key: garudalinux" http://localhost:8384/rest/db/override?folder=${garuda-lib.secrets.syncthing.folders.chaotic-aur}
     '';
   };
   systemd.timers.syncthing-reset = {

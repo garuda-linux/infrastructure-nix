@@ -29,8 +29,59 @@
   '';
   services.chaotic.db-name = "chaotic-aur-kde";
   services.chaotic.routines = [ "hourly" "nightly" "afternoon" ];
-  services.chaotic.patches = [ ./garuda/services/chaotic/kde-git.diff ];
+  services.chaotic.patches = [ ./garuda/services/chaotic/garuda.diff ];
   services.chaotic.useACMEHost = "garudalinux.org";
+
+    # Special Syncthing configuration allowing to push to main node
+  services.syncthing = {
+    enable = true;
+    overrideDevices = true;
+    overrideFolders = true;
+    configDir = config.services.syncthing.dataDir;
+    cert = garuda-lib.secrets.syncthing.kde-dragon.cert;
+    key = garuda-lib.secrets.syncthing.kde-dragon.key;
+    devices = {
+      "builds.garudalinux.org" = {
+        id = garuda-lib.secrets.syncthing.esxi-build.id;
+        addresses = [ "dynamic" "tcp://builds.garudalinux.org" ];
+      };
+    };
+    folders = {
+      "chaotic-aur-kde" = {
+        path = "/srv/http/repos/chaotic-aur-kde";
+        id = garuda-lib.secrets.syncthing.folders.chaotic-aur-kde;
+        devices = [ "builds.garudalinux.org" ];
+        type = "sendonly";
+      };
+    };
+    extraOptions = {
+      gui = {
+        apikey = "garudalinux";
+        insecureSkipHostcheck = true;
+      };
+    };
+  };
+
+    # Cloudflared access to Syncthing webinterface
+  services.garuda-cloudflared = {
+    enable = true;
+    ingress = { "syncthing-kde.garudalinux.net" = "http://localhost:8384"; };
+    tunnel-id = garuda-lib.secrets.cloudflared.kde-dragon.id;
+    tunnel-credentials = garuda-lib.secrets.cloudflared.kde-dragon.cred;
+  };
+
+
+  # Auto reset syncthing stuff
+  systemd.services.syncthing-reset = {
+    serviceConfig.Type = "oneshot";
+    script = ''
+      "${pkgs.curl}/bin/curl" -X POST -H "X-API-Key: garudalinux" http://localhost:8384/rest/db/override?folder=${garuda-lib.secrets.syncthing.folders.chaotic-aur-kde}
+    '';
+  };
+  systemd.timers.syncthing-reset = {
+    wantedBy = [ "timers.target" ];
+    timerConfig.OnCalendar = [ "hourly" ];
+  };
 
   system.stateVersion = "22.11";
 }
