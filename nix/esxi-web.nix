@@ -319,6 +319,7 @@
           client_max_body_size 100M;
           ${garuda-lib.setRealIpFromConfig}
           real_ip_header CF-Connecting-IP;
+          proxy_set_header X-Forwarded-For $remote_addr;
         '';
         locations = { "/" = { proxyPass = "http://192.168.1.70:80"; }; };
         http3 = true;
