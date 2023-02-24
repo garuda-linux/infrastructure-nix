@@ -14,7 +14,7 @@ services:
     volumes:
       - "./whoogle:/config"
     ports:
-      - "0.0.0.0:5000:5000"
+      - "127.0.0.1:5000:5000"
     environment:
       WHOOGLE_ALT_IG: insta.dr460nf1r3.org
       WHOOGLE_ALT_RD: reddit.dr460nf1r3.org
@@ -41,12 +41,11 @@ services:
     volumes:
       - "./searxng:/etc/searxng"
     ports:
-      - 0.0.0.0:8080:8080
+      - 127.0.0.1:8080:8080
     environment:
       BIND_ADDRESS: 0.0.0.0:8080
       BASE_URL: https://searx.garudalinux.org/
       MORTY_URL: https://searx.garudalinux.org/morty/
-      SX_MORTY_KEY: ${SX_MORTY_KEY:-?err}
     cap_drop:
       - ALL
     cap_add:

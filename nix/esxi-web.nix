@@ -60,17 +60,6 @@
   # Reverse proxy for our docker-compose stack
   services.nginx = {
     enable = true;
-    upstreams.whoogle.extraConfig = ''
-        ip_hash;
-        server 10.241.162.206:5000 max_fails=3 fail_timeout=300s;
-        server 127.0.0.1:5000 max_fails=3 fail_timeout=300s;
-        server 10.241.33.139:5000 max_fails=3 fail_timeout=300s;
-     '';
-    upstreams.searx.extraConfig = ''
-        ip_hash;
-        server 10.241.162.206:8080 max_fails=3 fail_timeout=300s;
-        server 127.0.0.1:8080 max_fails=3 fail_timeout=300s;
-     '';
     virtualHosts = {
       "garudalinux.org" = {
         addSSL = true;
@@ -195,15 +184,8 @@
           access_log off;
           ${garuda-lib.setRealIpFromConfig}
           real_ip_header CF-Connecting-IP;
-
-          location / {
-            proxy_redirect      off;
-            proxy_set_header    X-Real-IP $remote_addr;
-            proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header    Host $host;
-            proxy_pass http://whoogle;
-          }
         '';
+        locations = { "/" = { proxyPass = "http://127.0.0.1:5000"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
@@ -213,15 +195,8 @@
           access_log off;
           ${garuda-lib.setRealIpFromConfig}
           real_ip_header CF-Connecting-IP;
-
-          location / {
-            proxy_redirect      off;
-            proxy_set_header    X-Real-IP $remote_addr;
-            proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header    Host $host;
-            proxy_pass http://searx;
-          }
         '';
+        locations = { "/" = { proxyPass = "http://127.0.0.1:8080"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };

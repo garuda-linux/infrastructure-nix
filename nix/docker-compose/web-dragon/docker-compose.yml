@@ -10,7 +10,7 @@ services:
       LIBREDDIT_DEFAULT_THEME: dracula
       LIBREDDIT_DEFAULT_USE_HLS: True
     ports:
-      - 127.0.0.1:8083:8080
+      - "127.0.0.1:8083:8080"
     restart: always
 
   # Whoogle search engine
@@ -28,7 +28,7 @@ services:
     volumes:
       - "./whoogle:/config"
     ports:
-      - 0.0.0.0:5000:5000
+      - "127.0.0.1:5000:5000"
     environment:
       WHOOGLE_ALT_RD: reddit.dr460nf1r3.org
       WHOOGLE_ALT_TL: translate.dr460nf1r3.org
@@ -53,7 +53,7 @@ services:
     volumes:
       - ./nitter/nitter.conf:/src/nitter.conf:ro
     ports:
-      - 127.0.0.1:8888:8888
+      - "127.0.0.1:8888:8888"
     depends_on:
       - nitter_redis
     healthcheck:
@@ -88,7 +88,7 @@ services:
       DEFAULT_TARGET_LANG: en
       SITE_DOMAIN: lingva.garudalinux.org
     ports:
-      - 127.0.0.1:3000:3000
+      - "127.0.0.1:3000:3000"
     restart: always
 
   # Teddit
@@ -103,7 +103,7 @@ services:
       THEME: dark
       TRUST_PROXY: "true"
     ports:
-      - 127.0.0.1:8081:8080
+      - "127.0.0.1:8081:8080"
     healthcheck:
       test:
         [
@@ -156,7 +156,7 @@ services:
         use_pubsub_feeds: true
         use_quic: true
     ports:
-      - 127.0.0.1:3001:3000
+      - "127.0.0.1:3001:3000"
     healthcheck:
       test: wget -nv --tries=1 --spider http://127.0.0.1:3001/api/v1/comments/jNQXAC9IVRw || exit 1
       interval: 30s
@@ -216,7 +216,7 @@ services:
       - ./piped/config/ytproxy.conf:/etc/nginx/snippets/ytproxy.conf:ro
       - piped_proxy:/var/run/ytproxy
     ports:
-      - 127.0.0.1:8082:80
+      - "127.0.0.1:8082:80"
     restart: always
 
   piped_postgres:
