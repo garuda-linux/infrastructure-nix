@@ -31,15 +31,20 @@ in {
             cert = "/var/garuda/secrets/syncthing/esxi-build-cert.pem";
           };
         };
-        cloudflared = {
-          kde-dragon.cred = "/var/garuda/secrets/cloudflared/kde-dragon.json";
-          esxi-web.cred = "/var/garuda/secrets/cloudflared/esxi-web.json";
-          esxi-build.cred =
-            "/var/garuda/secrets/cloudflared/esxi-build.json";
-          monitor-dragon.cred =
-            "/var/garuda/secrets/cloudflared/monitor-dragon.json";
-          chaotic-dragon.cred =
-            "/var/garuda/secrets/cloudflared/chaotic-dragon.json";
+        cloudflare = {
+          cloudflared = {
+            kde-dragon.cred = "/var/garuda/secrets/cloudflare/kde-dragon.json";
+            esxi-web.cred = "/var/garuda/secrets/cloudflare/esxi-web.json";
+            esxi-build.cred =
+            "/var/garuda/secrets/cloudflare/esxi-build.json";
+            monitor-dragon.cred =
+              "/var/garuda/secrets/cloudflare/monitor-dragon.json";
+            chaotic-dragon.cred =
+              "/var/garuda/secrets/cloudflare/chaotic-dragon.json";
+          };
+          r2 = {
+            rclone = "/var/garuda/secrets/cloudflare/rclone.conf";
+          };
         };
         docker-compose = {
           esxi-cloud = "/var/garuda/secrets/docker-compose/esxi-cloud.env";

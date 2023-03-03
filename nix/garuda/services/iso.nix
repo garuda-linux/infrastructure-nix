@@ -27,6 +27,7 @@ in {
             -v "/var/garuda/buildiso/iso:/var/cache/garuda-tools/garuda-builds/iso/" \
             -v "/var/garuda/buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
             -v "${garuda-lib.secrets.ssh.team.private}:/root/.ssh/id_ed25519" \
+            -v "${garuda-lib.secrets.cloudflare.r2.rclone}:/root/.config/rclone/rclone.conf" \
             -v "${envfile}:/var/cache/garuda-tools/garuda-builds/.env" \
             "$(docker build -q "${sources.buildiso}")" auto
         '';
@@ -62,6 +63,9 @@ in {
           }
           if ($arg_osdn) {
             rewrite ^/iso/(.*)$ https://osdn.net/projects/garuda-linux/storage/$1? permanent;
+          }
+          if ($arg_r2) {
+            rewrite ^/iso/(.*)$ https://r2.garudalinux.org/iso/$1? permanent;
           }
           break;
         '';

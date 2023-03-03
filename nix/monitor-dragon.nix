@@ -123,8 +123,8 @@
   services.garuda-cloudflared = {
     enable = true;
     ingress = { "netdata.garudalinux.net" = "http://localhost:19999"; };
-    tunnel-id = garuda-lib.secrets.cloudflared.monitor-dragon.id;
-    tunnel-credentials = garuda-lib.secrets.cloudflared.monitor-dragon.cred;
+    tunnel-id = garuda-lib.secrets.cloudflare.cloudflared.monitor-dragon.id;
+    tunnel-credentials = garuda-lib.secrets.cloudflare.cloudflared.monitor-dragon.cred;
   };
 
   system.stateVersion = "22.05";

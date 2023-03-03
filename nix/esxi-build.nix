@@ -63,8 +63,8 @@
   services.garuda-cloudflared = {
     enable = true;
     ingress = { "syncthing-build.garudalinux.net" = "http://localhost:8384"; };
-    tunnel-id = garuda-lib.secrets.cloudflared.esxi-build.id;
-    tunnel-credentials = garuda-lib.secrets.cloudflared.esxi-build.cred;
+    tunnel-id = garuda-lib.secrets.cloudflare.cloudflared.esxi-build.id;
+    tunnel-credentials = garuda-lib.secrets.cloudflare.cloudflared.esxi-build.cred;
   };
 
   # Auto reset syncthing stuff
