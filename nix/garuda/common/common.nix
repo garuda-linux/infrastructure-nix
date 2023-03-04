@@ -212,7 +212,15 @@
   # Print a diff when running system updates
   system.activationScripts.diff = ''
     if [[ -e /run/current-system ]]; then
-      ${pkgs.nix}/bin/nix store diff-closures /run/current-system "$systemConfig"
+      (
+        for i in {1..3}; do
+          result=$(${config.nix.package}/bin/nix store diff-closures /run/current-system "$systemConfig" 2>&1)
+          if [ $? -eq 0 ]; then
+            printf '%s' "$result"
+            break
+          fi
+        done
+      )
     fi
   '';
 
