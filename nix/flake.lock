@@ -190,11 +190,11 @@
     "src-garuda-website": {
       "flake": false,
       "locked": {
-        "lastModified": 1677812541,
-        "narHash": "sha256-+GIh6lHe2a0GQ9sMWf3avlSzpvTJGtapox1Aq50+dgc=",
+        "lastModified": 1677888338,
+        "narHash": "sha256-aujfgAxdY7snQ5Xx6EF+ftNaI+Fuyc9E9FHZoB8s6NI=",
         "owner": "garuda-linux%2Fwebsite",
         "repo": "garuda",
-        "rev": "ed6db3cec5ab48c1cae7792831ac771ca1b7a1f1",
+        "rev": "4c4004cebf6911861a563111c864766701534c2b",
         "type": "gitlab"
       },
       "original": {

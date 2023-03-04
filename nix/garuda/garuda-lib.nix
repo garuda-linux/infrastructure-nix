@@ -19,7 +19,7 @@ in {
       inherit setRealIpFromConfig;
       secrets = recursiveUpdate secrets {
         cachix = "/var/garuda/secrets/cachix";
-        cloudflare_key = "/var/garuda/secrets/cloudflare_key";
+        cloudflare_key = "/var/garuda/secrets/cloudflare/cloudflare_key";
         meshagent_msh = "/var/garuda/secrets/meshagent.msh";
         syncthing = {
           kde-dragon = {
