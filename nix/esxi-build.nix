@@ -64,7 +64,8 @@
     enable = true;
     ingress = { "syncthing-build.garudalinux.net" = "http://localhost:8384"; };
     tunnel-id = garuda-lib.secrets.cloudflare.cloudflared.esxi-build.id;
-    tunnel-credentials = garuda-lib.secrets.cloudflare.cloudflared.esxi-build.cred;
+    tunnel-credentials =
+      garuda-lib.secrets.cloudflare.cloudflared.esxi-build.cred;
   };
 
   # Auto reset syncthing stuff
@@ -208,7 +209,9 @@
     src = "/srv/http/repos/";
     dest = "r2:/mirror/repos";
     config = garuda-lib.secrets.cloudflare.r2.rclone;
-    args = "--s3-upload-cutoff 5G --s3-chunk-size 4G --fast-list --s3-no-head --s3-no-check-bucket --ignore-checksum --s3-disable-checksum -u --use-server-modtime --delete-during --delete-excluded --include /*/x86_64/*.pkg.tar.zst --include /*/lastupdate --order-by modtime,ascending --stats-log-level NOTICE";
+    args =
+      "--s3-upload-cutoff 5G --s3-chunk-size 4G --fast-list --s3-no-head --s3-no-check-bucket --ignore-checksum --s3-disable-checksum -u --use-server-modtime --delete-during --delete-excluded --include /*/x86_64/*.pkg.tar.zst --include /*/lastupdate --order-by modtime,ascending --stats-log-level NOTICE";
+    startAt = "*:0/10";
   };
 
   # This is a containerized version of our esxi-repo configuration
@@ -221,11 +224,13 @@
       Capability = "all";
     };
     filesConfig = {
-      Bind = [ "/srv/http/repos/garuda:/srv/http/repos/garuda" "/var/cache/pacman/pkg:/var/cache/pacman/pkg" "/var/cache/chaotic/packages:/var/cache/chaotic/packages" ];
+      Bind = [
+        "/srv/http/repos/garuda:/srv/http/repos/garuda"
+        "/var/cache/pacman/pkg:/var/cache/pacman/pkg"
+        "/var/cache/chaotic/packages:/var/cache/chaotic/packages"
+      ];
     };
-    networkConfig = {
-      Interface = "ens35";
-    };
+    networkConfig = { Interface = "ens35"; };
   };
   systemd.services."systemd-nspawn@esxi-repo" = {
     overrideStrategy = "asDropin";
