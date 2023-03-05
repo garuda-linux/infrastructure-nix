@@ -65,7 +65,8 @@ in {
             rewrite ^/iso/(.*)$ https://osdn.net/projects/garuda-linux/storage/$1? permanent;
           }
           if ($arg_r2) {
-            rewrite ^/iso/(.*)$ https://r2.garudalinux.org/iso/$1? permanent;
+            set $args "";
+            rewrite ^/iso/(.*)$ https://r2.garudalinux.org/iso/$1?r2request permanent;
           }
           break;
         '';
