@@ -110,8 +110,6 @@ in {
         [options]
         Architecture = x86_64
         SigLevel = Never
-        [garuda]
-        Include = /etc/pacman.d/chaotic-mirrorlist
         [core]
         Include = /etc/pacman.d/mirrorlist
         [extra]

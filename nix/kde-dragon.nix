@@ -29,7 +29,7 @@
   '';
   services.chaotic.db-name = "chaotic-aur-kde";
   services.chaotic.routines = [ "hourly" "nightly" "afternoon" ];
-  services.chaotic.patches = [ ./garuda/services/chaotic/garuda.diff ];
+  services.chaotic.patches = [ ./garuda/services/chaotic/add-chaotic-repo.diff ./garuda/services/chaotic/prepend-repo.diff ];
   services.chaotic.useACMEHost = "garudalinux.org";
 
     # Special Syncthing configuration allowing to push to main node

@@ -29,7 +29,7 @@
   '';
   services.chaotic.db-name = "garuda";
   services.chaotic.routines = [ "hourly" ];
-  services.chaotic.patches = [ ./garuda/services/chaotic/garuda.diff ];
+  services.chaotic.patches = [ ./garuda/services/chaotic/add-chaotic-repo.diff ];
   services.chaotic.useACMEHost = "garudalinux.org";
 
   system.stateVersion = "22.11";
