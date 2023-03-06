@@ -183,61 +183,61 @@ services:
         ]
     restart: always
 
-  # Piped
-  piped_backend:
-    image: 1337kavin/piped:latest
-    container_name: piped_backend
-    depends_on:
-      - piped_postgres
-    volumes:
-      - ./piped/config.properties:/app/config.properties:ro
-    restart: always
+  # # Piped
+  # piped_backend:
+  #   image: 1337kavin/piped:latest
+  #   container_name: piped_backend
+  #   depends_on:
+  #     - piped_postgres
+  #   volumes:
+  #     - ./piped/config.properties:/app/config.properties:ro
+  #   restart: always
 
-  piped_frontend:
-    image: 1337kavin/piped-frontend:latest
-    container_name: piped_frontend
-    entrypoint: ash -c 'sed -i s/pipedapi.kavin.rocks/piped-api.garudalinux.org/g /usr/share/nginx/html/assets/* && /docker-entrypoint.sh && nginx -g "daemon off;"'
-    depends_on:
-      - piped_backend
-    restart: always
+  # piped_frontend:
+  #   image: 1337kavin/piped-frontend:latest
+  #   container_name: piped_frontend
+  #   entrypoint: ash -c 'sed -i s/pipedapi.kavin.rocks/piped-api.garudalinux.org/g /usr/share/nginx/html/assets/* && /docker-entrypoint.sh && nginx -g "daemon off;"'
+  #   depends_on:
+  #     - piped_backend
+  #   restart: always
 
-  piped_nginx:
-    image: nginx:mainline-alpine
-    container_name: piped_nginx
-    depends_on:
-      - piped_backend
-      - piped_frontend
-      - piped_proxy
-    volumes:
-      - ./piped/config/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./piped/config/pipedapi.conf:/etc/nginx/conf.d/pipedapi.conf:ro
-      - ./piped/config/pipedproxy.conf:/etc/nginx/conf.d/pipedproxy.conf:ro
-      - ./piped/config/pipedfrontend.conf:/etc/nginx/conf.d/pipedfrontend.conf:ro
-      - ./piped/config/ytproxy.conf:/etc/nginx/snippets/ytproxy.conf:ro
-      - piped_proxy:/var/run/ytproxy
-    ports:
-      - "127.0.0.1:8082:80"
-    restart: always
+  # piped_nginx:
+  #   image: nginx:mainline-alpine
+  #   container_name: piped_nginx
+  #   depends_on:
+  #     - piped_backend
+  #     - piped_frontend
+  #     - piped_proxy
+  #   volumes:
+  #     - ./piped/config/nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ./piped/config/pipedapi.conf:/etc/nginx/conf.d/pipedapi.conf:ro
+  #     - ./piped/config/pipedproxy.conf:/etc/nginx/conf.d/pipedproxy.conf:ro
+  #     - ./piped/config/pipedfrontend.conf:/etc/nginx/conf.d/pipedfrontend.conf:ro
+  #     - ./piped/config/ytproxy.conf:/etc/nginx/snippets/ytproxy.conf:ro
+  #     - piped_proxy:/var/run/ytproxy
+  #   ports:
+  #     - "127.0.0.1:8082:80"
+  #   restart: always
 
-  piped_postgres:
-    image: postgres:13-alpine
-    container_name: piped_postgres
-    volumes:
-      - ./piped/db:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: piped
-      POSTGRES_PASSWORD: "${INVIDIOUS_DB_PASSWORD:?err}"
-      POSTGRES_USER: piped
-    restart: always
+  # piped_postgres:
+  #   image: postgres:13-alpine
+  #   container_name: piped_postgres
+  #   volumes:
+  #     - ./piped/db:/var/lib/postgresql/data
+  #   environment:
+  #     POSTGRES_DB: piped
+  #     POSTGRES_PASSWORD: "${INVIDIOUS_DB_PASSWORD:?err}"
+  #     POSTGRES_USER: piped
+  #   restart: always
 
-  piped_proxy:
-    image: 1337kavin/ytproxy:latest
-    container_name: piped_proxy
-    #environment:
-    #  - UDS=1
-    volumes:
-      - piped_proxy:/app/socket
-    restart: always
+  # piped_proxy:
+  #   image: 1337kavin/ytproxy:latest
+  #   container_name: piped_proxy
+  #   #environment:
+  #   #  - UDS=1
+  #   volumes:
+  #     - piped_proxy:/app/socket
+  #   restart: always
 
 volumes:
   piped_proxy: null
