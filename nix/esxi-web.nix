@@ -54,7 +54,8 @@
       "matrixadmin.garudalinux.net" = "http://esxi-web-two.local:8081";
     };
     tunnel-id = garuda-lib.secrets.cloudflare.cloudflared.esxi-web.id;
-    tunnel-credentials = garuda-lib.secrets.cloudflare.cloudflared.esxi-web.cred;
+    tunnel-credentials =
+      garuda-lib.secrets.cloudflare.cloudflared.esxi-web.cred;
   };
 
   # Reverse proxy for our docker-compose stack
@@ -87,7 +88,8 @@
           };
           "/os/garuda-update/remote-update" = {
             extraConfig = "expires 12h;";
-            return = "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update";
+            return =
+              "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update";
           };
           "/os/garuda-update/garuda-hotfixes-version" = {
             extraConfig = "expires 5m;";
@@ -296,7 +298,13 @@
           real_ip_header CF-Connecting-IP;
           proxy_set_header X-Forwarded-For $remote_addr;
         '';
-        locations = { "/" = { proxyPass = "http://192.168.1.70:80"; }; };
+        locations = {
+          "/" = { proxyPass = "http://192.168.1.70:80"; };
+          "/c/announcements/announcements-maintenance/45.json" = {
+            extraConfig = "expires 2m;";
+            proxyPass = "http://192.168.1.70:80";
+          };
+        };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
@@ -342,16 +350,15 @@
           }
         '';
         locations = {
-          "/" = {
-            return = "301 https://social.garudalinux.org$request_uri";
-          };
+          "/" = { return = "301 https://social.garudalinux.org$request_uri"; };
         };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
       "builds.garudalinux.org" = {
         addSSL = true;
-        serverAliases = [ "iso.builds.garudalinux.org" "cf-builds.garudalinux.org" ];
+        serverAliases =
+          [ "iso.builds.garudalinux.org" "cf-builds.garudalinux.org" ];
         extraConfig = ''
           proxy_buffering off;
           ${garuda-lib.setRealIpFromConfig}
