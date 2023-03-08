@@ -7,7 +7,7 @@
   home.stateVersion = "22.05";
 
   # Personally used packages
-  home.packages = with pkgs; [ neovim ];
+  home.packages = with pkgs; [ neovim rustc nushell cargo ];
 
   # Application user configuration
   programs = {
