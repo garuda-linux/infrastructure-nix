@@ -215,8 +215,8 @@
       (
         for i in {1..3}; do
           result=$(${config.nix.package}/bin/nix store diff-closures /run/current-system "$systemConfig" 2>&1)
-          if [ $? -eq 0 ]; then
-            printf '%s' "$result"
+          if [ $? -eq 0 ] && [ ! -z "$result" ]; then
+            printf '%s\n' "$result"
             break
           fi
         done

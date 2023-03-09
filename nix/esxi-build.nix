@@ -211,7 +211,29 @@
     config = garuda-lib.secrets.cloudflare.r2.rclone;
     args =
       "--s3-upload-cutoff 5G --s3-chunk-size 4G --fast-list --s3-no-head --s3-no-check-bucket --ignore-checksum --s3-disable-checksum -u --use-server-modtime --delete-during --delete-excluded --include /*/x86_64/*.pkg.tar.zst --include /*/lastupdate --order-by modtime,ascending --stats-log-level NOTICE";
-    startAt = "*:0/10";
+    startAt = "hourly";
+  };
+  systemd.services.chaotic-rclone-inotify = {
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network-online.target" ];
+    serviceConfig = { #xargs -P 0 -0rI '{}' \
+      # Get all file changes, upload pkg.tar.zst. Not more than 5 per 5 seconds queued and only one uploaded at the same time. Queue dropped if uploading takes longer than 15 seconds.
+      # This prevents the queue from getting overloaded with nonsense requests if that ever were to happen. The hourly sync should take care of this.
+      ExecStart = pkgs.writeShellScript "chaotic-rclone-inotify-execstart" ''
+        set -eo pipefail
+        upload() {
+          destpath="r2:/mirror/$(realpath --relative-to="." "$1")"
+          ${pkgs.flock}/bin/flock -w 15 /tmp/chaotic-rclone-inotify.lock && \
+            ${pkgs.rclone}/bin/rclone copyto "$1" "$destpath" --s3-upload-cutoff 5G --s3-chunk-size 4G --s3-no-head --no-check-dest --s3-no-check-bucket --ignore-checksum --s3-disable-checksum --config "${garuda-lib.secrets.cloudflare.r2.rclone}" --stats-one-line -v
+        }
+        export -f upload
+        ${pkgs.inotify-tools}/bin/inotifywait -m ./repos/*/x86_64 -e CLOSE_WRITE,MOVED_TO --format "%w%f" | \
+          ${pkgs.gawk}/bin/awk '/\.pkg\.tar\.zst$/ { if (int(systime() / 5) != prev_time) { count=0; prev_time = int(systime() / 5); }; if (count++ < 5) { print $0; fflush(); } }' | \
+          xargs -rP 0 -I % ${pkgs.bash}/bin/bash -c 'upload "%"'
+      '';
+      Restart = "always";
+      WorkingDirectory = "/srv/http";
+    };
   };
 
   # This is a containerized version of our esxi-repo configuration
