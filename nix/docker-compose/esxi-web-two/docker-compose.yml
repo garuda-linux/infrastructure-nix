@@ -39,7 +39,7 @@ services:
       timeout: 10s
 
   matrix-appservice-discord:
-    build: https://github.com/matrix-org/matrix-appservice-discord.git#develop
+    image: ghcr.io/matrix-org/matrix-appservice-discord:develop
     container_name: matrix-appservice-discord
     volumes:
       - "./matrix/matrix-appservice-discord:/data"
@@ -76,22 +76,6 @@ services:
     volumes:
       - "./matterbridge/matterbridge.toml:/etc/matterbridge/matterbridge.toml:ro"
     restart: always
-
-  github-runner:
-    image: myoung34/github-runner:latest
-    environment:
-      ORG_NAME: chaotic-aur
-      RUNNER_NAME: esxi
-      RUNNER_WORKDIR: /tmp/runner/work
-      RUNNER_SCOPE: 'org'
-      ACCESS_TOKEN: ${ACCESS_TOKEN:-?err}
-      LABELS: ubuntu-20.04
-    security_opt:
-      # needed on SELinux systems to allow docker container to manage other docker containers
-      - label:disable
-    volumes:
-      - '/var/run/docker.sock:/var/run/docker.sock'
-      - '/tmp/runner:/tmp/runner'
 
   # # Mastodon instance
   # mastodon_web:
