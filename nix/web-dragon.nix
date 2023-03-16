@@ -1,13 +1,20 @@
-{ garuda-lib, pkgs, lib, ... }: {
-  imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
+{
+  garuda-lib,
+  pkgs,
+  lib,
+  ...
+}: {
+  imports = [./garuda/garuda.nix ./garuda/common/lxc.nix];
 
   # Base configuration
   networking.defaultGateway = "192.168.1.1";
   networking.hostName = "web-dragon";
-  networking.interfaces.eth0.ipv4.addresses = [{
-    address = "192.168.1.60";
-    prefixLength = 24;
-  }];
+  networking.interfaces.eth0.ipv4.addresses = [
+    {
+      address = "192.168.1.60";
+      prefixLength = 24;
+    }
+  ];
 
   # Configure backups to backup-dragon
   services.borgbackup.jobs = {
@@ -19,9 +26,9 @@
         passCommand = "cat /var/garuda/secrets/backup/repo_key";
       };
       environment = {
-        BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_web-dragon -p 666";
+        BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_web-dragon";
       };
-      paths = [ "/var/garuda/docker-compose-runner/web-dragon" ];
+      paths = ["/var/garuda/docker-compose-runner/web-dragon"];
       prune.keep = {
         daily = 7;
         monthly = 1;
@@ -58,8 +65,7 @@
           }
         '';
         http3 = true;
-        serverAliases =
-          [ "piped-api.garudalinux.org" "piped-proxy.garudalinux.org" ];
+        serverAliases = ["piped-api.garudalinux.org" "piped-proxy.garudalinux.org"];
         useACMEHost = "garudalinux.org";
       };
       "invidious.garudalinux.org" = {
