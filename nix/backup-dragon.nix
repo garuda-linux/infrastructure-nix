@@ -1,12 +1,18 @@
-{ pkgs, ... }: {
-  imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
+{
+  pkgs,
+  garuda-lib,
+  ...
+}: {
+  imports = [./garuda/garuda.nix ./garuda/common/lxc.nix];
 
   # Base configuration
   networking.hostName = "backup-dragon";
-  networking.interfaces.eth0.ipv4.addresses = [{
-    address = "192.168.1.70";
-    prefixLength = 24;
-  }];
+  networking.interfaces.eth0.ipv4.addresses = [
+    {
+      address = "192.168.1.70";
+      prefixLength = 24;
+    }
+  ];
   networking.defaultGateway = "192.168.1.1";
 
   # Enable borg repositories, making them accessible by the borg user and people belonging to the backup group
@@ -66,7 +72,7 @@
   users.users.borg.home = "/backups";
 
   # Create a backup group to allow rsync'ing backups to offsite locations
-  users.groups.backup = { members = [ "sgs" "nico" ]; };
+  users.groups.backup = {members = ["sgs" "nico"];};
 
   # Borg applies 0600 permissions on repositories by default, it needs to be at least
   # accessible by the backup group though in order for offsite backups to succeed
@@ -79,18 +85,18 @@
     '';
   };
   systemd.timers.borg-repo-permissions = {
-    wantedBy = [ "timers.target" ];
-    timerConfig.OnCalendar = [ "hourly" ];
+    wantedBy = ["timers.target"];
+    timerConfig.OnCalendar = ["hourly"];
   };
   # Regularly compacting the repo seems to be required in order for repos to not grow indefinitely in size
   systemd.services.borg-repo-compact = {
-    path = [ pkgs.borgbackup ];
+    path = [pkgs.borgbackup];
     serviceConfig.Type = "oneshot";
     script = ''
       cd /backups
       for folder in $(ls); do
         pushd $folder
-          if [ $folder == sgs-artwork ]; then 
+          if [ $folder == sgs-artwork ]; then
             for artwork in $(ls); do
               pushd $artwork
                 borg compact .
@@ -99,7 +105,7 @@
           else borg compact .
           fi
         popd
-      done 
+      done
     '';
     serviceConfig = {
       User = "borg";
@@ -107,8 +113,26 @@
     };
   };
   systemd.timers.borg-repo-compact = {
-    wantedBy = [ "timers.target" ];
-    timerConfig.OnCalendar = [ "daily" ];
+    wantedBy = ["timers.target"];
+    timerConfig.OnCalendar = ["daily"];
+  };
+
+  # Sync repos to our offsite backup storage
+  systemd.services.offsite-replication = {
+    path = [pkgs.rsync pkgs.openssh];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      rsync -e "ssh -i ${garuda-lib.secrets.ssh.team.private}" \
+       -avz --delete --progress /backups/ u342919@u342919.your-storagebox.de:/
+    '';
+    serviceConfig = {
+      User = "borg";
+      Group = "backup";
+    };
+  };
+  systemd.timers.offsite-replication = {
+    wantedBy = ["timers.target"];
+    timerConfig.OnCalendar = ["daily"];
   };
 
   system.stateVersion = "22.05";
