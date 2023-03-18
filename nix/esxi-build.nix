@@ -227,7 +227,9 @@
             ${pkgs.rclone}/bin/rclone copyto "$1" "$destpath" --s3-upload-cutoff 5G --s3-chunk-size 4G --s3-no-head --no-check-dest --s3-no-check-bucket --ignore-checksum --s3-disable-checksum --config "${garuda-lib.secrets.cloudflare.r2.rclone}" --stats-one-line -v
         }
         export -f upload
-        ${pkgs.inotify-tools}/bin/inotifywait -m ./repos/*/x86_64 -e CLOSE_WRITE,MOVED_TO --format "%w%f" | grep --line-buffered '\.pkg\.tar\.zst$' | xargs -rP 0 -I % ${pkgs.bash}/bin/bash -c 'upload "%"'
+        ${pkgs.inotify-tools}/bin/inotifywait -m ./repos/*/x86_64 -e CLOSE_WRITE,MOVED_TO --format "%w%f" | \
+          ${pkgs.gawk}/bin/awk '/\.pkg\.tar\.zst$/ { print $0; fflush(); }' | \
+          xargs -rP 0 -I % ${pkgs.bash}/bin/bash -c 'upload "%"'
       '';
       Restart = "always";
       WorkingDirectory = "/srv/http";
