@@ -228,22 +228,31 @@
   systemd.services.chaotic-rclone-inotify = {
     wantedBy = ["multi-user.target"];
     after = ["network-online.target"];
+    # Get all file changes, upload pkg.tar.zst. Not more than 5 per 5 seconds queued and only one uploaded at the same time. Queue dropped if uploading takes longer than 15 seconds.
+    # This prevents the queue from getting overloaded with nonsense requests if that ever were to happen. The hourly sync should take care of this.
+    script = ''
+      set -eo pipefail
+      upload() {
+        operation="''${1%%|*}"
+        path="''${1#*|}"
+        relative="$(realpath --relative-to="." "$path")"
+        relative="''${relative#./}"
+        destpath="r2:/mirror/$relative"
+        if [ "$operation" != "MOVED_FROM" ]; then
+        ${pkgs.flock}/bin/flock -w 15 /tmp/chaotic-rclone-inotify.lock && \
+          ${pkgs.rclone}/bin/rclone copyto "$path" "$destpath" --s3-upload-cutoff 5G --s3-chunk-size 4G --s3-no-head --no-check-dest --s3-no-check-bucket --ignore-checksum --s3-disable-checksum --config "${garuda-lib.secrets.cloudflare.r2.rclone}" --stats-one-line -v
+        else
+          ${pkgs.rclone}/bin/rclone deletefile "$destpath" --s3-no-head --no-check-dest --s3-no-check-bucket --config "${garuda-lib.secrets.cloudflare.r2.rclone}" --stats-one-line -v
+          ${pkgs.curl}/bin/curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_GARUDALINUX_ORG/purge_cache" -H "Authorization: Bearer $CF_CACHE_API_TOKEN" -H "Content-Type:application/json" --data "{\"files\":[\"https://r2.garudalinux.org/''${relative}\"]}"
+        fi
+      }
+      export -f upload
+      ${pkgs.inotify-tools}/bin/inotifywait -m ./repos/*/x86_64 -e CLOSE_WRITE,MOVED_TO,MOVED_FROM --format "%e|%w%f" | \
+        ${pkgs.gawk}/bin/awk '/\.pkg\.tar\.zst$/ { print $0; fflush(); }' | \
+        xargs -rP 0 -I % ${pkgs.bash}/bin/bash -c 'upload "%"'
+    '';
     serviceConfig = {
-      #xargs -P 0 -0rI '{}' \
-      # Get all file changes, upload pkg.tar.zst. Not more than 5 per 5 seconds queued and only one uploaded at the same time. Queue dropped if uploading takes longer than 15 seconds.
-      # This prevents the queue from getting overloaded with nonsense requests if that ever were to happen. The hourly sync should take care of this.
-      ExecStart = pkgs.writeShellScript "chaotic-rclone-inotify-execstart" ''
-        set -eo pipefail
-        upload() {
-          destpath="r2:/mirror/$(realpath --relative-to="." "$1")"
-          ${pkgs.flock}/bin/flock -w 15 /tmp/chaotic-rclone-inotify.lock && \
-            ${pkgs.rclone}/bin/rclone copyto "$1" "$destpath" --s3-upload-cutoff 5G --s3-chunk-size 4G --s3-no-head --no-check-dest --s3-no-check-bucket --ignore-checksum --s3-disable-checksum --config "${garuda-lib.secrets.cloudflare.r2.rclone}" --stats-one-line -v
-        }
-        export -f upload
-        ${pkgs.inotify-tools}/bin/inotifywait -m ./repos/*/x86_64 -e CLOSE_WRITE,MOVED_TO --format "%w%f" | \
-          ${pkgs.gawk}/bin/awk '/\.pkg\.tar\.zst$/ { print $0; fflush(); }' | \
-          xargs -rP 0 -I % ${pkgs.bash}/bin/bash -c 'upload "%"'
-      '';
+      EnvironmentFile = garuda-lib.secrets.cloudflare.apikeys;
       Restart = "always";
       WorkingDirectory = "/srv/http";
     };

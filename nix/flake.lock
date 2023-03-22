@@ -48,7 +48,7 @@
     "keys_technetium1": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-d6PFL1WTyfee09ykY1oWnX+7nGhEfPZn4aSQouAS42c=",
+        "narHash": "sha256-d6xi4mKdjkX2JFicDIv5niSzpyI0m/Hnm8GGAIU04kY=",
         "type": "file",
         "url": "https://github.com/Technetium1.keys"
       },

@@ -19,7 +19,6 @@ in {
       inherit setRealIpFromConfig;
       secrets = recursiveUpdate secrets {
         cachix = "/var/garuda/secrets/cachix";
-        cloudflare_key = "/var/garuda/secrets/cloudflare/cloudflare_key";
         meshagent_msh = "/var/garuda/secrets/meshagent.msh";
         syncthing = {
           kde-dragon = {
@@ -45,6 +44,7 @@ in {
           r2 = {
             rclone = "/var/garuda/secrets/cloudflare/rclone.conf";
           };
+          apikeys = "/var/garuda/secrets/cloudflare/cloudflare_key";
         };
         docker-compose = {
           esxi-cloud = "/var/garuda/secrets/docker-compose/esxi-cloud.env";
