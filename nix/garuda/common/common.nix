@@ -191,6 +191,7 @@
 
   # Make cloudflared happy (https://github.com/lucas-clemente/quic-go/wiki/UDP-Receive-Buffer-Size)
   boot.kernel.sysctl = { "net.core.rmem_max" = 2500000; };
+  services.cloudflared.user = "root";
 
   systemd.services.nix-clean-result = {
     serviceConfig.Type = "oneshot";

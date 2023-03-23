@@ -53,7 +53,6 @@
       "mesh.garudalinux.net" = "http://127.0.0.1:80";
       "matrixadmin.garudalinux.net" = "http://esxi-web-two.local:8081";
     };
-    tunnel-id = garuda-lib.secrets.cloudflare.cloudflared.esxi-web.id;
     tunnel-credentials =
       garuda-lib.secrets.cloudflare.cloudflared.esxi-web.cred;
   };

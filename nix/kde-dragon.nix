@@ -66,7 +66,6 @@
   services.garuda-cloudflared = {
     enable = true;
     ingress = { "syncthing-kde.garudalinux.net" = "http://localhost:8384"; };
-    tunnel-id = garuda-lib.secrets.cloudflare.cloudflared.kde-dragon.id;
     tunnel-credentials = garuda-lib.secrets.cloudflare.cloudflared.kde-dragon.cred;
   };
 
