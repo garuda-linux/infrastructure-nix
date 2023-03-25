@@ -164,11 +164,6 @@
         specialArgs = specialArgs;
         modules = defaultModules ++ [ ./esxi-forum.nix ];
       };
-      nixosConfigurations."oracle-dragon" = nixos.lib.nixosSystem {
-        system = "aarch64-linux";
-        specialArgs = specialArgs;
-        modules = defaultModules ++ [ ./oracle-dragon.nix ];
-      };
       nixosConfigurations."cachix" = nixos.lib.nixosSystem {
         inherit system;
         specialArgs = specialArgs;
