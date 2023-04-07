@@ -31,11 +31,12 @@ let
       appdirs
       colorama
       # Pinned python-telegram-bot 13.15
-      (callPackage (builtins.fetchurl { url = "https://raw.githubusercontent.com/NixOS/nixpkgs/a0389fe5c691f80bb794a0aa9731d5e4ad6752ac/pkgs/development/python-modules/python-telegram-bot/default.nix"; sha256 = "sha256:1xz49dzydfyv1xksm8apj9v6r2px15339xznkr8zqjgzzhvarjbg";}) {})
+      (callPackage (builtins.fetchurl { url = "https://raw.githubusercontent.com/NixOS/nixpkgs/a0389fe5c691f80bb794a0aa9731d5e4ad6752ac/pkgs/development/python-modules/python-telegram-bot/default.nix"; sha256 = "sha256:1xz49dzydfyv1xksm8apj9v6r2px15339xznkr8zqjgzzhvarjbg"; }) { })
     ];
   };
   repodir = "${cfg.repos-dir}/${cfg.db-name}";
-in {
+in
+{
   options.services.chaotic = {
     enable = mkEnableOption "Chaotic AUR";
     db-name = mkOption {
@@ -186,36 +187,40 @@ in {
           };
         };
       }
-      (builtins.listToAttrs (builtins.map (x: {
+      (builtins.listToAttrs (builtins.map
+        (x: {
+          name = "chaotic-" + x;
+          value = {
+            description = "Chaotic's ${x} routine";
+            serviceConfig = {
+              User = "root";
+              Group = "chaotic_op";
+              WorkingDirectory = "/tmp";
+              ExecStart = "${toolbox}/bin/chaotic routine ${x}";
+              TimeoutStopSec = 86400;
+              TimeoutStopFailureMode = "abort";
+              WatchdogSignal = "SIGUSR1";
+              TimeoutAbortSec = 600;
+            };
+          };
+        })
+        cfg.routines))
+    ];
+    systemd.timers = builtins.listToAttrs (builtins.map
+      (x: {
         name = "chaotic-" + x;
         value = {
           description = "Chaotic's ${x} routine";
-          serviceConfig = {
-            User = "root";
-            Group = "chaotic_op";
-            WorkingDirectory = "/tmp";
-            ExecStart = "${toolbox}/bin/chaotic routine ${x}";
-            TimeoutStopSec = 86400;
-            TimeoutStopFailureMode = "abort";
-            WatchdogSignal = "SIGUSR1";
-            TimeoutAbortSec = 600;
+          wantedBy = [ "timers.target" ];
+          timerConfig = {
+            OnCalendar =
+              lib.attrByPath [ x ] (abort "Routine not defined in calendarmap")
+                cfg.calendarmap;
+            Persistent = false;
           };
         };
-      }) cfg.routines))
-    ];
-    systemd.timers = builtins.listToAttrs (builtins.map (x: {
-      name = "chaotic-" + x;
-      value = {
-        description = "Chaotic's ${x} routine";
-        wantedBy = [ "timers.target" ];
-        timerConfig = {
-          OnCalendar =
-            lib.attrByPath [ x ] (abort "Routine not defined in calendarmap")
-            cfg.calendarmap;
-          Persistent = false;
-        };
-      };
-    }) cfg.routines);
+      })
+      cfg.routines);
     security.wrappers = {
       chaotic = {
         setuid = true;
@@ -235,7 +240,7 @@ in {
       useACMEHost = cfg.useACMEHost;
     };
     networking.hosts = mkIf (!cfg.cluster) { "127.0.0.1" = [ cfg.host ]; };
-    
+
     # Handy aliases for our maintainers
     programs.bash = {
       interactiveShellInit = ''

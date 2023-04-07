@@ -24,23 +24,26 @@ let
       dest = mkOption { type = types.str; };
     };
   };
-in {
+in
+{
   options.services.garuda-rclone = mkOption {
     type = types.attrsOf (types.submodule submoduleOptions);
     default = { };
   };
 
   config = {
-    systemd.services = mapAttrs' (name: value:
-      nameValuePair ("garuda-rclone-" + name) (lib.mkMerge [
-        {
-          description = ''Garuda rclone "${name}" routine'';
-          startAt = value.startAt;
-          serviceConfig = {
-            ExecStart = "${pkgs.rclone}/bin/rclone sync --config=\"${value.config}\" \"${value.src}\" \"${value.dest}\" ${value.args}";
-          };
-        }
-        value.extraConfig
-      ])) cfg;
+    systemd.services = mapAttrs'
+      (name: value:
+        nameValuePair ("garuda-rclone-" + name) (lib.mkMerge [
+          {
+            description = ''Garuda rclone "${name}" routine'';
+            startAt = value.startAt;
+            serviceConfig = {
+              ExecStart = "${pkgs.rclone}/bin/rclone sync --config=\"${value.config}\" \"${value.src}\" \"${value.dest}\" ${value.args}";
+            };
+          }
+          value.extraConfig
+        ]))
+      cfg;
   };
 }

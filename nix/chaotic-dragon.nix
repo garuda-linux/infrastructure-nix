@@ -1,19 +1,26 @@
-{ config, lib, garuda-lib, pkgs, ... }: {
+{ config
+, lib
+, garuda-lib
+, pkgs
+, ...
+}: {
   imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
 
   # Base configuration
   networking.hostName = "chaotic-dragon";
-  networking.interfaces."eth0".ipv4.addresses = [{
-    address = "192.168.1.50";
-    prefixLength = 24;
-  }];
+  networking.interfaces."eth0".ipv4.addresses = [
+    {
+      address = "192.168.1.50";
+      prefixLength = 24;
+    }
+  ];
   networking.defaultGateway = "192.168.1.1";
 
   # LXC support
   systemd.enableUnifiedCgroupHierarchy = lib.mkForce true;
 
-  # Openssh HPN for the performance gains while uploading packages
-  programs.ssh.package = pkgs.openssh_hpn;
+  # Openssh HPN for the performance gains while uploading packages - marked broken as of 230407
+  # programs.ssh.package = pkgs.openssh_hpn;
 
   # Enable Chaotic-AUR building
   services.chaotic.enable = true;

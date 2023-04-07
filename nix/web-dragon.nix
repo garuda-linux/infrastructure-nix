@@ -1,10 +1,9 @@
-{
-  garuda-lib,
-  pkgs,
-  lib,
-  ...
+{ garuda-lib
+, pkgs
+, lib
+, ...
 }: {
-  imports = [./garuda/garuda.nix ./garuda/common/lxc.nix];
+  imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
 
   # Base configuration
   networking.defaultGateway = "192.168.1.1";
@@ -28,7 +27,7 @@
       environment = {
         BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_web-dragon";
       };
-      paths = ["/var/garuda/docker-compose-runner/web-dragon"];
+      paths = [ "/var/garuda/docker-compose-runner/web-dragon" ];
       prune.keep = {
         daily = 7;
         monthly = 1;
@@ -65,7 +64,7 @@
           }
         '';
         http3 = true;
-        serverAliases = ["piped-api.garudalinux.org" "piped-proxy.garudalinux.org"];
+        serverAliases = [ "piped-api.garudalinux.org" "piped-proxy.garudalinux.org" ];
         useACMEHost = "garudalinux.org";
       };
       "invidious.garudalinux.org" = {

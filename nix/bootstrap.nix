@@ -34,6 +34,8 @@
     "d /var/garuda 1555 root root"
   ];
 
-  nix.package = (import (builtins.fetchTarball
-    "https://github.com/nixos/nixpkgs/tarball/nixos-unstable") { }).nix;
+  nix.package = (import
+    (builtins.fetchTarball
+      "https://github.com/nixos/nixpkgs/tarball/nixos-unstable")
+    { }).nix;
 }

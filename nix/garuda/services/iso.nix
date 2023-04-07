@@ -6,7 +6,8 @@ let
     "TELEGRAM=tgram://${garuda-lib.secrets.telegram.token}/${garuda-lib.secrets.telegram.updates_channel}";
   buildiso_script =
     pkgs.writeScriptBin "buildiso" "docker exec -it buildiso bash";
-in {
+in
+{
   options.services.garuda-iso = {
     enable = mkEnableOption "Garuda ISO builder";
   };

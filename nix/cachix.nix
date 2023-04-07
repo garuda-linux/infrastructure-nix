@@ -9,8 +9,8 @@
     fileSystems."/" = { device = "nodev"; };
     boot.loader.grub.device = "nodev";
     cachix = pkgs.buildEnv {
-        name = "cachix";
-        paths = [ config.services.zerotierone.package config.services.nginx.package ];
+      name = "cachix";
+      paths = [ config.services.zerotierone.package config.services.nginx.package ];
     };
   };
 }

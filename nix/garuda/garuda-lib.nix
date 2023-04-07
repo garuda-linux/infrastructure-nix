@@ -2,10 +2,13 @@
 with lib;
 let
   secrets = builtins.fromJSON (builtins.readFile ./secrets/secrets.json);
-  setRealIpFromConfig = lib.concatMapStrings (ip: ''
-    set_real_ip_from ${ip};
-  '') (lib.strings.splitString "\n" (builtins.readFile sources.cloudflare-ipv4));
-in {
+  setRealIpFromConfig = lib.concatMapStrings
+    (ip: ''
+      set_real_ip_from ${ip};
+    '')
+    (lib.strings.splitString "\n" (builtins.readFile sources.cloudflare-ipv4));
+in
+{
   options.garuda-lib = mkOption {
     type = types.attrs;
     default = { };
@@ -35,7 +38,7 @@ in {
             kde-dragon.cred = "/var/garuda/secrets/cloudflare/kde-dragon.json";
             esxi-web.cred = "/var/garuda/secrets/cloudflare/esxi-web.json";
             esxi-build.cred =
-            "/var/garuda/secrets/cloudflare/esxi-build.json";
+              "/var/garuda/secrets/cloudflare/esxi-build.json";
             monitor-dragon.cred =
               "/var/garuda/secrets/cloudflare/monitor-dragon.json";
             chaotic-dragon.cred =

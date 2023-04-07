@@ -23,7 +23,8 @@ let
     '';
     system = pkgs.hostPlatform.system;
   };
-in {
+in
+{
   options.services.chaotic-mirror = {
     enable = mkEnableOption "Chaotic Mirror service";
     domain = mkOption { type = types.str; };

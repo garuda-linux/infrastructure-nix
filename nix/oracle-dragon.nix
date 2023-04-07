@@ -21,17 +21,17 @@
     #   server web-dragon.local:5000;
     # '';
     virtualHosts = {
-    #   "search-balance.garudalinux.org" = {
-    #     addSSL = true;
-    #     extraConfig = ''
-    #       access_log off;
-    #       ${garuda-lib.setRealIpFromConfig}
-    #       real_ip_header CF-Connecting-IP;
-    #     '';
-    #     locations = { "/" = { proxyPass = "http://whoogle"; }; };
-    #     http3 = true;
-    #     useACMEHost = "garudalinux.org";
-    #   };
+      #   "search-balance.garudalinux.org" = {
+      #     addSSL = true;
+      #     extraConfig = ''
+      #       access_log off;
+      #       ${garuda-lib.setRealIpFromConfig}
+      #       real_ip_header CF-Connecting-IP;
+      #     '';
+      #     locations = { "/" = { proxyPass = "http://whoogle"; }; };
+      #     http3 = true;
+      #     useACMEHost = "garudalinux.org";
+      #   };
       "search-2.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''

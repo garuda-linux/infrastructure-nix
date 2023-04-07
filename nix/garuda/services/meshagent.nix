@@ -13,7 +13,8 @@ let
     dontConfigure = true;
     dontUnpack = true;
   };
-in {
+in
+{
   options.services.garuda-meshagent = {
     enable = mkEnableOption "Garuda Meshagent";
     mshFile = mkOption { };

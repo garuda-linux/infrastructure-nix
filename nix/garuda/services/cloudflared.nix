@@ -2,7 +2,8 @@
 with lib;
 let
   cfg = config.services.garuda-cloudflared;
-in {
+in
+{
   options.services.garuda-cloudflared = {
     enable = mkEnableOption "Garuda legacy cloudflared options";
     ingress = mkOption { type = types.attrs; };

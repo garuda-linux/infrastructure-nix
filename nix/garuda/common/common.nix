@@ -108,10 +108,11 @@
       startWhenNeeded = true;
     };
     garuda-meshagent = {
-      agentBinary = if pkgs.hostPlatform.system == "aarch64-linux" then
-        meshagent.aarch64
-      else
-        meshagent.x86_64;
+      agentBinary =
+        if pkgs.hostPlatform.system == "aarch64-linux" then
+          meshagent.aarch64
+        else
+          meshagent.x86_64;
       enable = lib.mkDefault true;
       mshFile = garuda-lib.secrets.meshagent_msh;
     };

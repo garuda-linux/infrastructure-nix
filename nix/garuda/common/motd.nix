@@ -11,7 +11,8 @@ let
     fi
     HISTCONTROL=ignoreboth
   '';
-in {
+in
+{
   # Add fancy MOTD to shell logins
   environment.interactiveShellInit = "${initscript}";
 }

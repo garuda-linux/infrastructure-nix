@@ -1,9 +1,8 @@
-{
-  pkgs,
-  garuda-lib,
-  ...
+{ pkgs
+, garuda-lib
+, ...
 }: {
-  imports = [./garuda/garuda.nix ./garuda/common/lxc.nix];
+  imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
 
   # Base configuration
   networking.hostName = "backup-dragon";
@@ -72,7 +71,7 @@
   users.users.borg.home = "/backups";
 
   # Create a backup group to allow rsync'ing backups to offsite locations
-  users.groups.backup = {members = ["sgs" "nico"];};
+  users.groups.backup = { members = [ "sgs" "nico" ]; };
 
   # Borg applies 0600 permissions on repositories by default, it needs to be at least
   # accessible by the backup group though in order for offsite backups to succeed
@@ -85,12 +84,12 @@
     '';
   };
   systemd.timers.borg-repo-permissions = {
-    wantedBy = ["timers.target"];
-    timerConfig.OnCalendar = ["hourly"];
+    wantedBy = [ "timers.target" ];
+    timerConfig.OnCalendar = [ "hourly" ];
   };
   # Regularly compacting the repo seems to be required in order for repos to not grow indefinitely in size
   systemd.services.borg-repo-compact = {
-    path = [pkgs.borgbackup];
+    path = [ pkgs.borgbackup ];
     serviceConfig.Type = "oneshot";
     script = ''
       cd /backups
@@ -113,13 +112,13 @@
     };
   };
   systemd.timers.borg-repo-compact = {
-    wantedBy = ["timers.target"];
-    timerConfig.OnCalendar = ["daily"];
+    wantedBy = [ "timers.target" ];
+    timerConfig.OnCalendar = [ "daily" ];
   };
 
   # Sync repos to our offsite backup storage
   systemd.services.offsite-replication = {
-    path = [pkgs.rsync pkgs.openssh];
+    path = [ pkgs.rsync pkgs.openssh ];
     serviceConfig.Type = "oneshot";
     script = ''
       rsync -e "ssh -i ${garuda-lib.secrets.ssh.team.private}" \
@@ -131,8 +130,8 @@
     };
   };
   systemd.timers.offsite-replication = {
-    wantedBy = ["timers.target"];
-    timerConfig.OnCalendar = ["daily"];
+    wantedBy = [ "timers.target" ];
+    timerConfig.OnCalendar = [ "daily" ];
   };
 
   system.stateVersion = "22.05";

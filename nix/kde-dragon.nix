@@ -1,19 +1,26 @@
-{ config, lib, garuda-lib, pkgs, ... }: {
+{ config
+, lib
+, garuda-lib
+, pkgs
+, ...
+}: {
   imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
 
   # Base configuration
   networking.hostName = "kde-dragon";
-  networking.interfaces."eth0".ipv4.addresses = [{
-    address = "192.168.1.90";
-    prefixLength = 24;
-  }];
+  networking.interfaces."eth0".ipv4.addresses = [
+    {
+      address = "192.168.1.90";
+      prefixLength = 24;
+    }
+  ];
   networking.defaultGateway = "192.168.1.1";
 
   # LXC support
   systemd.enableUnifiedCgroupHierarchy = lib.mkForce true;
 
-  # Openssh HPN for the performance gains while uploading packages
-  programs.ssh.package = pkgs.openssh_hpn;
+  # Openssh HPN for the performance gains while uploading packages - marked broken as of 230407
+  # programs.ssh.package = pkgs.openssh_hpn;
 
   # Enable Chaotic-AUR building
   services.chaotic.enable = true;
@@ -32,7 +39,7 @@
   services.chaotic.patches = [ ./garuda/services/chaotic/add-chaotic-repo.diff ./garuda/services/chaotic/prepend-repo.diff ];
   services.chaotic.useACMEHost = "garudalinux.org";
 
-    # Special Syncthing configuration allowing to push to main node
+  # Special Syncthing configuration allowing to push to main node
   services.syncthing = {
     enable = true;
     overrideDevices = true;
@@ -62,13 +69,12 @@
     };
   };
 
-    # Cloudflared access to Syncthing webinterface
+  # Cloudflared access to Syncthing webinterface
   services.garuda-cloudflared = {
     enable = true;
     ingress = { "syncthing-kde.garudalinux.net" = "http://localhost:8384"; };
     tunnel-credentials = garuda-lib.secrets.cloudflare.cloudflared.kde-dragon.cred;
   };
-
 
   # Auto reset syncthing stuff
   systemd.services.syncthing-reset = {

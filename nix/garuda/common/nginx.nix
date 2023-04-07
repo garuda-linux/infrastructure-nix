@@ -1,15 +1,14 @@
-{
-  pkgs,
-  lib,
-  config,
-  ...
+{ pkgs
+, lib
+, config
+, ...
 }: {
   # The Nginx QUIC package with Perl & Brotli modules
   services.nginx.package = pkgs.nginxQuic.override {
     withPerl = true;
     doCheck = false;
   };
-  services.nginx.additionalModules = with pkgs; [nginxModules.brotli];
+  services.nginx.additionalModules = with pkgs; [ nginxModules.brotli ];
 
   # Recommended settings replacing custom configuration
   services.nginx.recommendedGzipSettings = true;
@@ -21,7 +20,7 @@
 
   # Upstream resolvers
   services.nginx.resolver = {
-    addresses = ["1.1.1.1" "1.0.0.1" "[2606:4700:4700::1111]" "[2606:4700:4700::1001]"];
+    addresses = [ "1.1.1.1" "1.0.0.1" "[2606:4700:4700::1111]" "[2606:4700:4700::1001]" ];
     valid = "60s";
   };
 
@@ -79,13 +78,13 @@
   security.dhparams = lib.mkIf config.services.nginx.enable {
     defaultBitSize = 3072;
     enable = true;
-    params.nginx = {};
+    params.nginx = { };
   };
   services.nginx.sslDhparam = config.security.dhparams.params.nginx.path;
 
   # Need to explicitly open our web server ports
   networking.firewall = lib.mkIf config.services.nginx.enable {
-    allowedTCPPorts = [80 443];
-    allowedUDPPorts = [443];
+    allowedTCPPorts = [ 80 443 ];
+    allowedUDPPorts = [ 443 ];
   };
 }

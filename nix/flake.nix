@@ -61,7 +61,11 @@
     };
   };
 
-  outputs = { nixos-unstable, home-manager, ... }@attrs:
+  outputs =
+    { nixos-unstable
+    , home-manager
+    , ...
+    } @ attrs:
     let
       nixos = nixos-unstable;
       system = "x86_64-linux";
@@ -86,19 +90,23 @@
           tne = attrs.keys_tne;
         };
       };
-      overlay-unstable = ({ ... }: {
+      overlay-unstable = { ... }: {
         nixpkgs.overlays = [
           (final: prev: {
             unstable = nixos-unstable.legacyPackages.${prev.system};
           })
         ];
-      });
+      };
       defaultModules = [
         "${nixos}/nixos/modules/profiles/hardened.nix"
         home-manager.nixosModules.home-manager
         overlay-unstable
       ];
-    in {
+    in
+    {
+      formatter.x86_64-linux = nixos.legacyPackages.x86_64-linux.nixpkgs-fmt;
+      formatter.aarch64-linux = nixos.legacyPackages.aarch64-linux.nixpkgs-fmt;
+
       nixosConfigurations."garuda-iso" = nixos.lib.nixosSystem {
         inherit system;
         specialArgs = specialArgs;

@@ -35,7 +35,7 @@
       enable = true;
       enableAliases = true;
     };
-    fish = { 
+    fish = {
       enable = true;
       shellInit = ''
         # Motd
@@ -68,7 +68,7 @@
         function history
           builtin history --show-time='%F %T '
         end
-      ''; 
+      '';
     };
     git = {
       enable = true;
