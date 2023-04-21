@@ -42,7 +42,7 @@
   };
   console = { keyMap = "de"; };
 
-  boot.cleanTmpDir = true;
+  boot.tmp.cleanOnBoot = true;
 
   # Home-manager configuration
   home-manager = {

@@ -52,6 +52,7 @@
     ingress = {
       "mesh.garudalinux.net" = "http://127.0.0.1:80";
       "matrixadmin.garudalinux.net" = "http://esxi-web-two.local:8081";
+      "opnsense.garudalinux.net" = { service = "https://192.168.1.1"; originRequest.noTLSVerify = true; };
     };
     tunnel-credentials =
       garuda-lib.secrets.cloudflare.cloudflared.esxi-web.cred;
