@@ -28,7 +28,7 @@
       paths = [ "/var/discourse/shared/standalone/backups/" ];
       prune.keep = {
         within = "1d";
-        daily = 7;
+        daily = 3;
         weekly = 2;
         monthly = 1;
       };

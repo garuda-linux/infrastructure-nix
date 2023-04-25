@@ -29,7 +29,7 @@
       };
       paths = [ "/var/garuda/docker-compose-runner/web-dragon" ];
       prune.keep = {
-        daily = 7;
+        daily = 3;
         monthly = 1;
         weekly = 2;
         within = "1d";
