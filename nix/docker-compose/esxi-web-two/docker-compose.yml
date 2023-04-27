@@ -76,119 +76,13 @@ services:
     volumes:
       - "./matterbridge/matterbridge.toml:/etc/matterbridge/matterbridge.toml:ro"
     restart: always
-
-  # # Mastodon instance
-  # mastodon_web:
-  #   image: tootsuite/mastodon:latest
-  #   container_name: mastodon_web
-  #   restart: always
-  #   environment:
-  #     DB_HOST: 172.17.0.1
-  #     DB_NAME: mastodon
-  #     DB_PASS: ${MASTODON_DB_PASS:-?err}
-  #     DB_PORT: 5432
-  #     DB_USER: mastodon
-  #     LOCAL_DOMAIN: social.garudalinux.org
-  #     OTP_SECRET: ${MASTODON_OTP_SECRET:-?err}
-  #     REDIS_HOST: mastodon_redis
-  #     REDIS_PORT: 6379
-  #     SECRET_KEY_BASE: 
-  #     SMTP_FROM_ADDRESS: mastodon.garudalinux.org
-  #     SMTP_LOGIN: mastodon.garudalinux.org
-  #     SMTP_PASSWORD: ${MASTODON_SMTP_PASS:-?err}
-  #     SMTP_PORT: 587
-  #     SMTP_SERVER: mastodon.garudalinux.org
-  #     VAPID_PRIVATE_KEY:
-  #     VAPID_PUBLIC_KEY:
-  #     IP_RETENTION_PERIOD: 31556952
-  #     SESSION_RETENTION_PERIOD: 31556952
-  #   command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000"
-  #   healthcheck:
-  #     test:
-  #       [
-  #         'CMD-SHELL',
-  #         'wget -q --spider --proxy=off localhost:3000/health || exit 1'
-  #       ]
-  #   ports:
-  #     - '127.0.0.1:3000:3000'
-  #   depends_on:
-  #     - mastodon_redis
-  #   volumes:
-  #     - ./mastodon/system:/mastodon/public/system
-
-  # mastodon_redis:
-  #   restart: always
-  #   image: redis:7-alpine
-  #   container_name: mastodon_redis
-  #   healthcheck:
-  #     test: [ 'CMD', 'redis-cli', 'ping' ]
-  #   volumes:
-  #     - ./mastodon/redis:/data
-
-  # mastodon_streaming:
-  #   image: tootsuite/mastodon:latest
-  #   container_name: mastodon_streaming
-  #   restart: always
-  #   environment:
-  #     DB_HOST: 172.17.0.1
-  #     DB_NAME: mastodon
-  #     DB_PASS: ${MASTODON_DB_PASS:-?err}
-  #     DB_PORT: 5432
-  #     DB_USER: mastodon
-  #     LOCAL_DOMAIN: social.garudalinux.org
-  #     OTP_SECRET: ${MASTODON_OTP_SECRET:-?err}
-  #     REDIS_HOST: mastodon_redis
-  #     REDIS_PORT: 6379
-  #     SECRET_KEY_BASE: 
-  #     SMTP_FROM_ADDRESS: mastodon.garudalinux.org
-  #     SMTP_LOGIN: mastodon.garudalinux.org
-  #     SMTP_PASSWORD: ${MASTODON_SMTP_PASS:-?err}
-  #     SMTP_PORT: 587
-  #     SMTP_SERVER: mastodon.garudalinux.org
-  #     VAPID_PRIVATE_KEY:
-  #     VAPID_PUBLIC_KEY:
-  #     IP_RETENTION_PERIOD: 31556952
-  #     SESSION_RETENTION_PERIOD: 31556952
-  #   command: node ./streaming
-  #   healthcheck:
-  #     test:
-  #       [
-  #         'CMD-SHELL',
-  #         'wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit 1'
-  #       ]
-  #   ports:
-  #     - '127.0.0.1:4000:4000'
-  #   depends_on:
-  #     - mastodon_redis
-
-  # mastodon_sidekiq:
-  #   image: tootsuite/mastodon:latest
-  #   container_name: mastodon_sidekiq
-  #   restart: always
-  #   environment:
-  #     DB_HOST: 172.17.0.1
-  #     DB_NAME: mastodon
-  #     DB_PASS: ${MASTODON_DB_PASS:-?err}
-  #     DB_PORT: 5432
-  #     DB_USER: mastodon
-  #     LOCAL_DOMAIN: social.garudalinux.org
-  #     OTP_SECRET: ${MASTODON_OTP_SECRET:-?err}
-  #     REDIS_HOST: mastodon_redis
-  #     REDIS_PORT: 6379
-  #     SECRET_KEY_BASE: 
-  #     SMTP_FROM_ADDRESS: mastodon.garudalinux.org
-  #     SMTP_LOGIN: mastodon.garudalinux.org
-  #     SMTP_PASSWORD: ${MASTODON_SMTP_PASS:-?err}
-  #     SMTP_PORT: 587
-  #     SMTP_SERVER: mastodon.garudalinux.org
-  #     VAPID_PRIVATE_KEY:
-  #     VAPID_PUBLIC_KEY:
-  #     IP_RETENTION_PERIOD: 31556952
-  #     SESSION_RETENTION_PERIOD: 31556952
-  #   command: bundle exec sidekiq
-  #   depends_on:
-  #     - mastodon_redis
-  #   volumes:
-  #     - ./mastodon/system:/mastodon/public/system
-  #   healthcheck:
-  #     test: [ 'CMD-SHELL', "ps aux | grep '[s]idekiq 6' || false" ]
+  
+  # Automatic container updates
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      WATCHTOWER_CLEANUP: true
+    command: wikijs_app

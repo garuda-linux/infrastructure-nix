@@ -37,3 +37,13 @@ services:
     environment:
       ALLOW_EMPTY_PASSWORD: True
     restart: always
+
+  # Automatic container updates
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      WATCHTOWER_CLEANUP: true
+    command: nextcloud_app

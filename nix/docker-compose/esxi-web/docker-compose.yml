@@ -184,3 +184,13 @@ services:
   #   mem_reservation: 20m
   #   cpus: 0.2
   #   restart: unless-stopped
+
+  # Automatic container updates
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      WATCHTOWER_CLEANUP: true
+    command: homer privatebin bitwarden thelounge searx whoogle
