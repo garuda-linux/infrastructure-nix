@@ -2,4 +2,4 @@
 
 ### How it is connected
 
-<img src="https://gitlab.com/garuda-linux/infrastructure/-/raw/main/Infra.png" alt="Infra structure">
+<img src="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/Infra.png" alt="Infra structure">
