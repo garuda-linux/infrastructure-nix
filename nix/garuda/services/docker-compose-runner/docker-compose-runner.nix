@@ -5,7 +5,7 @@ let
 in
 {
   options.services.docker-compose-runner = mkOption {
-    type = types.attrsOf (types.submodule ({
+    type = types.attrsOf (types.submodule {
       options = {
         source = mkOption {
           type = types.path;
@@ -17,7 +17,7 @@ in
           default = null;
         };
       };
-    }));
+    });
     default = { };
   };
 
@@ -35,7 +35,7 @@ in
               sed -r 's/(^\s+restart:\s*)(unless-stopped|always)(\s*($|#))/\1on-failure\3/g' "$src/docker-compose.yml" > "$out/docker-compose.yml"
               rsync -a "$src/" "$out"
             '';
-            system = pkgs.hostPlatform.system;
+            inherit (pkgs.hostPlatform) system;
           };
           statepath = "/var/garuda/docker-compose-runner/${name}";
         in

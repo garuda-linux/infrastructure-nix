@@ -60,7 +60,7 @@ in {
 
     # Extra Python & system packages required for Netdata to function
     services.netdata.python.extraPackages = ps: [ ps.psycopg2 ];
-    systemd.services.netdata = { path = (with pkgs; [ jq ]); };
+    systemd.services.netdata = { path = with pkgs; [ jq ]; };
 
     # Let Netdata poll Nginx' status page 
     services.nginx.statusPage = true;

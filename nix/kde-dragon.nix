@@ -45,11 +45,11 @@
     overrideDevices = true;
     overrideFolders = true;
     configDir = config.services.syncthing.dataDir;
-    cert = garuda-lib.secrets.syncthing.kde-dragon.cert;
-    key = garuda-lib.secrets.syncthing.kde-dragon.key;
+    inherit (garuda-lib.secrets.syncthing.kde-dragon) cert;
+    inherit (garuda-lib.secrets.syncthing.kde-dragon) key;
     devices = {
       "builds.garudalinux.org" = {
-        id = garuda-lib.secrets.syncthing.esxi-build.id;
+        inherit (garuda-lib.secrets.syncthing.esxi-build) id;
         addresses = [ "dynamic" "tcp://builds.garudalinux.org" ];
       };
     };

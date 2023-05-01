@@ -51,8 +51,8 @@
     enable = true;
     openDefaultPorts = true;
     configDir = config.services.syncthing.dataDir;
-    cert = garuda-lib.secrets.syncthing.esxi-build.cert;
-    key = garuda-lib.secrets.syncthing.esxi-build.key;
+    inherit (garuda-lib.secrets.syncthing.esxi-build) cert;
+    inherit (garuda-lib.secrets.syncthing.esxi-build) key;
     overrideFolders = false;
     overrideDevices = false;
     user = "root";

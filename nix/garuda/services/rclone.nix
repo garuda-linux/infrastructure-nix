@@ -37,7 +37,7 @@ in
         nameValuePair ("garuda-rclone-" + name) (lib.mkMerge [
           {
             description = ''Garuda rclone "${name}" routine'';
-            startAt = value.startAt;
+            inherit (value) startAt;
             serviceConfig = {
               ExecStart = "${pkgs.rclone}/bin/rclone sync --config=\"${value.config}\" \"${value.src}\" \"${value.dest}\" ${value.args}";
             };

@@ -14,7 +14,7 @@ in
     services.cloudflared = {
       enable = true;
       tunnels.garuda-cloudflared-legacy = {
-        ingress = cfg.ingress;
+        inherit (cfg) ingress;
         credentialsFile = cfg.tunnel-credentials;
         default = "http_status:404";
       };
