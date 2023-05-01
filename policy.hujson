@@ -9,31 +9,19 @@
 			"src":    ["autogroup:members"],
 			"dst":    ["autogroup:self:*"],
 		},
-		// All regular members can access devices tagged tag:others
+		// Shared oracle-dragon may be used as DNS server
 		{
 			"action": "accept",
-			"src":    ["autogroup:members"],
-			"dst":    ["tag:others:*"],
+			"src":    ["*"],
+			"dst":    ["dr460nf1r3@github:*"],
 		},
-		// All regular devices with tag:garuda can always access each other
+		// Tailscale admins can access every device
 		{
 			"action": "accept",
-			"src":    ["tag:garuda"],
-			"dst":    ["tag:garuda:*"],
+			"src":    ["autogroup:admin"],
+			"dst":    ["*:*"],
 		},
-		// Oracle-dragon may be used as DNS server
-		{"action": "accept", "src": ["tag:garuda"], "dst": ["100.86.102.115:*"]},
-		// All Tailscale admins can access every devices
-		{"action": "accept", "src": ["autogroup:admin"], "dst": ["*:*"]},
 	],
-
-	// Define tagOwners via autogroups
-	"tagOwners": {
-		// only admins own devices with tag:garuda
-		"tag:garuda": ["autogroup:admin", "autogroup:members"],
-		// all others own devices with tag:others
-		"tag:others": ["autogroup:members"],
-	},
 
 	// Define users and devices that can use Tailscale SSH
 	"ssh": [

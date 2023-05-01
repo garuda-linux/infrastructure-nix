@@ -55,7 +55,7 @@
     enable = true;
     ingress = {
       "mesh.garudalinux.net" = "http://127.0.0.1:80";
-      "matrixadmin.garudalinux.net" = "http://esxi-web-two.local:8081";
+      "matrixadmin.garudalinux.net" = "http://esxi-web-two:8081";
       "opnsense.garudalinux.net" = { service = "https://192.168.1.1"; originRequest.noTLSVerify = true; };
     };
     tunnel-credentials =
@@ -179,7 +179,7 @@
                 set $delimeter "&";
               }
               set $args "$args''${delimeter}user=cfaccess&pass=${garuda-lib.secrets.meshcentral.cfaccess-user}";
-              proxy_pass http://esxi-web-two.local:22260;
+              proxy_pass http://esxi-web-two:22260;
             '';
           };
         };
@@ -380,7 +380,7 @@
           real_ip_header CF-Connecting-IP;
         '';
         locations = {
-          "/" = { proxyPass = "http://esxi-web-two.local:8080"; };
+          "/" = { proxyPass = "http://esxi-web-two:8080"; };
         };
         http3 = true;
         useACMEHost = "garudalinux.org";
@@ -392,7 +392,7 @@
           real_ip_header CF-Connecting-IP;
         '';
         locations = {
-          "/" = { proxyPass = "http://esxi-web-two.local:3001"; };
+          "/" = { proxyPass = "http://esxi-web-two:3001"; };
         };
         http3 = true;
         useACMEHost = "garudalinux.org";
@@ -405,7 +405,7 @@
         '';
         locations = {
           "/" = {
-            proxyPass = "http://esxi-web-two.local:22260";
+            proxyPass = "http://esxi-web-two:22260";
             extraConfig = ''
               proxy_http_version 1.1;
               proxy_read_timeout 330s;
@@ -437,7 +437,7 @@
         locations = {
           "/" = {
             extraConfig = "client_max_body_size 50M;";
-            proxyPass = "http://esxi-web-two.local:8008";
+            proxyPass = "http://esxi-web-two:8008";
           };
         };
         http3 = true;

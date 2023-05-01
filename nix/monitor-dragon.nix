@@ -24,7 +24,7 @@
       "page cache size" = "3072";
       "update every" = "2";
     };
-    web = { "bind to" = "localhost monitor-dragon.local 192.168.1.80"; };
+    web = { "bind to" = "localhost monitor-dragon 192.168.1.80"; };
   };
   services.netdata.configDir = {
     "stream.conf" = pkgs.writeText "stream.conf" ''

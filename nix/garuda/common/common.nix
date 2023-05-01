@@ -17,27 +17,9 @@
 
   # Network stuff
   networking = {
-    firewall.trustedInterfaces = [ garuda-lib.secrets.zerotier.interface ];
-    nameservers = [ "1.1.1.1" ];
     useDHCP = false;
-    useHostResolvConf = false;
-    useNetworkd = true;
     usePredictableInterfaceNames = true;
   };
-  systemd.network = {
-    networks = {
-      "${garuda-lib.secrets.zerotier.interface}" = {
-        name = "${garuda-lib.secrets.zerotier.interface}";
-        networkConfig = {
-          KeepConfiguration = true;
-          LinkLocalAddressing = "no";
-          MulticastDNS = true;
-        };
-      };
-    };
-  };
-  services.resolved.enable = true;
-  services.resolved.extraConfig = "MulticastDNS=true";
 
   ## Enable BBR & cake
   boot.kernelModules = [ "tcp_bbr" ];
@@ -130,10 +112,6 @@
       enable = lib.mkDefault true;
       mshFile = garuda-lib.secrets.meshagent_msh;
     };
-    zerotierone = {
-      enable = true;
-      joinNetworks = [ garuda-lib.secrets.zerotier.network ];
-    };
     garuda-monitoring = {
       enable = true;
       parent = "monitor-dragon.local";
@@ -149,9 +127,6 @@
       locate = pkgs.plocate;
     };
   };
-  services.zerotierone.package = pkgs.zerotierone.overrideAttrs (finalAttrs: previousAttrs: {
-    doCheck = false;
-  });
 
   # Docker
   virtualisation.docker = {

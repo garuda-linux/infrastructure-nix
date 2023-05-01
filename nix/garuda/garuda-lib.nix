@@ -58,7 +58,6 @@ in
           esxi-web = "/var/garuda/secrets/docker-compose/esxi-web.env";
           esxi-web-two = "/var/garuda/secrets/docker-compose/esxi-web-two.env";
           web-dragon = "/var/garuda/secrets/docker-compose/web-dragon.env";
-          oracle-dragon = "/var/garuda/secrets/docker-compose/oracle-dragon.env";
         };
         ssh = {
           team = {
