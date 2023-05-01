@@ -1,4 +1,7 @@
-{ config, pkgs, lib, ... }:
+{ config
+, lib
+, ...
+}:
 with lib;
 let
   cfg = config.services.garuda-cloudflared;

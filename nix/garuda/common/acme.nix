@@ -1,4 +1,8 @@
-{ pkgs, config, lib, garuda-lib, ... }:
+{ config
+, lib
+, garuda-lib
+, ...
+}:
 with lib; {
   config = mkIf (config.services.nginx.enable && !garuda-lib.behind_proxy) {
     security.acme = {

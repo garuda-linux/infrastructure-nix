@@ -1,4 +1,4 @@
-{ config, garuda-lib, pkgs, ... }: {
+{ ... }: {
   imports = [
     ./garuda/garuda.nix
   ];

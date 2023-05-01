@@ -1,4 +1,9 @@
-{ lib, pkgs, config, garuda-lib, sources, ... }:
+{ lib
+, pkgs
+, config
+, sources
+, ...
+}:
 with lib;
 let
   cfg = config.services.chaotic;

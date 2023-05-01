@@ -1,6 +1,4 @@
 { garuda-lib
-, pkgs
-, lib
 , ...
 }: {
   imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];

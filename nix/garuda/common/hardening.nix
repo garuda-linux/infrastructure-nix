@@ -1,6 +1,4 @@
-{ config, ... }:
-
-{
+_: {
   # Disable coredumps
   systemd.coredump.enable = false;
 

@@ -1,6 +1,7 @@
-{ config, pkgs, lib, ... }:
-
-{
+{ config
+, pkgs
+, ...
+}: {
   # Always needed home-manager settings - don't touch!
   home.username = "nico";
   home.homeDirectory = "/home/nico";

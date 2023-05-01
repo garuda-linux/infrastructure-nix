@@ -1,4 +1,8 @@
-{ config, lib, pkgs, sources, ... }:
+{ config
+, lib
+, sources
+, ...
+}:
 with lib;
 let
   secrets = builtins.fromJSON (builtins.readFile ./secrets/secrets.json);

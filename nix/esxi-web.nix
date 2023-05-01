@@ -1,4 +1,8 @@
-{ garuda-lib, lib, sources, pkgs, ... }: {
+{ garuda-lib
+, sources
+, pkgs
+, ...
+}: {
   imports = [
     ./garuda/common/esxi.nix
     ./garuda/garuda.nix

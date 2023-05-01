@@ -1,4 +1,8 @@
-{ lib, pkgs, config, sources, ... }:
+{ lib
+, pkgs
+, config
+, ...
+}:
 with lib;
 let
   cfg = config.services.docker-compose-runner;
