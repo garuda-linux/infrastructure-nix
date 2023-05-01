@@ -34,7 +34,7 @@
     '';
   };
 
-   # Always allow traffic from Tailscale network
+  # Always allow traffic from Tailscale network
   networking.firewall.trustedInterfaces = [ "tailscale0" ];
 
   # Allow the Tailscale UDP port through the firewall

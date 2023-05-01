@@ -62,8 +62,8 @@
   };
 
   outputs =
-    { nixos-unstable
-    , home-manager
+    { home-manager
+    , nixos-unstable
     , ...
     } @ attrs:
     let
@@ -71,8 +71,8 @@
       system = "x86_64-linux";
       specialArgs = {
         meshagent = {
-          x86_64 = attrs.meshagent_x86_64;
           aarch64 = attrs.meshagent_aarch64;
+          x86_64 = attrs.meshagent_x86_64;
         };
         sources = {
           buildiso = attrs.src-buildiso;
@@ -80,8 +80,8 @@
           chaotic-toolbox = attrs.src-chaotic-toolbox;
           cloudflare-ipv4 = attrs.src-cloudflare-ipv4;
           garuda-website = attrs.src-garuda-website;
-          repoctl = attrs.src-repoctl;
           nixpkgs = nixos-unstable;
+          repoctl = attrs.src-repoctl;
         };
         keys = {
           alexjp = attrs.keys_alexjp;
@@ -104,8 +104,8 @@
       ];
     in
     {
-      formatter.x86_64-linux = nixos.legacyPackages.x86_64-linux.nixpkgs-fmt;
       formatter.aarch64-linux = nixos.legacyPackages.aarch64-linux.nixpkgs-fmt;
+      formatter.x86_64-linux = nixos.legacyPackages.x86_64-linux.nixpkgs-fmt;
 
       nixosConfigurations."garuda-iso" = nixos.lib.nixosSystem {
         inherit system;

@@ -1,6 +1,6 @@
 { garuda-lib
-, sources
 , pkgs
+, sources
 , ...
 }: {
   imports = [

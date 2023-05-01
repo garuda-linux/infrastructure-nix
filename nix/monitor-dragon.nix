@@ -1,4 +1,8 @@
-{ pkgs, garuda-lib, lib, ... }: {
+{ garuda-lib
+, lib
+, pkgs
+, ...
+}: {
   imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
 
   # Base configuration

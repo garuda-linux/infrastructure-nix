@@ -1,7 +1,10 @@
 { garuda-lib
 , ...
 }: {
-  imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
+  imports = [
+    ./garuda/common/lxc.nix
+    ./garuda/garuda.nix
+  ];
 
   # Base configuration
   networking.defaultGateway = "192.168.1.1";

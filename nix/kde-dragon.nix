@@ -1,10 +1,13 @@
 { config
-, lib
 , garuda-lib
+, lib
 , pkgs
 , ...
 }: {
-  imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
+  imports = [
+    ./garuda/common/lxc.nix
+    ./garuda/garuda.nix
+  ];
 
   # Base configuration
   networking.hostName = "kde-dragon";

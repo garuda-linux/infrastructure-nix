@@ -6,9 +6,9 @@ sftp_enabled = true
 [nix]
 backup-dragon
 chaotic-dragon
+esxi-build
 esxi-cloud
 esxi-forum
-esxi-build
 esxi-repo
 esxi-web
 esxi-web-two

@@ -1,4 +1,9 @@
-{ lib, pkgs, config, sources, ... }:
+{ config
+, lib
+, pkgs
+, sources
+, ...
+}:
 with lib;
 let
   cfg = config.services.chaotic-mirror;

@@ -1,4 +1,9 @@
-{ lib, pkgs, config, garuda-lib, ... }:
+{ config
+, pkgs
+, lib
+, garuda-lib
+, ...
+}:
 with lib;
 let cfg = config.services.garuda-monitoring;
 in {

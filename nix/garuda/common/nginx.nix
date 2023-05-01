@@ -1,6 +1,6 @@
-{ pkgs
+{ config
 , lib
-, config
+, pkgs
 , ...
 }: {
   # The Nginx QUIC package with Perl & Brotli modules

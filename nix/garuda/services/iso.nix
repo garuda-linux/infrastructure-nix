@@ -1,4 +1,10 @@
-{ lib, pkgs, config, garuda-lib, sources, ... }:
+{ config
+, garuda-lib
+, lib
+, pkgs
+, sources
+, ...
+}:
 with lib;
 let
   cfg = config.services.garuda-iso;

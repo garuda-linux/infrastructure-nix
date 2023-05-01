@@ -1,5 +1,8 @@
 { ... }: {
-  imports = [ ./hardware-configuration.nix ./garuda/garuda.nix ];
+  imports = [
+    ./garuda/garuda.nix
+    ./hardware-configuration.nix
+  ];
 
   # Base configuration
   networking.interfaces.ens18.ipv4.addresses = [{

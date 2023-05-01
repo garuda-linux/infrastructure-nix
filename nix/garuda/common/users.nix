@@ -1,6 +1,6 @@
-{ keys
+{ config
+, keys
 , lib
-, config
 , ...
 }: {
   # All users are immuntable; if a password is required it needs to be set via passwordFile
