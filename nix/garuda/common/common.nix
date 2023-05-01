@@ -1,23 +1,37 @@
-{ pkgs, lib, garuda-lib, config, meshagent, sources, ... }: {
-  imports = [ ./acme.nix ./hardening.nix ./motd.nix ./nginx.nix ./users.nix ];
+{ config
+, garuda-lib
+, lib
+, meshagent
+, pkgs
+, sources
+, ...
+}: {
+  imports = [
+    ./acme.nix
+    ./hardening.nix
+    ./motd.nix
+    ./nginx.nix
+    ./tailscale.nix
+    ./users.nix
+  ];
 
   # Network stuff
   networking = {
+    firewall.trustedInterfaces = [ garuda-lib.secrets.zerotier.interface ];
     nameservers = [ "1.1.1.1" ];
     useDHCP = false;
-    usePredictableInterfaceNames = true;
-    firewall.trustedInterfaces = [ garuda-lib.secrets.zerotier.interface ];
     useHostResolvConf = false;
     useNetworkd = true;
+    usePredictableInterfaceNames = true;
   };
   systemd.network = {
     networks = {
       "${garuda-lib.secrets.zerotier.interface}" = {
         name = "${garuda-lib.secrets.zerotier.interface}";
         networkConfig = {
-          MulticastDNS = true;
-          LinkLocalAddressing = "no";
           KeepConfiguration = true;
+          LinkLocalAddressing = "no";
+          MulticastDNS = true;
         };
       };
     };
@@ -40,7 +54,7 @@
     defaultLocale = "en_GB.UTF-8";
     supportedLocales = [ "en_GB.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" ];
   };
-  console = { keyMap = "de"; };
+  console.keyMap = "de";
 
   boot.tmp.cleanOnBoot = true;
 
