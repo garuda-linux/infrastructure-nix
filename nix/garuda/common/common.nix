@@ -17,6 +17,7 @@
 
   # Network stuff
   networking = {
+    nameservers = [ "1.1.1.1" "1.0.0.1" ];
     useDHCP = false;
     usePredictableInterfaceNames = true;
   };
@@ -114,7 +115,7 @@
     };
     garuda-monitoring = {
       enable = true;
-      parent = "monitor-dragon.local";
+      parent = "monitor-dragon";
     };
     earlyoom = {
       enable = true;
