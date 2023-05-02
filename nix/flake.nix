@@ -9,6 +9,8 @@
       inputs.nixpkgs.follows = "nixos-unstable";
     };
 
+    nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
+
     meshagent_x86_64 = {
       url = "https://mesh.garudalinux.org/meshagents?id=6";
       flake = false;
@@ -63,6 +65,7 @@
 
   outputs =
     { home-manager
+    , nixos-mailserver
     , nixos-unstable
     , ...
     } @ attrs:
@@ -107,15 +110,13 @@
       formatter.aarch64-linux = nixos.legacyPackages.aarch64-linux.nixpkgs-fmt;
       formatter.x86_64-linux = nixos.legacyPackages.x86_64-linux.nixpkgs-fmt;
 
-      nixosConfigurations."garuda-iso" = nixos.lib.nixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ [ ./iso.nix ];
-      };
       nixosConfigurations."garuda-build" = nixos.lib.nixosSystem {
         inherit system;
         inherit specialArgs;
-        modules = defaultModules ++ [ ./garuda-build.nix ];
+        modules = defaultModules ++ [
+          ./garuda-build.nix
+          nixos-mailserver.nixosModule
+        ];
       };
       nixosConfigurations."esxi-build" = nixos.lib.nixosSystem {
         inherit system;
