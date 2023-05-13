@@ -5,11 +5,12 @@ _: {
   # Disable root login & password authentication on sshd
   services.openssh = {
     extraConfig = ''
+      ChallengeResponseAuthentication no
       ClientAliveInterval 600
       LoginGraceTime 15
-      ChallengeResponseAuthentication no
       MaxStartups 30:30:60
       Protocol 2
+      TCPKeepAlive yes
     '';
     settings = {
       PermitRootLogin = "no";
