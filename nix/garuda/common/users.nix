@@ -51,6 +51,12 @@
     extraGroups = [ "chaotic_op" ];
     openssh.authorizedKeys.keyFiles = [ keys.alexjp ];
   };
+  users.users.xiota = lib.mkIf config.services.chaotic.enable {
+    isNormalUser = true;
+    home = "/home/xiota";
+    extraGroups = [ "chaotic_op" ];
+    openssh.authorizedKeys.keyFiles = [ keys.xiota ];
+  };
 
   # Sudo configuration
   security.sudo.extraRules = [{

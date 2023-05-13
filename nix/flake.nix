@@ -36,6 +36,10 @@
       url = "https://github.com/alexjp.keys";
       flake = false;
     };
+    keys_xiota = {
+      url = "https://github.com/xiota.keys";
+      flake = false;
+    };
 
     src-chaotic-toolbox = {
       url = "github:chaotic-aur/toolbox";
@@ -91,6 +95,7 @@
           nico = attrs.keys_nico;
           technetium1 = attrs.keys_technetium1;
           tne = attrs.keys_tne;
+          xiota = attrs.keys_xiota;
         };
       };
       overlay-unstable = _: {
