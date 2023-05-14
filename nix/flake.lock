@@ -100,6 +100,18 @@
         "url": "https://github.com/justtne.keys"
       }
     },
+    "keys_xiota": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-KI9FTFh33l8KfTt8OuHepx8RKClQ4a+OHwt91k4rdCM=",
+        "type": "file",
+        "url": "https://github.com/xiota.keys"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/xiota.keys"
+      }
+    },
     "meshagent_aarch64": {
       "flake": false,
       "locked": {
@@ -200,6 +212,7 @@
         "keys_nico": "keys_nico",
         "keys_technetium1": "keys_technetium1",
         "keys_tne": "keys_tne",
+        "keys_xiota": "keys_xiota",
         "meshagent_aarch64": "meshagent_aarch64",
         "meshagent_x86_64": "meshagent_x86_64",
         "nixos-mailserver": "nixos-mailserver",
@@ -247,11 +260,11 @@
     "src-chaotic-toolbox": {
       "flake": false,
       "locked": {
-        "lastModified": 1683919322,
-        "narHash": "sha256-YJ0IOd9PYa2ir319eirFlz9jcYzWexG851Q1zAkJpq8=",
+        "lastModified": 1684061676,
+        "narHash": "sha256-qt0tz5QenoYP8IWWPFqpe2AZHbTD77Qqhm8Eyo3nzY4=",
         "owner": "chaotic-aur",
         "repo": "toolbox",
-        "rev": "c9f8574ac6a96fa859133ac4fc3de537ca652ba7",
+        "rev": "92ebda7ad90697ec42dbf22148f7d7053590f470",
         "type": "github"
       },
       "original": {
