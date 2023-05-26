@@ -1,5 +1,6 @@
+.direnv
 .envrc
 .vault_pass
 node_modules/
-package.json
 package-lock.json
+package.json
