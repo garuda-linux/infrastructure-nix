@@ -59,6 +59,24 @@ in
           esxi-web-two = "/var/garuda/secrets/docker-compose/esxi-web-two.env";
           web-dragon = "/var/garuda/secrets/docker-compose/web-dragon.env";
         };
+        mail = {
+          actionsatcx = "/var/garuda/secrets/mail/actionsatcx";
+          cloudatgl = "/var/garuda/secrets/mail/cloudatgl";
+          complaintsatgl = "/var/garuda/secrets/mail/complaintsatgl";
+          dr460nf1r3atgl = "/var/garuda/secrets/mail/dr460nf1r3atgl";
+          filoatgl = "/var/garuda/secrets/mail/filoatgl";
+          gitlabatgl = "/var/garuda/secrets/mail/gitlabatgl";
+          mastodonatgl = "/var/garuda/secrets/mail/mastodonatgl";
+          namanatgl = "/var/garuda/secrets/mail/namanatgl";
+          nicoatcx = "/var/garuda/secrets/mail/nicoatcx";
+          rohitatgl = "/var/garuda/secrets/mail/rohitatgl";
+          securityatgl = "/var/garuda/secrets/mail/securityatgl";
+          sgsatgl = "/var/garuda/secrets/mail/sgsatgl";
+          spam-reportsatgl = "/var/garuda/secrets/mail/spam-reportsatgl";
+          teamatgl = "/var/garuda/secrets/mail/teamatgl";
+          tneatgl = "/var/garuda/secrets/mail/tnegl";
+          yorperatgl = "/var/garuda/secrets/mail/yorperatgl";
+        };
         ssh = {
           team = {
             private = "/var/garuda/secrets/team_sshkey";

@@ -13,9 +13,7 @@ esxi-repo
 esxi-web
 esxi-web-two
 garuda-build
+garuda-mail
 kde-dragon
 monitor-dragon
 web-dragon
-
-[debian]
-garuda-mail

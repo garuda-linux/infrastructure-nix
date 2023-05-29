@@ -120,6 +120,13 @@
         inherit specialArgs;
         modules = defaultModules ++ [
           ./garuda-build.nix
+        ];
+      };
+      nixosConfigurations."garuda-mail" = nixos.lib.nixosSystem {
+        inherit system;
+        inherit specialArgs;
+        modules = defaultModules ++ [
+          ./garuda-mail.nix
           nixos-mailserver.nixosModule
         ];
       };
