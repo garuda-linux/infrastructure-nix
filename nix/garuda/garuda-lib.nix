@@ -69,6 +69,7 @@ in
           mastodonatgl = "/var/garuda/secrets/mail/mastodonatgl";
           namanatgl = "/var/garuda/secrets/mail/namanatgl";
           nicoatcx = "/var/garuda/secrets/mail/nicoatcx";
+          noreplyatgl = "/var/garuda/secrets/mail/noreplyatgl";
           rohitatgl = "/var/garuda/secrets/mail/rohitatgl";
           securityatgl = "/var/garuda/secrets/mail/securityatgl";
           sgsatgl = "/var/garuda/secrets/mail/sgsatgl";

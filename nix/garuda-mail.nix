@@ -74,6 +74,9 @@
       "naman@garudalinux.org" = {
         hashedPasswordFile = "/var/garuda/secrets/mail/namanatgl";
       };
+      "noreply@garudalinux.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/noreplyatgl";
+      };
       "rohit@garudalinux.org" = {
         hashedPasswordFile = "/var/garuda/secrets/mail/rohitatgl";
       };
