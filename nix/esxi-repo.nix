@@ -1,4 +1,4 @@
-{ ... }: {
+{ lib, ... }: {
   imports = [
     ./garuda/garuda.nix
   ];
@@ -48,6 +48,10 @@
     after = [ "create-tmp-proc-directory.service" ];
     wantedBy = [ "local-fs.target" ];
   }];
+
+  # Fix issues with Nginx while applying configs,
+  # enabled by chaotic module and not needed on this machine
+  services.nginx.enable = lib.mkForce false; 
 
   system.stateVersion = "22.11";
 }
