@@ -112,7 +112,7 @@
     };
     garuda-monitoring = {
       enable = true;
-      parent = "monitor-dragon";
+      parent = "100.68.56.130";
     };
     earlyoom = {
       enable = true;
