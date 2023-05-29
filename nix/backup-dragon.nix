@@ -48,6 +48,14 @@
       path = "/backups/esxi-web-two";
       user = "borg";
     };
+    garuda-mail = {
+      authorizedKeys = [
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCzqLKPVEqfSEB56ZUdrf7vYmRbHXTByqYGL/Q1d2Nmph/OlG7EvW2zlXTM0z/+kLQdFeVO9dm9XFmJd8Ef8xC1u9CliDCrkax7ncK/av3wYAahaq+yZ2MTM1uQMP4kMXxCl6njoLkkUw2c2Sjsj+Wube1+9tHfPKDDhcxx/qMI3pyVCyZtZdOeT9ya6XD4XHfCWD//LwPJbF93J7CapcLZBKepl1q4ppGCqDRwtXz+IuWGpswV+FnEy+XA+DIpao4WpXjs5xgoeNLla0JHp1rBxc8mc9K1/bSDXciC5BD7Z4rYyorAL+DrjkiAJgEYoADwLa/rhxhnygYSXJtiU6rm3NjRcDqfHCN9GBLtyFXiGv3QDWVyS/fW33DAYQSeqct9L+xcuxMEReRssOkGHkENfF3URRDlr4iX7cGPAyRGxX97Mcdw3jlHG+Z8F4QB6aET7dLCoPTY33kbLWaqU1FtF38WG7ix13WkC9WEucBPc6gJQTMjp78F6I51TLgm29E= nico@garuda-mail"
+      ];
+      group = "backup";
+      path = "/backups/garuda-mail";
+      user = "borg";
+    };
     web-dragon = {
       authorizedKeys = [
         "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDK+o9S0fmC5zqV24hVgOWKmDVW18S/FTaIGnLtHFF5dHgGmwCsyv/ERFfG5cHv7obMNWV5mrHXIHMTEvowO1r0RzWWy8gMwfoQkhXvohXdMMZXy7jslnYfYWuLxCV//ZvL+0jy6Q8Sidi/yA49jTYYf4pO86lgxKTXTWS/aIXwRn7UY+CDA1u0T6RtonwGwx18hHkMhqb1QgyFpSgT9bgZO7tfaOwr3KvPwk3XbCozYUsPKLKmDXayIivdGPedDWRmJrZd2rUBDVHGHMFvGv8si1xGTCp7ockTsXKLfOVVeiCv6pV2/Nn/Ky0jvrGeLQmqchzK/NkBsLymsH2TX+XmiyEzm1fwtSWG4zG659R0wphzo+g4jMWIqyVb7x2kRTTY2lDC6r5dhWkSemhSI/J5t96mr03cpT14qpVRE8YjL1VqMuw5d6yq++OMF7o183xD3e3s3E2OzY/3DyDtAA5tWKlVg2dNAiO+1YZsDaoLGn5GQeGXgLBjCM2AzPRma+E="

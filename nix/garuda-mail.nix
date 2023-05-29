@@ -18,12 +18,32 @@
   # GRUB
   boot.loader.grub.devices = [ "/dev/vda" ];
 
+  # Configure backups to backup-dragon
+  services.borgbackup.jobs = {
+    backupToBackupDragon = {
+      compression = "auto,zstd";
+      doInit = true;
+      encryption = {
+        mode = "repokey-blake2";
+        passCommand = "cat /var/garuda/secrets/backup/repo_key";
+      };
+      environment = {
+        BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_garuda-mail -p 666";
+      };
+      paths = [ config.mailserver.mailDirectory "/var/dkim" ];
+      prune.keep = {
+        within = "1d";
+        daily = 3;
+        weekly = 2;
+        monthly = 1;
+      };
+      repo = "borg@89.58.13.188:.";
+      startAt = "daily";
+    };
+  };
+
   # NixOS Mailserver
   mailserver = {
-    borgbackup = {
-      enable = true;
-      compression.method = "zstd";
-    };
     certificateScheme = "acme-nginx";
     dmarcReporting = {
       domain = "garudalinux.org";
@@ -126,23 +146,8 @@
   # Fix dovecot errors caused by failed scudo allocations
   environment.memoryAllocator.provider = lib.mkForce "libc";
 
-  # Nginx host for Rspamd UI
-  services.nginx = {
-    enable = true;
-    virtualHosts.rspamd = {
-      forceSSL = true;
-      enableACME = true;
-      basicAuthFile = "/var/garuda/secrets/mail/rspamd";
-      serverName = "rspamd.garudalinux.net";
-      locations = {
-        "/" = {
-          proxyPass = "http://unix:/run/rspamd/worker-controller.sock:/";
-        };
-      };
-    };
-  };
-
-  networking.firewall.allowedTCPPorts = [ 80 443 ];
+  # Postmaster alias
+  services.postfix.postmasterAlias = "nico@dr460nf1r3.org";
 
   system.stateVersion = "22.05";
 }
