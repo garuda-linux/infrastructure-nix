@@ -15,8 +15,10 @@ in {
   config = mkIf cfg.enable {
     services.netdata.enable = true;
     services.netdata.config = {
-      global = {
-        "memory mode" = "none";
+      db = {
+        "dbengine disk space MB" = "256";
+        "dbengine multihost disk space MB" = "256";
+        "mode" = "dbengine";
         "update every" = "2";
       };
       ml = { "enabled" = "yes"; };
