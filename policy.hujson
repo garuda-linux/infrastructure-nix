@@ -15,28 +15,17 @@
 			"src":    ["*"],
 			"dst":    ["dr460nf1r3@github:*"],
 		},
-		// All invited members can access SSH
+		// Shared out nodes can be accessed on SSH / Mosh ports
 		{
 			"action": "accept",
 			"src":    ["autogroup:shared"],
-			"dst":    ["*:22"],
+			"dst":    ["*:22,60000-61000"],
 		},
 		// Tailscale admins can access every device
 		{
 			"action": "accept",
 			"src":    ["autogroup:admin"],
 			"dst":    ["*:*"],
-		},
-	],
-
-	// Define users and devices that can use Tailscale SSH
-	"ssh": [
-		// Allow all users to SSH into their own devices in check mode
-		{
-			"action": "check",
-			"src":    ["autogroup:members"],
-			"dst":    ["autogroup:self"],
-			"users":  ["autogroup:nonroot", "root"],
 		},
 	],
 }
