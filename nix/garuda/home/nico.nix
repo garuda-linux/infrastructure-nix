@@ -16,7 +16,7 @@
       enable = true;
       initExtra = ''
         if [ "$SSH_CLIENT" != "" ]; then
-          exec tmux
+          exec ${pkgs.tmux}/bin/tmux attach
         fi
       '';
     };
