@@ -36,7 +36,7 @@ in
             -v "${garuda-lib.secrets.ssh.team.private}:/root/.ssh/id_ed25519" \
             -v "${garuda-lib.secrets.cloudflare.r2.rclone}:/root/.config/rclone/rclone.conf" \
             -v "${envfile}:/var/cache/garuda-tools/garuda-builds/.env" \
-            "$(docker build -q "${sources.buildiso}")" auto
+            "$(docker build -q "${sources.buildiso}")" auto-noweekly
         '';
         Restart = "on-failure";
         RestartSec = "30";

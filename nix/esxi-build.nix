@@ -214,6 +214,12 @@
     };
   };
 
+  # Enable the docker-compose stack
+  services.docker-compose-runner.esxi-build = {
+    source = ./docker-compose/esxi-build;
+    envfile = garuda-lib.secrets.docker-compose.esxi-build;
+  };
+
   # Push chaotic to r2 hourly automatically
   services.garuda-rclone.chaotic = {
     src = "/srv/http/repos/";

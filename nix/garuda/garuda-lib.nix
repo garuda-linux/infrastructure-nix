@@ -58,6 +58,7 @@ in
           esxi-web = "/var/garuda/secrets/docker-compose/esxi-web.env";
           esxi-web-two = "/var/garuda/secrets/docker-compose/esxi-web-two.env";
           web-dragon = "/var/garuda/secrets/docker-compose/web-dragon.env";
+          esxi-build = "/var/garuda/secrets/docker-compose/esxi-build.env";
         };
         mail = {
           actionsatcx = "/var/garuda/secrets/mail/actionsatcx";
