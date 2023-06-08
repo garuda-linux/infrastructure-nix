@@ -231,7 +231,7 @@ services:
     restart: always
 
   piped_proxy:
-    image: 1337kavin/ytproxy:latest
+    image: 1337kavin/piped-proxy:latest
     container_name: piped_proxy
     environment:
       - UDS=1
