@@ -2,7 +2,6 @@ version: "3.7"
 services:
   github-runner:
     image: myoung34/github-runner:latest
-    restart: unless-stopped
     environment:
       ORG_NAME: chaotic-cx
       RUNNER_NAME: garuda

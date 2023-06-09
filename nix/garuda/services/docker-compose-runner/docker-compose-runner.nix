@@ -47,6 +47,8 @@ in
           wantedBy = [ "multi-user.target" ];
           description = "docker-compose runner for ${name}";
           path = [ pkgs.rsync pkgs.docker-compose pkgs.docker pkgs.bash ];
+          startLimitIntervalSec = 30;
+          startLimitBurst = 3;
           serviceConfig = {
             ExecStart = pkgs.writeShellScript ("execstart-docker-compose-runner-" + name) ''
               set -e
@@ -64,6 +66,8 @@ in
               cd "${statepath}"
               docker-compose down
             '';
+            Restart = "always";
+            RestartSec = 5;
           };
           unitConfig = {
             After = "docker.service";
