@@ -21,6 +21,12 @@
 			"src":    ["autogroup:shared"],
 			"dst":    ["*:22,60000-61000"],
 		},
+		// All users can use exit nodes
+		{
+			"action": "accept",
+			"src":    ["*"],
+			"dst":    ["autogroup:internet:*"],
+		},
 		// Tailscale admins can access every device
 		{
 			"action": "accept",
