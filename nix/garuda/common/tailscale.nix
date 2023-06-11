@@ -1,10 +1,14 @@
 { config
 , garuda-lib
+, lib
 , pkgs
 , ...
 }: {
   # Enable the Tailscale service
-  services.tailscale.enable = true;
+  services.tailscale = {
+    enable = true;
+    useRoutingFeatures = lib.mkDefault "client";
+  };
 
   # Autoconnect to our networks
   systemd.services.tailscale-autoconnect = {

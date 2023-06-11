@@ -6,7 +6,9 @@
   # All users are immuntable; if a password is required it needs to be set via passwordFile
   users.mutableUsers = false;
 
-  # Ansible user - generate password files with nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt' > /path/to/passwordfile and add them to infra-nix-secrets repo
+  # Ansible user - generate password files with 
+  # nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt' > /path/to/passwordfile 
+  # and add them to infra-nix-secrets repo
   users.users.ansible = {
     extraGroups = [ "wheel" ];
     home = "/home/ansible";
