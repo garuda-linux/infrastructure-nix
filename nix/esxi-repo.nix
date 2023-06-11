@@ -49,9 +49,9 @@
     wantedBy = [ "local-fs.target" ];
   }];
 
-  # Fix issues with Nginx while applying configs,
-  # enabled by chaotic module and not needed on this machine
-  services.nginx.enable = lib.mkForce false; 
+  # Workaround https://discourse.nixos.org/t/logrotate-config-fails-due-to-missing-group-30000/28501
+  # for now
+  services.logrotate.checkConfig = false;
 
   system.stateVersion = "22.11";
 }
