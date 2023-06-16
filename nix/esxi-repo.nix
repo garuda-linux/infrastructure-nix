@@ -23,7 +23,7 @@
     export CAUR_DEPLOY_LABEL="Maximus 🐉"
     export CAUR_LOWER_PKGS+=(chaotic-mirrorlist chaotic-keyring)
     export CAUR_PACKAGER="Garuda Builder <team@garudalinux.org>"
-    export CAUR_SIGN_KEY=0706B90D37D9B881
+    export CAUR_SIGN_KEY=D6C9442437365605
     export CAUR_SIGN_USER=nico
     export CAUR_TELEGRAM_TAG="@dr460nf1r3"
   '';

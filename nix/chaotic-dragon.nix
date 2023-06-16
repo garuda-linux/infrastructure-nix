@@ -24,7 +24,7 @@
   services.chaotic.enable = true;
   services.chaotic.cluster-name = "dragon-cluster";
   services.chaotic.extraConfig = ''
-    export CAUR_SIGN_KEY=BF773B6877808D28
+    export CAUR_SIGN_KEY=D6C9442437365605
     export CAUR_SIGN_USER=root
     export CAUR_PACKAGER="Nico Jensch <dr460nf1r3@chaotic.cx>"
     export CAUR_TYPE=cluster
