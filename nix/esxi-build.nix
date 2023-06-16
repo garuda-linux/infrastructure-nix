@@ -33,7 +33,7 @@
   # Let nginx set itself up for this local domain
   services.chaotic.host = "local.chaotic.invalid";
   services.chaotic.extraConfig = ''
-    export CAUR_SIGN_KEY=BF773B6877808D28
+    export CAUR_SIGN_KEY=D6C9442437365605
     export CAUR_SIGN_USER=root
     export CAUR_TYPE=primary
     export CAUR_PACKAGER="Nico Jensch <dr460nf1r3@chaotic.cx>"
