@@ -118,21 +118,6 @@
         };
         useACMEHost = "garudalinux.org";
       };
-      "nitter.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            extraConfig = "access_log off;";
-            proxyPass = "http://127.0.0.1:8888";
-          };
-        };
-        useACMEHost = "garudalinux.org";
-      };
       "libreddit.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''

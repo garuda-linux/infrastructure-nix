@@ -59,9 +59,6 @@ in
           if ($symlink_target_rel != "") {
             rewrite ^ https://$server_name/iso/$symlink_target_rel redirect;
           }
-          if ($arg_fosshost) {
-            rewrite ^/iso/(.*)$ https://mirrors.fossho.st/garuda/iso/$1? permanent;
-          }
           if ($arg_usa) {
             rewrite ^/iso/(.*)$ https://us-ny-mirror.garudalinux.org/iso/$1? permanent;
           }

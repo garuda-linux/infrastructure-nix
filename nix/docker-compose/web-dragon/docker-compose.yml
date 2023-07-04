@@ -46,38 +46,6 @@ services:
     pids_limit: 100
     restart: always
 
-  # Twitter frontend
-  nitter:
-    image: zedeus/nitter:latest
-    container_name: nitter
-    volumes:
-      - ./nitter/nitter.conf:/src/nitter.conf:ro
-    ports:
-      - "127.0.0.1:8888:8888"
-    depends_on:
-      - nitter_redis
-    healthcheck:
-      test: wget -nv --tries=1 --spider http://127.0.0.1:8888/Jack/status/20 || exit 1
-      interval: 30s
-      timeout: 5s
-      retries: 2
-    restart: always
-
-  nitter_redis:
-    image: redis:6-alpine
-    container_name: nitter_redis
-    command: redis-server --save 60 1 --loglevel warning
-    volumes:
-      - ./nitter/redis:/data
-    mem_limit: 512m
-    memswap_limit: 512m
-    healthcheck:
-      test: redis-cli ping
-      interval: 30s
-      timeout: 5s
-      retries: 2
-    restart: always
-
   # Lingva
   lingva:
     image: thedaviddelta/lingva-translate:latest
@@ -247,7 +215,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       WATCHTOWER_CLEANUP: true
-    command: invidious libreddit piped_backend piped_frontend piped_proxy piped_nginx nitter teddit lingva
+    command: invidious libreddit piped_backend piped_frontend piped_proxy piped_nginx teddit lingva
 
 volumes:
   piped_proxy: null

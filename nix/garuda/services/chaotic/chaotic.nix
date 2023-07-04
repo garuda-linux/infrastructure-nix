@@ -135,8 +135,8 @@ in
         # Automatic per-country routing of the mirrors below.
         Server = https://geo-mirror.chaotic.cx/$repo/$arch
 
-        # CDN (delayed syncing)
-        # By: Fosshost
+        # CDN
+        # By: Garuda Linux
         Server = https://cdn-mirror.chaotic.cx/$repo/$arch
       '';
       "chaotic.conf".text = ''

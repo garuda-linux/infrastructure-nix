@@ -49,9 +49,5 @@
     wantedBy = [ "local-fs.target" ];
   }];
 
-  # Workaround https://discourse.nixos.org/t/logrotate-config-fails-due-to-missing-group-30000/28501
-  # for now
-  services.logrotate.checkConfig = false;
-
   system.stateVersion = "22.11";
 }
