@@ -76,6 +76,18 @@
     let
       nixos = nixos-unstable;
       system = "x86_64-linux";
+      defaultModules = [
+        "${nixos}/nixos/modules/profiles/hardened.nix"
+        home-manager.nixosModules.home-manager
+        overlay-unstable
+      ];
+      overlay-unstable = _: {
+        nixpkgs.overlays = [
+          (final: prev: {
+            unstable = nixos-unstable.legacyPackages.${prev.system};
+          })
+        ];
+      };
       specialArgs = {
         meshagent = {
           aarch64 = attrs.meshagent_aarch64;
@@ -89,6 +101,8 @@
           garuda-website = attrs.src-garuda-website;
           nixpkgs = nixos-unstable;
           repoctl = attrs.src-repoctl;
+          inherit defaultModules; 
+          specialArgs = specialArgs;
         };
         keys = {
           alexjp = attrs.keys_alexjp;
@@ -98,18 +112,6 @@
           xiota = attrs.keys_xiota;
         };
       };
-      overlay-unstable = _: {
-        nixpkgs.overlays = [
-          (final: prev: {
-            unstable = nixos-unstable.legacyPackages.${prev.system};
-          })
-        ];
-      };
-      defaultModules = [
-        "${nixos}/nixos/modules/profiles/hardened.nix"
-        home-manager.nixosModules.home-manager
-        overlay-unstable
-      ];
     in
     {
       formatter.aarch64-linux = nixos.legacyPackages.aarch64-linux.nixpkgs-fmt;
@@ -130,7 +132,12 @@
           nixos-mailserver.nixosModule
         ];
       };
-      nixosConfigurations."esxi-build" = nixos.lib.nixosSystem {
+      nixosConfigurations."immortalis" = nixos.lib.nixosSystem {
+        inherit system;
+        inherit specialArgs;
+        modules = defaultModules ++ [ ./immortalis.nix ];
+      };
+      /*nixosConfigurations."esxi-build" = nixos.lib.nixosSystem {
         inherit system;
         inherit specialArgs;
         modules = defaultModules ++ [ ./esxi-build.nix ];
@@ -184,7 +191,7 @@
         inherit system;
         inherit specialArgs;
         modules = defaultModules ++ [ ./esxi-forum.nix ];
-      };
+      };*/
       nixosConfigurations."cachix" = nixos.lib.nixosSystem {
         inherit system;
         inherit specialArgs;
