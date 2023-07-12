@@ -19,7 +19,12 @@ let
           mountPoint = "/var/garuda/secrets";
           isReadOnly = true;
         };
+        "dev-fuse" = { hostPath = "/dev/fuse"; mountPoint = "/dev/fuse"; };
       };
+      allowedDevices = [
+        { node = "/dev/fuse"; modifier = "rwm"; }
+        { node = "/dev/mapper/control"; modifier = "rwm"; }
+      ];
     }
       extra];
 in
@@ -69,25 +74,24 @@ in
   };
   systemd.services."container@repo" = {
     serviceConfig = {
-      DevicePolicy = lib.mkForce "closed";
-      DeviceAllow = lib.mkForce [ "/dev/net/tun rwm" "char-pts rw" "/dev/loop-control rw" "block-loop rw" "block-blkext rw" ];
-      Delegate = lib.mkForce "no";
-      ExecStartPre = [
-        ''
-          "${pkgs.util-linux}/bin/mount" -t cgroup2 -o remount,rw,nosuid,nodev,noexec,relatime,rprivate cgroup /sys/fs/cgroup
-        ''
-      ];
+      DevicePolicy = lib.mkForce "";
+      DeviceAllow = lib.mkForce [ "" ];
+      ExecStartPost = [ (pkgs.writeShellScript "container-repo-post" ''
+        "${pkgs.coreutils}/bin/echo" "mount -t cgroup2 -o rw,nosuid,nodev,noexec,relatime none /sys/fs/cgroup" | "${pkgs.nixos-container}/bin/nixos-container" root-login repo
+      '') ];
     };
+    environment.SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1";
+    environment.SYSTEMD_NSPAWN_API_VFS_WRITABLE = "1";
   };
+
+  # allow syscalls via an nspawn config file, because arguments with spaces work bad with containers.example.extraArgs
+  environment.etc."systemd/nspawn/repo.nspawn".text = ''
+    [Exec]
+    SystemCallFilter=add_key keyctl bpf
+  '';
 
   containers = {
     "docker" = mkContainer "docker" {
-      allowedDevices = [
-        { node = "/dev/fuse"; modifier = "rwm"; }
-        { node = "/dev/mapper/control"; modifier = "rwm"; }
-      ];
-      bindMounts.dev-fuse = { hostPath = "/dev/fuse"; mountPoint = "/dev/fuse"; };
-      bindMounts.dev-mapper = { hostPath = "/dev/mapper"; mountPoint = "/dev/mapper"; };
       localAddress = "10.0.5.20/24";
     };
   };
