@@ -1,30 +1,25 @@
 { garuda-lib
 , lib
 , pkgs
+, sources
 , ...
 }: {
-  imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
-
-  # Base configuration
-  networking.hostName = "monitor-dragon";
-  networking.interfaces.eth0.ipv4.addresses = [{
-    address = "192.168.1.80";
-    prefixLength = 24;
-  }];
-  networking.defaultGateway = "192.168.1.1";
+  imports = sources.defaultModules ++ [
+    ./garuda/garuda.nix
+  ];
 
   # Need to turn regular monitoring off to avoid conflicts
   services.garuda-monitoring.enable = lib.mkForce false;
 
-  # Enable our Netdata parent node with a 40GB database
+  # Enable our Netdata parent node with a 20GB database
   services.netdata.enable = true;
   services.netdata.config = {
     global = {
-      "dbengine multihost disk space" = "40960";
+      "dbengine multihost disk space" = "20480";
       "page cache size" = "3072";
       "update every" = "2";
     };
-    web = { "bind to" = "localhost monitor-dragon 192.168.1.80 100.68.56.130"; };
+    web = { "bind to" = "localhost monitor 10.0.5.40"; };
   };
   services.netdata.configDir = {
     "stream.conf" = pkgs.writeText "stream.conf" ''
@@ -117,18 +112,19 @@
     '';
   };
 
-  # Allow web-dragon to send data
+  # Allow containers to send data
   networking.firewall = {
     allowedTCPPorts = [ 19999 ];
     allowedUDPPorts = [ 19999 ];
   };
 
   # Make the Netdata parent node available via Cloudflared
-  services.garuda-cloudflared = {
-    enable = true;
-    ingress = { "netdata.garudalinux.net" = "http://localhost:19999"; };
-    tunnel-credentials = garuda-lib.secrets.cloudflare.cloudflared.monitor-dragon.cred;
-  };
+  # services.garuda-cloudflared = {
+  #   enable = true;
+  #   ingress = { "netdata.garudalinux.net" = "http://localhost:19999"; };
+  #   tunnel-credentials = garuda-lib.secrets.cloudflare.cloudflared.monitor-dragon.cred;
+  # };
 
-  system.stateVersion = "22.05";
+  system.stateVersion = "23.05";
 }
+

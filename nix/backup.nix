@@ -1,18 +1,11 @@
 { garuda-lib
 , pkgs
+, sources
 , ...
 }: {
-  imports = [ ./garuda/garuda.nix ./garuda/common/lxc.nix ];
-
-  # Base configuration
-  networking.hostName = "backup-dragon";
-  networking.interfaces.eth0.ipv4.addresses = [
-    {
-      address = "192.168.1.70";
-      prefixLength = 24;
-    }
+  imports = sources.defaultModules ++ [
+    ./garuda/garuda.nix
   ];
-  networking.defaultGateway = "192.168.1.1";
 
   # Enable borg repositories, making them accessible by the borg user and people belonging to the backup group
   services.borgbackup.repos = {
@@ -147,5 +140,6 @@
   # globally as per ssh-audit suggestions
   programs.ssh.macs = [ "hmac-sha2-512" ];
 
-  system.stateVersion = "22.05";
+  system.stateVersion = "23.05";
 }
+

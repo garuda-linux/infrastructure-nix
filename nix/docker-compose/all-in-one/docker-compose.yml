@@ -52,7 +52,7 @@ services:
     volumes:
       - "./whoogle:/config"
     ports:
-      - 127.0.0.1:5000:5000
+      - 5000:5000
     environment:
       WHOOGLE_AUTOCOMPLETE: 1
       WHOOGLE_CONFIG_LANGUAGE: lang_en
@@ -76,7 +76,7 @@ services:
     volumes:
       - "./searxng:/etc/searxng"
     ports:
-      - 127.0.0.1:8080:8080
+      - 8080:8080
     environment:
       BIND_ADDRESS: 0.0.0.0:8080
       BASE_URL: https://searx.garudalinux.org/
@@ -95,7 +95,7 @@ services:
     image: dalf/morty:latest
     container_name: morty
     ports:
-      - "127.0.0.1:3000:3000"
+      - 3000:3000
     command: -timeout 6 -ipv6
     environment:
       MORTY_KEY: ${SX_MORTY_KEY:-?err}
@@ -111,8 +111,8 @@ services:
     image: dalf/filtron:latest
     container_name: filtron
     ports:
-      - "127.0.0.1:4040:4040"
-      - "127.0.0.1:4041:4041"
+      - 4040:4040
+      - 4041:4041
     command: -listen 0.0.0.0:4040 -api 0.0.0.0:4041 -target searxng:8080
     volumes:
       - "./searxng/rules.json:/etc/filtron/rules.json:rw"
@@ -128,7 +128,7 @@ services:
     volumes:
       - "./syncserver:/data"
     ports:
-      - 127.0.0.1:5001:5000
+      - 5001:5000
     environment:
       FF_SYNCSERVER_ACCESSLOG: True
       FF_SYNCSERVER_FORCE_WSGI_ENVIRON: True
@@ -146,7 +146,7 @@ services:
     volumes:
       - "./thelounge:/var/opt/thelounge"
     ports:
-      - 127.0.0.1:9000:9000
+      - 9000:9000
     restart: always
 
   # Password vault
@@ -156,7 +156,7 @@ services:
     volumes:
       - "./bitwarden:/data"
     ports:
-      - 127.0.0.1:8082:80
+      - 8081:80
     environment:
       ADMIN_TOKEN: ${BW_ADMIN_TOKEN:-?err}
       DOMAIN: https://bitwarden.garudalinux.org
@@ -180,7 +180,7 @@ services:
       - "./privatebin:/srv/data"
       - "./configs/privatebin.cfg.php:/srv/cfg/conf.php"
     ports:
-      - 127.0.0.1:8085:8080
+      - 8082:8080
     restart: always
 
   # Garuda startpage
@@ -190,7 +190,7 @@ services:
     volumes:
       - "./startpage:/www/assets"
     ports:
-      - 127.0.0.1:8084:8080
+      - 8083:8080
     restart: always
 
   # MongoDB instance
@@ -259,7 +259,7 @@ services:
     volumes:
       - "./matrix/element/config.json:/app/config.json"
     ports:
-      - 8080:80
+      - 8084:80
     restart: always
 
   # Admin interface for Matrix
@@ -269,7 +269,7 @@ services:
     depends_on:
       - matrix
     ports:
-      - 8081:80
+      - 8085:80
     restart: always
 
   # Matrix to IRC/Discord/Telegram relay
@@ -293,7 +293,7 @@ services:
       LIBREDDIT_DEFAULT_THEME: dracula
       LIBREDDIT_DEFAULT_USE_HLS: True
     ports:
-      - "127.0.0.1:8083:8080"
+      - 8086:8080
     restart: always
 
   # Lingva
@@ -306,7 +306,7 @@ services:
       DEFAULT_TARGET_LANG: en
       SITE_DOMAIN: lingva.garudalinux.org
     ports:
-      - "127.0.0.1:3002:3000"
+      - 3002:3000
     restart: always
 
   # Teddit
@@ -321,7 +321,7 @@ services:
       THEME: dark
       TRUST_PROXY: "true"
     ports:
-      - "127.0.0.1:8081:8080"
+      - 8087:8080
     healthcheck:
       test:
         [
@@ -330,7 +330,7 @@ services:
           "--no-verbose",
           "--tries=1",
           "--spider",
-          "http://127.0.0.1:8081/about"
+          "http://8081/about"
         ]
       interval: 1m
       timeout: 3s
@@ -374,9 +374,9 @@ services:
         use_pubsub_feeds: true
         use_quic: true
     ports:
-      - "127.0.0.1:3001:3000"
+      - "10.0.5.20:3003:3000"
     healthcheck:
-      test: wget -nv --tries=1 --spider http://127.0.0.1:3001/api/v1/comments/jNQXAC9IVRw || exit 1
+      test: wget -nv --tries=1 --spider http://10.0.5.20:3003/api/v1/comments/jNQXAC9IVRw || exit 1
       interval: 30s
       timeout: 5s
       retries: 2
@@ -434,7 +434,7 @@ services:
       - ./piped/config/ytproxy.conf:/etc/nginx/snippets/ytproxy.conf:ro
       - piped_proxy:/var/run/ytproxy
     ports:
-      - "127.0.0.1:8082:80"
+      - "10.0.5.20:8088:80"
     restart: always
 
   piped_postgres:
@@ -455,17 +455,6 @@ services:
       - UDS=1
     volumes:
       - piped_proxy:/app/socket
-    restart: always
-
-  # Automatic container updates
-  watchtower:
-    image: containrrr/watchtower:latest
-    container_name: watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      WATCHTOWER_CLEANUP: true
-    command: invidious libreddit piped_backend piped_frontend piped_proxy piped_nginx teddit lingva
     restart: always
 
 volumes:

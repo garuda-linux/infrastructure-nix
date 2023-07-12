@@ -101,7 +101,7 @@
           garuda-website = attrs.src-garuda-website;
           nixpkgs = nixos-unstable;
           repoctl = attrs.src-repoctl;
-          inherit defaultModules; 
+          inherit defaultModules;
           specialArgs = specialArgs;
         };
         keys = {

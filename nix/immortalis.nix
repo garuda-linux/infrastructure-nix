@@ -66,19 +66,15 @@ in
     "kernel.keys.maxkeys" = 10000;
   };
 
-  # Container config
-  containers = {
-    "repo" = mkContainer "repo" {
-      localAddress = "10.0.5.30/24";
-    };
-  };
   systemd.services."container@repo" = {
     serviceConfig = {
       DevicePolicy = lib.mkForce "";
       DeviceAllow = lib.mkForce [ "" ];
-      ExecStartPost = [ (pkgs.writeShellScript "container-repo-post" ''
-        "${pkgs.coreutils}/bin/echo" "mount -t cgroup2 -o rw,nosuid,nodev,noexec,relatime none /sys/fs/cgroup" | "${pkgs.nixos-container}/bin/nixos-container" root-login repo
-      '') ];
+      ExecStartPost = [
+        (pkgs.writeShellScript "container-repo-post" ''
+          "${pkgs.coreutils}/bin/echo" "mount -t cgroup2 -o rw,nosuid,nodev,noexec,relatime none /sys/fs/cgroup" | "${pkgs.nixos-container}/bin/nixos-container" root-login repo
+        '')
+      ];
     };
     environment.SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1";
     environment.SYSTEMD_NSPAWN_API_VFS_WRITABLE = "1";
@@ -90,17 +86,48 @@ in
     SystemCallFilter=add_key keyctl bpf
   '';
 
-  containers = {
-    "docker" = mkContainer "docker" {
-      localAddress = "10.0.5.20/24";
-    };
-  };
   systemd.services."container@docker".environment.SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1";
   # allow syscalls via an nspawn config file, because arguments with spaces work bad with containers.example.extraArgs
   environment.etc."systemd/nspawn/docker.nspawn".text = ''
     [Exec]
     SystemCallFilter=add_key keyctl bpf
   '';
+
+  containers = {
+    "backup" = mkContainer "backup" {
+      localAddress = "10.0.5.70/24";
+    };
+    "chaotic-kde" = mkContainer "chaotic-kde" {
+      localAddress = "10.0.5.120/24";
+    };
+    "docker" = mkContainer "docker" {
+      localAddress = "10.0.5.20/24";
+    };
+    "forum" = mkContainer "forum" {
+      localAddress = "10.0.5.60/24";
+    };
+    "mastodon" = mkContainer "mastodon" {
+      localAddress = "10.0.5.90/24";
+    };
+    "meshcentral" = mkContainer "meshcentral" {
+      localAddress = "10.0.5.100/24";
+    };
+    "monitor" = mkContainer "monitor" {
+      localAddress = "10.0.5.40/24";
+    };
+    "postgres" = mkContainer "postgres" {
+      localAddress = "10.0.5.110/24";
+    };
+    "repo" = mkContainer "repo" {
+      localAddress = "10.0.5.30/24";
+    };
+    "temeraire" = mkContainer "temeraire" {
+      localAddress = "10.0.5.80/24";
+    };
+    "web-front" = mkContainer "web-front" {
+      localAddress = "10.0.5.50/24";
+    };
+  };
 
   system.stateVersion = "23.05";
 }

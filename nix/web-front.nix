@@ -1,15 +1,12 @@
-{ garuda-lib, lib, sources, ... }: {
+{ garuda-lib
+, lib
+, pkgs
+, sources
+, ...
+}: {
   imports = sources.defaultModules ++ [
     ./garuda/garuda.nix
   ];
-
-  networking.hostName = "web-front";
-
-  # Enable our docker-compose stack
-  services.docker-compose-runner.web-dragon = {
-    envfile = garuda-lib.secrets.docker-compose.web-dragon;
-    source = ./docker-compose/web-dragon;
-  };
 
   # Reverse proxy for our docker-compose stack
   services.nginx = {
@@ -391,6 +388,89 @@
         };
         http3 = true;
         addSSL = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "piped.garudalinux.org" = {
+        addSSL = true;
+        # extraConfig = ''
+        #   location / {
+        #     access_log off;
+        #     ${garuda-lib.setRealIpFromConfig}
+        #     real_ip_header CF-Connecting-IP;
+        #     proxy_buffering off;
+        #     proxy_pass http://127.0.0.1:8082;
+        #     proxy_set_header Host $host;
+        #   }
+        # '';
+        http3 = true;
+        globalRedirect = "piped.video";
+        serverAliases = [ "piped-api.garudalinux.org" "piped-proxy.garudalinux.org" ];
+        useACMEHost = "garudalinux.org";
+      };
+      "invidious.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        # locations = {
+        #   "/" = {
+        #     extraConfig = ''
+        #       access_log off;
+        #       proxy_buffering off;
+        #       proxy_set_header Connection "";
+        #       proxy_http_version 1.1;
+        #     '';
+        #     proxyPass = "http://127.0.0.1:3001";
+        #   };
+        # };
+        globalRedirect = "invidious.snopyta.org";
+        useACMEHost = "garudalinux.org";
+      };
+      "teddit.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = "access_log off;";
+            proxyPass = "http://127.0.0.1:8081";
+          };
+        };
+        useACMEHost = "garudalinux.org";
+      };
+      "lingva.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = "access_log off;";
+            proxyPass = "http://127.0.0.1:3000";
+          };
+        };
+        useACMEHost = "garudalinux.org";
+      };
+      "libreddit.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = "access_log off;";
+            proxyPass = "http://127.0.0.1:8083";
+          };
+        };
         useACMEHost = "garudalinux.org";
       };
     };
