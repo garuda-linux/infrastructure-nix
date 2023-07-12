@@ -54,6 +54,7 @@ in
           apikeys = "/var/garuda/secrets/cloudflare/cloudflare_key";
         };
         docker-compose = {
+          all-in-one = "/var/garuda/secrets/docker-compose/all-in-one.env";
           esxi-cloud = "/var/garuda/secrets/docker-compose/esxi-cloud.env";
           esxi-web = "/var/garuda/secrets/docker-compose/esxi-web.env";
           esxi-web-two = "/var/garuda/secrets/docker-compose/esxi-web-two.env";
