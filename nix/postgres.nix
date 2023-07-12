@@ -7,6 +7,9 @@
     ./garuda/garuda.nix
   ];
 
+  # Avoid running Netdata instances in containers
+  services.garuda-monitoring.enable = lib.mkForce false;
+
   # Our Postgres database
   services.postgresql = {
     enable = true;

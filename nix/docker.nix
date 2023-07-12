@@ -1,7 +1,14 @@
-{ garuda-lib, lib, sources, ... }: {
+{ garuda-lib
+, lib
+, sources
+, ...
+}: {
   imports = sources.defaultModules ++ [
     ./garuda/garuda.nix
   ];
+
+  # Avoid running Netdata instances in containers
+  services.garuda-monitoring.enable = lib.mkForce false;
 
   # This container is just for docker-compose stuff
   services.docker-compose-runner.all-in-one = {

@@ -12,6 +12,9 @@
   # This disables HTTPS certificates and forced redirects
   garuda-lib.behind_proxy = true;
 
+  # Avoid running Netdata instances in containers
+  services.garuda-monitoring.enable = lib.mkForce false;
+
   # Enable Chaotic-AUR building
   # services.chaotic.enable = true;
   # services.chaotic.cluster-name = "garuda-cluster";

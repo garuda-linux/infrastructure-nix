@@ -1,10 +1,14 @@
-{ pkgs
+{ lib
+, pkgs
 , sources
 , ...
 }: {
   imports = sources.defaultModules ++ [
     ./garuda/garuda.nix
   ];
+
+  # Avoid running Netdata instances in containers
+  services.garuda-monitoring.enable = lib.mkForce false;
 
   # Meshcentral for easy remote access
   # manual installation as Nix version is outdated

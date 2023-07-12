@@ -1,4 +1,5 @@
 { garuda-lib
+, lib
 , pkgs
 , sources
 , ...
@@ -6,6 +7,9 @@
   imports = sources.defaultModules ++ [
     ./garuda/garuda.nix
   ];
+
+  # Avoid running Netdata instances in containers
+  services.garuda-monitoring.enable = lib.mkForce false;
 
   # Enable borg repositories, making them accessible by the borg user and people belonging to the backup group
   services.borgbackup.repos = {
