@@ -102,7 +102,7 @@
           nixpkgs = nixos-unstable;
           repoctl = attrs.src-repoctl;
           inherit defaultModules;
-          specialArgs = specialArgs;
+          inherit specialArgs;
         };
         keys = {
           alexjp = attrs.keys_alexjp;

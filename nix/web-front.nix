@@ -5,11 +5,8 @@
 , ...
 }: {
   imports = sources.defaultModules ++ [
-    ./garuda/garuda.nix
+    ./garuda/containers.nix
   ];
-
-  # Avoid running Netdata instances in containers
-  services.garuda-monitoring.enable = lib.mkForce false;
 
   # Reverse proxy for our docker-compose stack
   services.nginx = {

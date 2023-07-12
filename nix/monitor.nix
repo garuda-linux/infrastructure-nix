@@ -5,11 +5,8 @@
 , ...
 }: {
   imports = sources.defaultModules ++ [
-    ./garuda/garuda.nix
+    ./garuda/containers.nix
   ];
-
-  # Need to turn regular monitoring off to avoid conflicts
-  services.garuda-monitoring.enable = lib.mkForce false;
 
   # Enable our Netdata parent node with a 20GB database
   services.netdata.enable = true;

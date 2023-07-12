@@ -3,11 +3,8 @@
 , ...
 }: {
   imports = sources.defaultModules ++ [
-    ./garuda/garuda.nix
+    ./garuda/containers.nix
   ];
-
-  # Avoid running Netdata instances in containers
-  services.garuda-monitoring.enable = lib.mkForce false;
 
   # Enable Docker since we use the official Docker image in /var/discourse
   virtualisation.docker.enable = true;
