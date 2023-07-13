@@ -1,13 +1,14 @@
 { config
 , garuda-lib
-, lib
-, pkg
 , sources
 , ...
 }: {
   imports = sources.defaultModules ++ [
-    ./garuda/containers.nix
+    ./garuda/garuda.nix
   ];
+
+  # This is a container, run less services
+  garuda-lib.isContainer = true;
 
   # This disables HTTPS certificates and forced redirects
   garuda-lib.behind_proxy = true;

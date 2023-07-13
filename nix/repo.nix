@@ -1,10 +1,12 @@
-{ lib
-, sources
+{ sources
 , ...
 }: {
   imports = sources.defaultModules ++ [
-    ./garuda/containers.nix
+    ./garuda/garuda.nix
   ];
+
+  # This is a container, run less services
+  garuda-lib.isContainer = true;
 
   # Enable Chaotic-AUR building
   services.chaotic.enable = true;

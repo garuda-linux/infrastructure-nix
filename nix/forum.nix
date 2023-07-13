@@ -1,10 +1,12 @@
-{ lib
-, sources
+{ sources
 , ...
 }: {
   imports = sources.defaultModules ++ [
-    ./garuda/containers.nix
+    ./garuda/garuda.nix
   ];
+
+  # This is a container, run less services
+  garuda-lib.isContainer = true;
 
   # Enable Docker since we use the official Docker image in /var/discourse
   virtualisation.docker.enable = true;

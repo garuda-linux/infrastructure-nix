@@ -24,6 +24,7 @@ in
       xslt_style = ./static/style.xslt;
       behind_proxy = false;
       inherit setRealIpFromConfig;
+      isContainer = false;
       secrets = recursiveUpdate secrets {
         cachix = "/var/garuda/secrets/cachix";
         meshagent_msh = "/var/garuda/secrets/meshagent.msh";
