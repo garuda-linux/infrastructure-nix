@@ -5,9 +5,6 @@
     ./garuda/garuda.nix
   ];
 
-  # This is a container, run less services
-  garuda-lib.isContainer = true;
-
   # Enable Chaotic-AUR building
   services.chaotic.enable = true;
   services.chaotic.cluster-name = "garuda-repo";

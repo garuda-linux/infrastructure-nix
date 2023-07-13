@@ -7,9 +7,6 @@
     ./garuda/garuda.nix
   ];
 
-  # This is a container, run less services
-  garuda-lib.isContainer = true;
-
   # Enable our Netdata parent node with a 20GB database
   services.netdata.enable = true;
   services.netdata.config = {

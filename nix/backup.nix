@@ -7,9 +7,6 @@
     ./garuda/garuda.nix
   ];
 
-  # This is a container, run less services
-  garuda-lib.isContainer = true;
-
   # Enable borg repositories, making them accessible by the borg user and people belonging to the backup group
   services.borgbackup.repos = {
     esxi-cloud = {

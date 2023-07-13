@@ -16,15 +16,15 @@
   ];
 
   # Network stuff
-  networking = lib.mkIf (!garuda-lib.isContainer) {
+  networking = lib.mkIf (!config.boot.isContainer) {
     nameservers = [ "1.1.1.1" "1.0.0.1" ];
     useDHCP = false;
     usePredictableInterfaceNames = true;
   };
 
   ## Enable BBR & cake
-  boot.kernelModules = lib.mkIf (!garuda-lib.isContainer) [ "tcp_bbr" ];
-  boot.kernel.sysctl = lib.mkIf (!garuda-lib.isContainer) {
+  boot.kernelModules = lib.mkIf (!config.boot.isContainer) [ "tcp_bbr" ];
+  boot.kernel.sysctl = lib.mkIf (!config.boot.isContainer) {
     "net.ipv4.tcp_congestion_control" = "bbr";
     "net.core.default_qdisc" = "cake";
     # Make cloudflared happy (https://github.com/lucas-clemente/quic-go/wiki/UDP-Receive-Buffer-Size)
@@ -33,8 +33,8 @@
   # Mount /run as shared for systemd-nspawn
   boot.specialFileSystems."/run".options = lib.mkIf (!config.boot.isContainer) [ "rshared" ];
 
-  # No need for a kernel in containers
-  boot.kernel.enable = lib.mkIf garuda-lib.isContainer false; 
+  # No need for a kernel
+  boot.kernel.enable = lib.mkIf config.boot.isContainer false; 
 
   # Locales & timezone
   time.timeZone = "Europe/Berlin";
@@ -116,7 +116,7 @@
       mshFile = garuda-lib.secrets.meshagent_msh;
     };
     garuda-monitoring = {
-      enable = lib.mkIf (!garuda-lib.isContainer) true;
+      enable = lib.mkIf (!config.boot.isContainer) true;
       parent = "100.68.56.130";
     };
     earlyoom = {
@@ -203,7 +203,7 @@
   documentation.man.enable = false;
 
   # Print a diff when running system updates
-  system.activationScripts.diff = lib.mkIf (!garuda-lib.isContainer) ''
+  system.activationScripts.diff = lib.mkIf (!config.boot.isContainer) ''
     if [[ -e /run/current-system ]]; then
       (
         for i in {1..3}; do

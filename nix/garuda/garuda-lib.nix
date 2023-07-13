@@ -21,12 +21,11 @@ in
     _module.args.garuda-lib = config.garuda-lib;
     # Defaults
     garuda-lib = {
-      xslt_style = ./static/style.xslt;
       behind_proxy = false;
       inherit setRealIpFromConfig;
-      isContainer = false;
       secrets = recursiveUpdate secrets {
         cachix = "/var/garuda/secrets/cachix";
+        github-runner-token = "/var/garuda/secrets/github-runner-token";
         meshagent_msh = "/var/garuda/secrets/meshagent.msh";
         syncthing = {
           kde-dragon = {
@@ -56,11 +55,6 @@ in
         };
         docker-compose = {
           all-in-one = "/var/garuda/secrets/docker-compose/all-in-one.env";
-          esxi-cloud = "/var/garuda/secrets/docker-compose/esxi-cloud.env";
-          esxi-web = "/var/garuda/secrets/docker-compose/esxi-web.env";
-          esxi-web-two = "/var/garuda/secrets/docker-compose/esxi-web-two.env";
-          web-dragon = "/var/garuda/secrets/docker-compose/web-dragon.env";
-          esxi-build = "/var/garuda/secrets/docker-compose/esxi-build.env";
           runner = "/var/garuda/secrets/docker-compose/runner.env";
         };
         mail = {
@@ -88,6 +82,7 @@ in
           };
         };
       };
+      xslt_style = ./static/style.xslt;
     };
   };
 }

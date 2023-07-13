@@ -6,9 +6,6 @@
     ./garuda/garuda.nix
   ];
 
-  # This is a container, run less services
-  garuda-lib.isContainer = true;
-
   # Meshcentral for easy remote access
   # manual installation as Nix version is outdated
   # Also adding in a Python module needed for monitoring our PostgreSQL database via Netdata

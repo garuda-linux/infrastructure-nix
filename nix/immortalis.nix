@@ -9,27 +9,35 @@ let
   hostAddress = "10.0.5.1";
   mkContainer = name: extra:
     lib.mkMerge [{
-      autoStart = true;
-      hostAddress = hostAddress;
-      hostBridge = bridgeInterface;
-      config = import ./${name}.nix;
-      specialArgs = sources.specialArgs;
-      enableTun = true; # Tailscale
-      ephemeral = false;
-      privateNetwork = true;
       additionalCapabilities = lib.mkForce [ "all" ];
-      bindMounts = {
-        "secrets" = lib.mkDefault {
-          hostPath = "/var/garuda/secrets";
-          mountPoint = "/var/garuda/secrets";
-          isReadOnly = true;
-        };
-        "dev-fuse" = { hostPath = "/dev/fuse"; mountPoint = "/dev/fuse"; };
-      };
       allowedDevices = [
         { node = "/dev/fuse"; modifier = "rwm"; }
         { node = "/dev/mapper/control"; modifier = "rwm"; }
       ];
+      autoStart = true;
+      bindMounts = {
+        "secrets" = lib.mkDefault {
+          hostPath = "/var/garuda/secrets";
+          isReadOnly = true;
+          mountPoint = "/var/garuda/secrets";
+        };
+        "dev-fuse" = {
+          hostPath = "/dev/fuse";
+          mountPoint = "/dev/fuse";
+        };
+      };
+      config = import ./${name}.nix;
+      enableTun = true;
+      ephemeral = false;
+      extraFlags = [
+        "--property=CPUQuota=80%"
+        "--property=MemoryHigh=60G"
+        "--property=MemoryMax=64G"
+      ];
+      hostAddress = hostAddress;
+      hostBridge = bridgeInterface;
+      privateNetwork = true;
+      specialArgs = sources.specialArgs;
     }
       extra];
 in
@@ -76,20 +84,20 @@ in
 
   # Raise limits to support many containers
   boot.kernel.sysctl = {
-    # Fix "Failed to allocate directory watch: Too many open files"
-    # or "Insufficent watch descriptors available."
-    "fs.inotify.max_user_instances" = 524288; # max (uses up to 512 MB kernel memory)
-    # Fix "Failed to add ... to directory watch: inotify watch limit reached"
-    "fs.inotify.max_user_watches" = 524288; # max (uses up to 512 MB kernel memory)
-    # Fix full PIDs, check with `lsof -n -l | wc -l` (default 32768)
-    "kernel.pid_max" = 4194303; # 64-bit max
+    "fs.inotify.max_user_instances" = 524288;
+    "fs.inotify.max_user_watches" = 524288;
+    "kernel.pid_max" = 4194303;
   };
+
+  # Improve nspawn container performance since we grant all capabilities anyway
+  # https://github.com/systemd/systemd/issues/18370#issuecomment-768645418
+  environment.variables.SYSTEMD_SECCOMP = "0";
 
   # Systemd-nspawn based NixOS containers
   containers = {
     "backup" = mkContainer "backup" {
       localAddress = "10.0.5.70/24";
-        forwardPorts = [
+      forwardPorts = [
         {
           containerPort = 22;
           hostPort = 226;
@@ -110,6 +118,11 @@ in
           isReadOnly = false;
         };
       };
+      extraFlags = lib.mkForce [
+        "--property=CPUQuota=80%"
+        "--property=MemoryHigh=60G"
+        "--property=MemoryMax=64G"
+      ];
       forwardPorts = [
         {
           containerPort = 22;
@@ -157,6 +170,11 @@ in
           isReadOnly = false;
         };
       };
+      extraFlags = lib.mkForce [
+        "--property=CPUQuota=80%"
+        "--property=MemoryHigh=60G"
+        "--property=MemoryMax=64G"
+      ];
       forwardPorts = [
         {
           containerPort = 22;
@@ -167,6 +185,11 @@ in
       localAddress = "10.0.5.30/24";
     };
     "runner" = mkContainer "runner" {
+      extraFlags = lib.mkForce [
+        "--property=CPUQuota=80%"
+        "--property=MemoryHigh=60G"
+        "--property=MemoryMax=64G"
+      ];
       localAddress = "10.0.5.120/24";
     };
     "temeraire" = mkContainer "temeraire" {
@@ -182,6 +205,11 @@ in
           isReadOnly = false;
         };
       };
+      extraFlags = lib.mkForce [
+        "--property=CPUQuota=80%"
+        "--property=MemoryHigh=60G"
+        "--property=MemoryMax=64G"
+      ];
       forwardPorts = [
         {
           containerPort = 22;

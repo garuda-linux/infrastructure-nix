@@ -7,9 +7,6 @@
     ./garuda/garuda.nix
   ];
 
-  # This is a container, run less services
-  garuda-lib.isContainer = true;
-
   # Our Postgres database
   services.postgresql = {
     enable = true;

@@ -6,9 +6,6 @@
     ./garuda/garuda.nix
   ];
 
-  # This is a container, run less services
-  garuda-lib.isContainer = true;
-
   # This container is just for docker-compose stuff
   services.docker-compose-runner.all-in-one = {
     envfile = garuda-lib.secrets.docker-compose.all-in-one;
