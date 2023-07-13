@@ -23,6 +23,8 @@ in
     garuda-lib = {
       behind_proxy = false;
       inherit setRealIpFromConfig;
+      minimalContainer = false;
+      unifiedUID = false;
       secrets = recursiveUpdate secrets {
         cachix = "/var/garuda/secrets/cachix";
         github-runner-token = "/var/garuda/secrets/github-runner-token";

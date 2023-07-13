@@ -62,25 +62,25 @@
   # };
 
   # Auto reset syncthing stuff
-  systemd.services.syncthing-reset = {
+  /*systemd.services.syncthing-reset = {
     serviceConfig.Type = "oneshot";
     script = ''
       "${pkgs.curl}/bin/curl" -X POST -H "X-API-Key: garudalinux" http://localhost:8384/rest/db/override?folder=${garuda-lib.secrets.syncthing.folders.chaotic-aur-kde}
     '';
-  };
-  systemd.timers.syncthing-reset = {
+    };
+    systemd.timers.syncthing-reset = {
     wantedBy = [ "timers.target" ];
     timerConfig.OnCalendar = [ "hourly" ];
-  };
+  };*/
 
   # Fix nix nonsense causing issues with not being able to mount /proc
-  systemd.services.create-tmp-proc-directory = {
+  /*systemd.services.create-tmp-proc-directory = {
     description = "Create /tmp/proc directory";
     script = ''
       mkdir -p /tmp/proc
     '';
-  };
-  systemd.mounts = [{
+    };
+    systemd.mounts = [{
     description = "Mount for procfs to /tmp/proc";
     what = "none";
     where = "/tmp/proc";
@@ -88,7 +88,7 @@
     requires = [ "create-tmp-proc-directory.service" ];
     after = [ "create-tmp-proc-directory.service" ];
     wantedBy = [ "multi-user.target" ];
-  }];
+  }];*/
 
   system.stateVersion = "23.05";
 }

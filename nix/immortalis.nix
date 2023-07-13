@@ -1,46 +1,10 @@
 { config
+, garuda-lib
 , lib
 , pkgs
 , sources
 , ...
 }:
-let
-  bridgeInterface = "br0";
-  hostAddress = "10.0.5.1";
-  mkContainer = name: extra:
-    lib.mkMerge [{
-      additionalCapabilities = lib.mkForce [ "all" ];
-      allowedDevices = [
-        { node = "/dev/fuse"; modifier = "rwm"; }
-        { node = "/dev/mapper/control"; modifier = "rwm"; }
-      ];
-      autoStart = true;
-      bindMounts = {
-        "secrets" = lib.mkDefault {
-          hostPath = "/var/garuda/secrets";
-          isReadOnly = true;
-          mountPoint = "/var/garuda/secrets";
-        };
-        "dev-fuse" = {
-          hostPath = "/dev/fuse";
-          mountPoint = "/dev/fuse";
-        };
-      };
-      config = import ./${name}.nix;
-      enableTun = true;
-      ephemeral = false;
-      extraFlags = [
-        "--property=CPUQuota=80%"
-        "--property=MemoryHigh=60G"
-        "--property=MemoryMax=64G"
-      ];
-      hostAddress = hostAddress;
-      hostBridge = bridgeInterface;
-      privateNetwork = true;
-      specialArgs = sources.specialArgs;
-    }
-      extra];
-in
 {
   imports = [
     ./hardware-configuration.nix
@@ -49,35 +13,24 @@ in
 
   # Boot stuff
   boot = {
-    kernelPackages = pkgs.linuxPackages_xanmod_latest;
     loader.systemd-boot.enable = true;
     tmp.useTmpfs = true;
   };
 
   # Network configuration with a bridge interface
   networking = {
-    bridges."${bridgeInterface}" = {
-      interfaces = [ ];
-    };
     defaultGateway = "116.202.208.65";
     hostName = "immortalis";
     interfaces = {
-      "${bridgeInterface}".ipv4.addresses = [{
-        address = hostAddress;
-        prefixLength = 24;
-      }];
       "eth0".ipv4.addresses = [{
         address = "116.202.208.112";
         prefixLength = 26;
       }];
     };
-    nat = {
-      enable = true;
-      internalInterfaces = [ "br0" ];
-      externalInterface = "eth0";
-      enableIPv6 = true;
-    };
   };
+
+  # OpenSSH on another port to keep Chaotic's main node working
+  services.openssh.ports = [ 666 ];
 
   # Make use of all threads!
   security.allowSimultaneousMultithreading = true;
@@ -93,285 +46,263 @@ in
   # https://github.com/systemd/systemd/issues/18370#issuecomment-768645418
   environment.variables.SYSTEMD_SECCOMP = "0";
 
-  # Systemd-nspawn based NixOS containers
-  containers = {
-    "backup" = mkContainer "backup" {
-      localAddress = "10.0.5.70/24";
-      forwardPorts = [
-        {
-          containerPort = 22;
-          hostPort = 226;
-          protocol = "tcp";
-        }
-      ];
-    };
-    "chaotic-kde" = mkContainer "chaotic-kde" {
-      bindMounts = {
-        "repo" = {
-          hostPath = "/data_2/containers/chaotic-kde/repo";
-          mountPoint = "/srv/http/repos";
-          isReadOnly = false;
-        };
-        "cache" = {
-          hostPath = "/data_2/containers/chaotic-kde/cache";
-          mountPoint = "/var/cache/chaotic";
-          isReadOnly = false;
-        };
-      };
-      extraFlags = lib.mkForce [
-        "--property=CPUQuota=80%"
-        "--property=MemoryHigh=60G"
-        "--property=MemoryMax=64G"
-      ];
-      forwardPorts = [
-        {
-          containerPort = 22;
-          hostPort = 225;
-          protocol = "tcp";
-        }
-      ];
-      localAddress = "10.0.5.120/24";
-    };
-    "docker" = mkContainer "docker" {
-      bindMounts = {
-        "compose" = {
-          hostPath = "/data_1/containers/docker/";
-          mountPoint = "/var/garuda/docker-compose-runner/all-in-one";
-          isReadOnly = false;
-        };
-      };
-      forwardPorts = [
-        {
-          containerPort = 27017;
-          hostPort = 27017;
-          protocol = "tcp";
-        }
-      ];
-      localAddress = "10.0.5.20/24";
-    };
-    "forum" = mkContainer "forum" {
-      bindMounts = {
-        "forum" = {
-          hostPath = "/data_1/containers/forum/";
-          mountPoint = "/var/discourse";
-          isReadOnly = false;
+  # Custom tailscale configuration
+  systemd.services.tailscale-autoconnect.script = with pkgs; ''
+    sleep 2
+    status="$(${tailscale}/bin/tailscale status -json | ${jq}/bin/jq -r .BackendState)"
+    if [ $status = "Running" ]; then # if so, then do nothing
+      exit 0
+    fi
+    ${tailscale}/bin/tailscale up --authkey ${garuda-lib.secrets.tailscale.authkey} \
+      --advertise-routes=10.0.5.0/24
+  '';
+
+  # Custom systemd nspawn container configurations
+  services.garuda-nspawn = {
+    hostIp = "10.0.5.1";
+    hostInterface = "eth0";
+    bridgeInterface = "br0";
+    containers = {
+      chaotic-kde = {
+        ipAddress = "10.0.5.90";
+        needsNesting = true;
+        config = import ./chaotic-kde.nix;
+        extraOptions = {
+          bindMounts = {
+            "repo" = {
+              hostPath = "/data_2/containers/chaotic-kde/repo";
+              mountPoint = "/srv/http/repos/chaotic-aur-kde";
+              isReadOnly = false;
+            };
+            "chaotic-aur-kde" = {
+              hostPath = "/data_2/chaotic-aur/chaotic-aur-kde";
+              mountPoint = "/srv/http/repos/chaotic-aur-kde";
+              isReadOnly = false;
+            };
+            "cache" = {
+              hostPath = "/data_2/containers/chaotic-kde/cache";
+              mountPoint = "/var/cache/chaotic";
+              isReadOnly = false;
+            };
+          };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 226;
+              protocol = "tcp";
+            }
+          ];
         };
       };
-      localAddress = "10.0.5.60/24";
-    };
-    "mastodon" = mkContainer "mastodon" {
-      bindMounts = {
-        "mastodon" = {
-          hostPath = "/data_1/containers/mastodon/mastodon";
-          mountPoint = "/var/lib/mastodon";
-          isReadOnly = false;
+      docker = {
+        ipAddress = "10.0.5.20";
+        needsDocker = true;
+        config = import ./docker.nix;
+        extraOptions = {
+          bindMounts = {
+            "compose" = {
+              hostPath = "/data_1/containers/docker/";
+              mountPoint = "/var/garuda/docker-compose-runner/all-in-one";
+              isReadOnly = false;
+            };
+          };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 225;
+              protocol = "tcp";
+            }
+            {
+              containerPort = 27017;
+              hostPort = 27017;
+              protocol = "tcp";
+            }
+          ];
         };
       };
-      bindMounts = {
-        "redis" = {
-          hostPath = "/data_1/containers/mastodon/redis/";
-          mountPoint = "/var/lib/redis-mastodon";
-          isReadOnly = false;
+      forum = {
+        needsDocker = true;
+        ipAddress = "10.0.5.70";
+        config = import ./forum.nix;
+        extraOptions = {
+          bindMounts = {
+            "forum" = {
+              hostPath = "/data_1/containers/forum/";
+              mountPoint = "/var/discourse";
+              isReadOnly = false;
+            };
+          };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 224;
+              protocol = "tcp";
+            }
+          ];
         };
       };
-      localAddress = "10.0.5.90/24";
-    };
-    "meshcentral" = mkContainer "meshcentral" {
-      bindMounts = {
-        "meshcentral" = {
-          hostPath = "/data_1/containers/meshcentral/";
-          mountPoint = "/opt/meshcentral";
-          isReadOnly = false;
+      mastodon = {
+        ipAddress = "10.0.5.80";
+        config = import ./mastodon.nix;
+        extraOptions = {
+          bindMounts = {
+            "mastodon" = {
+              hostPath = "/data_1/containers/mastodon/mastodon";
+              mountPoint = "/var/lib/mastodon";
+              isReadOnly = false;
+            };
+          };
+          bindMounts = {
+            "redis" = {
+              hostPath = "/data_1/containers/mastodon/redis/";
+              mountPoint = "/var/lib/redis-mastodon";
+              isReadOnly = false;
+            };
+          };
         };
       };
-      localAddress = "10.0.5.100/24";
-    };
-    "postgres" = mkContainer "postgres" {
-      bindMounts = {
-        "postgres" = {
-          hostPath = "/data_1/containers/postgres/";
-          mountPoint = "/var/garuda/backups/postgres";
-          isReadOnly = false;
+      meshcentral = {
+        ipAddress = "10.0.5.60";
+        config = import ./meshcentral.nix;
+        extraOptions = {
+          bindMounts = {
+            "meshcentral" = {
+              hostPath = "/data_1/containers/meshcentral/";
+              mountPoint = "/opt/meshcentral";
+              isReadOnly = false;
+            };
+          };
         };
       };
-      localAddress = "10.0.5.110/24";
-    };
-    "repo" = mkContainer "repo" {
-      bindMounts = {
-        "repo" = {
-          hostPath = "/data_2/containers/repo/repo";
-          mountPoint = "/srv/http/repos";
-          isReadOnly = false;
-        };
-        "cache" = {
-          hostPath = "/data_2/containers/repo/cache";
-          mountPoint = "/var/cache/chaotic";
-          isReadOnly = false;
+      postgres = {
+        ipAddress = "10.0.5.50";
+        config = import ./postgres.nix;
+        extraOptions = {
+          bindMounts = {
+            "postgres" = {
+              hostPath = "/data_1/containers/postgres/";
+              mountPoint = "/var/garuda/backups/postgres";
+              isReadOnly = false;
+            };
+          };
         };
       };
-      extraFlags = lib.mkForce [
-        "--property=CPUQuota=80%"
-        "--property=MemoryHigh=60G"
-        "--property=MemoryMax=64G"
-      ];
-      forwardPorts = [
-        {
-          containerPort = 22;
-          hostPort = 224;
-          protocol = "tcp";
-        }
-      ];
-      localAddress = "10.0.5.30/24";
-    };
-    "runner" = mkContainer "runner" {
-      extraFlags = lib.mkForce [
-        "--property=CPUQuota=80%"
-        "--property=MemoryHigh=60G"
-        "--property=MemoryMax=64G"
-      ];
-      localAddress = "10.0.5.120/24";
-    };
-    "temeraire" = mkContainer "temeraire" {
-      bindMounts = {
-        "repo" = {
-          hostPath = "/data_2/containers/temeraire/repo";
-          mountPoint = "/srv/http/repos";
-          isReadOnly = false;
-        };
-        "cache" = {
-          hostPath = "/data_2/containers/temeraire/cache";
-          mountPoint = "/var/cache/chaotic";
-          isReadOnly = false;
+      repo = {
+        ipAddress = "10.0.5.30";
+        config = import ./repo.nix;
+        needsNesting = true;
+        extraOptions = {
+          bindMounts = {
+            "garuda" = {
+              hostPath = "/data_2/chaotic-aur/garuda";
+              mountPoint = "/srv/http/repos/garuda";
+              isReadOnly = false;
+            };
+            "cache" = {
+              hostPath = "/data_2/containers/repo/cache";
+              mountPoint = "/var/cache/chaotic";
+              isReadOnly = false;
+            };
+          };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 223;
+              protocol = "tcp";
+            }
+          ];
         };
       };
-      extraFlags = lib.mkForce [
-        "--property=CPUQuota=80%"
-        "--property=MemoryHigh=60G"
-        "--property=MemoryMax=64G"
-      ];
-      forwardPorts = [
-        {
-          containerPort = 22;
-          hostPort = 223;
-          protocol = "tcp";
-        }
-        {
-          containerPort = config.services.rsyncd.port;
-          hostPort = config.services.rsyncd.port;
-          protocol = "tcp";
-        }
-        {
-          containerPort = 21027;
-          hostPort = 21027;
-          protocol = "udp";
-        }
-        {
-          containerPort = 22000;
-          hostPort = 22000;
-          protocol = "tcp";
-        }
-        {
-          containerPort = 22000;
-          hostPort = 22000;
-          protocol = "udp";
-        }
-      ];
-      localAddress = "10.0.5.80/24";
-    };
-    "web-front" = mkContainer "web-front" {
-      bindMounts = {
-        "nginx" = {
-          hostPath = "/var/log/nginx";
-          mountPoint = "/var/log/nginx";
-          isReadOnly = false;
+      runner = {
+        config = import ./runner.nix;
+        ipAddress = "10.0.5.40";
+        needsDocker = true;
+      };
+      temeraire = {
+        ipAddress = "10.0.5.20";
+        config = import ./temeraire.nix;
+        needsNesting = true;
+        extraOptions = {
+          bindMounts = {
+            "garuda" = {
+              hostPath = "/data_2/chaotic-aur";
+              mountPoint = "/srv/http/repos";
+              isReadOnly = false;
+            };
+            "cache" = {
+              hostPath = "/data_2/containers/temeraire/cache";
+              mountPoint = "/var/cache/chaotic";
+              isReadOnly = false;
+            };
+          };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 22;
+              protocol = "tcp";
+            }
+            {
+              containerPort = config.services.rsyncd.port;
+              hostPort = config.services.rsyncd.port;
+              protocol = "tcp";
+            }
+            {
+              containerPort = 21027;
+              hostPort = 21027;
+              protocol = "udp";
+            }
+            {
+              containerPort = 22000;
+              hostPort = 22000;
+              protocol = "tcp";
+            }
+            {
+              containerPort = 22000;
+              hostPort = 22000;
+              protocol = "udp";
+            }
+          ];
         };
       };
-      forwardPorts = [
-        {
-          containerPort = 22;
-          hostPort = 222;
-          protocol = "tcp";
-        }
-        {
-          containerPort = 80;
-          hostPort = 80;
-          protocol = "tcp";
-        }
-        {
-          containerPort = 443;
-          hostPort = 443;
-          protocol = "tcp";
-        }
-        {
-          containerPort = 443;
-          hostPort = 443;
-          protocol = "udp";
-        }
-      ];
-      localAddress = "10.0.5.50/24";
+      web-front = {
+        ipAddress = "10.0.5.10";
+        config = import ./web-front.nix;
+        extraOptions = {
+          bindMounts = {
+            "nginx" = {
+              hostPath = "/var/log/nginx";
+              mountPoint = "/var/log/nginx";
+              isReadOnly = false;
+            };
+          };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 222;
+              protocol = "tcp";
+            }
+            {
+              containerPort = 80;
+              hostPort = 80;
+              protocol = "tcp";
+            }
+            {
+              containerPort = 443;
+              hostPort = 443;
+              protocol = "tcp";
+            }
+            {
+              containerPort = 443;
+              hostPort = 443;
+              protocol = "udp";
+            }
+          ];
+        };
+      };
     };
   };
 
-  # Allow syscalls via an nspawn config file, because arguments with spaces work bad with containers.example.extraArgs
-  environment.etc = {
-    "systemd/nspawn/docker.nspawn".text = ''
-      [Exec]
-      SystemCallFilter=add_key keyctl bpf
-    '';
-    "systemd/nspawn/repo.nspawn".text = ''
-      [Exec]
-      SystemCallFilter=add_key keyctl bpf
-    '';
-    "systemd/nspawn/runner.nspawn".text = ''
-      [Exec]
-      SystemCallFilter=add_key keyctl bpf
-    '';
-  };
-
-  systemd.services = {
-    "container@docker".environment.SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1";
-    "container@chaotic-kde" = {
-      serviceConfig = {
-        DevicePolicy = lib.mkForce "";
-        DeviceAllow = lib.mkForce [ "" ];
-        ExecStartPost = [
-          (pkgs.writeShellScript "container-chaotic-kde-post" ''
-            "${pkgs.coreutils}/bin/echo" "mount -t cgroup2 -o rw,nosuid,nodev,noexec,relatime none /sys/fs/cgroup" | "${pkgs.nixos-container}/bin/nixos-container" root-login repo
-          '')
-        ];
-      };
-      environment.SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1";
-      environment.SYSTEMD_NSPAWN_API_VFS_WRITABLE = "1";
-    };
-    "container@repo" = {
-      serviceConfig = {
-        DevicePolicy = lib.mkForce "";
-        DeviceAllow = lib.mkForce [ "" ];
-        ExecStartPost = [
-          (pkgs.writeShellScript "container-repo-post" ''
-            "${pkgs.coreutils}/bin/echo" "mount -t cgroup2 -o rw,nosuid,nodev,noexec,relatime none /sys/fs/cgroup" | "${pkgs.nixos-container}/bin/nixos-container" root-login repo
-          '')
-        ];
-      };
-      environment.SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1";
-      environment.SYSTEMD_NSPAWN_API_VFS_WRITABLE = "1";
-    };
-    "container@runner".environment.SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1";
-    "container@temeraire" = {
-      serviceConfig = {
-        DevicePolicy = lib.mkForce "";
-        DeviceAllow = lib.mkForce [ "" ];
-        ExecStartPost = [
-          (pkgs.writeShellScript "container-temeraire-post" ''
-            "${pkgs.coreutils}/bin/echo" "mount -t cgroup2 -o rw,nosuid,nodev,noexec,relatime none /sys/fs/cgroup" | "${pkgs.nixos-container}/bin/nixos-container" root-login repo
-          '')
-        ];
-      };
-      environment.SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1";
-      environment.SYSTEMD_NSPAWN_API_VFS_WRITABLE = "1";
-    };
-  };
-
+  garuda-lib.unifiedUID = true;
   system.stateVersion = "23.05";
 }
 

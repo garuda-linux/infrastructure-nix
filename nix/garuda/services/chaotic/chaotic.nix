@@ -2,6 +2,7 @@
 , lib
 , pkgs
 , sources
+, garuda-lib
 , ...
 }:
 with lib;
@@ -100,7 +101,11 @@ in
   };
 
   config = mkIf cfg.enable {
-    users.groups = { "chaotic_op" = { }; };
+    users.groups = {
+      "chaotic_op" = {
+        gid = lib.mkIf garuda-lib.unifiedUID 2000;
+      };
+    };
     environment.systemPackages = [
       toolbox
       pkgs.unstable.arch-install-scripts
