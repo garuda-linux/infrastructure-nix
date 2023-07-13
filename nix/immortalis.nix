@@ -268,20 +268,6 @@ in
     };
   };
 
-  systemd.services."container@repo" = {
-    serviceConfig = {
-      DevicePolicy = lib.mkForce "";
-      DeviceAllow = lib.mkForce [ "" ];
-      ExecStartPost = [
-        (pkgs.writeShellScript "container-repo-post" ''
-          "${pkgs.coreutils}/bin/echo" "mount -t cgroup2 -o rw,nosuid,nodev,noexec,relatime none /sys/fs/cgroup" | "${pkgs.nixos-container}/bin/nixos-container" root-login repo
-        '')
-      ];
-    };
-    environment.SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1";
-    environment.SYSTEMD_NSPAWN_API_VFS_WRITABLE = "1";
-  };
-
   # Allow syscalls via an nspawn config file, because arguments with spaces work bad with containers.example.extraArgs
   environment.etc = {
     "systemd/nspawn/docker.nspawn".text = ''
@@ -292,9 +278,55 @@ in
       [Exec]
       SystemCallFilter=add_key keyctl bpf
     '';
+    "systemd/nspawn/runner.nspawn".text = ''
+      [Exec]
+      SystemCallFilter=add_key keyctl bpf
+    '';
   };
 
-  systemd.services."container@docker".environment.SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1";
+  systemd.services = {
+    "container@docker".environment.SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1";
+    "container@chaotic-kde" = {
+      serviceConfig = {
+        DevicePolicy = lib.mkForce "";
+        DeviceAllow = lib.mkForce [ "" ];
+        ExecStartPost = [
+          (pkgs.writeShellScript "container-chaotic-kde-post" ''
+            "${pkgs.coreutils}/bin/echo" "mount -t cgroup2 -o rw,nosuid,nodev,noexec,relatime none /sys/fs/cgroup" | "${pkgs.nixos-container}/bin/nixos-container" root-login repo
+          '')
+        ];
+      };
+      environment.SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1";
+      environment.SYSTEMD_NSPAWN_API_VFS_WRITABLE = "1";
+    };
+    "container@repo" = {
+      serviceConfig = {
+        DevicePolicy = lib.mkForce "";
+        DeviceAllow = lib.mkForce [ "" ];
+        ExecStartPost = [
+          (pkgs.writeShellScript "container-repo-post" ''
+            "${pkgs.coreutils}/bin/echo" "mount -t cgroup2 -o rw,nosuid,nodev,noexec,relatime none /sys/fs/cgroup" | "${pkgs.nixos-container}/bin/nixos-container" root-login repo
+          '')
+        ];
+      };
+      environment.SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1";
+      environment.SYSTEMD_NSPAWN_API_VFS_WRITABLE = "1";
+    };
+    "container@runner".environment.SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1";
+    "container@temeraire" = {
+      serviceConfig = {
+        DevicePolicy = lib.mkForce "";
+        DeviceAllow = lib.mkForce [ "" ];
+        ExecStartPost = [
+          (pkgs.writeShellScript "container-temeraire-post" ''
+            "${pkgs.coreutils}/bin/echo" "mount -t cgroup2 -o rw,nosuid,nodev,noexec,relatime none /sys/fs/cgroup" | "${pkgs.nixos-container}/bin/nixos-container" root-login repo
+          '')
+        ];
+      };
+      environment.SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1";
+      environment.SYSTEMD_NSPAWN_API_VFS_WRITABLE = "1";
+    };
+  };
 
   system.stateVersion = "23.05";
 }
