@@ -309,41 +309,6 @@ services:
       - 3002:3000
     restart: always
 
-  # Teddit
-  teddit:
-    image: teddit/teddit:latest
-    container_name: teddit
-    depends_on:
-      - teddit_redis
-    environment:
-      DOMAIN: teddit.garudalinux.org
-      REDIS_HOST: teddit_redis
-      THEME: dark
-      TRUST_PROXY: "true"
-    ports:
-      - 8087:8080
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://8081/about"
-        ]
-      interval: 1m
-      timeout: 3s
-    restart: always
-
-  teddit_redis:
-    image: redis:6.2.5-alpine
-    container_name: teddit_redis
-    command: redis-server
-    environment:
-      REDIS_REPLICATION_MODE: master
-    restart: always
-
   # Invious YouTube frontend
   invidious:
     image: quay.io/invidious/invidious:latest
@@ -374,7 +339,7 @@ services:
         use_pubsub_feeds: true
         use_quic: true
     ports:
-      - "10.0.5.20:3003:3000"
+      - 3003:3000
     healthcheck:
       test: wget -nv --tries=1 --spider http://10.0.5.20:3003/api/v1/comments/jNQXAC9IVRw || exit 1
       interval: 30s
@@ -434,7 +399,7 @@ services:
       - ./piped/config/ytproxy.conf:/etc/nginx/snippets/ytproxy.conf:ro
       - piped_proxy:/var/run/ytproxy
     ports:
-      - "10.0.5.20:8088:80"
+      - 8088:80
     restart: always
 
   piped_postgres:

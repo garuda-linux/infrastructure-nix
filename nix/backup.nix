@@ -121,23 +121,23 @@
   };
 
   # Sync repos to our offsite backup storage
-  systemd.services.offsite-replication = {
-    path = [ pkgs.rsync pkgs.openssh ];
-    serviceConfig.Type = "oneshot";
-    script = ''
-      rsync -e "ssh -p23 -i ${garuda-lib.secrets.ssh.team.private}" \
-       -avz --delete --progress /backups/ \
-       u342919@u342919.your-storagebox.de:./backups
-    '';
-    serviceConfig = {
-      User = "borg";
-      Group = "backup";
-    };
-  };
-  systemd.timers.offsite-replication = {
-    wantedBy = [ "timers.target" ];
-    timerConfig.OnCalendar = [ "daily" ];
-  };
+  # systemd.services.offsite-replication = {
+  #   path = [ pkgs.rsync pkgs.openssh ];
+  #   serviceConfig.Type = "oneshot";
+  #   script = ''
+  #     rsync -e "ssh -p23 -i ${garuda-lib.secrets.ssh.team.private}" \
+  #      -avz --delete --progress /backups/ \
+  #      u342919@u342919.your-storagebox.de:./backups
+  #   '';
+  #   serviceConfig = {
+  #     User = "borg";
+  #     Group = "backup";
+  #   };
+  # };
+  # systemd.timers.offsite-replication = {
+  #   wantedBy = [ "timers.target" ];
+  #   timerConfig.OnCalendar = [ "daily" ];
+  # };
 
   # Hetzner SSH only allows hmac-sha2-512, which is disabled
   # globally as per ssh-audit suggestions

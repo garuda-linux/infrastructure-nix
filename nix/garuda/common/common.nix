@@ -33,6 +33,9 @@
   # Mount /run as shared for systemd-nspawn
   boot.specialFileSystems."/run".options = lib.mkIf (!config.boot.isContainer) [ "rshared" ];
 
+  # No need for a kernel in containers
+  boot.kernel.enable = lib.mkIf garuda-lib.isContainer false; 
+
   # Locales & timezone
   time.timeZone = "Europe/Berlin";
   i18n = {
