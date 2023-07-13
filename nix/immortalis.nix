@@ -108,12 +108,12 @@ in
     "chaotic-kde" = mkContainer "chaotic-kde" {
       bindMounts = {
         "repo" = {
-          hostPath = "/data/containers/chaotic-kde/repo";
+          hostPath = "/data_2/containers/chaotic-kde/repo";
           mountPoint = "/srv/http/repos";
           isReadOnly = false;
         };
         "cache" = {
-          hostPath = "/data/containers/chaotic-kde/cache";
+          hostPath = "/data_2/containers/chaotic-kde/cache";
           mountPoint = "/var/cache/chaotic";
           isReadOnly = false;
         };
@@ -133,6 +133,13 @@ in
       localAddress = "10.0.5.120/24";
     };
     "docker" = mkContainer "docker" {
+      bindMounts = {
+        "compose" = {
+          hostPath = "/data_1/containers/docker/";
+          mountPoint = "/var/garuda/docker-compose-runner/all-in-one";
+          isReadOnly = false;
+        };
+      };
       forwardPorts = [
         {
           containerPort = 27017;
@@ -143,29 +150,61 @@ in
       localAddress = "10.0.5.20/24";
     };
     "forum" = mkContainer "forum" {
+      bindMounts = {
+        "forum" = {
+          hostPath = "/data_1/containers/forum/";
+          mountPoint = "/var/discourse";
+          isReadOnly = false;
+        };
+      };
       localAddress = "10.0.5.60/24";
     };
     "mastodon" = mkContainer "mastodon" {
+      bindMounts = {
+        "mastodon" = {
+          hostPath = "/data_1/containers/mastodon/mastodon";
+          mountPoint = "/var/lib/mastodon";
+          isReadOnly = false;
+        };
+      };
+      bindMounts = {
+        "redis" = {
+          hostPath = "/data_1/containers/mastodon/redis/";
+          mountPoint = "/var/lib/redis-mastodon";
+          isReadOnly = false;
+        };
+      };
       localAddress = "10.0.5.90/24";
     };
     "meshcentral" = mkContainer "meshcentral" {
+      bindMounts = {
+        "meshcentral" = {
+          hostPath = "/data_1/containers/meshcentral/";
+          mountPoint = "/opt/meshcentral";
+          isReadOnly = false;
+        };
+      };
       localAddress = "10.0.5.100/24";
     };
-    "monitor" = mkContainer "monitor" {
-      localAddress = "10.0.5.40/24";
-    };
     "postgres" = mkContainer "postgres" {
+      bindMounts = {
+        "postgres" = {
+          hostPath = "/data_1/containers/postgres/";
+          mountPoint = "/var/garuda/backups/postgres";
+          isReadOnly = false;
+        };
+      };
       localAddress = "10.0.5.110/24";
     };
     "repo" = mkContainer "repo" {
       bindMounts = {
         "repo" = {
-          hostPath = "/data/containers/repo/repo";
+          hostPath = "/data_2/containers/repo/repo";
           mountPoint = "/srv/http/repos";
           isReadOnly = false;
         };
         "cache" = {
-          hostPath = "/data/containers/repo/cache";
+          hostPath = "/data_2/containers/repo/cache";
           mountPoint = "/var/cache/chaotic";
           isReadOnly = false;
         };
@@ -195,12 +234,12 @@ in
     "temeraire" = mkContainer "temeraire" {
       bindMounts = {
         "repo" = {
-          hostPath = "/data/containers/temeraire/repo";
+          hostPath = "/data_2/containers/temeraire/repo";
           mountPoint = "/srv/http/repos";
           isReadOnly = false;
         };
         "cache" = {
-          hostPath = "/data/containers/temeraire/cache";
+          hostPath = "/data_2/containers/temeraire/cache";
           mountPoint = "/var/cache/chaotic";
           isReadOnly = false;
         };
@@ -214,6 +253,11 @@ in
         {
           containerPort = 22;
           hostPort = 223;
+          protocol = "tcp";
+        }
+        {
+          containerPort = config.services.rsyncd.port;
+          hostPort = config.services.rsyncd.port;
           protocol = "tcp";
         }
         {

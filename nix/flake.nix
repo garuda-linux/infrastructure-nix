@@ -120,9 +120,7 @@
       nixosConfigurations."garuda-build" = nixos.lib.nixosSystem {
         inherit system;
         inherit specialArgs;
-        modules = defaultModules ++ [
-          ./garuda-build.nix
-        ];
+        modules = defaultModules ++ [ ./garuda-build.nix ];
       };
       nixosConfigurations."garuda-mail" = nixos.lib.nixosSystem {
         inherit system;
@@ -137,61 +135,6 @@
         inherit specialArgs;
         modules = defaultModules ++ [ ./immortalis.nix ];
       };
-      /*nixosConfigurations."esxi-build" = nixos.lib.nixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ [ ./esxi-build.nix ];
-      };
-      nixosConfigurations."esxi-repo" = nixos.lib.nixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ [ ./esxi-repo.nix ];
-      };
-      nixosConfigurations."backup-dragon" = nixos.lib.nixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ [ ./backup-dragon.nix ];
-      };
-      nixosConfigurations."chaotic-dragon" = nixos.lib.nixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ [ ./chaotic-dragon.nix ];
-      };
-      nixosConfigurations."web-dragon" = nixos.lib.nixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ [ ./web-dragon.nix ];
-      };
-      nixosConfigurations."monitor-dragon" = nixos.lib.nixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ [ ./monitor-dragon.nix ];
-      };
-      nixosConfigurations."kde-dragon" = nixos.lib.nixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ [ ./kde-dragon.nix ];
-      };
-      nixosConfigurations."esxi-web" = nixos.lib.nixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ [ ./esxi-web.nix ];
-      };
-      nixosConfigurations."esxi-web-two" = nixos.lib.nixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ [ ./esxi-web-two.nix ];
-      };
-      nixosConfigurations."esxi-cloud" = nixos.lib.nixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ [ ./esxi-cloud.nix ];
-      };
-      nixosConfigurations."esxi-forum" = nixos.lib.nixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ [ ./esxi-forum.nix ];
-      };*/
       nixosConfigurations."cachix" = nixos.lib.nixosSystem {
         inherit system;
         inherit specialArgs;

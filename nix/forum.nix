@@ -9,10 +9,7 @@
   virtualisation.docker.enable = true;
 
   # Open required port
-  networking.firewall = {
-    allowedTCPPorts = [ 80 ];
-    allowedUDPPorts = [ 80 ];
-  };
+  networking.firewall.allowedTCPPorts = [ 80 ];
 
   system.stateVersion = "23.05";
 }

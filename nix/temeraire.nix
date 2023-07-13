@@ -227,6 +227,23 @@
   #   };
   # };
 
+  # Fix nix nonsense causing issues with not being able to mount /proc
+  systemd.services.create-tmp-proc-directory = {
+    description = "Create /tmp/proc directory";
+    script = ''
+      mkdir -p /tmp/proc
+    '';
+  };
+  systemd.mounts = [{
+    description = "Mount for procfs to /tmp/proc";
+    what = "none";
+    where = "/tmp/proc";
+    type = "proc";
+    requires = [ "create-tmp-proc-directory.service" ];
+    after = [ "create-tmp-proc-directory.service" ];
+    wantedBy = [ "multi-user.target" ];
+  }];
+
   system.stateVersion = "23.05";
 }
 

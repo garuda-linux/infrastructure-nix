@@ -14,10 +14,11 @@ in {
 
   config = mkIf cfg.enable {
     services.netdata.enable = true;
+    services.netdata.claimTokenFile = "/var/garuda/secrets/netdata_claim_token";
     services.netdata.config = {
       db = {
-        "dbengine disk space MB" = "256";
-        "dbengine multihost disk space MB" = "256";
+        "dbengine disk space MB" = "512";
+        "dbengine multihost disk space MB" = "512";
         "mode" = "dbengine";
         "update every" = "2";
       };
@@ -25,26 +26,11 @@ in {
       web = { "mode" = "none"; };
     };
     services.netdata.configDir = {
-      "stream.conf" = pkgs.writeText "stream.conf" ''
-        [stream]
-            api key = ${garuda-lib.secrets.netdata.stream_token}
-            buffer size bytes = 15728640
-            destination = ${cfg.parent}
-            enable compression = yes
-            enabled = yes
-            timeout seconds = 360
-
-        [logs]
-            debug log = none
-            error log = none
-            access log = none
-      '';
       "go.d.conf" = pkgs.writeText "go.d.conf" ''
         enabled: yes
         modules:
           nginx: yes
           postgres: yes
-          vsphere: yes
           web_log: yes
       '';
       "python.d.conf" = pkgs.writeText "python.d.conf" ''

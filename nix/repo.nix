@@ -29,7 +29,6 @@
       mkdir -p /tmp/proc
     '';
   };
-
   systemd.mounts = [{
     description = "Mount for procfs to /tmp/proc";
     what = "none";

@@ -9,11 +9,12 @@ services:
       LABELS: nyxbuilder
       ORG_NAME: chaotic-cx
       RUNNER_NAME: immortalis
-      RUNNER_SCOPE: 'org'
+      RUNNER_SCOPE: "org"
       RUNNER_WORKDIR: /tmp/runner/work
     security_opt:
       # needed on SELinux systems to allow docker container to manage other docker containers
       - label:disable
     volumes:
-      - '/tmp/runner:/tmp/runner'
-      - '/var/run/docker.sock:/var/run/docker.sock'
+      - "/tmp/runner:/tmp/runner"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    restart: always
