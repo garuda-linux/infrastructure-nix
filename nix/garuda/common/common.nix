@@ -45,12 +45,11 @@
   boot.tmp.cleanOnBoot = true;
 
   # Home-manager configuration
-  home-manager = {
+  home-manager = lib.mkIf (!garuda-lib.minimalContainer) {
     useGlobalPkgs = true;
     useUserPackages = true;
     users.nico = import ../home/nico.nix;
-    users.alexjp =
-      lib.mkIf config.services.chaotic.enable (import ../home/alexjp.nix);
+    users.alexjp = import ../home/alexjp.nix;
   };
 
   # Programs & global config

@@ -27,7 +27,6 @@ in
       unifiedUID = false;
       secrets = recursiveUpdate secrets {
         cachix = "/var/garuda/secrets/cachix";
-        github-runner-token = "/var/garuda/secrets/github-runner-token";
         meshagent_msh = "/var/garuda/secrets/meshagent.msh";
         syncthing = {
           kde-dragon = {
@@ -38,6 +37,10 @@ in
             key = "/var/garuda/secrets/syncthing/esxi-build-key.pem";
             cert = "/var/garuda/secrets/syncthing/esxi-build-cert.pem";
           };
+        };
+        chaotic = {
+          telegram-send-group = "/var/garuda/secrets/chaotic/telegram-send-group.conf";
+          telegram-send-log = "/var/garuda/secrets/chaotic/telegram-send-log.conf";
         };
         cloudflare = {
           cloudflared = {

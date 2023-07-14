@@ -1,7 +1,8 @@
 { config
+, garuda-lib
 , keys
 , lib
-, garuda-lib
+, pkgs
 , ...
 }: {
   # All users are immuntable; if a password is required it needs to be set via passwordFile
@@ -18,14 +19,6 @@
     uid = lib.mkIf garuda-lib.unifiedUID 1000;
   };
   # Garuda Admins
-  users.users.tne = {
-    extraGroups = [ "wheel" "docker" "chaotic_op" ];
-    home = "/home/tne";
-    isNormalUser = true;
-    openssh.authorizedKeys.keyFiles = [ keys.tne ];
-    passwordFile = "/var/garuda/secrets/pass/tne";
-    uid = lib.mkIf garuda-lib.unifiedUID 1003;
-  };
   users.users.nico = {
     extraGroups = [ "wheel" "docker" "chaotic_op" ];
     home = "/home/nico";
@@ -44,27 +37,38 @@
     passwordFile = "/var/garuda/secrets/pass/sgs";
     uid = lib.mkIf garuda-lib.unifiedUID 1002;
   };
+  users.users.tne = {
+    extraGroups = [ "wheel" "docker" "chaotic_op" ];
+    home = "/home/tne";
+    isNormalUser = true;
+    openssh.authorizedKeys.keyFiles = [ keys.tne ];
+    passwordFile = "/var/garuda/secrets/pass/tne";
+    uid = lib.mkIf garuda-lib.unifiedUID 1003;
+  };
 
   # Chaotic-AUR maintainers
-  users.users.technetium = lib.mkIf config.services.chaotic.enable {
+  users.users.technetium = {
     isNormalUser = true;
     home = "/home/technetium";
-    extraGroups = [ "chaotic_op" ];
-    openssh.authorizedKeys.keyFiles = [ keys.technetium1 ];
+    extraGroups = lib.mkIf config.services.chaotic.enable [ "chaotic_op" ];
+    openssh.authorizedKeys.keyFiles = lib.mkIf config.services.chaotic.enable [ keys.technetium1 ];
+    shell = lib.mkIf (!config.services.chaotic.enable) "${pkgs.util-linux}/bin/nologin";
     uid = lib.mkIf garuda-lib.unifiedUID 1004;
   };
-  users.users.alexjp = lib.mkIf config.services.chaotic.enable {
+  users.users.alexjp = {
     isNormalUser = true;
     home = "/home/alexjp";
-    extraGroups = [ "chaotic_op" ];
-    openssh.authorizedKeys.keyFiles = [ keys.alexjp ];
+    extraGroups = lib.mkIf config.services.chaotic.enable [ "chaotic_op" ];
+    openssh.authorizedKeys.keyFiles = lib.mkIf config.services.chaotic.enable [ keys.alexjp ];
+    shell = lib.mkIf (!config.services.chaotic.enable) "${pkgs.util-linux}/bin/nologin";
     uid = lib.mkIf garuda-lib.unifiedUID 1005;
   };
-  users.users.xiota = lib.mkIf config.services.chaotic.enable {
+  users.users.xiota = {
     isNormalUser = true;
     home = "/home/xiota";
-    extraGroups = [ "chaotic_op" ];
-    openssh.authorizedKeys.keyFiles = [ keys.xiota ];
+    extraGroups = lib.mkIf config.services.chaotic.enable [ "chaotic_op" ];
+    openssh.authorizedKeys.keyFiles = lib.mkIf config.services.chaotic.enable [ keys.xiota ];
+    shell = lib.mkIf (!config.services.chaotic.enable) "${pkgs.util-linux}/bin/nologin";
     uid = lib.mkIf garuda-lib.unifiedUID 1006;
   };
 

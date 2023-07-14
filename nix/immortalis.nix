@@ -46,7 +46,7 @@
   # https://github.com/systemd/systemd/issues/18370#issuecomment-768645418
   environment.variables.SYSTEMD_SECCOMP = "0";
 
-  # Custom tailscale configuration
+  # Custom tailscale configuration to advertise our bridge's subnet route
   systemd.services.tailscale-autoconnect.script = with pkgs; ''
     sleep 2
     status="$(${tailscale}/bin/tailscale status -json | ${jq}/bin/jq -r .BackendState)"
@@ -57,15 +57,17 @@
       --advertise-routes=10.0.5.0/24
   '';
 
+  # We want to have same UID's in all containers to allow sharing home directories
+  garuda-lib.unifiedUID = true;
+
   # Custom systemd nspawn container configurations
   services.garuda-nspawn = {
-    hostIp = "10.0.5.1";
-    hostInterface = "eth0";
     bridgeInterface = "br0";
+    hostInterface = "eth0";
+    hostIp = "10.0.5.1";
     containers = {
       chaotic-kde = {
-        ipAddress = "10.0.5.90";
-        needsNesting = true;
+        buildsChaotic = true;
         config = import ./chaotic-kde.nix;
         extraOptions = {
           bindMounts = {
@@ -93,10 +95,10 @@
             }
           ];
         };
+        ipAddress = "10.0.5.90";
+        needsNesting = true;
       };
       docker = {
-        ipAddress = "10.0.5.20";
-        needsDocker = true;
         config = import ./docker.nix;
         extraOptions = {
           bindMounts = {
@@ -119,10 +121,10 @@
             }
           ];
         };
+        ipAddress = "10.0.5.100";
+        needsDocker = true;
       };
       forum = {
-        needsDocker = true;
-        ipAddress = "10.0.5.70";
         config = import ./forum.nix;
         extraOptions = {
           bindMounts = {
@@ -140,9 +142,10 @@
             }
           ];
         };
+        ipAddress = "10.0.5.70";
+        needsDocker = true;
       };
       mastodon = {
-        ipAddress = "10.0.5.80";
         config = import ./mastodon.nix;
         extraOptions = {
           bindMounts = {
@@ -160,9 +163,9 @@
             };
           };
         };
+        ipAddress = "10.0.5.80";
       };
       meshcentral = {
-        ipAddress = "10.0.5.60";
         config = import ./meshcentral.nix;
         extraOptions = {
           bindMounts = {
@@ -173,9 +176,9 @@
             };
           };
         };
+        ipAddress = "10.0.5.60";
       };
       postgres = {
-        ipAddress = "10.0.5.50";
         config = import ./postgres.nix;
         extraOptions = {
           bindMounts = {
@@ -186,11 +189,11 @@
             };
           };
         };
+        ipAddress = "10.0.5.50";
       };
       repo = {
-        ipAddress = "10.0.5.30";
+        buildsChaotic = true;
         config = import ./repo.nix;
-        needsNesting = true;
         extraOptions = {
           bindMounts = {
             "garuda" = {
@@ -212,6 +215,8 @@
             }
           ];
         };
+        ipAddress = "10.0.5.30";
+        needsNesting = true;
       };
       runner = {
         config = import ./runner.nix;
@@ -219,9 +224,8 @@
         needsDocker = true;
       };
       temeraire = {
-        ipAddress = "10.0.5.20";
+        buildsChaotic = true;
         config = import ./temeraire.nix;
-        needsNesting = true;
         extraOptions = {
           bindMounts = {
             "garuda" = {
@@ -263,9 +267,10 @@
             }
           ];
         };
+        ipAddress = "10.0.5.20";
+        needsNesting = true;
       };
       web-front = {
-        ipAddress = "10.0.5.10";
         config = import ./web-front.nix;
         extraOptions = {
           bindMounts = {
@@ -298,11 +303,37 @@
             }
           ];
         };
+        ipAddress = "10.0.5.10";
       };
     };
   };
 
-  garuda-lib.unifiedUID = true;
+  # Backup configurations to Hetzner storage box
+  programs.ssh.macs = [ "hmac-sha2-512" ];
+  services.borgbackup.jobs = {
+    backupToHetzner = {
+      compression = "auto,zstd";
+      doInit = true;
+      encryption = {
+        mode = "repokey-blake2";
+        passCommand = "cat /var/garuda/secrets/backup/repo_key";
+      };
+      environment = {
+        BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_immortalis -p 23";
+      };
+      paths = [ "/data_1" "/data_2" ];
+      prune.keep = {
+        within = "1d";
+        daily = 5;
+        weekly = 2;
+        monthly = 1;
+      };
+      repo = "u342919@u342919.your-storagebox.de:./immortalis";
+      startAt = "daily";
+    };
+  };
+
+
   system.stateVersion = "23.05";
 }
 

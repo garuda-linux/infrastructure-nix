@@ -4,7 +4,7 @@
 , pkgs
 , ...
 }:
-let 
+let
   cfg = config.services.garuda-tailscale;
 in
 {
@@ -37,17 +37,13 @@ in
 
       # Have the job run this shell script
       script = with pkgs; ''
-        # Wait for tailscaled to settle
         sleep 2
-
-        # Check if we are already authenticated to Tailscale
         status="$(${tailscale}/bin/tailscale status -json | ${jq}/bin/jq -r .BackendState)"
-        if [ $status = "Running" ]; then # if so, then do nothing
+        if [ $status = "Running" ]; then
           exit 0
         fi
-
-        # Otherwise authenticate with Tailscale
-        ${tailscale}/bin/tailscale up --authkey ${garuda-lib.secrets.tailscale.authkey}
+        ${tailscale}/bin/tailscale up --authkey ${garuda-lib.secrets.tailscale.authkey} \
+          --accept-routes
       '';
     };
 

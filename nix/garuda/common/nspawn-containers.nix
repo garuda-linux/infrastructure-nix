@@ -1,26 +1,28 @@
-{ config, lib, pkgs, sources, garuda-lib, ... }:
+{ config
+, garuda-lib
+, lib
+, pkgs
+, sources
+, ...
+}:
 let
   cfg = config.services.garuda-nspawn;
   submoduleOptions.options = {
+    buildsChaotic = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
     config = lib.mkOption { };
+    cpuQuota = lib.mkOption {
+      type = lib.types.ints.between 1 100;
+      default = 80;
+    };
     extraOptions = lib.mkOption {
       type = lib.types.attrs;
       default = { };
     };
     ipAddress = lib.mkOption {
       type = lib.types.str;
-    };
-    needsDocker = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-    };
-    needsNesting = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-    };
-    cpuQuota = lib.mkOption {
-      type = lib.types.ints.between 1 100;
-      default = 80;
     };
     memoryHigh = lib.mkOption {
       type = lib.types.ints.positive;
@@ -30,26 +32,34 @@ let
       type = lib.types.ints.positive;
       default = 64;
     };
+    needsDocker = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
+    needsNesting = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 in
 {
   options.services.garuda-nspawn = {
-    hostIp = lib.mkOption {
+    bridgeInterface = lib.mkOption {
       type = lib.types.str;
+    };
+    containers = lib.mkOption {
+      type = lib.types.attrsOf (lib.types.submodule submoduleOptions);
+      default = { };
     };
     hostInterface = lib.mkOption {
       type = lib.types.str;
     };
-    bridgeInterface = lib.mkOption {
+    hostIp = lib.mkOption {
       type = lib.types.str;
     };
     networkPrefix = lib.mkOption {
       type = lib.types.ints.between 1 32;
       default = 24;
-    };
-    containers = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.submodule submoduleOptions);
-      default = { };
     };
   };
   # lib.mkIf (cfg != { })
@@ -67,25 +77,76 @@ in
           ];
           autoStart = true;
           bindMounts = {
+            "dev-fuse" = lib.mkIf cont.needsDocker {
+              hostPath = "/dev/fuse";
+              mountPoint = "/dev/fuse";
+            };
+            "home-ansible" = {
+              hostPath = "/home/ansible";
+              isReadOnly = false;
+              mountPoint = "/home/ansible";
+            };
+            "home-nico" = {
+              hostPath = "/home/nico";
+              isReadOnly = false;
+              mountPoint = "/home/nico";
+            };
+            "home-sgs" = {
+              hostPath = "/home/sgs";
+              isReadOnly = false;
+              mountPoint = "/home/sgs";
+            };
+            "home-tne" = {
+              hostPath = "/home/tne";
+              isReadOnly = false;
+              mountPoint = "/home/tne";
+            };
+            "home-technetium" = lib.mkIf cont.buildsChaotic {
+              hostPath = "/home/technetium";
+              isReadOnly = false;
+              mountPoint = "/home/technetium";
+            };
+            "home-alexjp" = lib.mkIf cont.buildsChaotic {
+              hostPath = "/home/alexjp";
+              isReadOnly = false;
+              mountPoint = "/home/alexjp";
+            };
+            "home-xiota" = lib.mkIf cont.buildsChaotic {
+                hostPath = "/home/xiota";
+                isReadOnly = false;
+                mountPoint = "/home/xiota";
+              };
             "secrets" = lib.mkDefault {
               hostPath = "/var/garuda/secrets";
               isReadOnly = true;
               mountPoint = "/var/garuda/secrets";
             };
-            "dev-fuse" = lib.mkIf cont.needsDocker {
-              hostPath = "/dev/fuse";
-              mountPoint = "/dev/fuse";
+            "keyring" = lib.mkIf cont.buildsChaotic {
+              hostPath = "/root/.gnupg";
+              isReadOnly = false;
+              mountPoint = "/root/.gnupg";
+            };
+            "telegram-send-group" = lib.mkIf cont.buildsChaotic {
+              hostPath = "/var/garuda/secrets/chaotic/telegram-send-group"; #
+              isReadOnly = true;
+              mountPoint = "/root/.config/telegram-send-group.conf";
+            };
+            "telegram-send-log" = lib.mkIf cont.buildsChaotic {
+              hostPath = "/var/garuda/secrets/chaotic/telegram-send-log";
+              isReadOnly = true;
+              mountPoint = "/root/.config/telegram-send-log.conf";
             };
           };
-          config = lib.mkMerge ([
-            cont.config
-            {
-              config.garuda-lib.minimalContainer = true;
-            }
-          ]
-          ++ lib.lists.optional garuda-lib.unifiedUID {
-            config.garuda-lib.unifiedUID = true;
-          });
+          config = lib.mkMerge
+            ([
+              cont.config
+              {
+                config.garuda-lib.minimalContainer = true;
+              }
+            ]
+            ++ lib.lists.optional garuda-lib.unifiedUID {
+              config.garuda-lib.unifiedUID = true;
+            });
           ephemeral = true;
           extraFlags = [
             "--property=CPUQuota=${builtins.toString cont.cpuQuota}"
@@ -129,12 +190,12 @@ in
         address = cfg.hostIp;
         prefixLength = cfg.networkPrefix;
       }];
-      # network address translation from the internet to the bridge
+      # Network address translation from the internet to the bridge
       nat = {
         enable = true;
-        internalInterfaces = [ cfg.bridgeInterface ];
-        externalInterface = cfg.hostInterface;
         enableIPv6 = true;
+        externalInterface = cfg.hostInterface;
+        internalInterfaces = [ cfg.bridgeInterface ];
       };
     };
   };

@@ -75,7 +75,7 @@
               proxy_set_header X-Real-IP $remote_addr;
               set_real_ip_from      172.0.0.0/16;
             '';
-            proxyPass = "https://docker:443";
+            proxyPass = "https://10.0.5.100:443";
           };
           "/.well-known/carddav" = {
             extraConfig = "expires 12h;";
@@ -124,7 +124,7 @@
                 set $delimeter "&";
               }
               set $args "$args''${delimeter}user=cfaccess&pass=${garuda-lib.secrets.meshcentral.cfaccess-user}";
-              proxy_pass http://meshcentral:22260;
+              proxy_pass http://10.0.5.60:22260;
             '';
           };
         };
@@ -136,7 +136,7 @@
           ${garuda-lib.setRealIpFromConfig}
           real_ip_header CF-Connecting-IP;
         '';
-        locations = { "/" = { proxyPass = "http://docker:5000"; }; };
+        locations = { "/" = { proxyPass = "http://10.0.5.100:5000"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
@@ -147,7 +147,7 @@
           ${garuda-lib.setRealIpFromConfig}
           real_ip_header CF-Connecting-IP;
         '';
-        locations = { "/" = { proxyPass = "http://docker:8080"; }; };
+        locations = { "/" = { proxyPass = "http://10.0.5.100:8080"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
@@ -158,25 +158,25 @@
           ${garuda-lib.setRealIpFromConfig}
           real_ip_header CF-Connecting-IP;
         '';
-        locations = { "/" = { proxyPass = "http://docker:5001"; }; };
+        locations = { "/" = { proxyPass = "http://10.0.5.100:5001"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
       "repo.garudalinux.org" = {
         addSSL = true;
-        locations = { "/" = { proxyPass = "http://repo:80"; }; };
+        locations = { "/" = { proxyPass = "http://10.0.5.30:80"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
       "start.garudalinux.org" = {
         addSSL = true;
-        locations = { "/" = { proxyPass = "http://docker:8083"; }; };
+        locations = { "/" = { proxyPass = "http://10.0.5.100:8083"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
       "irc.garudalinux.org" = {
         addSSL = true;
-        locations = { "/" = { proxyPass = "http://docker:9000"; }; };
+        locations = { "/" = { proxyPass = "http://10.0.5.100:9000"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
@@ -187,7 +187,7 @@
           ${garuda-lib.setRealIpFromConfig}
           real_ip_header CF-Connecting-IP;
         '';
-        locations = { "/" = { proxyPass = "http://docker:8082"; }; };
+        locations = { "/" = { proxyPass = "http://10.0.5.100:8082"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
@@ -199,7 +199,7 @@
         '';
         locations = {
           "/" = {
-            proxyPass = "http://docker:8081";
+            proxyPass = "http://10.0.5.100:8081";
             proxyWebsockets = true;
           };
         };
@@ -248,10 +248,10 @@
           proxy_set_header X-Forwarded-For $remote_addr;
         '';
         locations = {
-          "/" = { proxyPass = "http://192.168.1.70:80"; };
+          "/" = { proxyPass = "http://10.0.5.70:80"; };
           "/c/announcements/announcements-maintenance/45.json" = {
             extraConfig = "expires 2m;";
-            proxyPass = "http://forum:80";
+            proxyPass = "http://10.0.5.70:80";
           };
         };
         http3 = true;
@@ -266,14 +266,14 @@
         '';
         locations = {
           "/" = {
-            proxyPass = "https://mastodon:443";
+            proxyPass = "https://10.0.5.80:443";
             proxyWebsockets = true;
             extraConfig = ''
               proxy_set_header Host social.garudalinux.org;
             '';
           };
           "/.well-known/webfinger" = {
-            proxyPass = "https://mastodon:443";
+            proxyPass = "https://10.0.5.80:443";
             proxyWebsockets = true;
             extraConfig = ''
               proxy_set_header Host social.garudalinux.org;
@@ -294,7 +294,7 @@
           ${garuda-lib.setRealIpFromConfig}
           real_ip_header CF-Connecting-IP;
           location ~* .(mp4|webm)$ {
-            proxy_pass https://mastodon:443;
+            proxy_pass https://10.0.5.80:443;
             proxy_set_header Host social.garudalinux.org;
           }
         '';
@@ -314,7 +314,7 @@
           real_ip_header CF-Connecting-IP;
           proxy_set_header Host $host;
         '';
-        locations = { "/" = { proxyPass = "http://temeraire:80"; }; };
+        locations = { "/" = { proxyPass = "http://10.0.5.100:80"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
@@ -325,7 +325,7 @@
           real_ip_header CF-Connecting-IP;
         '';
         locations = {
-          "/" = { proxyPass = "http://docker:8084"; };
+          "/" = { proxyPass = "http://10.0.5.100:8084"; };
         };
         http3 = true;
         useACMEHost = "garudalinux.org";
@@ -337,7 +337,7 @@
           real_ip_header CF-Connecting-IP;
         '';
         locations = {
-          "/" = { proxyPass = "http://docker:3001"; };
+          "/" = { proxyPass = "http://10.0.5.100:3001"; };
         };
         http3 = true;
         useACMEHost = "garudalinux.org";
@@ -382,7 +382,7 @@
         locations = {
           "/" = {
             extraConfig = "client_max_body_size 50M;";
-            proxyPass = "http://docker:8008";
+            proxyPass = "http://10.0.5.100:8008";
           };
         };
         http3 = true;
@@ -397,7 +397,7 @@
         #     ${garuda-lib.setRealIpFromConfig}
         #     real_ip_header CF-Connecting-IP;
         #     proxy_buffering off;
-        #     proxy_pass http://docker:8088;
+        #     proxy_pass http://10.0.5.100:8088;
         #     proxy_set_header Host $host;
         #   }
         # '';
@@ -421,7 +421,7 @@
         #       proxy_set_header Connection "";
         #       proxy_http_version 1.1;
         #     '';
-        #     proxyPass = "http://docker:3003";
+        #     proxyPass = "http://10.0.5.100:3003";
         #   };
         # };
         globalRedirect = "invidious.snopyta.org";
@@ -437,7 +437,7 @@
         locations = {
           "/" = {
             extraConfig = "access_log off;";
-            proxyPass = "http://docker:3002";
+            proxyPass = "http://10.0.5.100:3002";
           };
         };
         useACMEHost = "garudalinux.org";
@@ -452,7 +452,7 @@
         locations = {
           "/" = {
             extraConfig = "access_log off;";
-            proxyPass = "http://docker:8086";
+            proxyPass = "http://10.0.5.100:8086";
           };
         };
         useACMEHost = "garudalinux.org";

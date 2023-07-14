@@ -14,7 +14,7 @@
     export CAUR_LOWER_PKGS+=(chaotic-mirrorlist chaotic-keyring)
     export CAUR_PACKAGER="Garuda Builder <team@garudalinux.org>"
     export CAUR_SIGN_KEY=D6C9442437365605
-    export CAUR_SIGN_USER=nico
+    export CAUR_SIGN_USER=root
     export CAUR_TELEGRAM_TAG="@dr460nf1r3"
   '';
   services.chaotic.db-name = "garuda";
