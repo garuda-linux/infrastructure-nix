@@ -12,5 +12,8 @@
     source = ./docker-compose/runner;
   };
 
+  # Lets build Garuda isos here, too
+  services.garuda-iso.enable = true;
+
   system.stateVersion = "23.05";
 }

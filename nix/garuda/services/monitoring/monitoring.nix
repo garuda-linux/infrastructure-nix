@@ -47,7 +47,7 @@ in {
         (pkgs.writeText "postgres.conf" ''
           jobs:
             - name: web-two
-              dsn: 'postgres://netdata:netdata@127.0.0.1:5432/'
+              dsn: 'postgres://netdata:netdata@10.0.0.50:5432/'
         '');
     };
 

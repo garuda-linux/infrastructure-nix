@@ -215,7 +215,7 @@ services:
       - 3001:3000
     environment:
       DB_TYPE: postgres
-      DB_HOST: 172.17.0.1
+      DB_HOST: 10.0.5.50
       DB_PORT: 5432
       DB_USER: wikijs
       DB_PASS: ${WIKIJS_DB_PASS:-?err}

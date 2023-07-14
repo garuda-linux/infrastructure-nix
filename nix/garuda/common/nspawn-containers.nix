@@ -8,10 +8,6 @@
 let
   cfg = config.services.garuda-nspawn;
   submoduleOptions.options = {
-    buildsChaotic = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-    };
     config = lib.mkOption { };
     cpuQuota = lib.mkOption {
       type = lib.types.ints.between 1 100;
@@ -61,6 +57,9 @@ in
       type = lib.types.ints.between 1 32;
       default = 24;
     };
+    dockerCache = lib.mkOption {
+      type = lib.types.str;
+    };
   };
   # lib.mkIf (cfg != { })
   config = {
@@ -77,79 +76,29 @@ in
           ];
           autoStart = true;
           bindMounts = {
-            "chaotic-cache" = lib.mkIf cont.buildsChaotic {
-              hostPath = "data_2/containers/${name}/cache";
-              isReadOnly = false;
-              mountPoint = "/var/cache/chaotic";
-            };
-            "chaotic-libe" = lib.mkIf cont.buildsChaotic {
-              hostPath = "data_2/containers/${name}/lib";
-              isReadOnly = false;
-              mountPoint = "/var/lib/chaotic";
-            };
             "dev-fuse" = lib.mkIf cont.needsDocker {
               hostPath = "/dev/fuse";
               mountPoint = "/dev/fuse";
             };
-            "home-ansible" = {
-              hostPath = "/home/ansible";
+            "home" = {
+              hostPath = "/home";
               isReadOnly = false;
-              mountPoint = "/home/ansible";
+              mountPoint = "/home";
             };
-            "home-nico" = {
-              hostPath = "/home/nico";
-              isReadOnly = false;
-              mountPoint = "/home/nico";
-            };
-            "home-sgs" = {
-              hostPath = "/home/sgs";
-              isReadOnly = false;
-              mountPoint = "/home/sgs";
-            };
-            "home-tne" = {
-              hostPath = "/home/tne";
-              isReadOnly = false;
-              mountPoint = "/home/tne";
-            };
-            "home-technetium" = lib.mkIf cont.buildsChaotic {
-              hostPath = "/home/technetium";
-              isReadOnly = false;
-              mountPoint = "/home/technetium";
-            };
-            "home-alexjp" = lib.mkIf cont.buildsChaotic {
-              hostPath = "/home/alexjp";
-              isReadOnly = false;
-              mountPoint = "/home/alexjp";
-            };
-            "home-xiota" = lib.mkIf cont.buildsChaotic {
-                hostPath = "/home/xiota";
-                isReadOnly = false;
-                mountPoint = "/home/xiota";
-              };
-            "keyring" = lib.mkIf cont.buildsChaotic {
-              hostPath = "/root/.gnupg";
-              isReadOnly = false;
-              mountPoint = "/root/.gnupg";
-            };
-            "secrets" = lib.mkDefault {
+            "secrets" = {
               hostPath = "/var/garuda/secrets";
-              isReadOnly = true;
+              isReadOnly = false;
               mountPoint = "/var/garuda/secrets";
             };
-            "pacman" = lib.mkIf cont.buildsChaotic {
-              hostPath = "/var/cache/pacman/pkg";
+            "ssh" = {
+              hostPath = "/etc/ssh";
+              isReadOnly = true;
+              mountPoint = "/etc/ssh.host";
+            };
+            "dockercache" = lib.mkIf cont.needsDocker {
+              hostPath = "${cfg.dockerCache}/${name}";
               isReadOnly = false;
-              mountPoint = "/var/cache/pacman/pkg";
-            };
-            "telegram-send-group" = lib.mkIf cont.buildsChaotic {
-              hostPath = "/var/garuda/secrets/chaotic/telegram-send-group"; #
-              isReadOnly = true;
-              mountPoint = "/root/.config/telegram-send-group.conf";
-            };
-            "telegram-send-log" = lib.mkIf cont.buildsChaotic {
-              hostPath = "/var/garuda/secrets/chaotic/telegram-send-log";
-              isReadOnly = true;
-              mountPoint = "/root/.config/telegram-send-log.conf";
+              mountPoint = "/var/lib/docker";
             };
           };
           config = lib.mkMerge
@@ -195,6 +144,8 @@ in
         ];
       })
       (lib.filterAttrs (name: value: value.needsNesting) cfg.containers);
+
+    systemd.tmpfiles.rules = lib.mapAttrsToList (name: value: "d ${cfg.dockerCache}/${name} 1555 root root") (lib.filterAttrs (name: value: value.needsDocker) cfg.containers);
 
     # Bridge setup
     networking = lib.mkIf (cfg.containers != { }) {

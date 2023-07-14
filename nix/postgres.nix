@@ -44,11 +44,11 @@
       CREATE USER netdata;
       GRANT pg_monitor TO netdata;
     '';
-    authentication = "host all all 172.16.0.0/12 md5";
-    settings = { listen_addresses = lib.mkForce "localhost, 172.17.0.1"; };
+    authentication = "host all all 10.0.5.0/24 md5";
+    # We don't need to worry about different interfaces, because the only interface 
+    # available is eth0, which is fully isolated
+    enableTCPIP = true;
   };
-  # We need to wait for the 172.17.0.1 docker0 interface to be created.
-  systemd.services.postgresql.after = [ "docker.service" ];
 
   # Regular backups for our database (every 6h)
   services.postgresqlBackup = {

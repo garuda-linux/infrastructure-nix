@@ -9,6 +9,7 @@
   # Our Mastodon
   services.mastodon = {
     configureNginx = true;
+    #database.host = "10.0.5.50";
     enable = true;
     localDomain = "social.garudalinux.org";
     smtp = {

@@ -18,9 +18,10 @@
   # GRUB
   boot.loader.grub.devices = [ "/dev/vda" ];
 
-  # Configure backups to backup-dragon
+  # Backup configurations to Hetzner storage box
+  programs.ssh.macs = [ "hmac-sha2-512" ];
   services.borgbackup.jobs = {
-    backupToBackupDragon = {
+    backupToHetzner = {
       compression = "auto,zstd";
       doInit = true;
       encryption = {
@@ -28,16 +29,16 @@
         passCommand = "cat /var/garuda/secrets/backup/repo_key";
       };
       environment = {
-        BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_garuda-mail -p 666";
+        BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_garuda-mail -p 23";
       };
       paths = [ config.mailserver.mailDirectory "/var/dkim" ];
       prune.keep = {
         within = "1d";
-        daily = 3;
+        daily = 5;
         weekly = 2;
         monthly = 1;
       };
-      repo = "borg@89.58.13.188:.";
+      repo = "u358867@u358867.your-storagebox.de:./garuda-mail";
       startAt = "daily";
     };
   };

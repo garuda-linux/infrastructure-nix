@@ -53,7 +53,7 @@
         serverAliases = [ "www.garudalinux.org" ];
         useACMEHost = "garudalinux.org";
       };
-   /*    "cloud.garudalinux.org" = {
+      "cloud.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
@@ -103,32 +103,6 @@
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
-      "mesh.garudalinux.net" = {
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-        '';
-        locations = {
-          "/" = {
-            extraConfig = ''
-              proxy_send_timeout 330s;
-              proxy_read_timeout 330s;
-              proxy_set_header Connection $http_connection;
-              proxy_set_header Upgrade $http_upgrade;
-
-              allow 127.0.0.1;
-              deny all;
-
-              set $delimeter "";
-              if ($is_args) {
-                set $delimeter "&";
-              }
-              set $args "$args''${delimeter}user=cfaccess&pass=${garuda-lib.secrets.meshcentral.cfaccess-user}";
-              proxy_pass http://10.0.5.60:22260;
-            '';
-          };
-        };
-      };
       "search.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
@@ -161,13 +135,13 @@
         locations = { "/" = { proxyPass = "http://10.0.5.100:5001"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
-      }; */
+      };
       "repo.garudalinux.org" = {
         addSSL = true;
         locations = { "/" = { proxyPass = "http://10.0.5.30:80"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
-      };/* 
+      };
       "start.garudalinux.org" = {
         addSSL = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:8083"; }; };
@@ -206,7 +180,7 @@
         http3 = true;
         serverAliases = [ "vault.garudalinux.org" ];
         useACMEHost = "garudalinux.org";
-      }; */
+      };
       "status.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
@@ -238,7 +212,7 @@
         };
         http3 = true;
         useACMEHost = "garudalinux.org";
-      };/* 
+      };
       "forum.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
@@ -303,11 +277,11 @@
         };
         http3 = true;
         useACMEHost = "garudalinux.org";
-      }; */
+      };
       "builds.garudalinux.org" = {
         addSSL = true;
         serverAliases =
-          [ "iso.builds.garudalinux.org" "cf-builds.garudalinux.org" ];
+          [ "cf-builds.garudalinux.org" ];
         extraConfig = ''
           proxy_buffering off;
           ${garuda-lib.setRealIpFromConfig}
@@ -317,7 +291,19 @@
         locations = { "/" = { proxyPass = "http://10.0.5.20:80"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
-      };/* 
+      };
+      "iso.builds.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          proxy_buffering off;
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+          proxy_set_header Host $host;
+        '';
+        locations = { "/" = { proxyPass = "http://10.0.5.40:80"; }; };
+        http3 = true;
+        useACMEHost = "garudalinux.org";
+      };
       "element.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
@@ -350,7 +336,7 @@
         '';
         locations = {
           "/" = {
-            proxyPass = "http://meshcentral:22260";
+            proxyPass = "http://10.0.5.60:22260";
             extraConfig = ''
               proxy_http_version 1.1;
               proxy_read_timeout 330s;
@@ -365,6 +351,38 @@
         };
         http3 = true;
         useACMEHost = "garudalinux.org";
+      };
+      "mesh.garudalinux.net" = {
+        listen = [
+          {
+            addr = "127.0.0.1";
+            port = 80;
+          }
+        ];
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        locations = {
+          "/" = {
+            extraConfig = ''
+              proxy_send_timeout 330s;
+              proxy_read_timeout 330s;
+              proxy_set_header Connection $http_connection;
+              proxy_set_header Upgrade $http_upgrade;
+
+              allow 127.0.0.1;
+              deny all;
+
+              set $delimeter "";
+              if ($is_args) {
+                set $delimeter "&";
+              }
+              set $args "$args''${delimeter}user=cfaccess&pass=${garuda-lib.secrets.meshcentral.cfaccess-user}";
+              proxy_pass http://10.0.5.60:22260;
+            '';
+          };
+        };
       };
       "matrix.garudalinux.org" = {
         listen = [
@@ -456,8 +474,19 @@
           };
         };
         useACMEHost = "garudalinux.org";
-      }; */
+      };
     };
+  };
+
+  # Cloudflared access to Meshcentral webinterface
+  services.garuda-cloudflared = {
+    enable = true;
+    ingress = {
+      "mesh.garudalinux.net" = "http://localhost:80";
+      "matrixadmin.garudalinux.net" = "http://10.0.5.100:8085";
+    };
+    tunnel-credentials =
+      garuda-lib.secrets.cloudflare.cloudflared.esxi-web.cred;
   };
 
   system.stateVersion = "23.05";

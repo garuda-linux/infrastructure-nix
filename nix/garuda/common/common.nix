@@ -103,6 +103,12 @@
   services = {
     vnstat.enable = true;
     openssh.enable = true;
+    openssh.extraConfig = lib.mkIf garuda-lib.minimalContainer ''
+      HostKey /etc/ssh.host/ssh_host_rsa_key
+      HostKey /etc/ssh.host/ssh_host_dsa_key
+      HostKey /etc/ssh.host/ssh_host_ecdsa_key
+      HostKey /etc/ssh.host/ssh_host_ed25519_key
+    '';
     garuda-meshagent = {
       agentBinary =
         if pkgs.hostPlatform.system == "aarch64-linux" then

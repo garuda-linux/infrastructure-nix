@@ -5,6 +5,28 @@
 , sources
 , ...
 }:
+let
+  chaotic_mounts = {
+    "pacman" = {
+      hostPath = "/var/cache/pacman/pkg";
+      isReadOnly = false;
+      mountPoint = "/var/cache/pacman/pkg";
+    };
+    "telegram-send-group" = {
+      hostPath = "/var/garuda/secrets/chaotic/telegram-send-group"; #
+      mountPoint = "/root/.config/telegram-send-group.conf";
+    };
+    "telegram-send-log" = {
+      hostPath = "/var/garuda/secrets/chaotic/telegram-send-log";
+      mountPoint = "/root/.config/telegram-send-log.conf";
+    };
+    "keyring" = {
+      hostPath = "/root/.gnupg";
+      isReadOnly = false;
+      mountPoint = "/root/.gnupg";
+    };
+  };
+in
 {
   imports = [
     ./hardware-configuration.nix
@@ -65,18 +87,19 @@
     bridgeInterface = "br0";
     hostInterface = "eth0";
     hostIp = "10.0.5.1";
+    dockerCache = "/data_1/dockercache/";
     containers = {
       chaotic-kde = {
-        buildsChaotic = true;
         config = import ./chaotic-kde.nix;
         extraOptions = {
-          bindMounts = {
+          bindMounts = lib.mkMerge [{
             "chaotic-aur-kde" = {
               hostPath = "/data_2/chaotic-aur/chaotic-aur-kde";
               isReadOnly = false;
               mountPoint = "/srv/http/repos/chaotic-aur-kde";
             };
-          };
+          }
+            chaotic_mounts];
           forwardPorts = [
             {
               containerPort = 22;
@@ -135,6 +158,27 @@
         ipAddress = "10.0.5.70";
         needsDocker = true;
       };
+      iso-runner = {
+        config = import ./iso-runner.nix;
+        extraOptions = {
+          bindMounts = {
+            "iso" = {
+              hostPath = "/data_2/iso/";
+              isReadOnly = false;
+              mountPoint = "/var/garuda/buildiso/";
+            };
+          };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 227;
+              protocol = "tcp";
+            }
+          ];
+        };
+        ipAddress = "10.0.5.40";
+        needsDocker = true;
+      };
       mastodon = {
         config = import ./mastodon.nix;
         extraOptions = {
@@ -172,26 +216,31 @@
         config = import ./postgres.nix;
         extraOptions = {
           bindMounts = {
-            "postgres" = {
-              hostPath = "/data_1/containers/postgres/";
+            "postgres_backup" = {
+              hostPath = "/data_1/containers/postgres/backup";
               isReadOnly = false;
               mountPoint = "/var/garuda/backups/postgres";
+            };
+            "data" = {
+              hostPath = "/data_1/containers/postgres/data";
+              isReadOnly = false;
+              mountPoint = "/var/lib/postgresql";
             };
           };
         };
         ipAddress = "10.0.5.50";
       };
       repo = {
-        buildsChaotic = true;
         config = import ./repo.nix;
         extraOptions = {
-          bindMounts = {
+          bindMounts = lib.mkMerge [{
             "garuda" = {
               hostPath = "/data_2/chaotic-aur/garuda";
               isReadOnly = false;
               mountPoint = "/srv/http/repos/garuda";
             };
-          };
+          }
+            chaotic_mounts];
           forwardPorts = [
             {
               containerPort = 22;
@@ -203,16 +252,10 @@
         ipAddress = "10.0.5.30";
         needsNesting = true;
       };
-      runner = {
-        config = import ./runner.nix;
-        ipAddress = "10.0.5.40";
-        needsDocker = true;
-      };
       temeraire = {
-        buildsChaotic = true;
         config = import ./temeraire.nix;
         extraOptions = {
-          bindMounts = {
+          bindMounts = lib.mkMerge [{
             "garuda" = {
               hostPath = "/data_2/chaotic-aur";
               isReadOnly = false;
@@ -228,7 +271,8 @@
               isReadOnly = false;
               mountPoint = "/var/lib/syncthing";
             };
-          };
+          }
+            chaotic_mounts];
           forwardPorts = [
             {
               containerPort = 22;
@@ -236,8 +280,8 @@
               protocol = "tcp";
             }
             {
-              containerPort = config.services.rsyncd.port;
-              hostPort = config.services.rsyncd.port;
+              containerPort = 873;
+              hostPort = 873;
               protocol = "tcp";
             }
             {
@@ -266,13 +310,13 @@
           bindMounts = {
             "acme" = {
               hostPath = "/data_1/containers/web-front/acme";
-              mountPoint = "/var/lib/acme";
               isReadOnly = false;
-            };    
+              mountPoint = "/var/lib/acme";
+            };
             "nginx" = {
               hostPath = "/var/log/nginx";
-              mountPoint = "/var/log/nginx";
               isReadOnly = false;
+              mountPoint = "/var/log/nginx";
             };
           };
           forwardPorts = [
@@ -296,6 +340,12 @@
               hostPort = 443;
               protocol = "udp";
             }
+            {
+              containerPort = 8448;
+              hostPort = 8448;
+              protocol = "tcp";
+            }
+          
           ];
         };
         ipAddress = "10.0.5.10";
