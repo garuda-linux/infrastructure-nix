@@ -1,5 +1,6 @@
 { config
 , garuda-lib
+, pkgs
 , sources
 , ...
 }: {
@@ -11,61 +12,61 @@
   garuda-lib.behind_proxy = true;
 
   # Enable Chaotic-AUR building
-  # services.chaotic.enable = true;
-  # services.chaotic.cluster-name = "garuda-cluster";
-  # # Let nginx set itself up for this local domain
-  # services.chaotic.host = "local.chaotic.invalid";
-  # services.chaotic.extraConfig = ''
-  #   export CAUR_SIGN_KEY=D6C9442437365605
-  #   export CAUR_SIGN_USER=root
-  #   export CAUR_TYPE=primary
-  #   export CAUR_PACKAGER="Nico Jensch <dr460nf1r3@chaotic.cx>"
-  #   export CAUR_URL=https://builds.garudalinux.org/repos/chaotic-aur/x86_64
-  #   export CAUR_DEPLOY_LABEL="Temeraire 🐉"
-  #   export CAUR_TELEGRAM_TAG="@dr460nf1r3"
-  #   export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
-  # '';
-  # services.chaotic.db-name = "chaotic-aur";
-  # services.chaotic.routines = [ "hourly.1" "hourly.2" "afternoon" "nightly" "morning" ];
+  services.chaotic.enable = true;
+  services.chaotic.cluster-name = "garuda-cluster";
+  # Let nginx set itself up for this local domain
+  services.chaotic.host = "local.chaotic.invalid";
+  services.chaotic.extraConfig = ''
+    export CAUR_DEPLOY_LABEL="Temeraire 🐉"
+    export CAUR_PACKAGER="Temeraire <team@garudalinux.org>"
+    export CAUR_SIGN_KEY=D6C9442437365605
+    export CAUR_SIGN_USER=root
+    export CAUR_TELEGRAM_TAG="@dr460nf1r3"
+    export CAUR_TYPE=primary
+    export CAUR_URL=https://builds.garudalinux.org/repos/chaotic-aur/x86_64
+    export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
+  '';
+  services.chaotic.db-name = "chaotic-aur";
+  services.chaotic.routines = [ "hourly.1" "hourly.2" "afternoon" "nightly" "morning" ];
 
   # Special Syncthing configuration allowing to push to main node
-  # services.syncthing = {
-  #   enable = true;
-  #   openDefaultPorts = true;
-  #   configDir = config.services.syncthing.dataDir;
-  #   inherit (garuda-lib.secrets.syncthing.esxi-build) cert;
-  #   inherit (garuda-lib.secrets.syncthing.esxi-build) key;
-  #   overrideFolders = false;
-  #   overrideDevices = false;
-  #   user = "root";
-  #   group = "chaotic_op";
-  #   extraOptions = {
-  #     gui = {
-  #       apikey = "garudalinux";
-  #       insecureSkipHostcheck = true;
-  #     };
-  #   };
-  # };
+  services.syncthing = {
+    enable = true;
+    openDefaultPorts = true;
+    configDir = config.services.syncthing.dataDir;
+    inherit (garuda-lib.secrets.syncthing.esxi-build) cert;
+    inherit (garuda-lib.secrets.syncthing.esxi-build) key;
+    overrideFolders = false;
+    overrideDevices = false;
+    user = "root";
+    group = "chaotic_op";
+    extraOptions = {
+      gui = {
+        apikey = "garudalinux";
+        insecureSkipHostcheck = true;
+      };
+    };
+  };
 
   # Cloudflared access to Syncthing webinterface
-  # services.garuda-cloudflared = {
-  #   enable = true;
-  #   ingress = { "syncthing-build.garudalinux.net" = "http://localhost:8384"; };
-  #   tunnel-credentials =
-  #     garuda-lib.secrets.cloudflare.cloudflared.esxi-build.cred;
-  # };
+  services.garuda-cloudflared = {
+    enable = true;
+    ingress = { "syncthing-build.garudalinux.net" = "http://localhost:8384"; };
+    tunnel-credentials =
+      garuda-lib.secrets.cloudflare.cloudflared.esxi-build.cred;
+  };
 
   # Auto reset syncthing stuff
-  # systemd.services.syncthing-reset = {
-  #   serviceConfig.Type = "oneshot";
-  #   script = ''
-  #     "${pkgs.curl}/bin/curl" -X POST -H "X-API-Key: garudalinux" http://localhost:8384/rest/db/override?folder=${garuda-lib.secrets.syncthing.folders.chaotic-aur}
-  #   '';
-  # };
-  # systemd.timers.syncthing-reset = {
-  #   wantedBy = [ "timers.target" ];
-  #   timerConfig.OnCalendar = [ "hourly" ];
-  # };
+  systemd.services.syncthing-reset = {
+    serviceConfig.Type = "oneshot";
+    script = ''
+      "${pkgs.curl}/bin/curl" -X POST -H "X-API-Key: garudalinux" http://localhost:8384/rest/db/override?folder=${garuda-lib.secrets.syncthing.folders.chaotic-aur}
+    '';
+  };
+  systemd.timers.syncthing-reset = {
+    wantedBy = [ "timers.target" ];
+    timerConfig.OnCalendar = [ "hourly" ];
+  };
 
   # Chaotic-AUR builders need to upload their packages
   users.users.ufscar_hpc = {
@@ -81,6 +82,32 @@
     openssh.authorizedKeys.keys = [
       "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDHELhrMFNvxgAYMdzwerszypuvQc3uCFjkR6xCbcQnrcCrueJqTQ4y8WzddwxhRzKbSTQVhPdB5l95IYk7eOtmBmaMp4LAV2osMWDI/x3NyoY5s7YgpW815qNX9Io7VnrFUr0LK7hJ+Uw87nyxGp3zGddPVMUK7PIdJf2GxTxKPryycdLa9QWijfm3YBdN10yBMp6KrfPEnhtmNPMrc3wuBG4+xBoJxNOy0DJdIf2PRwU2CddP0zdDWwlMbGeHGcaJmlAx0u9e1jL8KWB/oyGT1D9q4l+fU8E9nZG+kAFMO1yG25je9bJnYNPMV1gdRT47G3J/B982XYO4G4AiOER0v0M0MN0qWTvIVBG6Vnly81ME91Qao34Lw2QOhZMVFwWz01u8KLLQy/Z2rX7jKyqeUyGXgs5NPmkeJ1vzpSRLXY+5GX5yva8A041Nft7sfKYPFjMsDaxAKVPz7LkKX1dYdiC4c3a/RcCzLKY+Uabjr0QAK4MKwmMW+SNF0QHr9mk= root@Chaotic"
     ];
+  };
+  users.users.chaotic-dragon = {
+    extraGroups = [ "chaotic_op" ];
+    isNormalUser = true;
+    openssh.authorizedKeys.keys = [
+      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC0zLuPM4IE4xsxen2XBqWKSQz5CpHONgguOhVuR5rTxRqijiwGro0VR4gPhpmuZjLkms4CJ2YGyjTbjDkh48+wAoiPjdvVqF6kJ9TLkHZabMJfx5chKMCVFcHM+0/F768fF/nRsfusbRO7H2nLGMXJ1eObemiCGg0e8Ccs0XA4PF9bGaDm+4bblNasVyT6PsnaYziyBtwU3fzBVbdQmErw37sjXV9jNsEq3XF9wSaFf/Dfzh9xY1CR1KC7Af84lL1vOj7QL06tEmDO6W4JJCpRS4OonpuahwaaR4gn6wW09eDgrpXUI5DhxGizwGPLdwENRONpcXP0xnWetC9IaUADHb9yZwQKZhN9RCoO5ytqrt/NkGfn7Si+mWSfMQRGvfgJocC89peIhbchXalT+JS1XWD+Isvj2I+sqmAcoKgji09MTF0lMW+m83/+YA7Jdhn5CLVs9RxZ5cwz1TqveuUaq4i9P867iKCltrqZxxgXD4emZXhHGvGrw8cNQZOVAhc= root@chaotic-dragon"
+    ];
+  };
+  users.users.dragons-ryzen = {
+    extraGroups = [ "chaotic_op" ];
+    isNormalUser = true;
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAd8nLLjysVefmk3I6BI/IkooUvnGSy7966T54gWNvgW nico@slim-lair"
+    ];
+  };
+
+  # Ufscar-HPC needs diffie-hellman-group-exchange-sha1
+  services.openssh.settings = {
+      KexAlgorithms = [
+        "curve25519-sha256"
+        "curve25519-sha256@libssh.org"
+        "diffie-hellman-group-exchange-sha1"
+        "diffie-hellman-group16-sha512"
+        "diffie-hellman-group18-sha512"
+        "sntrup761x25519-sha512@openssh.com"
+      ];
   };
 
   # Our main webserver on this machine
@@ -227,22 +254,7 @@
   #   };
   # };
 
-  # Fix nix nonsense causing issues with not being able to mount /proc
-  /*systemd.services.create-tmp-proc-directory = {
-    description = "Create /tmp/proc directory";
-    script = ''
-      mkdir -p /tmp/proc
-    '';
-    };
-    systemd.mounts = [{
-    description = "Mount for procfs to /tmp/proc";
-    what = "none";
-    where = "/tmp/proc";
-    type = "proc";
-    requires = [ "create-tmp-proc-directory.service" ];
-    after = [ "create-tmp-proc-directory.service" ];
-    wantedBy = [ "multi-user.target" ];
-  }];*/
+
 
   system.stateVersion = "23.05";
 }

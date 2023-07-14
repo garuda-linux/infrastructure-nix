@@ -77,6 +77,16 @@ in
           ];
           autoStart = true;
           bindMounts = {
+            "chaotic-cache" = lib.mkIf cont.buildsChaotic {
+              hostPath = "data_2/containers/${name}/cache";
+              isReadOnly = false;
+              mountPoint = "/var/cache/chaotic";
+            };
+            "chaotic-libe" = lib.mkIf cont.buildsChaotic {
+              hostPath = "data_2/containers/${name}/lib";
+              isReadOnly = false;
+              mountPoint = "/var/lib/chaotic";
+            };
             "dev-fuse" = lib.mkIf cont.needsDocker {
               hostPath = "/dev/fuse";
               mountPoint = "/dev/fuse";
@@ -116,15 +126,20 @@ in
                 isReadOnly = false;
                 mountPoint = "/home/xiota";
               };
+            "keyring" = lib.mkIf cont.buildsChaotic {
+              hostPath = "/root/.gnupg";
+              isReadOnly = false;
+              mountPoint = "/root/.gnupg";
+            };
             "secrets" = lib.mkDefault {
               hostPath = "/var/garuda/secrets";
               isReadOnly = true;
               mountPoint = "/var/garuda/secrets";
             };
-            "keyring" = lib.mkIf cont.buildsChaotic {
-              hostPath = "/root/.gnupg";
+            "pacman" = lib.mkIf cont.buildsChaotic {
+              hostPath = "/var/cache/pacman/pkg";
               isReadOnly = false;
-              mountPoint = "/root/.gnupg";
+              mountPoint = "/var/cache/pacman/pkg";
             };
             "telegram-send-group" = lib.mkIf cont.buildsChaotic {
               hostPath = "/var/garuda/secrets/chaotic/telegram-send-group"; #

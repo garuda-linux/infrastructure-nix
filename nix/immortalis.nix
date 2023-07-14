@@ -71,20 +71,10 @@
         config = import ./chaotic-kde.nix;
         extraOptions = {
           bindMounts = {
-            "repo" = {
-              hostPath = "/data_2/containers/chaotic-kde/repo";
-              mountPoint = "/srv/http/repos/chaotic-aur-kde";
-              isReadOnly = false;
-            };
             "chaotic-aur-kde" = {
               hostPath = "/data_2/chaotic-aur/chaotic-aur-kde";
+              isReadOnly = false;
               mountPoint = "/srv/http/repos/chaotic-aur-kde";
-              isReadOnly = false;
-            };
-            "cache" = {
-              hostPath = "/data_2/containers/chaotic-kde/cache";
-              mountPoint = "/var/cache/chaotic";
-              isReadOnly = false;
             };
           };
           forwardPorts = [
@@ -104,8 +94,8 @@
           bindMounts = {
             "compose" = {
               hostPath = "/data_1/containers/docker/";
-              mountPoint = "/var/garuda/docker-compose-runner/all-in-one";
               isReadOnly = false;
+              mountPoint = "/var/garuda/docker-compose-runner/all-in-one";
             };
           };
           forwardPorts = [
@@ -130,8 +120,8 @@
           bindMounts = {
             "forum" = {
               hostPath = "/data_1/containers/forum/";
-              mountPoint = "/var/discourse";
               isReadOnly = false;
+              mountPoint = "/var/discourse";
             };
           };
           forwardPorts = [
@@ -151,15 +141,15 @@
           bindMounts = {
             "mastodon" = {
               hostPath = "/data_1/containers/mastodon/mastodon";
-              mountPoint = "/var/lib/mastodon";
               isReadOnly = false;
+              mountPoint = "/var/lib/mastodon";
             };
           };
           bindMounts = {
             "redis" = {
               hostPath = "/data_1/containers/mastodon/redis/";
-              mountPoint = "/var/lib/redis-mastodon";
               isReadOnly = false;
+              mountPoint = "/var/lib/redis-mastodon";
             };
           };
         };
@@ -171,8 +161,8 @@
           bindMounts = {
             "meshcentral" = {
               hostPath = "/data_1/containers/meshcentral/";
-              mountPoint = "/opt/meshcentral";
               isReadOnly = false;
+              mountPoint = "/opt/meshcentral";
             };
           };
         };
@@ -184,8 +174,8 @@
           bindMounts = {
             "postgres" = {
               hostPath = "/data_1/containers/postgres/";
-              mountPoint = "/var/garuda/backups/postgres";
               isReadOnly = false;
+              mountPoint = "/var/garuda/backups/postgres";
             };
           };
         };
@@ -198,13 +188,8 @@
           bindMounts = {
             "garuda" = {
               hostPath = "/data_2/chaotic-aur/garuda";
+              isReadOnly = false;
               mountPoint = "/srv/http/repos/garuda";
-              isReadOnly = false;
-            };
-            "cache" = {
-              hostPath = "/data_2/containers/repo/cache";
-              mountPoint = "/var/cache/chaotic";
-              isReadOnly = false;
             };
           };
           forwardPorts = [
@@ -230,13 +215,18 @@
           bindMounts = {
             "garuda" = {
               hostPath = "/data_2/chaotic-aur";
+              isReadOnly = false;
               mountPoint = "/srv/http/repos";
-              isReadOnly = false;
             };
-            "cache" = {
-              hostPath = "/data_2/containers/temeraire/cache";
-              mountPoint = "/var/cache/chaotic";
+            "repoctl" = {
+              hostPath = "/data_2/containers/temeraire/chaotic-repoctl.toml";
               isReadOnly = false;
+              mountPoint = "/usr/local/etc/chaotic-repoctl.toml";
+            };
+            "syncthing" = {
+              hostPath = "/data_2/containers/temeraire/syncthing";
+              isReadOnly = false;
+              mountPoint = "/var/lib/syncthing";
             };
           };
           forwardPorts = [
@@ -274,6 +264,11 @@
         config = import ./web-front.nix;
         extraOptions = {
           bindMounts = {
+            "acme" = {
+              hostPath = "/data_1/containers/web-front/acme";
+              mountPoint = "/var/lib/acme";
+              isReadOnly = false;
+            };    
             "nginx" = {
               hostPath = "/var/log/nginx";
               mountPoint = "/var/log/nginx";

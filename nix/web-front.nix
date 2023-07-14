@@ -53,7 +53,7 @@
         serverAliases = [ "www.garudalinux.org" ];
         useACMEHost = "garudalinux.org";
       };
-      "cloud.garudalinux.org" = {
+   /*    "cloud.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
@@ -161,13 +161,13 @@
         locations = { "/" = { proxyPass = "http://10.0.5.100:5001"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
-      };
+      }; */
       "repo.garudalinux.org" = {
         addSSL = true;
         locations = { "/" = { proxyPass = "http://10.0.5.30:80"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
-      };
+      };/* 
       "start.garudalinux.org" = {
         addSSL = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:8083"; }; };
@@ -206,7 +206,7 @@
         http3 = true;
         serverAliases = [ "vault.garudalinux.org" ];
         useACMEHost = "garudalinux.org";
-      };
+      }; */
       "status.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
@@ -238,7 +238,7 @@
         };
         http3 = true;
         useACMEHost = "garudalinux.org";
-      };
+      };/* 
       "forum.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
@@ -303,7 +303,7 @@
         };
         http3 = true;
         useACMEHost = "garudalinux.org";
-      };
+      }; */
       "builds.garudalinux.org" = {
         addSSL = true;
         serverAliases =
@@ -314,10 +314,10 @@
           real_ip_header CF-Connecting-IP;
           proxy_set_header Host $host;
         '';
-        locations = { "/" = { proxyPass = "http://10.0.5.100:80"; }; };
+        locations = { "/" = { proxyPass = "http://10.0.5.20:80"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
-      };
+      };/* 
       "element.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
@@ -456,7 +456,7 @@
           };
         };
         useACMEHost = "garudalinux.org";
-      };
+      }; */
     };
   };
 
