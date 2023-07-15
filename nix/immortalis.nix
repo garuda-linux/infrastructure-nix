@@ -49,6 +49,34 @@ in
         prefixLength = 26;
       }];
     };
+    # Specify these here to allow containers to access
+    # our services from the internal network via NAT reflection
+    nat.forwardPorts = [
+      {
+        destination = "10.0.5.10:80";
+        loopbackIPs = [ "116.202.208.112" ];
+        proto = "tcp";
+        sourcePort = 80;
+      }
+      {
+        destination = "10.0.5.10:443";
+        loopbackIPs = [ "116.202.208.112" ];
+        proto = "tcp";
+        sourcePort = 443;
+      }
+      {
+        destination = "10.0.5.10:443";
+        loopbackIPs = [ "116.202.208.112" ];
+        proto = "udp";
+        sourcePort = 443;
+      }
+      {
+        destination = "10.0.5.10:8448";
+        loopbackIPs = [ "116.202.208.112" ];
+        proto = "tcp";
+        sourcePort = 8448;
+      }
+    ];
   };
 
   # OpenSSH on another port to keep Chaotic's main node working
@@ -81,6 +109,20 @@ in
 
   # We want to have same UID's in all containers to allow sharing home directories
   garuda-lib.unifiedUID = true;
+
+  # Monitor a few services of the containers
+  services.netdata.configDir = {
+    "go.d/postgres.conf" = (pkgs.writeText "postgres.conf" ''
+      jobs:
+        - name: postgres
+          dsn: 'postgres://netdata:netdata@10.0.5.50:5432/'
+    '');
+    "go.d/web_log.conf" = (pkgs.writeText "web_log.conf" ''
+      jobs:
+        - name: nginx
+          path: /var/log/nginx/access.log
+    '');
+  };
 
   # Custom systemd nspawn container configurations
   services.garuda-nspawn = {
@@ -158,11 +200,6 @@ in
         ipAddress = "10.0.5.70";
         needsDocker = true;
       };
-      runner = {
-        config = import ./runner.nix;
-        ipAddress = "10.0.5.40";
-        needsDocker = true;
-      };
       mastodon = {
         config = import ./mastodon.nix;
         extraOptions = {
@@ -235,6 +272,11 @@ in
         };
         ipAddress = "10.0.5.30";
         needsNesting = true;
+      };
+      runner = {
+        config = import ./runner.nix;
+        ipAddress = "10.0.5.40";
+        needsDocker = true;
       };
       temeraire = {
         config = import ./temeraire.nix;
@@ -309,34 +351,11 @@ in
               mountPoint = "/var/log/nginx";
             };
           };
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 222;
-              protocol = "tcp";
-            }
-            {
-              containerPort = 80;
-              hostPort = 80;
-              protocol = "tcp";
-            }
-            {
-              containerPort = 443;
-              hostPort = 443;
-              protocol = "tcp";
-            }
-            {
-              containerPort = 443;
-              hostPort = 443;
-              protocol = "udp";
-            }
-            {
-              containerPort = 8448;
-              hostPort = 8448;
-              protocol = "tcp";
-            }
-          
-          ];
+          forwardPorts = [{
+            containerPort = 22;
+            hostPort = 222;
+            protocol = "tcp";
+          }];
         };
         ipAddress = "10.0.5.10";
       };

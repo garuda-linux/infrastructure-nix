@@ -20,8 +20,8 @@
     ];
     ensureUsers = [
       {
-        name = "synapse";
-        ensurePermissions = { "DATABASE synapse" = "ALL PRIVILEGES"; };
+        name = "mastodon";
+        ensurePermissions = { "DATABASE mastodon" = "ALL PRIVILEGES"; };
       }
       {
         name = "matrix-bridges";
@@ -34,6 +34,10 @@
       {
         name = "meshcentral";
         ensurePermissions = { "DATABASE meshcentral" = "ALL PRIVILEGES"; };
+      }
+      {
+        name = "synapse";
+        ensurePermissions = { "DATABASE synapse" = "ALL PRIVILEGES"; };
       }
       {
         name = "wikijs";
