@@ -200,6 +200,11 @@
         exclude = "/chaotic-aur/archive/*** /chaotic-aur/logs/*** /chaotic-aur/x86_64/quartus* /chaotic-aur/x86_64/unrealtournament4* /chaotic-aur/x86_64/urbanterror*";
         path = "/srv/http/repos/";
       };
+      iso = {
+        path = "/var/garuda/buildiso/iso/";
+        comment = "ISO downloads";
+        "read only" = "yes";
+      };
       global = {
         "max connections" = 80;
         "max verbosity" = 3;
@@ -254,6 +259,9 @@
       WorkingDirectory = "/srv/http";
     };
   };
+
+  # Lets build Garuda isos here, too
+  services.garuda-iso.enable = true;
 
   system.stateVersion = "23.05";
 }

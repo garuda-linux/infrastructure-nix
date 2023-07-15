@@ -281,7 +281,7 @@
       "builds.garudalinux.org" = {
         addSSL = true;
         serverAliases =
-          [ "cf-builds.garudalinux.org" ];
+          [ "cf-builds.garudalinux.org" "iso.builds.garudalinux.org" ];
         extraConfig = ''
           proxy_buffering off;
           ${garuda-lib.setRealIpFromConfig}
@@ -289,18 +289,6 @@
           proxy_set_header Host $host;
         '';
         locations = { "/" = { proxyPass = "http://10.0.5.20:80"; }; };
-        http3 = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "iso.builds.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          proxy_buffering off;
-          ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-          proxy_set_header Host $host;
-        '';
-        locations = { "/" = { proxyPass = "http://10.0.5.40:80"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };

@@ -13,7 +13,7 @@ let
       mountPoint = "/var/cache/pacman/pkg";
     };
     "telegram-send-group" = {
-      hostPath = "/var/garuda/secrets/chaotic/telegram-send-group"; #
+      hostPath = "/var/garuda/secrets/chaotic/telegram-send-group";
       mountPoint = "/root/.config/telegram-send-group.conf";
     };
     "telegram-send-log" = {
@@ -158,24 +158,8 @@ in
         ipAddress = "10.0.5.70";
         needsDocker = true;
       };
-      iso-runner = {
-        config = import ./iso-runner.nix;
-        extraOptions = {
-          bindMounts = {
-            "iso" = {
-              hostPath = "/data_2/iso/";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/buildiso/";
-            };
-          };
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 227;
-              protocol = "tcp";
-            }
-          ];
-        };
+      runner = {
+        config = import ./runner.nix;
         ipAddress = "10.0.5.40";
         needsDocker = true;
       };
@@ -261,6 +245,11 @@ in
               isReadOnly = false;
               mountPoint = "/srv/http/repos";
             };
+            "iso" = {
+              hostPath = "/data_2/iso/";
+              isReadOnly = false;
+              mountPoint = "/var/garuda/buildiso/";
+            };
             "repoctl" = {
               hostPath = "/data_2/containers/temeraire/chaotic-repoctl.toml";
               isReadOnly = false;
@@ -303,6 +292,7 @@ in
         };
         ipAddress = "10.0.5.20";
         needsNesting = true;
+        needsDocker = true;
       };
       web-front = {
         config = import ./web-front.nix;
