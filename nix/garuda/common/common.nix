@@ -42,6 +42,7 @@
   };
   console.keyMap = "de";
 
+  # Clean /tmp on boot
   boot.tmp.cleanOnBoot = true;
 
   # Home-manager configuration
@@ -53,7 +54,6 @@
   };
 
   # Programs & global config
-  programs.mosh.enable = true;
   programs.bash.shellAliases = {
     "bat" = "bat --style header --style snip --style changes";
     "cls" = "clear";
@@ -71,6 +71,7 @@
     "vdir" = "vdir --color=auto";
     "wget" = "wget -c";
   };
+  programs.command-not-found.enable = false;
   programs.fish = {
     enable = true;
     shellAbbrs = {
@@ -98,6 +99,7 @@
       set fish_greeting
     '';
   };
+  programs.mosh.enable = true;
 
   # Services 
   services = {
@@ -148,6 +150,7 @@
       ncdu
       python3
       screen
+      starship
       ugrep
       wget
     ];

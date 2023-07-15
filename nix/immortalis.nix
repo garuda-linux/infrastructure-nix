@@ -393,12 +393,12 @@ in
       environment = {
         BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_immortalis -p 23";
       };
-      paths = [ "/data_1" "/data_2" ];
+      paths = [ "/data_1" ];
       prune.keep = {
         within = "1d";
-        daily = 5;
+        daily = 7;
         weekly = 2;
-        monthly = 1;
+        monthly = 2;
       };
       repo = "u342919@u342919.your-storagebox.de:./immortalis";
       startAt = "daily";
