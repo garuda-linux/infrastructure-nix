@@ -60,7 +60,7 @@ in
         };
         docker-compose = {
           all-in-one = "/var/garuda/secrets/docker-compose/all-in-one.env";
-          runner = "/var/garuda/secrets/docker-compose/runner.env";
+          iso-runner = "/var/garuda/secrets/docker-compose/iso-runner.env";
         };
         mail = {
           actionsatcx = "/var/garuda/secrets/mail/actionsatcx";

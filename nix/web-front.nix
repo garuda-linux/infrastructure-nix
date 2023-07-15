@@ -397,18 +397,18 @@
       };
       "piped.garudalinux.org" = {
         addSSL = true;
-        # extraConfig = ''
-        #   location / {
-        #     access_log off;
-        #     ${garuda-lib.setRealIpFromConfig}
-        #     real_ip_header CF-Connecting-IP;
-        #     proxy_buffering off;
-        #     proxy_pass http://10.0.5.100:8088;
-        #     proxy_set_header Host $host;
-        #   }
-        # '';
+        extraConfig = ''
+          location / {
+            access_log off;
+            ${garuda-lib.setRealIpFromConfig}
+            real_ip_header CF-Connecting-IP;
+            proxy_buffering off;
+            proxy_pass http://10.0.5.100:8088;
+            proxy_set_header Host $host;
+          }
+        '';
         http3 = true;
-        globalRedirect = "piped.video";
+        #globalRedirect = "piped.video";
         serverAliases = [ "piped-api.garudalinux.org" "piped-proxy.garudalinux.org" ];
         useACMEHost = "garudalinux.org";
       };
@@ -419,18 +419,18 @@
           real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
-        # locations = {
-        #   "/" = {
-        #     extraConfig = ''
-        #       access_log off;
-        #       proxy_buffering off;
-        #       proxy_set_header Connection "";
-        #       proxy_http_version 1.1;
-        #     '';
-        #     proxyPass = "http://10.0.5.100:3003";
-        #   };
-        # };
-        globalRedirect = "invidious.snopyta.org";
+        locations = {
+          "/" = {
+            extraConfig = ''
+              access_log off;
+              proxy_buffering off;
+              proxy_set_header Connection "";
+              proxy_http_version 1.1;
+            '';
+            proxyPass = "http://10.0.5.100:3003";
+          };
+        };
+        #globalRedirect = "invidious.snopyta.org";
         useACMEHost = "garudalinux.org";
       };
       "lingva.garudalinux.org" = {
@@ -470,7 +470,7 @@
   services.garuda-cloudflared = {
     enable = true;
     ingress = {
-      "mesh.garudalinux.net" = "http://localhost:80";
+      "mesh.garudalinux.net" = "http://127.0.0.1:80";
       "matrixadmin.garudalinux.net" = "http://10.0.5.100:8085";
     };
     tunnel-credentials =

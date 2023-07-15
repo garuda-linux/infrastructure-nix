@@ -8,8 +8,7 @@
 
   # Meshcentral for easy remote access
   # manual installation as Nix version is outdated
-  # Also adding in a Python module needed for monitoring our PostgreSQL database via Netdata
-  environment.systemPackages = with pkgs; [ python310Packages.psycopg2 nodejs ];
+  environment.systemPackages = with pkgs; [ nodejs ];
   systemd.services.meshcentral = {
     wantedBy = [ "multi-user.target" ];
     after = [ "network-online.target" ];

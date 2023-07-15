@@ -178,6 +178,37 @@
         http3 = true;
         root = "/srv/http/";
       };
+      "iso.builds.garudalinux.org" = {
+        extraConfig = ''
+          autoindex on;
+          autoindex_format xml;
+          xslt_string_param path $uri;
+          xslt_string_param hostname "Garuda Linux ISO Builds";
+        '';
+        locations."/iso" = {
+          root = "/var/garuda/buildiso";
+          extraConfig = ''
+            xslt_stylesheet "${garuda-lib.xslt_style}";
+            if ($symlink_target_rel != "") {
+              rewrite ^ https://$server_name/iso/$symlink_target_rel redirect;
+            }
+            if ($arg_usa) {
+              rewrite ^/iso/(.*)$ https://us-ny-mirror.garudalinux.org/iso/$1? permanent;
+            }
+            if ($arg_sourceforge) {
+              rewrite ^/iso/(.*)$ https://sourceforge.net/projects/garuda-linux/files/$1? permanent;
+            }
+            if ($arg_osdn) {
+              rewrite ^/iso/(.*)$ https://osdn.net/projects/garuda-linux/storage/$1? permanent;
+            }
+            if ($arg_r2) {
+              set $args "";
+              rewrite ^/iso/(.*)$ https://r2.garudalinux.org/iso/$1?r2request permanent;
+            }
+            break;
+          '';
+        };
+      };
     };
   };
 
@@ -259,9 +290,6 @@
       WorkingDirectory = "/srv/http";
     };
   };
-
-  # Lets build Garuda isos here, too
-  services.garuda-iso.enable = true;
 
   system.stateVersion = "23.05";
 }

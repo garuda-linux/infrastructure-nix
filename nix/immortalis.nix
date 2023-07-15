@@ -200,6 +200,25 @@ in
         ipAddress = "10.0.5.70";
         needsDocker = true;
       };
+      iso-runner = {
+        config = import ./iso-runner.nix;
+        extraOptions = {
+          bindMounts = {
+            "iso" = {
+              hostPath = "/data_2/iso/";
+              isReadOnly = false;
+              mountPoint = "/var/garuda/buildiso";
+            };
+          };
+          forwardPorts = [{
+            containerPort = 22;
+            hostPort = 227;
+            protocol = "tcp";
+          }];
+        };
+        ipAddress = "10.0.5.40";
+        needsDocker = true;
+      };
       mastodon = {
         config = import ./mastodon.nix;
         extraOptions = {
@@ -273,11 +292,6 @@ in
         ipAddress = "10.0.5.30";
         needsNesting = true;
       };
-      runner = {
-        config = import ./runner.nix;
-        ipAddress = "10.0.5.40";
-        needsDocker = true;
-      };
       temeraire = {
         config = import ./temeraire.nix;
         extraOptions = {
@@ -290,7 +304,12 @@ in
             "iso" = {
               hostPath = "/data_2/iso/";
               isReadOnly = false;
-              mountPoint = "/var/garuda/buildiso/";
+              mountPoint = "/var/garuda/buildiso";
+            };
+            "iso-builds" = {
+              hostPath = "/data_2/iso/iso";
+              isReadOnly = false;
+              mountPoint = "/srv/http/iso";
             };
             "repoctl" = {
               hostPath = "/data_2/containers/temeraire/chaotic-repoctl.toml";
@@ -334,7 +353,6 @@ in
         };
         ipAddress = "10.0.5.20";
         needsNesting = true;
-        needsDocker = true;
       };
       web-front = {
         config = import ./web-front.nix;
@@ -386,7 +404,6 @@ in
       startAt = "daily";
     };
   };
-
 
   system.stateVersion = "23.05";
 }
