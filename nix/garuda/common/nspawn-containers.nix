@@ -90,10 +90,25 @@ in
               isReadOnly = false;
               mountPoint = "/var/garuda/secrets";
             };
-            "ssh" = {
-              hostPath = "/etc/ssh";
+            "ssh_ed25519" = {
+              hostPath = "/etc/ssh/ssh_host_ed25519_key";
               isReadOnly = true;
-              mountPoint = "/etc/ssh.host";
+              mountPoint = "/etc/ssh/ssh_host_ed25519_key";
+            };
+            "ssh_ed25519_pub" = {
+              hostPath = "/etc/ssh/ssh_host_ed25519_key.pub";
+              isReadOnly = true;
+              mountPoint = "/etc/ssh/ssh_host_ed25519_key.pub";
+            };
+            "ssh_rsa" = {
+              hostPath = "/etc/ssh/ssh_host_rsa_key";
+              isReadOnly = true;
+              mountPoint = "/etc/ssh/ssh_host_rsa_key";
+            };
+            "ssh_rsa_pub" = {
+              hostPath = "/etc/ssh/ssh_host_rsa_key.pub";
+              isReadOnly = true;
+              mountPoint = "/etc/ssh/ssh_host_rsa_key.pub";
             };
             "dockercache" = lib.mkIf cont.needsDocker {
               hostPath = "${cfg.dockerCache}/${name}";
