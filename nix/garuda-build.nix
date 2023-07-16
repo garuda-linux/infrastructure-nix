@@ -1,4 +1,4 @@
-{ config, ... }: {
+{ ... }: {
   imports = [
     ./garuda/garuda.nix
     ./hardware-configuration.nix

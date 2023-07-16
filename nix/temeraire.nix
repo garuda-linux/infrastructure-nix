@@ -1,31 +1,15 @@
 { config
 , garuda-lib
 , pkgs
+, sources
 , ...
 }: {
-  imports = [
-    ./garuda/common/esxi.nix
+  imports = sources.defaultModules ++ [
     ./garuda/garuda.nix
-    ./hardware-configuration.nix
   ];
 
-  # Base configuration
-  networking.hostName = "esxi-build";
-  networking.interfaces.ens33.ipv4.addresses = [
-    {
-      address = "192.168.1.60";
-      prefixLength = 24;
-    }
-  ];
-  networking.defaultGateway = "192.168.1.1";
-
-  # Lets build Garuda isos here
-  services.garuda-iso.enable = true;
   # This disables HTTPS certificates and forced redirects
   garuda-lib.behind_proxy = true;
-
-  # Openssh HPN for the performance gains - marked broken as of 230407
-  #programs.ssh.package = pkgs.openssh_hpn;
 
   # Enable Chaotic-AUR building
   services.chaotic.enable = true;
@@ -33,13 +17,14 @@
   # Let nginx set itself up for this local domain
   services.chaotic.host = "local.chaotic.invalid";
   services.chaotic.extraConfig = ''
+    export CAUR_DEPLOY_LABEL="Temeraire 🐉"
+    export CAUR_PACKAGER="Garuda Builder <team@garudalinux.org>"
+    export CAUR_ROUTINES=/tmp/chaotic/routines
     export CAUR_SIGN_KEY=D6C9442437365605
     export CAUR_SIGN_USER=root
-    export CAUR_TYPE=primary
-    export CAUR_PACKAGER="Nico Jensch <dr460nf1r3@chaotic.cx>"
-    export CAUR_URL=https://builds.garudalinux.org/repos/chaotic-aur/x86_64
-    export CAUR_DEPLOY_LABEL="Temeraire 🐉"
     export CAUR_TELEGRAM_TAG="@dr460nf1r3"
+    export CAUR_TYPE=primary
+    export CAUR_URL=https://builds.garudalinux.org/repos/chaotic-aur/x86_64
     export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
   '';
   services.chaotic.db-name = "chaotic-aur";
@@ -114,6 +99,18 @@
     ];
   };
 
+  # Ufscar-HPC needs diffie-hellman-group-exchange-sha1
+  services.openssh.settings = {
+    KexAlgorithms = [
+      "curve25519-sha256"
+      "curve25519-sha256@libssh.org"
+      "diffie-hellman-group-exchange-sha1"
+      "diffie-hellman-group16-sha512"
+      "diffie-hellman-group18-sha512"
+      "sntrup761x25519-sha512@openssh.com"
+    ];
+  };
+
   # Our main webserver on this machine
   services.nginx = {
     enable = true;
@@ -181,6 +178,37 @@
         http3 = true;
         root = "/srv/http/";
       };
+      "iso.builds.garudalinux.org" = {
+        extraConfig = ''
+          autoindex on;
+          autoindex_format xml;
+          xslt_string_param path $uri;
+          xslt_string_param hostname "Garuda Linux ISO Builds";
+        '';
+        locations."/iso" = {
+          root = "/var/garuda/buildiso";
+          extraConfig = ''
+            xslt_stylesheet "${garuda-lib.xslt_style}";
+            if ($symlink_target_rel != "") {
+              rewrite ^ https://$server_name/iso/$symlink_target_rel redirect;
+            }
+            if ($arg_usa) {
+              rewrite ^/iso/(.*)$ https://us-ny-mirror.garudalinux.org/iso/$1? permanent;
+            }
+            if ($arg_sourceforge) {
+              rewrite ^/iso/(.*)$ https://sourceforge.net/projects/garuda-linux/files/$1? permanent;
+            }
+            if ($arg_osdn) {
+              rewrite ^/iso/(.*)$ https://osdn.net/projects/garuda-linux/storage/$1? permanent;
+            }
+            if ($arg_r2) {
+              set $args "";
+              rewrite ^/iso/(.*)$ https://r2.garudalinux.org/iso/$1?r2request permanent;
+            }
+            break;
+          '';
+        };
+      };
     };
   };
 
@@ -203,6 +231,11 @@
         exclude = "/chaotic-aur/archive/*** /chaotic-aur/logs/*** /chaotic-aur/x86_64/quartus* /chaotic-aur/x86_64/unrealtournament4* /chaotic-aur/x86_64/urbanterror*";
         path = "/srv/http/repos/";
       };
+      iso = {
+        path = "/var/garuda/buildiso/iso/";
+        comment = "ISO downloads";
+        "read only" = "yes";
+      };
       global = {
         "max connections" = 80;
         "max verbosity" = 3;
@@ -212,12 +245,6 @@
         uid = "nobody";
       };
     };
-  };
-
-  # Enable the docker-compose stack
-  services.docker-compose-runner.esxi-build = {
-    source = ./docker-compose/esxi-build;
-    envfile = garuda-lib.secrets.docker-compose.esxi-build;
   };
 
   # Push chaotic to r2 hourly automatically
@@ -264,30 +291,6 @@
     };
   };
 
-  # This is a containerized version of our esxi-repo configuration
-  systemd.nspawn.esxi-repo = {
-    enable = true;
-    execConfig = {
-      Boot = "yes";
-      ResolvConf = "off";
-      PrivateUsers = 0;
-      Capability = "all";
-    };
-    filesConfig = {
-      Bind = [
-        "/srv/http/repos/garuda:/srv/http/repos/garuda"
-        "/var/cache/pacman/pkg:/var/cache/pacman/pkg"
-        "/var/cache/chaotic/packages:/var/cache/chaotic/packages"
-      ];
-    };
-    networkConfig = { Interface = "ens35"; };
-  };
-  systemd.services."systemd-nspawn@esxi-repo" = {
-    overrideStrategy = "asDropin";
-    wantedBy = [ "machines.target" ];
-    environment = { SYSTEMD_NSPAWN_UNIFIED_HIERARCHY = "1"; };
-    enable = true;
-  };
-
-  system.stateVersion = "22.05";
+  system.stateVersion = "23.05";
 }
+

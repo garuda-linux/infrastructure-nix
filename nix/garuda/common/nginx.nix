@@ -76,7 +76,6 @@
 
   # Diffie-Hellman parameter for DHE ciphersuites
   security.dhparams = lib.mkIf config.services.nginx.enable {
-    defaultBitSize = 3072;
     enable = true;
     params.nginx = { };
   };

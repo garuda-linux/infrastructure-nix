@@ -39,9 +39,6 @@ _: {
     };
   };
 
-  # Default configured for ssh
-  services.fail2ban.enable = true;
-
   # The hardening profile enables Apparmor by default, we don't want this to happen
   security.apparmor.enable = false;
 

@@ -3,44 +3,55 @@
 , lib
 , pkgs
 , ...
-}: {
-  # Enable the Tailscale service
-  services.tailscale = {
-    enable = true;
-    useRoutingFeatures = lib.mkDefault "client";
+}:
+let
+  cfg = config.services.garuda-tailscale;
+in
+{
+  options.services.garuda-tailscale = {
+    enable = lib.mkOption {
+      default = false;
+      description = "Enables the Tailscale service and connects to our Tailnet.";
+      type = lib.types.bool;
+    };
   };
 
-  # Autoconnect to our networks
-  systemd.services.tailscale-autoconnect = {
-    description = "Automatic connection to Tailscale";
+  config = lib.mkIf cfg.enable {
+    # Enable the Tailscale service
+    services.tailscale = {
+      enable = true;
+      useRoutingFeatures = lib.mkDefault "client";
+    };
 
-    # Make sure tailscale is running before trying to connect to tailscale
-    after = [ "network-pre.target" "tailscale.service" ];
-    wants = [ "network-pre.target" "tailscale.service" ];
-    wantedBy = [ "multi-user.target" ];
+    # Autoconnect to our networks
+    systemd.services.tailscale-autoconnect = {
+      description = "Automatic connection to Tailscale";
 
-    # Set this service as a oneshot job
-    serviceConfig.Type = "oneshot";
+      # Make sure tailscale is running before trying to connect to tailscale
+      after = [ "network-pre.target" "tailscale.service" ];
+      wants = [ "network-pre.target" "tailscale.service" ];
+      wantedBy = [ "multi-user.target" ];
 
-    # Have the job run this shell script
-    script = with pkgs; ''
-      # Wait for tailscaled to settle
-      sleep 2
+      # Set this service as a oneshot job
+      serviceConfig.Type = "oneshot";
 
-      # Check if we are already authenticated to Tailscale
-      status="$(${tailscale}/bin/tailscale status -json | ${jq}/bin/jq -r .BackendState)"
-      if [ $status = "Running" ]; then # if so, then do nothing
-        exit 0
-      fi
+      # Have the job run this shell script
+      script = with pkgs; ''
+        sleep 2
+        status="$(${tailscale}/bin/tailscale status -json | ${jq}/bin/jq -r .BackendState)"
+        if [ $status = "Running" ]; then
+          exit 0
+        fi
+        ${tailscale}/bin/tailscale up --authkey ${garuda-lib.secrets.tailscale.authkey} \
+          --accept-routes
+      '';
+    };
 
-      # Otherwise authenticate with Tailscale
-      ${tailscale}/bin/tailscale up --authkey ${garuda-lib.secrets.tailscale.authkey}
-    '';
+    # Always allow traffic from Tailscale network
+    networking.firewall.trustedInterfaces = [ "tailscale0" ];
+
+    # Allow the Tailscale UDP port through the firewall
+    networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
   };
-
-  # Always allow traffic from Tailscale network
-  networking.firewall.trustedInterfaces = [ "tailscale0" ];
-
-  # Allow the Tailscale UDP port through the firewall
-  networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
 }
+

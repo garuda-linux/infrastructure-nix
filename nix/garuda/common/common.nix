@@ -11,22 +11,25 @@
     ./hardening.nix
     ./motd.nix
     ./nginx.nix
+    ./nspawn-containers.nix
     ./tailscale.nix
     ./users.nix
   ];
 
   # Network stuff
-  networking = {
+  networking = lib.mkIf (!garuda-lib.minimalContainer) {
     nameservers = [ "1.1.1.1" "1.0.0.1" ];
     useDHCP = false;
     usePredictableInterfaceNames = true;
   };
 
   ## Enable BBR & cake
-  boot.kernelModules = [ "tcp_bbr" ];
-  boot.kernel.sysctl = {
+  boot.kernelModules = lib.mkIf (!garuda-lib.minimalContainer) [ "tcp_bbr" ];
+  boot.kernel.sysctl = lib.mkIf (!garuda-lib.minimalContainer) {
     "net.ipv4.tcp_congestion_control" = "bbr";
     "net.core.default_qdisc" = "cake";
+    # Make cloudflared happy (https://github.com/lucas-clemente/quic-go/wiki/UDP-Receive-Buffer-Size)
+    "net.core.rmem_max" = 2500000;
   };
   # Mount /run as shared for systemd-nspawn
   boot.specialFileSystems."/run".options = lib.mkIf (!config.boot.isContainer) [ "rshared" ];
@@ -39,19 +42,18 @@
   };
   console.keyMap = "de";
 
+  # Clean /tmp on boot
   boot.tmp.cleanOnBoot = true;
 
   # Home-manager configuration
-  home-manager = {
+  home-manager = lib.mkIf (!garuda-lib.minimalContainer) {
     useGlobalPkgs = true;
     useUserPackages = true;
     users.nico = import ../home/nico.nix;
-    users.alexjp =
-      lib.mkIf config.services.chaotic.enable (import ../home/alexjp.nix);
+    users.alexjp = import ../home/alexjp.nix;
   };
 
   # Programs & global config
-  programs.mosh.enable = true;
   programs.bash.shellAliases = {
     "bat" = "bat --style header --style snip --style changes";
     "cls" = "clear";
@@ -69,6 +71,7 @@
     "vdir" = "vdir --color=auto";
     "wget" = "wget -c";
   };
+  programs.command-not-found.enable = false;
   programs.fish = {
     enable = true;
     shellAbbrs = {
@@ -96,6 +99,7 @@
       set fish_greeting
     '';
   };
+  programs.mosh.enable = true;
 
   # Services 
   services = {
@@ -110,10 +114,8 @@
       enable = lib.mkDefault true;
       mshFile = garuda-lib.secrets.meshagent_msh;
     };
-    garuda-monitoring = {
-      enable = true;
-      parent = "100.68.56.130";
-    };
+    garuda-monitoring.enable = lib.mkIf (!garuda-lib.minimalContainer) true;
+    garuda-tailscale.enable = lib.mkIf (!garuda-lib.minimalContainer) true;
     earlyoom = {
       enable = true;
       freeMemThreshold = 5;
@@ -148,6 +150,7 @@
       ncdu
       python3
       screen
+      starship
       ugrep
       wget
     ];
@@ -178,8 +181,6 @@
     nixPath = [ "nixpkgs=${sources.nixpkgs}" ];
   };
 
-  # Make cloudflared happy (https://github.com/lucas-clemente/quic-go/wiki/UDP-Receive-Buffer-Size)
-  boot.kernel.sysctl = { "net.core.rmem_max" = 2500000; };
   services.cloudflared.user = "root";
 
   systemd.services.nix-clean-result = {
@@ -200,7 +201,7 @@
   documentation.man.enable = false;
 
   # Print a diff when running system updates
-  system.activationScripts.diff = ''
+  system.activationScripts.diff = lib.mkIf (!garuda-lib.minimalContainer) ''
     if [[ -e /run/current-system ]]; then
       (
         for i in {1..3}; do
