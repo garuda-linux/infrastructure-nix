@@ -21,32 +21,28 @@ in
     _module.args.garuda-lib = config.garuda-lib;
     # Defaults
     garuda-lib = {
-      xslt_style = ./static/style.xslt;
       behind_proxy = false;
       inherit setRealIpFromConfig;
+      minimalContainer = false;
+      unifiedUID = false;
       secrets = recursiveUpdate secrets {
         cachix = "/var/garuda/secrets/cachix";
         meshagent_msh = "/var/garuda/secrets/meshagent.msh";
         syncthing = {
-          kde-dragon = {
-            key = "/var/garuda/secrets/syncthing/kde-dragon-key.pem";
-            cert = "/var/garuda/secrets/syncthing/kde-dragon-cert.pem";
-          };
           esxi-build = {
             key = "/var/garuda/secrets/syncthing/esxi-build-key.pem";
             cert = "/var/garuda/secrets/syncthing/esxi-build-cert.pem";
           };
         };
+        chaotic = {
+          telegram-send-group = "/var/garuda/secrets/chaotic/telegram-send-group.conf";
+          telegram-send-log = "/var/garuda/secrets/chaotic/telegram-send-log.conf";
+        };
         cloudflare = {
           cloudflared = {
-            kde-dragon.cred = "/var/garuda/secrets/cloudflare/kde-dragon.json";
             esxi-web.cred = "/var/garuda/secrets/cloudflare/esxi-web.json";
             esxi-build.cred =
               "/var/garuda/secrets/cloudflare/esxi-build.json";
-            monitor-dragon.cred =
-              "/var/garuda/secrets/cloudflare/monitor-dragon.json";
-            chaotic-dragon.cred =
-              "/var/garuda/secrets/cloudflare/chaotic-dragon.json";
           };
           r2 = {
             rclone = "/var/garuda/secrets/cloudflare/rclone.conf";
@@ -54,11 +50,8 @@ in
           apikeys = "/var/garuda/secrets/cloudflare/cloudflare_key";
         };
         docker-compose = {
-          esxi-cloud = "/var/garuda/secrets/docker-compose/esxi-cloud.env";
-          esxi-web = "/var/garuda/secrets/docker-compose/esxi-web.env";
-          esxi-web-two = "/var/garuda/secrets/docker-compose/esxi-web-two.env";
-          web-dragon = "/var/garuda/secrets/docker-compose/web-dragon.env";
-          esxi-build = "/var/garuda/secrets/docker-compose/esxi-build.env";
+          all-in-one = "/var/garuda/secrets/docker-compose/all-in-one.env";
+          iso-runner = "/var/garuda/secrets/docker-compose/iso-runner.env";
         };
         mail = {
           actionsatcx = "/var/garuda/secrets/mail/actionsatcx";
@@ -85,6 +78,7 @@ in
           };
         };
       };
+      xslt_style = ./static/style.xslt;
     };
   };
 }

@@ -1,11 +1,12 @@
 { ... }: {
   imports = [
+    ./chaotic/chaotic.nix
+    ./cloudflared.nix
+    ./docker-compose-runner/docker-compose-runner.nix
+    ./ipv6-rotator.nix
     ./iso.nix
     ./meshagent.nix
-    ./cloudflared.nix
     ./monitoring/monitoring.nix
-    ./chaotic/chaotic.nix
-    ./docker-compose-runner/docker-compose-runner.nix
     ./rclone.nix
   ];
 }

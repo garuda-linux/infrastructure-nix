@@ -3,12 +3,14 @@
 }: {
   imports = [ ./hardware-configuration.nix ];
 
-  networking.hostName = "esxi-monitor";
+  networking.hostName = "immortalis";
   networking.interfaces."eth0".ipv4.addresses = [{
-    address = "192.168.1.80";
-    prefixLength = 24;
+    address = "116.202.208.112";
+    prefixLength = 26;
   }];
-  networking.defaultGateway = "192.168.1.1";
+  networking.defaultGateway = "116.202.208.65";
+
+  boot.loader.systemd-boot.enable = true;
 
   users.users.ansible = {
     isNormalUser = true;
@@ -30,7 +32,7 @@
   }];
   networking.nameservers = [ "1.1.1.1" ];
   environment.systemPackages = [ pkgs.python3 pkgs.git ];
-  system.stateVersion = "22.11";
+  system.stateVersion = "23.05";
 
   systemd.tmpfiles.rules = [
     "d /var/garuda 1555 root root"
