@@ -2,7 +2,6 @@
 , garuda-lib
 , lib
 , pkgs
-, sources
 , ...
 }:
 let
@@ -78,6 +77,13 @@ in
       }
     ];
   };
+
+  # Rotate ipv6 addresses
+  # services.garuda-ipv6-rotator = {
+  #   enable = f;
+  #   interface = "eth0";
+  #   network = "2a01:4f8:2200:30ac";
+  # };
 
   # OpenSSH on another port to keep Chaotic's main node working
   services.openssh.ports = [ 666 ];

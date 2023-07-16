@@ -1,5 +1,4 @@
 { config
-, garuda-lib
 , lib
 , pkgs
 , ...

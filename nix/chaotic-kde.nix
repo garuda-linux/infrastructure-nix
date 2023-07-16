@@ -1,8 +1,4 @@
-{ garuda-lib
-, pkgs
-, sources
-, ...
-}: {
+{ sources, ...}: {
   imports = sources.defaultModules ++ [
     ./garuda/garuda.nix
   ];

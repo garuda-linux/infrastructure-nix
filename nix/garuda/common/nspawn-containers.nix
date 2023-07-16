@@ -136,7 +136,7 @@ in
           hostBridge = cfg.bridgeInterface;
           localAddress = "${cont.ipAddress}/${builtins.toString cfg.networkPrefix}";
           privateNetwork = true;
-          specialArgs = sources.specialArgs;
+          inherit (sources) specialArgs;
         }
           cont.extraOptions])
       cfg.containers;
