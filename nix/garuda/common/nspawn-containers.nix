@@ -95,6 +95,11 @@ in
               isReadOnly = true;
               mountPoint = "/etc/ssh.host/";
             };
+            "pacman" = lib.mkIf config.services.chaotic.enable {
+              hostPath = "/var/cache/pacman/pkg";
+              isReadOnly = false;
+              mountPoint = "/var/cache/pacman/pkg";
+            };
             "dockercache" = lib.mkIf cont.needsDocker {
               hostPath = "${cfg.dockerCache}/${name}";
               isReadOnly = false;
