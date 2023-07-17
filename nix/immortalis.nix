@@ -41,12 +41,40 @@ in
   # Network configuration with a bridge interface
   networking = {
     defaultGateway = "116.202.208.65";
+    defaultGateway6 = {
+      address = "fe80::1";
+      interface = "eth0";
+    };
     hostName = "immortalis";
     interfaces = {
-      "eth0".ipv4.addresses = [{
-        address = "116.202.208.112";
-        prefixLength = 26;
-      }];
+      "eth0" = {
+        ipv4.addresses = [{
+          address = "116.202.208.112";
+          prefixLength = 26;
+        }];
+        ipv6.addresses = [
+          {
+            address = "2a01:4f8:2200:30ac:e442:200b:22d7:c9d2";
+            prefixLength = 64;
+          }
+          {
+            address = "2a01:4f8:2200:30ac:87d5:a3ed:63e0:e78b";
+            prefixLength = 64;
+          }
+          {
+            address = "2a01:4f8:2200:30ac:64f:67fa:66e4:6462";
+            prefixLength = 64;
+          }
+          {
+            address = "2a01:4f8:2200:30ac:a09f:ca9b:59bb:aa58";
+            prefixLength = 64;
+          }
+          {
+            address = "2a01:4f8:2200:30ac:bb37:cfcd:2b16:5c93";
+            prefixLength = 64;
+          }
+        ];
+      };
     };
     # Specify these here to allow containers to access
     # our services from the internal network via NAT reflection
@@ -77,13 +105,6 @@ in
       }
     ];
   };
-
-  # Rotate ipv6 addresses
-  # services.garuda-ipv6-rotator = {
-  #   enable = f;
-  #   interface = "eth0";
-  #   network = "2a01:4f8:2200:30ac";
-  # };
 
   # OpenSSH on another port to keep Chaotic's main node working
   services.openssh.ports = [ 666 ];
@@ -409,6 +430,28 @@ in
       repo = "u342919@u342919.your-storagebox.de:./immortalis";
       startAt = "daily";
     };
+  };
+
+  # A proxy server making use of our IPv6 IP addresses
+  services.squid = {
+    enable = true;
+    extraConfig = ''
+      forwarded_for delete
+
+      acl fifth random 1/5
+      acl fourth random 1/4
+      acl third random 1/3
+      acl half random 1/2
+
+      # Invalid IP
+      tcp_outgoing_address 10.254.254.254
+      tcp_outgoing_address 2a01:4f8:2200:30ac:bb37:cfcd:2b16:5c93 fifth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:a09f:ca9b:59bb:aa58 fourth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:e442:200b:22d7:c9d2 third
+      tcp_outgoing_address 2a01:4f8:2200:30ac:87d5:a3ed:63e0:e78b half
+      tcp_outgoing_address 2a01:4f8:2200:30ac:64f:67fa:66e4:6462
+    '';
+    proxyAddress = "127.0.0.1";
   };
 
   system.stateVersion = "23.05";

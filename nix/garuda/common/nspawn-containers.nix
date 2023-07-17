@@ -91,24 +91,9 @@ in
               mountPoint = "/var/garuda/secrets";
             };
             "ssh_ed25519" = {
-              hostPath = "/etc/ssh/ssh_host_ed25519_key";
+              hostPath = "/etc/ssh/";
               isReadOnly = true;
-              mountPoint = "/etc/ssh/ssh_host_ed25519_key";
-            };
-            "ssh_ed25519_pub" = {
-              hostPath = "/etc/ssh/ssh_host_ed25519_key.pub";
-              isReadOnly = true;
-              mountPoint = "/etc/ssh/ssh_host_ed25519_key.pub";
-            };
-            "ssh_rsa" = {
-              hostPath = "/etc/ssh/ssh_host_rsa_key";
-              isReadOnly = true;
-              mountPoint = "/etc/ssh/ssh_host_rsa_key";
-            };
-            "ssh_rsa_pub" = {
-              hostPath = "/etc/ssh/ssh_host_rsa_key.pub";
-              isReadOnly = true;
-              mountPoint = "/etc/ssh/ssh_host_rsa_key.pub";
+              mountPoint = "/etc/ssh.host/";
             };
             "dockercache" = lib.mkIf cont.needsDocker {
               hostPath = "${cfg.dockerCache}/${name}";
@@ -121,6 +106,17 @@ in
               cont.config
               {
                 config.garuda-lib.minimalContainer = true;
+                config.services.openssh.hostKeys = [
+                  {
+                    bits = 4096;
+                    path = "/etc/ssh.host/ssh_host_rsa_key";
+                    type = "rsa";
+                  }
+                  {
+                    path = "/etc/ssh.host/ssh_host_ed25519_key";
+                    type = "ed25519";
+                  }
+                ];
               }
             ]
             ++ lib.lists.optional garuda-lib.unifiedUID {
@@ -174,7 +170,7 @@ in
       # Network address translation from the internet to the bridge
       nat = {
         enable = true;
-        enableIPv6 = true;
+        enableIPv6 = false;
         externalInterface = cfg.hostInterface;
         internalInterfaces = [ cfg.bridgeInterface ];
       };

@@ -1,4 +1,4 @@
-{ sources, ...}: {
+{ sources, ... }: {
   imports = sources.defaultModules ++ [
     ./garuda/garuda.nix
   ];
