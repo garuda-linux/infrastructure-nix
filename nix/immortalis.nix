@@ -34,6 +34,7 @@ in
 
   # Boot stuff
   boot = {
+    kernelPackages = pkgs.linuxPackages_latest;
     loader.systemd-boot.enable = true;
     tmp.useTmpfs = true;
   };
@@ -112,11 +113,16 @@ in
   # Make use of all threads!
   security.allowSimultaneousMultithreading = true;
 
-  # Raise limits to support many containers
+  # Raise limits to support many containers 
+  # (from LXC's recommendedSysctlSettings)
   boot.kernel.sysctl = {
-    "fs.inotify.max_user_instances" = 524288;
-    "fs.inotify.max_user_watches" = 524288;
+    "fs.inotify.max_user_instances" = 1048576;
+    "fs.inotify.max_user_watches" = 1048576;
+    "kernel.dmesg_restrict" = 1;
+    "kernel.keys.maxkeys" = 2000;
     "kernel.pid_max" = 4194303;
+    "net.ipv4.neigh.default.gc_thresh3" = 8192;
+    "net.ipv6.neigh.default.gc_thresh3" = 8192;
   };
 
   # Improve nspawn container performance since we grant all capabilities anyway
@@ -127,7 +133,7 @@ in
   systemd.services.tailscale-autoconnect.script = with pkgs; ''
     sleep 2
     status="$(${tailscale}/bin/tailscale status -json | ${jq}/bin/jq -r .BackendState)"
-    if [ $status = "Running" ]; then # if so, then do nothing
+    if [ $status = "Running" ]; then
       exit 0
     fi
     ${tailscale}/bin/tailscale up --authkey ${garuda-lib.secrets.tailscale.authkey} \
