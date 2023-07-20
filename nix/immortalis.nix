@@ -383,6 +383,7 @@ in
               protocol = "udp";
             }
           ];
+          tmpfs = [ "/tmp:size=25G" ];
         };
         ipAddress = "10.0.5.20";
         needsNesting = true;
