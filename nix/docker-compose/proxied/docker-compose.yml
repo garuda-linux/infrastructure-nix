@@ -92,22 +92,6 @@ services:
       HTTPS_PROXY: "http://10.0.5.1:3128"
     restart: always
 
-  # Reddit frontend
-  libreddit:
-    image: libreddit/libreddit:latest
-    container_name: libreddit
-    environment:
-      HTTP_PROXY: "http://10.0.5.1:3128"
-      HTTPS_PROXY: "http://10.0.5.1:3128"
-      LIBREDDIT_DEFAULT_AUTOPLAY_VIDEOS: "true"
-      LIBREDDIT_DEFAULT_FRONT_PAGE: popular
-      LIBREDDIT_DEFAULT_SHOW_NSFW: True
-      LIBREDDIT_DEFAULT_THEME: dracula
-      LIBREDDIT_DEFAULT_USE_HLS: True
-    ports:
-      - 8086:8080
-    restart: always
-
   # Lingva
   lingva:
     image: thedaviddelta/lingva-translate:latest

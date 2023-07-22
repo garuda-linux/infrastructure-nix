@@ -445,21 +445,6 @@
         };
         useACMEHost = "garudalinux.org";
       };
-      "libreddit.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            extraConfig = "access_log off;";
-            proxyPass = "http://10.0.5.110:8086";
-          };
-        };
-        useACMEHost = "garudalinux.org";
-      };
     };
   };
 
