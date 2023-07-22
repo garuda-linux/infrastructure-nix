@@ -54,6 +54,11 @@ in
           prefixLength = 26;
         }];
         ipv6.addresses = [
+          # Random outgoing
+          {
+            address = "2a01:4f8:2200:30ac:e442:200b:22d7:c9d2";
+            prefixLength = 64;
+          }
           {
             address = "2a01:4f8:2200:30ac:e442:200b:22d7:c9d2";
             prefixLength = 64;
@@ -105,6 +110,7 @@ in
         sourcePort = 8448;
       }
     ];
+    firewall.trustedInterfaces = [ "br0" ];
   };
 
   # OpenSSH on another port to keep Chaotic's main node working
@@ -145,16 +151,16 @@ in
 
   # Monitor a few services of the containers
   services.netdata.configDir = {
-    "go.d/postgres.conf" = (pkgs.writeText "postgres.conf" ''
+    "go.d/postgres.conf" = pkgs.writeText "postgres.conf" ''
       jobs:
         - name: postgres
           dsn: 'postgres://netdata:netdata@10.0.5.50:5432/'
-    '');
-    "go.d/web_log.conf" = (pkgs.writeText "web_log.conf" ''
+    '';
+    "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
       jobs:
         - name: nginx
           path: /var/log/nginx/access.log
-    '');
+    '';
   };
 
   # Custom systemd nspawn container configurations
@@ -210,6 +216,20 @@ in
           ];
         };
         ipAddress = "10.0.5.100";
+        needsDocker = true;
+      };
+      docker-proxied = {
+        config = import ./docker-proxied.nix;
+        extraOptions = {
+          bindMounts = {
+            "compose" = {
+              hostPath = "/data_1/containers/docker-proxied/";
+              isReadOnly = false;
+              mountPoint = "/var/garuda/docker-compose-runner/proxied";
+            };
+          };
+        };
+        ipAddress = "10.0.5.110";
         needsDocker = true;
       };
       forum = {
@@ -458,7 +478,7 @@ in
       tcp_outgoing_address 2a01:4f8:2200:30ac:87d5:a3ed:63e0:e78b half
       tcp_outgoing_address 2a01:4f8:2200:30ac:64f:67fa:66e4:6462
     '';
-    proxyAddress = "127.0.0.1";
+    proxyAddress = "10.0.5.1";
   };
 
   system.stateVersion = "23.05";

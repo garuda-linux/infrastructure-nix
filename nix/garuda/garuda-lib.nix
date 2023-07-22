@@ -52,6 +52,7 @@ in
         docker-compose = {
           all-in-one = "/var/garuda/secrets/docker-compose/all-in-one.env";
           iso-runner = "/var/garuda/secrets/docker-compose/iso-runner.env";
+          proxied = "/var/garuda/secrets/docker-compose/proxied.env";
         };
         mail = {
           actionsatcx = "/var/garuda/secrets/mail/actionsatcx";

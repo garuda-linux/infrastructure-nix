@@ -26,9 +26,13 @@
     export CAUR_TYPE=primary
     export CAUR_URL=https://builds.garudalinux.org/repos/chaotic-aur/x86_64
     export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
+
+    export HTTP_PROXY=http://10.0.5.1:3128/
+    export HTTPS_PROXY=http://10.0.5.1:3128/
+    export NO_PROXY=mirror.rackspace.com,cloudflaremirrors.com
   '';
   services.chaotic.db-name = "chaotic-aur";
-  services.chaotic.routines = [ "hourly.1" "hourly.2" "afternoon" "nightly" "morning" ];
+  services.chaotic.routines = [ "afternoon" "hourly.1" "hourly.2" "morning" "nightly" "tkg-wine" ];
 
   # Special Syncthing configuration allowing to push to main node
   services.syncthing = {

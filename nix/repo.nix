@@ -17,6 +17,10 @@
     export CAUR_ROUTINES=/tmp/chaotic/routines
     export CAUR_SIGN_USER=root
     export CAUR_TELEGRAM_TAG="@dr460nf1r3"
+
+    export HTTP_PROXY=http://10.0.5.1:3128/
+    export HTTPS_PROXY=http://10.0.5.1:3128/
+    export NO_PROXY=mirror.rackspace.com,cloudflaremirrors.com
   '';
   services.chaotic.db-name = "garuda";
   services.chaotic.routines = [ "hourly" ];

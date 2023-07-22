@@ -109,7 +109,7 @@
           ${garuda-lib.setRealIpFromConfig}
           real_ip_header CF-Connecting-IP;
         '';
-        locations = { "/" = { proxyPass = "http://10.0.5.100:5000"; }; };
+        locations = { "/" = { proxyPass = "http://10.0.5.110:5000"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
@@ -120,7 +120,7 @@
           ${garuda-lib.setRealIpFromConfig}
           real_ip_header CF-Connecting-IP;
         '';
-        locations = { "/" = { proxyPass = "http://10.0.5.100:8080"; }; };
+        locations = { "/" = { proxyPass = "http://10.0.5.110:8080"; }; };
         http3 = true;
         useACMEHost = "garudalinux.org";
       };
@@ -402,12 +402,11 @@
             ${garuda-lib.setRealIpFromConfig}
             real_ip_header CF-Connecting-IP;
             proxy_buffering off;
-            proxy_pass http://10.0.5.100:8088;
+            proxy_pass http://10.0.5.110:8088;
             proxy_set_header Host $host;
           }
         '';
         http3 = true;
-        #globalRedirect = "piped.video";
         serverAliases = [ "piped-api.garudalinux.org" "piped-proxy.garudalinux.org" ];
         useACMEHost = "garudalinux.org";
       };
@@ -426,10 +425,9 @@
               proxy_set_header Connection "";
               proxy_http_version 1.1;
             '';
-            proxyPass = "http://10.0.5.100:3003";
+            proxyPass = "http://10.0.5.110:3003";
           };
         };
-        #globalRedirect = "invidious.snopyta.org";
         useACMEHost = "garudalinux.org";
       };
       "lingva.garudalinux.org" = {
@@ -442,7 +440,7 @@
         locations = {
           "/" = {
             extraConfig = "access_log off;";
-            proxyPass = "http://10.0.5.100:3002";
+            proxyPass = "http://10.0.5.110:3002";
           };
         };
         useACMEHost = "garudalinux.org";
@@ -457,7 +455,7 @@
         locations = {
           "/" = {
             extraConfig = "access_log off;";
-            proxyPass = "http://10.0.5.100:8086";
+            proxyPass = "http://10.0.5.110:8086";
           };
         };
         useACMEHost = "garudalinux.org";

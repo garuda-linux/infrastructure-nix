@@ -15,6 +15,10 @@
     export CAUR_SIGN_KEY=0706B90D37D9B881
     export CAUR_SIGN_USER=root
     export CAUR_TELEGRAM_TAG="@dr460nf1r3"
+
+    export HTTP_PROXY=http://10.0.5.1:3128/
+    export HTTPS_PROXY=http://10.0.5.1:3128/
+    export NO_PROXY=mirror.rackspace.com,cloudflaremirrors.com
   '';
   services.chaotic.db-name = "chaotic-aur-kde";
   services.chaotic.routines = [ "hourly" "nightly" "afternoon" ];
