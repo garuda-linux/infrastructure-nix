@@ -32,11 +32,15 @@ in
     ./garuda/garuda.nix
   ];
 
-  # Boot stuff
+  # Increase /tmp & /run size to make better use of RAM
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
     loader.systemd-boot.enable = true;
-    tmp.useTmpfs = true;
+    runSize = "50%";
+    tmp = {
+      tmpfsSize = "95%";
+      useTmpfs = true;
+    };
   };
 
   # Network configuration with a bridge interface
@@ -155,6 +159,14 @@ in
       jobs:
         - name: postgres
           dsn: 'postgres://netdata:netdata@10.0.5.50:5432/'
+    '';
+    "go.d/squidlog.conf" = pkgs.writeText "squidlog.conf" ''
+      jobs:
+        - name: squid
+          path: /var/log/squid/access.log
+          log_type: csv
+          csv_config:
+            format: '- resp_time client_address result_code resp_size req_method - - hierarchy mime_type'
     '';
     "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
       jobs:

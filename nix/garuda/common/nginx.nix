@@ -58,11 +58,6 @@
     ssl_ecdh_curve          X25519:secp521r1:secp384r1:prime256v1;
     resolver_timeout        2s;
 
-    # Custom log format for Netdata to analyze
-    log_format              custom '"$http_referer" "$http_user_agent" '
-                            '$remote_addr - $remote_user [$time_local] '
-                            '"$request" $status $body_bytes_sent';
-
     # Brotli compression
     brotli                  on;
     brotli_comp_level       6;

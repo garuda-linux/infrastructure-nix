@@ -30,6 +30,7 @@ in {
         modules:
           nginx: yes
           postgres: yes
+          squidlog: yes
           web_log: yes
       '';
       "python.d.conf" = pkgs.writeText "python.d.conf" ''
@@ -46,7 +47,7 @@ in {
         (pkgs.writeText "postgres.conf" ''
           jobs:
             - name: web-two
-              dsn: 'postgres://netdata:netdata@10.0.0.50:5432/'
+              dsn: 'postgres://netdata:netdata@localhost:5432/'
         '');
     };
 
