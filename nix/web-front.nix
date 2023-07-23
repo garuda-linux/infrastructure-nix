@@ -107,7 +107,6 @@
       "search.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
-          access_log off;
           ${garuda-lib.setRealIpFromConfig}
           real_ip_header CF-Connecting-IP;
         '';
@@ -119,7 +118,6 @@
       "searx.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
-          access_log off;
           ${garuda-lib.setRealIpFromConfig}
           real_ip_header CF-Connecting-IP;
         '';
@@ -131,7 +129,6 @@
       "ffsync.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
-          access_log off;
           ${garuda-lib.setRealIpFromConfig}
           real_ip_header CF-Connecting-IP;
         '';
@@ -172,7 +169,6 @@
       "bin.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
-          access_log off;
           ${garuda-lib.setRealIpFromConfig}
           real_ip_header CF-Connecting-IP;
         '';
@@ -423,7 +419,6 @@
         addSSL = true;
         extraConfig = ''
           location / {
-            access_log off;
             ${garuda-lib.setRealIpFromConfig}
             real_ip_header CF-Connecting-IP;
             proxy_buffering off;
@@ -446,7 +441,6 @@
         locations = {
           "/" = {
             extraConfig = ''
-              access_log off;
               proxy_buffering off;
               proxy_set_header Connection "";
               proxy_http_version 1.1;
@@ -466,7 +460,6 @@
         http3 = true;
         locations = {
           "/" = {
-            extraConfig = "access_log off;";
             proxyPass = "http://10.0.5.120:80";
           };
         };
@@ -482,7 +475,6 @@
         http3 = true;
         locations = {
           "/" = {
-            extraConfig = "access_log off;";
             proxyPass = "http://10.0.5.110:3002";
           };
         };
