@@ -10,14 +10,19 @@
   services.postgresql = {
     enable = true;
     ensureDatabases = [
-      "meshcentral"
-      "wikijs"
-      "synapse"
-      "matrix-telegram"
+      "lemmy"
       "matrix-discord"
       "matrix-irc"
+      "matrix-telegram"
+      "meshcentral"
+      "synapse"
+      "wikijs"
     ];
     ensureUsers = [
+      {
+        name = "lemmy";
+        ensurePermissions = { "DATABASE lemmy" = "ALL PRIVILEGES"; };
+      }
       {
         name = "mastodon";
         ensurePermissions = { "DATABASE mastodon" = "ALL PRIVILEGES"; };

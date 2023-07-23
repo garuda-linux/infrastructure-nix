@@ -430,6 +430,21 @@
         };
         useACMEHost = "garudalinux.org";
       };
+      "lemmy.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = "access_log off;";
+            proxyPass = "http://10.0.5.120:80";
+          };
+        };
+        useACMEHost = "garudalinux.org";
+      };
       "lingva.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''

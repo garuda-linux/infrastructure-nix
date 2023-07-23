@@ -32,13 +32,13 @@
       port = 587;
       user = "noreply@garudalinux.org";
     };
-    trustedProxy = "10.0.5.90";
+    trustedProxy = "10.0.5.10";
   };
 
   services.nginx.virtualHosts."social.garudalinux.org" = {
     enableACME = lib.mkForce false;
     extraConfig = ''
-      set_real_ip_from 10.0.5.50;
+      set_real_ip_from 10.0.5.10;
       real_ip_header X-Forwarded-For;
     '';
     useACMEHost = "garudalinux.org";

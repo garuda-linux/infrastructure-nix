@@ -284,6 +284,19 @@ in
         ipAddress = "10.0.5.40";
         needsDocker = true;
       };
+      lemmy = {
+        config = import ./lemmy.nix;
+        extraOptions = {
+          bindMounts = {
+            "pict-rs" = {
+              hostPath = "/data_1/containers/lemmy/pict-rs";
+              isReadOnly = false;
+              mountPoint = "/var/lib/pict-rs";
+            };
+          };
+        };
+        ipAddress = "10.0.5.120";
+      };
       mastodon = {
         config = import ./mastodon.nix;
         extraOptions = {
