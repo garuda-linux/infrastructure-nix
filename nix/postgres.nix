@@ -1,4 +1,5 @@
-{ pkgs
+{ garuda-lib
+, pkgs
 , sources
 , ...
 }: {
@@ -63,6 +64,26 @@
     compression = "zstd";
     enable = true;
     location = "/var/garuda/backups/postgres";
+  };
+
+  # Run daily synapse state compressor on Matrix database
+  systemd.services.synapse_auto_compressor = {
+    description = "Run synapse state compressor on Matrix db";
+    serviceConfig = {
+      ExecStart = pkgs.writeShellScript "execstart" ''
+        set -e
+        ${pkgs.matrix-synapse-tools.rust-synapse-compress-state}/bin/synapse_auto_compressor \
+          -p postgresql://${garuda-lib.secrets.matrix.db_string}@10.0.5.50/synapse -c 500 -n 100
+      '';
+      Restart = "on-failure";
+      RestartSec = "30";
+    };
+    wantedBy = [ "multi-user.target" ];
+  };
+  systemd.timers.synapse_auto_compressor = {
+    description = "Run synapse state compressor on Matrix db";
+    timerConfig.OnCalendar = [ "daily" ];
+    wantedBy = [ "timers.target" ];
   };
 
   # Open up ports for Postgres

@@ -18,3 +18,12 @@ services:
       - "/tmp/runner:/tmp/runner"
       - "/var/run/docker.sock:/var/run/docker.sock"
     restart: always
+
+  # Automated container updates
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    command: --cleanup github-runner
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    restart: always

@@ -160,11 +160,7 @@ services:
       POSTGRES_USER: kemal
       POSTGRES_PASSWORD: "${INVIDIOUS_DB_PASSWORD:?err}"
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"
-        ]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
     restart: always
 
   # Piped
@@ -236,6 +232,15 @@ services:
       UDS: 1
     volumes:
       - piped_proxy:/app/socket
+    restart: always
+
+  # Automated container updates
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    command: --cleanup piped_backend piped_frontend piped_proxy invidious searx lingva whoogle
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
     restart: always
 
 volumes:

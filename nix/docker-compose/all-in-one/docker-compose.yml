@@ -123,9 +123,9 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-?err}
     restart: always
 
-  wikijs_app:
+  wikijs:
     image: requarks/wiki:latest
-    container_name: wikijs_app
+    container_name: wikijs
     volumes:
       - "./wikijs/assets:/wiki/assets/favicons"
     ports:
@@ -156,7 +156,11 @@ services:
       - "./matrix/mautrix-telegram:/data"
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "! (grep -q 'System clock is wrong, set time offset to' /tmp/debug.log && rm /tmp/debug.log && kill -SIGINT 1)"]
+      test:
+        [
+          "CMD-SHELL",
+          "! (grep -q 'System clock is wrong, set time offset to' /tmp/debug.log && rm /tmp/debug.log && kill -SIGINT 1)",
+        ]
       interval: 1m
       timeout: 10s
 
@@ -197,4 +201,13 @@ services:
       - matrix
     volumes:
       - "./matterbridge/matterbridge.toml:/etc/matterbridge/matterbridge.toml:ro"
+    restart: always
+
+  # Automated container updates
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    command: --cleanup matrix_web matrix_admin wikijs mongodb homer privatebin bitwarden thelounge syncserver nextcloud_app
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
     restart: always

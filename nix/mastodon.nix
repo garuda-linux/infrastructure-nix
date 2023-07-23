@@ -1,4 +1,5 @@
 { lib
+, pkgs
 , sources
 , ...
 }: {
@@ -23,7 +24,7 @@
       "WEB_DOMAIN" = "social.garudalinux.org";
     };
     localDomain = "social.garudalinux.org";
-    mediaAutoRemove.enable = true;
+    mediaAutoRemove.enable = false;
     smtp = {
       authenticate = true;
       fromAddress = "noreply@garudalinux.org";
@@ -33,6 +34,26 @@
       user = "noreply@garudalinux.org";
     };
     trustedProxy = "10.0.5.10";
+  };
+
+  # Run daily synapse state compressor on Matrix database
+  systemd.services.mastodon-cleanup = {
+    description = "Run daily cleanup of statuses and media of Mastodon";
+    serviceConfig = {
+      ExecStart = pkgs.writeShellScript "execstart" ''
+        set -e
+        ${pkgs.mastodon}/bin/mastodon-tootctl media remove --days=7
+        ${pkgs.mastodon}/bin/mastodon-tootctl statuses remove --days=7
+      '';
+      Restart = "on-failure";
+      RestartSec = "30";
+    };
+    wantedBy = [ "multi-user.target" ];
+  };
+  systemd.timers.mastodon-cleanup = {
+    description = "Run daily cleanup of statuses and media of Mastodon";
+    timerConfig.OnCalendar = [ "daily" ];
+    wantedBy = [ "timers.target" ];
   };
 
   services.nginx.virtualHosts."social.garudalinux.org" = {
