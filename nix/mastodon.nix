@@ -36,15 +36,16 @@
     trustedProxy = "10.0.5.10";
   };
 
-  # Run daily synapse state compressor on Matrix database
+  # Run daily cleanup of statuses and media of Mastodon
   systemd.services.mastodon-cleanup = {
     description = "Run daily cleanup of statuses and media of Mastodon";
     serviceConfig = {
       ExecStart = pkgs.writeShellScript "execstart" ''
         set -e
-        ${pkgs.mastodon}/bin/mastodon-tootctl media remove --days=7
-        ${pkgs.mastodon}/bin/mastodon-tootctl statuses remove --days=7
+        /run/current-system/sw/bin/mastodon-tootctl media remove --days=7
+        /run/current-system/sw/bin/mastodon-tootctl statuses remove --days=7
       '';
+      Path = [ pkgs.mastodon ];
       Restart = "on-failure";
       RestartSec = "30";
     };

@@ -14,6 +14,7 @@
   services.nginx.recommendedGzipSettings = true;
   services.nginx.recommendedOptimisation = true;
   services.nginx.recommendedTlsSettings = true;
+  services.nginx.recommendedZstdSettings = true;
 
   # Statuspage for Netdata to consume
   services.nginx.statusPage = true;
