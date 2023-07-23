@@ -154,25 +154,31 @@ in
   garuda-lib.unifiedUID = true;
 
   # Monitor a few services of the containers
-  services.netdata.configDir = {
-    "go.d/postgres.conf" = pkgs.writeText "postgres.conf" ''
-      jobs:
-        - name: postgres
-          dsn: 'postgres://netdata:netdata@10.0.5.50:5432/'
-    '';
-    "go.d/squidlog.conf" = pkgs.writeText "squidlog.conf" ''
-      jobs:
-        - name: squid
-          path: /var/log/squid/access.log
-          log_type: csv
-          csv_config:
-            format: '- resp_time client_address result_code resp_size req_method - - hierarchy mime_type'
-    '';
-    "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
-      jobs:
-        - name: nginx
-          path: /var/log/nginx/access.log
-    '';
+  services = {
+    netdata.configDir = {
+      "go.d/postgres.conf" = pkgs.writeText "postgres.conf" ''
+        jobs:
+          - name: postgres
+            dsn: 'postgres://netdata:netdata@10.0.5.50:5432/'
+      '';
+      "go.d/squidlog.conf" = pkgs.writeText "squidlog.conf" ''
+        jobs:
+          - name: squid
+            path: /var/log/squid/access.log
+            log_type: csv
+            csv_config:
+              format: '- resp_time client_address result_code resp_size req_method - - hierarchy mime_type'
+      '';
+      "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
+        jobs:
+          - name: nginx
+            path: /var/log/nginx/access.log
+      '';
+    };
+    smartd = {
+      enable = true;
+      extraOptions = [ "-A /var/log/smartd/" "--interval=600" ];
+    };
   };
 
   # Custom systemd nspawn container configurations
@@ -495,8 +501,6 @@ in
       acl third random 1/3
       acl half random 1/2
 
-      # Invalid IP
-      tcp_outgoing_address 10.254.254.254
       tcp_outgoing_address 2a01:4f8:2200:30ac:bb37:cfcd:2b16:5c93 fifth
       tcp_outgoing_address 2a01:4f8:2200:30ac:a09f:ca9b:59bb:aa58 fourth
       tcp_outgoing_address 2a01:4f8:2200:30ac:e442:200b:22d7:c9d2 third
