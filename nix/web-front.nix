@@ -460,6 +460,9 @@
         http3 = true;
         locations = {
           "/" = {
+            extraConfig = ''
+              proxy_set_header Host $host;
+            '';
             proxyPass = "http://10.0.5.120:80";
           };
         };
