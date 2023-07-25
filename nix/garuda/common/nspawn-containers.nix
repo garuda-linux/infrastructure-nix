@@ -96,9 +96,19 @@ in
               mountPoint = "/etc/ssh.host/";
             };
             "pacman" = lib.mkIf config.services.chaotic.enable {
-              hostPath = "/var/cache/pacman/pkg";
+              hostPath = "/data_2/chaotic/pkg";
               isReadOnly = false;
               mountPoint = "/var/cache/pacman/pkg";
+            };
+            "chaotic-sources" = lib.mkIf config.services.chaotic.enable {
+              hostPath = "/data_2/chaotic/sources";
+              isReadOnly = false;
+              mountPoint = "/var/cache/chaotic/sources";
+            };
+            "chaotic-cc" = lib.mkIf config.services.chaotic.enable {
+              hostPath = "/data_2/chaotic/cc";
+              isReadOnly = false;
+              mountPoint = "/var/cache/chaotic/cc";
             };
             "dockercache" = lib.mkIf cont.needsDocker {
               hostPath = "${cfg.dockerCache}/${name}";

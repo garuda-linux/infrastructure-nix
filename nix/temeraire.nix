@@ -61,6 +61,16 @@
       garuda-lib.secrets.cloudflare.cloudflared.esxi-build.cred;
   };
 
+  # Allow systemd-nspawn to create subcgroups (for Chaotic-AUR builders)
+  systemd.services.remount-sysfscgroup = {
+    description = "Remount cgroup2 to allow systemd-nspawn to create subcgroups";
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      ${pkgs.mount}/bin/mount -t cgroup2 -o rw,nosuid,nodev,noexec,relatime none /sys/fs/cgroup
+    '';
+  };
+
   # Auto reset syncthing stuff
   systemd.services.syncthing-reset = {
     serviceConfig.Type = "oneshot";

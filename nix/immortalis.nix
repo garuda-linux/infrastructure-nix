@@ -280,6 +280,11 @@ in
               isReadOnly = false;
               mountPoint = "/var/garuda/buildiso";
             };
+            "pacman" = {
+              hostPath = "/data_2/chaotic/pkg";
+              isReadOnly = false;
+              mountPoint = "/var/cache/pacman/pkg";
+            };
           };
           forwardPorts = [{
             containerPort = 22;

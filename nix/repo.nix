@@ -1,4 +1,5 @@
-{ sources
+{ pkgs
+, sources
 , ...
 }: {
   imports = sources.defaultModules ++ [
@@ -26,6 +27,16 @@
   services.chaotic.routines = [ "hourly" ];
   services.chaotic.patches = [ ./garuda/services/chaotic/add-chaotic-repo.diff ];
   services.chaotic.useACMEHost = "garudalinux.org";
+
+  # Allow systemd-nspawn to create subcgroups (for Chaotic-AUR builders)
+  systemd.services.remount-sysfscgroup = {
+    description = "Remount cgroup2 to allow systemd-nspawn to create subcgroups";
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      ${pkgs.mount}/bin/mount -t cgroup2 -o rw,nosuid,nodev,noexec,relatime none /sys/fs/cgroup
+    '';
+  };
 
   system.stateVersion = "23.05";
 }
