@@ -141,8 +141,13 @@
       cachix
       exa
       fancy-motd
+      fishPlugins.autopair
+      fishPlugins.grc
+      fishPlugins.puffer
+      fishPlugins.pure
       git
       goaccess
+      grc
       htop
       jq
       killall
@@ -150,7 +155,6 @@
       ncdu
       python3
       screen
-      starship
       ugrep
       wget
     ];
