@@ -161,16 +161,6 @@ in
       })
       (lib.filterAttrs (name: value: value.needsDocker) cfg.containers);
 
-    systemd.services = lib.mapAttrs'
-      (name: value: lib.nameValuePair "container@${name}" {
-        serviceConfig.ExecStartPost = [
-          (pkgs.writeShellScript "container-${name}-post" ''
-            "${pkgs.coreutils}/bin/echo" "mount -t cgroup2 -o rw,nosuid,nodev,noexec,relatime none /sys/fs/cgroup" | "${pkgs.nixos-container}/bin/nixos-container" root-login ${name}
-          '')
-        ];
-      })
-      (lib.filterAttrs (name: value: value.needsNesting) cfg.containers);
-
     systemd.tmpfiles.rules = lib.mapAttrsToList (name: value: "d ${cfg.dockerCache}/${name} 1555 root root") (lib.filterAttrs (name: value: value.needsDocker) cfg.containers);
 
     # Bridge setup
