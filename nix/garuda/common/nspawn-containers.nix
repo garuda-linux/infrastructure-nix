@@ -9,24 +9,12 @@ let
   cfg = config.services.garuda-nspawn;
   submoduleOptions.options = {
     config = lib.mkOption { };
-    cpuQuota = lib.mkOption {
-      type = lib.types.ints.between 1 100;
-      default = 80;
-    };
     extraOptions = lib.mkOption {
       type = lib.types.attrs;
       default = { };
     };
     ipAddress = lib.mkOption {
       type = lib.types.str;
-    };
-    memoryHigh = lib.mkOption {
-      type = lib.types.ints.positive;
-      default = 60;
-    };
-    memoryMax = lib.mkOption {
-      type = lib.types.ints.positive;
-      default = 64;
     };
     needsDocker = lib.mkOption {
       type = lib.types.bool;
@@ -138,11 +126,6 @@ in
               config.garuda-lib.unifiedUID = true;
             });
           ephemeral = true;
-          extraFlags = [
-            "--property=CPUQuota=${builtins.toString cont.cpuQuota}"
-            "--property=MemoryHigh=${builtins.toString cont.memoryHigh}"
-            "--property=MemoryMax=${builtins.toString cont.memoryMax}"
-          ];
           hostAddress = cfg.hostIp;
           hostBridge = cfg.bridgeInterface;
           localAddress = "${cont.ipAddress}/${builtins.toString cfg.networkPrefix}";
