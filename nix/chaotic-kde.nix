@@ -15,7 +15,7 @@
     export CAUR_LOWER_PKGS+=(chaotic-mirrorlist chaotic-keyring git qt6-declarative qt6-tools qt6-doc clang doxygen qt6-declarative)
     export CAUR_PACKAGER="Garuda Builder <team@garudalinux.org>"
     export CAUR_ROUTINES=/tmp/chaotic/routines
-    export CAUR_SIGN_KEY=0706B90D37D9B881
+    export CAUR_SIGN_KEY=D6C9442437365605
     export CAUR_SIGN_USER=root
     export CAUR_TELEGRAM_TAG="@dr460nf1r3"
 
