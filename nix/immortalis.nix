@@ -472,45 +472,19 @@ in
 
   # Set some sanity limits & make sure postgres is started before other containers
   systemd.services = {
-    "container@chaotic-kde".serviceConfig = {
-      CPUQuota = "90%";
-      CPUWeight = 50;
-      MemoryHigh = "62G";
-      MemoryMax = "64G";
-    };
     "container@docker".requires = [ "container@postgres.service" ];
     "container@docker-proxied".requires = [ "container@postgres.service" ];
-    "container@iso-runner".serviceConfig = {
-      CPUQuota = "90%";
-      CPUWeight = 50;
-      MemoryHigh = "62G";
-      MemoryMax = "64G";
-    };
     "container@lemmy".requires = [ "container@postgres.service" ];
     "container@mastodon".requires = [ "container@postgres.service" ];
     "container@meshcentral".requires = [ "container@postgres.service" ];
-    "container@postgres" =
-      {
-        before = [
-          "container@docker-proxied.service"
-          "container@docker.service"
-          "container@lemmy.service"
-          "container@mastodon.service"
-          "container@meshcentral.service"
-        ];
-      };
-
-    "container@repo".serviceConfig = {
-      CPUQuota = "90%";
-      CPUWeight = 50;
-      MemoryHigh = "62G";
-      MemoryMax = "64G";
-    };
-    "container@temeraire".serviceConfig = {
-      CPUQuota = "90%";
-      CPUWeight = 50;
-      MemoryMax = "64G";
-      MemoryHigh = "62G";
+    "container@postgres" = {
+      before = [
+        "container@docker-proxied.service"
+        "container@docker.service"
+        "container@lemmy.service"
+        "container@mastodon.service"
+        "container@meshcentral.service"
+      ];
     };
   };
 

@@ -211,6 +211,10 @@ in
               TimeoutStopFailureMode = "abort";
               WatchdogSignal = "SIGUSR1";
               TimeoutAbortSec = 600;
+              CPUWeight = 50;
+              MemoryHigh = "40G";
+              MemoryMax = "42G";
+              Nice = 19;
             };
           };
         })
