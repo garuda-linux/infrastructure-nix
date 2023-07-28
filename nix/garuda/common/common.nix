@@ -103,8 +103,6 @@
 
   # Services 
   services = {
-    vnstat.enable = true;
-    openssh.enable = true;
     garuda-meshagent = {
       agentBinary =
         if pkgs.hostPlatform.system == "aarch64-linux" then
@@ -116,16 +114,20 @@
     };
     garuda-monitoring.enable = lib.mkIf (!garuda-lib.minimalContainer) true;
     garuda-tailscale.enable = lib.mkIf (!garuda-lib.minimalContainer) true;
-    earlyoom = {
-      enable = true;
-      freeMemThreshold = 5;
-      freeSwapThreshold = 5;
-    };
     locate = {
       enable = true;
       localuser = null;
       locate = pkgs.plocate;
     };
+    openssh.enable = true;
+    vnstat.enable = true;
+  };
+
+  # OOM prevention
+  systemd.oomd = {
+    enable = true; # This is actually the default, anyways...
+    enableSystemSlice = true;
+    enableUserServices = true;
   };
 
   # Docker
@@ -138,16 +140,15 @@
   environment = {
     # Packages the system needs, individual user packages shall be put into home-manager configurations
     systemPackages = with pkgs; [
+      btop
       cachix
       exa
       fancy-motd
       fishPlugins.autopair
-      fishPlugins.grc
       fishPlugins.puffer
       fishPlugins.pure
       git
       goaccess
-      grc
       htop
       jq
       killall

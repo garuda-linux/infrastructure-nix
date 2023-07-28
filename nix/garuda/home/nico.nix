@@ -7,9 +7,6 @@
   home.homeDirectory = "/home/nico";
   home.stateVersion = "22.05";
 
-  # Personally used packages
-  home.packages = with pkgs; [ btop nmap nettools bind whois traceroute lynis ];
-
   # Application user configuration
   programs = {
     bash = {
@@ -39,7 +36,6 @@
     fish = {
       enable = true;
       shellInit = ''
-        # Motd
         ${pkgs.fancy-motd}/bin/motd
       '';
     };
@@ -60,7 +56,7 @@
       extraConfig = ''
         set-option -ga terminal-overrides ",*256col*:Tc,alacritty:Tc"
       '';
-      historyLimit = 10000;
+      historyLimit = 100000;
       newSession = true;
       sensibleOnTop = false;
       shell = "${pkgs.fish}/bin/fish";
