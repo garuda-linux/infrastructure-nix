@@ -21,7 +21,7 @@
 
     export HTTP_PROXY=http://10.0.5.1:3128/
     export HTTPS_PROXY=http://10.0.5.1:3128/
-    export NO_PROXY=mirror.rackspace.com,cloudflaremirrors.com,github.com
+    export NO_PROXY=mirror.rackspace.com,cloudflaremirrors.com,github.com,downloads.sentry-cdn.com
   '';
   services.chaotic.db-name = "garuda";
   services.chaotic.routines = [ "hourly" ];

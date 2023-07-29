@@ -29,7 +29,7 @@
 
     export HTTP_PROXY=http://10.0.5.1:3128/
     export HTTPS_PROXY=http://10.0.5.1:3128/
-    export NO_PROXY=mirror.rackspace.com,cloudflaremirrors.com,github.com
+    export NO_PROXY=mirror.rackspace.com,cloudflaremirrors.com,github.com,downloads.sentry-cdn.com
   '';
   services.chaotic.db-name = "chaotic-aur";
   services.chaotic.routines = [ "afternoon" "hourly.1" "hourly.2" "morning" "nightly" "tkg-wine" ];
