@@ -146,7 +146,6 @@
       fancy-motd
       fishPlugins.autopair
       fishPlugins.puffer
-      fishPlugins.pure
       git
       goaccess
       htop

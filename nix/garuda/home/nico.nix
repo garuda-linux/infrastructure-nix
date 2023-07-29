@@ -37,6 +37,7 @@
       enable = true;
       shellInit = ''
         ${pkgs.fancy-motd}/bin/motd
+        echo ""
       '';
     };
     git = {

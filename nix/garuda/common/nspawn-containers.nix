@@ -125,7 +125,7 @@ in
             ++ lib.lists.optional garuda-lib.unifiedUID {
               config.garuda-lib.unifiedUID = true;
             });
-          ephemeral = true;
+          ephemeral = false;
           hostAddress = cfg.hostIp;
           hostBridge = cfg.bridgeInterface;
           localAddress = "${cont.ipAddress}/${builtins.toString cfg.networkPrefix}";
