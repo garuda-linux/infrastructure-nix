@@ -11,7 +11,7 @@ let
   envfile = pkgs.writeText "iso-env"
     "TELEGRAM=tgram://${garuda-lib.secrets.telegram.token}/${garuda-lib.secrets.telegram.updates_channel}";
   buildiso_script =
-    pkgs.writeScriptBin "buildiso" "cd /var/garuda/buildiso/docker && docker compose exec -it buildiso bash";
+    pkgs.writeScriptBin "buildiso" "docker exec -it buildiso bash";
 in
 {
   options.services.garuda-iso = {
