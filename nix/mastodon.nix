@@ -28,7 +28,7 @@
     smtp = {
       authenticate = true;
       fromAddress = "noreply@garudalinux.org";
-      host = "mail.garudalinux.org";
+      host = "mail.garudalinux.net";
       passwordFile = "/var/lib/mastodon/secrets/smtp-password";
       port = 587;
       user = "noreply@garudalinux.org";
