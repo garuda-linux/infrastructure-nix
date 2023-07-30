@@ -6,6 +6,15 @@
 }:
 let
   chaotic_mounts = {
+    "gitconfig" = {
+      hostPath = "/root/.gitconfig";
+      mountPoint = "/root/.gitconfig";
+    };
+    "keyring" = {
+      hostPath = "/root/.gnupg";
+      isReadOnly = false;
+      mountPoint = "/root/.gnupg";
+    };
     "pacman" = {
       hostPath = "/var/cache/pacman/pkg";
       isReadOnly = false;
@@ -18,11 +27,6 @@ let
     "telegram-send-log" = {
       hostPath = "/var/garuda/secrets/chaotic/telegram-send-log";
       mountPoint = "/root/.config/telegram-send-log.conf";
-    };
-    "keyring" = {
-      hostPath = "/root/.gnupg";
-      isReadOnly = false;
-      mountPoint = "/root/.gnupg";
     };
   };
 in

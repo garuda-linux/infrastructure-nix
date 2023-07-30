@@ -35,6 +35,7 @@ in
           };
         };
         chaotic = {
+          interfere_ed25519 = "/var/garuda/secrets/chaotic/interfere_ed25519";
           telegram-send-group = "/var/garuda/secrets/chaotic/telegram-send-group.conf";
           telegram-send-log = "/var/garuda/secrets/chaotic/telegram-send-log.conf";
         };

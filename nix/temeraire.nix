@@ -27,8 +27,9 @@
     export CAUR_URL=https://builds.garudalinux.org/repos/chaotic-aur/x86_64
     export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
 
-    export HTTP_PROXY=http://10.0.5.1:3128/
+    export GIT_SSH_COMMAND="ssh -i /var/garuda/secrets/chaotic/interfere_ed25519"
     export HTTPS_PROXY=http://10.0.5.1:3128/
+    export HTTP_PROXY=http://10.0.5.1:3128/
     export NO_PROXY=mirror.rackspace.com,cloudflaremirrors.com,github.com,downloads.sentry-cdn.com
   '';
   services.chaotic.db-name = "chaotic-aur";

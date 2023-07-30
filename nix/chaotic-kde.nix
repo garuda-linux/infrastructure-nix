@@ -19,6 +19,7 @@
     export CAUR_SIGN_USER=root
     export CAUR_TELEGRAM_TAG="@dr460nf1r3"
 
+    export GIT_SSH_COMMAND="ssh -i /var/garuda/secrets/chaotic/interfere_ed25519"
     export HTTP_PROXY=http://10.0.5.1:3128/
     export HTTPS_PROXY=http://10.0.5.1:3128/
     export NO_PROXY=mirror.rackspace.com,cloudflaremirrors.com,github.com,downloads.sentry-cdn.com
