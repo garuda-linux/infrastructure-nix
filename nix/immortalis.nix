@@ -505,10 +505,11 @@ in
       environment = {
         BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_immortalis -p 23";
       };
+      exclude = [ "/data_1/dockercache" "/data_1/dockerdata" ];
       paths = [ "/data_1" ];
       prune.keep = {
         within = "1d";
-        daily = 7;
+        daily = 3;
         weekly = 2;
         monthly = 2;
       };
