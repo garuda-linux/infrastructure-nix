@@ -360,6 +360,13 @@ in
               mountPoint = "/var/lib/postgresql";
             };
           };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 229;
+              protocol = "tcp";
+            }
+          ];
         };
         ipAddress = "10.0.5.50";
       };

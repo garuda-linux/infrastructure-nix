@@ -67,7 +67,7 @@
     "keys_nico": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-bjGTTIvcY63ND86cV15JJIhbH0rPmqkTZaWQFTTQME8=",
+        "narHash": "sha256-vpxhTHZTCwioN8JHjb0RYjNWZvKA4VbzBxTs+8clLqc=",
         "type": "file",
         "url": "https://github.com/dr460nf1r3.keys"
       },
