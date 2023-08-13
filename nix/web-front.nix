@@ -1,7 +1,41 @@
 { garuda-lib
+, pkgs
 , sources
 , ...
-}: {
+}: 
+let 
+  goaccessConfig = pkgs.writeText "goaccess.conf" ''
+    anonymize-ip true
+    db-path /var/log/nginx
+    enable-panel BROWSERS
+    enable-panel CACHE_STATUS
+    enable-panel GEO_LOCATION
+    enable-panel HOSTS
+    enable-panel KEYPHRASES
+    enable-panel MIME_TYPE
+    enable-panel NOT_FOUND
+    enable-panel OS
+    enable-panel REFERRERS
+    enable-panel REFERRING_SITES
+    enable-panel REMOTE_USER
+    enable-panel REQUESTS
+    enable-panel REQUESTS_STATIC
+    enable-panel STATUS_CODES
+    enable-panel TLS_TYPE
+    enable-panel VIRTUAL_HOSTS
+    enable-panel VISITORS
+    enable-panel VISIT_TIMES
+    html-prefs {"theme":"darkPurple","perPage":5,"layout":"horizontal","showTables":true,"visitors":{"plot":{"chartType":"bar"}}}
+    html-report-title Garuda Nginx logs
+    log-format COMBINED
+    no-query-string true
+    output /var/log/nginx/report/report.html
+    persist true
+    restore true
+    tz Europe/Berlin
+  '';
+in  
+{
   imports = sources.defaultModules ++ [
     ./garuda/garuda.nix
   ];
@@ -484,6 +518,24 @@
         quic = true;
         useACMEHost = "garudalinux.org";
       };
+      "logs.garudalinux.net" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            basicAuthFile = "/var/log/nginx/logs.garudalinux.net";
+            index = "report.html";
+            proxyWebsockets = true;
+            root = "/var/log/nginx/report";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
     };
   };
 
@@ -499,5 +551,25 @@
       garuda-lib.secrets.cloudflare.cloudflared.esxi-web.cred;
   };
 
+  # Goaccess logs
+  systemd.services.goaccess = {
+    description = "Update goaccess stats";
+    path = [ pkgs.goaccess ];
+    serviceConfig = {
+      ExecStart = pkgs.writeShellScript "execstart" ''
+        ${pkgs.goaccess}/bin/goaccess --config-file ${goaccessConfig} \
+          /var/log/nginx/access*.log
+      '';
+      PrivateTmp = "true";
+      Restart = "always";
+      RestartSec = 10;
+    };
+  };
+  systemd.timers.goaccess = {
+    description = "Update goaccess stats";
+    timerConfig.OnCalendar = [ "hourly" ];
+    wantedBy = [ "timers.target" ];
+  };
+ 
   system.stateVersion = "23.05";
 }
