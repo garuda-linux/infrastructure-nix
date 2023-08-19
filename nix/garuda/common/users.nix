@@ -74,7 +74,7 @@
 
   # Sudo configuration
   security.sudo.extraRules = [{
-    users = [ "ansible" "tne" "nico" ];
+    users = [ "ansible" "tne" "nico" "sgs" ];
     commands = [{
       command = "ALL";
       options = [ "NOPASSWD" ];
