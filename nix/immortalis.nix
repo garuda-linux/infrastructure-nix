@@ -64,27 +64,43 @@ in
         ipv6.addresses = [
           # Random outgoing
           {
-            address = "2a01:4f8:2200:30ac:e442:200b:22d7:c9d2";
+            address = "2a01:4f8:2200:30ac:8bc3:87ca:7eb3:1445";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:e442:200b:22d7:c9d2";
+            address = "2a01:4f8:2200:30ac:b3e8:3e97:b9ea:4f4c";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:87d5:a3ed:63e0:e78b";
+            address = "2a01:4f8:2200:30ac:3139:1040:65d2:f055";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:64f:67fa:66e4:6462";
+            address = "2a01:4f8:2200:30ac:1c69:9c53:0801:c089";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:a09f:ca9b:59bb:aa58";
+            address = "2a01:4f8:2200:30ac:43ca:4c70:b3af:0713";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:bb37:cfcd:2b16:5c93";
+            address = "2a01:4f8:2200:30ac:c164:d4da:d822:b5c0";
+            prefixLength = 64;
+          }
+          {
+            address = "2a01:4f8:2200:30ac:33ab:784a:d947:6fe1";
+            prefixLength = 64;
+          }
+          {
+            address = "2a01:4f8:2200:30ac:370c:1719:6265:3137";
+            prefixLength = 64;
+          }
+          {
+            address = "2a01:4f8:2200:30ac:c9c3:b7f6:fcc3:304e";
+            prefixLength = 64;
+          }
+          {
+            address = "2a01:4f8:2200:30ac:5c1b:cfd5:7c0e:f2e5";
             prefixLength = 64;
           }
         ];
@@ -535,16 +551,26 @@ in
     extraConfig = ''
       forwarded_for delete
 
+      acl tenth random 1/10
+      acl ninth random 1/9
+      cal eighth random 1/8
+      acl seventh random 1/7
+      acl sixth random 1/6
       acl fifth random 1/5
       acl fourth random 1/4
       acl third random 1/3
       acl half random 1/2
 
-      tcp_outgoing_address 2a01:4f8:2200:30ac:bb37:cfcd:2b16:5c93 fifth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:a09f:ca9b:59bb:aa58 fourth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:e442:200b:22d7:c9d2 third
-      tcp_outgoing_address 2a01:4f8:2200:30ac:87d5:a3ed:63e0:e78b half
-      tcp_outgoing_address 2a01:4f8:2200:30ac:64f:67fa:66e4:6462
+      tcp_outgoing_address 2a01:4f8:2200:30ac:8bc3:87ca:7eb3:1445 tenth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:b3e8:3e97:b9ea:4f4c ninth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:3139:1040:65d2:f055 eigth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:1c69:9c53:0801:c089 seventh
+      tcp_outgoing_address 2a01:4f8:2200:30ac:43ca:4c70:b3af:0713 sixth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:c164:d4da:d822:b5c0 fifth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:33ab:784a:d947:6fe1 fourth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:370c:1719:6265:3137 third
+      tcp_outgoing_address 2a01:4f8:2200:30ac:c9c3:b7f6:fcc3:304e half
+      tcp_outgoing_address 2a01:4f8:2200:30ac:5c1b:cfd5:7c0e:f2e5 
     '';
     proxyAddress = "10.0.5.1";
   };
