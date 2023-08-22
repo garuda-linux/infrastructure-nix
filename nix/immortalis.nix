@@ -548,29 +548,36 @@ in
       forwarded_for delete
       dns_nameservers 2606:4700:4700::1111
 
-      acl maybe random 1/5
-      acl maybeyes random 1/2
+      acl tenth random 1/10
+      acl ninth random 1/9
+      cal eighth random 1/8
+      acl seventh random 1/7
+      acl sixth random 1/6
+      acl fifth random 1/5
+      acl fourth random 1/4
+      acl third random 1/3
+      acl half random 1/2
 
-      tcp_outgoing_address 2a01:4f8:2200:30ac:8bc3:87ca:7eb3:1445 maybe
-      tcp_outgoing_address 2a01:4f8:2200:30ac:b3e8:3e97:b9ea:4f4c maybe
-      tcp_outgoing_address 2a01:4f8:2200:30ac:3139:1040:65d2:f055 maybe
-      tcp_outgoing_address 2a01:4f8:2200:30ac:1c69:9c53:0801:c089 maybe
-      tcp_outgoing_address 2a01:4f8:2200:30ac:43ca:4c70:b3af:0713 maybe
-      tcp_outgoing_address 2a01:4f8:2200:30ac:c164:d4da:d822:b5c0 maybe
-      tcp_outgoing_address 2a01:4f8:2200:30ac:33ab:784a:d947:6fe1 maybe
-      tcp_outgoing_address 2a01:4f8:2200:30ac:370c:1719:6265:3137 maybe
-      tcp_outgoing_address 2a01:4f8:2200:30ac:c9c3:b7f6:fcc3:304e maybe
+      tcp_outgoing_address 2a01:4f8:2200:30ac:8bc3:87ca:7eb3:1445 tenth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:b3e8:3e97:b9ea:4f4c ninth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:3139:1040:65d2:f055 eighth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:1c69:9c53:0801:c089 seventh
+      tcp_outgoing_address 2a01:4f8:2200:30ac:43ca:4c70:b3af:0713 sixth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:c164:d4da:d822:b5c0 fifth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:33ab:784a:d947:6fe1 fourth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:370c:1719:6265:3137 third
+      tcp_outgoing_address 2a01:4f8:2200:30ac:c9c3:b7f6:fcc3:304e half
       tcp_outgoing_address 2a01:4f8:2200:30ac:5c1b:cfd5:7c0e:f2e5
 
-      udp_outgoing_address 2a01:4f8:2200:30ac:8bc3:87ca:7eb3:1445 maybe
-      udp_outgoing_address 2a01:4f8:2200:30ac:b3e8:3e97:b9ea:4f4c maybe
-      udp_outgoing_address 2a01:4f8:2200:30ac:3139:1040:65d2:f055 maybe
-      udp_outgoing_address 2a01:4f8:2200:30ac:1c69:9c53:0801:c089 maybe
-      udp_outgoing_address 2a01:4f8:2200:30ac:43ca:4c70:b3af:0713 maybe
-      udp_outgoing_address 2a01:4f8:2200:30ac:c164:d4da:d822:b5c0 maybe
-      udp_outgoing_address 2a01:4f8:2200:30ac:33ab:784a:d947:6fe1 maybe
-      udp_outgoing_address 2a01:4f8:2200:30ac:370c:1719:6265:3137 maybe
-      udp_outgoing_address 2a01:4f8:2200:30ac:c9c3:b7f6:fcc3:304e maybe
+      udp_outgoing_address 2a01:4f8:2200:30ac:8bc3:87ca:7eb3:1445 tenth
+      udp_outgoing_address 2a01:4f8:2200:30ac:b3e8:3e97:b9ea:4f4c ninth
+      udp_outgoing_address 2a01:4f8:2200:30ac:3139:1040:65d2:f055 eighth
+      udp_outgoing_address 2a01:4f8:2200:30ac:1c69:9c53:0801:c089 seventh
+      udp_outgoing_address 2a01:4f8:2200:30ac:43ca:4c70:b3af:0713 sixth
+      udp_outgoing_address 2a01:4f8:2200:30ac:c164:d4da:d822:b5c0 fifth
+      udp_outgoing_address 2a01:4f8:2200:30ac:33ab:784a:d947:6fe1 fourth
+      udp_outgoing_address 2a01:4f8:2200:30ac:370c:1719:6265:3137 third
+      udp_outgoing_address 2a01:4f8:2200:30ac:c9c3:b7f6:fcc3:304e half
       udp_outgoing_address 2a01:4f8:2200:30ac:5c1b:cfd5:7c0e:f2e5
     '';
     proxyAddress = "10.0.5.1";
