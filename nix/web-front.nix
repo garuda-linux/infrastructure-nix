@@ -2,8 +2,8 @@
 , pkgs
 , sources
 , ...
-}: 
-let 
+}:
+let
   goaccessConfig = pkgs.writeText "goaccess.conf" ''
     anonymize-ip true
     db-path /var/log/nginx
@@ -34,7 +34,7 @@ let
     restore true
     tz Europe/Berlin
   '';
-in  
+in
 {
   imports = sources.defaultModules ++ [
     ./garuda/garuda.nix
@@ -570,6 +570,6 @@ in
     timerConfig.OnCalendar = [ "hourly" ];
     wantedBy = [ "timers.target" ];
   };
- 
+
   system.stateVersion = "23.05";
 }

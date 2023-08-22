@@ -46,7 +46,7 @@
     overrideDevices = false;
     user = "root";
     group = "chaotic_op";
-    extraOptions = {
+    settings = {
       gui = {
         apikey = "garudalinux";
         insecureSkipHostcheck = true;

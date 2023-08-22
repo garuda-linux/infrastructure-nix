@@ -1,4 +1,0 @@
-# Base values
-actual_hostname: chaotic-dragon
-ansible_host: 89.58.13.188
-ansible_port: 420
