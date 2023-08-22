@@ -295,6 +295,11 @@ in
         config = import ./iso-runner.nix;
         extraOptions = {
           bindMounts = {
+            "iso" = {
+              hostPath = "/data_2/iso/";
+              isReadOnly = false;
+              mountPoint = "/var/garuda/buildiso";
+            };
             "pacman" = {
               hostPath = "/data_2/chaotic/pkg";
               isReadOnly = false;
@@ -413,7 +418,7 @@ in
               mountPoint = "/srv/http/repos";
             };
             "iso" = {
-              hostPath = "/var/garuda/buildiso";
+              hostPath = "/data_2/iso/";
               isReadOnly = false;
               mountPoint = "/var/garuda/buildiso";
             };
@@ -534,15 +539,6 @@ in
       repo = "u342919@u342919.your-storagebox.de:./immortalis";
       startAt = "daily";
     };
-  };
-
-  # Lets build Garuda ISO here, serving is done via
-  # Temeraire already - only until TNE fixes builds inside 
-  # iso-runner (fails at creating efi partition)
-  services = {
-    garuda-iso.enable = true;
-    nginx.enable = lib.mkForce false;
-    rsyncd.enable = lib.mkForce false;
   };
 
   # A proxy server making use of our IPv6 IP addresses

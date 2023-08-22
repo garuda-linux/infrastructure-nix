@@ -58,15 +58,22 @@ in
         in
         lib.mkMerge [{
           additionalCapabilities = lib.mkForce [ "all" ];
-          allowedDevices = lib.lists.optionals cont.needsDocker [
+          allowedDevices = (lib.lists.optionals cont.needsDocker [
             { node = "/dev/fuse"; modifier = "rwm"; }
             { node = "/dev/mapper/control"; modifier = "rwm"; }
+          ]) ++ [
+            { node = "/dev/loop-control"; modifier = "rw"; }
+            { node = "block-loop"; modifier = "rw"; }
           ];
           autoStart = true;
           bindMounts = {
             "dev-fuse" = lib.mkIf cont.needsDocker {
               hostPath = "/dev/fuse";
               mountPoint = "/dev/fuse";
+            };
+            "dev-loop0" = {
+              hostPath = "/dev/loop0";
+              mountPoint = "/dev/loop0";
             };
             "home" = {
               hostPath = "/home";

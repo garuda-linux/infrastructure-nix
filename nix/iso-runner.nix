@@ -13,13 +13,13 @@
     source = ./docker-compose/runner;
   };
 
-  # To-do: move ISO builds from host to this container
-  # currently failing to build efi files
-  # services = {
-  #   garuda-iso.enable = true;
-  #   nginx.enable = lib.mkForce false;
-  #   rsyncd.enable = lib.mkForce false;
-  # };
+  # Lets build Garuda ISO here, serving is done via
+  # Temeraire already 
+  services = {
+    garuda-iso.enable = true;
+    nginx.enable = lib.mkForce false;
+    rsyncd.enable = lib.mkForce false;
+  };
 
   system.stateVersion = "23.05";
 }
