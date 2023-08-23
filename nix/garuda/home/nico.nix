@@ -19,13 +19,13 @@
     };
     bat = {
       enable = true;
-      config = { theme = "GitHub"; };
+      config = { theme = "Dracula"; };
     };
     btop = {
       enable = true;
       settings = {
         color_theme = "TTY";
-        proc_tree = true;
+        proc_tree = false;
         theme_background = false;
       };
     };
@@ -35,10 +35,6 @@
     };
     fish = {
       enable = true;
-      shellInit = ''
-        ${pkgs.fancy-motd}/bin/motd
-        echo ""
-      '';
     };
     git = {
       enable = true;
@@ -55,7 +51,8 @@
       clock24 = true;
       enable = true;
       extraConfig = ''
-        set-option -ga terminal-overrides ",*256col*:Tc,alacritty:Tc"
+        set -g default-terminal "screen-256color"
+        set -g status-bg black
       '';
       historyLimit = 100000;
       newSession = true;

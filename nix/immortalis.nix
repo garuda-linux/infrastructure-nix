@@ -550,7 +550,7 @@ in
 
       acl tenth random 1/10
       acl ninth random 1/9
-      cal eighth random 1/8
+      acl eighth random 1/8
       acl seventh random 1/7
       acl sixth random 1/6
       acl fifth random 1/5
@@ -558,6 +558,8 @@ in
       acl third random 1/3
       acl half random 1/2
 
+      # Invalid IP
+      tcp_outgoing_address 10.254.254.254
       tcp_outgoing_address 2a01:4f8:2200:30ac:8bc3:87ca:7eb3:1445 tenth
       tcp_outgoing_address 2a01:4f8:2200:30ac:b3e8:3e97:b9ea:4f4c ninth
       tcp_outgoing_address 2a01:4f8:2200:30ac:3139:1040:65d2:f055 eighth
