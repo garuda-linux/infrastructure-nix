@@ -157,6 +157,12 @@
       screen
       ugrep
       wget
+
+      # Alexjp stuff
+      cargo
+      neovim
+      nushell
+      rustc
     ];
     # Increase Mosh timeout
     variables = { MOSH_SERVER_NETWORK_TMOUT = "604800"; };
