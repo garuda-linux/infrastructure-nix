@@ -37,8 +37,29 @@
   };
 
   # Run daily cleanup of statuses and media of Mastodon
-  systemd.services.mastodon-cleanup = {
+  systemd.services.mastodon-media-cleanup = {
     description = "Run daily cleanup of statuses and media of Mastodon";
+    serviceConfig = {
+      ExecStart = pkgs.writeShellScript "execstart" ''
+        set -e
+        /run/current-system/sw/bin/mastodon-tootctl media remove --days=30
+        /run/current-system/sw/bin/mastodon-tootctl statuses remove --days=30
+      '';
+      Path = [ pkgs.mastodon ];
+      Restart = "on-failure";
+      RestartSec = "30";
+    };
+    wantedBy = [ "multi-user.target" ];
+  };
+  systemd.timers.mastodon-media-cleanup = {
+    description = "Monthly cleanup of statuses and media of Mastodon";
+    timerConfig.OnCalendar = [ "monthly" ];
+    wantedBy = [ "timers.target" ];
+  };
+
+  # Scan for orphaned media mo
+  systemd.services.mastodon-orphan-cleanup = {
+    description = "Run weekly cleanup of orphaned media of Mastodon";
     serviceConfig = {
       ExecStart = pkgs.writeShellScript "execstart" ''
         set -e
@@ -51,9 +72,9 @@
     };
     wantedBy = [ "multi-user.target" ];
   };
-  systemd.timers.mastodon-cleanup = {
-    description = "Run daily cleanup of statuses and media of Mastodon";
-    timerConfig.OnCalendar = [ "daily" ];
+  systemd.timers.mastodon-orphan-cleanup = {
+    description = "Run weekly cleanup of orphaned media of Mastodon";
+    timerConfig.OnCalendar = [ "weekly" ];
     wantedBy = [ "timers.target" ];
   };
 
