@@ -16,9 +16,19 @@ let
       mountPoint = "/root/.gnupg";
     };
     "pacman" = {
-      hostPath = "/var/cache/pacman/pkg";
+      hostPath = "/data_2/chaotic/pkg";
       isReadOnly = false;
       mountPoint = "/var/cache/pacman/pkg";
+    };
+    "chaotic-sources" = {
+      hostPath = "/data_2/chaotic/sources";
+      isReadOnly = false;
+      mountPoint = "/var/cache/chaotic/sources";
+    };
+    "chaotic-cc" = {
+      hostPath = "/data_2/chaotic/cc";
+      isReadOnly = false;
+      mountPoint = "/var/cache/chaotic/cc";
     };
     "telegram-send-group" = {
       hostPath = "/var/garuda/secrets/chaotic/telegram-send-group";
@@ -494,6 +504,21 @@ in
         };
         ipAddress = "10.0.5.10";
       };
+      github-runner = {
+        config = import ./github-runner.nix;
+        defaults = false;
+        extraOptions = {
+          ephemeral = lib.mkForce true;
+          bindMounts = {
+            "token" = {
+              hostPath = "/var/garuda/secrets/github-runner-pat";
+              isReadOnly = true;
+              mountPoint = "/var/garuda/secrets/github-runner-pat";
+            };
+          };
+        };
+        ipAddress = "10.0.5.130";
+      };
     };
   };
 
@@ -583,6 +608,10 @@ in
       udp_outgoing_address 2a01:4f8:2200:30ac:5c1b:cfd5:7c0e:f2e5
     '';
     proxyAddress = "10.0.5.1";
+  };
+
+  nix.settings = {
+    max-jobs = 8;
   };
 
   system.stateVersion = "23.05";

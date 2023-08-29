@@ -24,6 +24,10 @@ let
       type = lib.types.bool;
       default = false;
     };
+    defaults = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+    };
   };
 in
 {
@@ -57,16 +61,16 @@ in
           cont = value;
         in
         lib.mkMerge [{
-          additionalCapabilities = lib.mkForce [ "all" ];
+          additionalCapabilities = [ "all" ];
           allowedDevices = (lib.lists.optionals cont.needsDocker [
             { node = "/dev/fuse"; modifier = "rwm"; }
             { node = "/dev/mapper/control"; modifier = "rwm"; }
-          ]) ++ [
+          ]) ++ (lib.lists.optionals cont.defaults [
             { node = "/dev/loop-control"; modifier = "rw"; }
             { node = "block-loop"; modifier = "rw"; }
-          ];
+          ]);
           autoStart = true;
-          bindMounts = {
+          bindMounts = lib.mkIf cont.defaults {
             "dev-fuse" = lib.mkIf cont.needsDocker {
               hostPath = "/dev/fuse";
               mountPoint = "/dev/fuse";
@@ -90,21 +94,6 @@ in
               isReadOnly = true;
               mountPoint = "/etc/ssh.host/";
             };
-            "pacman" = lib.mkIf config.services.chaotic.enable {
-              hostPath = "/data_2/chaotic/pkg";
-              isReadOnly = false;
-              mountPoint = "/var/cache/pacman/pkg";
-            };
-            "chaotic-sources" = lib.mkIf config.services.chaotic.enable {
-              hostPath = "/data_2/chaotic/sources";
-              isReadOnly = false;
-              mountPoint = "/var/cache/chaotic/sources";
-            };
-            "chaotic-cc" = lib.mkIf config.services.chaotic.enable {
-              hostPath = "/data_2/chaotic/cc";
-              isReadOnly = false;
-              mountPoint = "/var/cache/chaotic/cc";
-            };
             "dockercache" = lib.mkIf cont.needsDocker {
               hostPath = "${cfg.dockerCache}/${name}";
               isReadOnly = false;
@@ -112,24 +101,22 @@ in
             };
           };
           config = lib.mkMerge
-            ([
-              cont.config
-              {
-                config.garuda-lib.minimalContainer = true;
-                config.services.openssh.hostKeys = [
-                  {
-                    bits = 4096;
-                    path = "/etc/ssh.host/ssh_host_rsa_key";
-                    type = "rsa";
-                  }
-                  {
-                    path = "/etc/ssh.host/ssh_host_ed25519_key";
-                    type = "ed25519";
-                  }
-                ];
-              }
-            ]
-            ++ lib.lists.optional garuda-lib.unifiedUID {
+            ([ cont.config ]
+              ++ lib.lists.optional cont.defaults {
+              config.garuda-lib.minimalContainer = true;
+              config.services.openssh.hostKeys = [
+                {
+                  bits = 4096;
+                  path = "/etc/ssh.host/ssh_host_rsa_key";
+                  type = "rsa";
+                }
+                {
+                  path = "/etc/ssh.host/ssh_host_ed25519_key";
+                  type = "ed25519";
+                }
+              ];
+            }
+              ++ lib.lists.optional (garuda-lib.unifiedUID && cont.defaults) {
               config.garuda-lib.unifiedUID = true;
             });
           ephemeral = false;
