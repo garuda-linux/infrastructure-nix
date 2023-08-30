@@ -543,9 +543,10 @@ in
   services.garuda-cloudflared = {
     enable = true;
     ingress = {
-      "mesh.garudalinux.net" = "http://127.0.0.1:80";
       "matrixadmin.garudalinux.net" = "http://10.0.5.100:8085";
+      "mesh.garudalinux.net" = "http://127.0.0.1:80";
       "test.garudalinux.net" = "http://10.0.5.40:8080";
+      "test2.garudalinux.net" = "http://10.0.5.40:8081";
     };
     tunnel-credentials =
       garuda-lib.secrets.cloudflare.cloudflared.esxi-web.cred;
