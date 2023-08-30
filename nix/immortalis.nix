@@ -538,6 +538,13 @@ in
         "container@meshcentral.service"
       ];
     };
+    "container@github-runner".serviceConfig = {
+      Restart = lib.mkForce "always";
+      RestartSec = 1;
+      RestartSteps = 5;
+      RestartMaxDelaySec = 300;
+      RuntimeMaxSec = "1d";
+    };
   };
 
   # Backup configurations to Hetzner storage box
@@ -596,6 +603,8 @@ in
       tcp_outgoing_address 2a01:4f8:2200:30ac:c9c3:b7f6:fcc3:304e half
       tcp_outgoing_address 2a01:4f8:2200:30ac:5c1b:cfd5:7c0e:f2e5
 
+      # Invalid IP
+      udp_outgoing_address 10.254.254.254
       udp_outgoing_address 2a01:4f8:2200:30ac:8bc3:87ca:7eb3:1445 tenth
       udp_outgoing_address 2a01:4f8:2200:30ac:b3e8:3e97:b9ea:4f4c ninth
       udp_outgoing_address 2a01:4f8:2200:30ac:3139:1040:65d2:f055 eighth

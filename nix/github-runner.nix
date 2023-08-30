@@ -14,10 +14,13 @@
   };
 
   nix.settings = {
-    trusted-users = [ "runner" ];
     experimental-features = [ "nix-command" "flakes" ];
-    accept-flake-config = true;
     max-jobs = 8;
+    substituters = [ "https://nyx.chaotic.cx" ];
+    trusted-public-keys = [
+      "nyx.chaotic.cx-1:HfnXSw4pj95iI/n17rIDy40agHj12WfF+Gqk6SonIT8="
+      "chaotic-nyx.cachix.org-1:HfnXSw4pj95iI/n17rIDy40agHj12WfF+Gqk6SonIT8="
+    ];
   };
 
   services.github-runner = {
