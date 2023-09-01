@@ -20,6 +20,11 @@ in
           description = "Direct path to a valid .env file";
           default = null;
         };
+        args = mkOption {
+          type = types.string;
+          description = "Additional arguments to pass to docker-compose up";
+          default = "up";
+        };
       };
     });
     default = { };
@@ -59,7 +64,7 @@ in
                   chmod 600 "${statepath}/.env"
               ''}
               cd "${statepath}"
-              docker-compose up
+              docker-compose ${value.args}
             '';
             ExecStopPost = pkgs.writeShellScript ("execstop-docker-compose-runner-" + name) ''
               set -e

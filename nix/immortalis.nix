@@ -507,13 +507,14 @@ in
       github-runner = {
         config = import ./github-runner.nix;
         defaults = false;
+        needsDocker = true;
         extraOptions = {
           ephemeral = lib.mkForce true;
           bindMounts = {
             "token" = {
-              hostPath = "/var/garuda/secrets/github-runner-pat";
+              hostPath = garuda-lib.secrets.docker-compose.github-runner;
               isReadOnly = true;
-              mountPoint = "/var/garuda/secrets/github-runner-pat";
+              mountPoint = "/var/garuda/secrets/github-runner.env";
             };
           };
         };

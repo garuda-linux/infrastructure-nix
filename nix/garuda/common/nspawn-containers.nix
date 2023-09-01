@@ -70,11 +70,8 @@ in
             { node = "block-loop"; modifier = "rw"; }
           ]);
           autoStart = true;
-          bindMounts = lib.mkIf cont.defaults {
-            "dev-fuse" = lib.mkIf cont.needsDocker {
-              hostPath = "/dev/fuse";
-              mountPoint = "/dev/fuse";
-            };
+          bindMounts = lib.mkMerge
+            ((lib.lists.optional cont.defaults {
             "dev-loop0" = {
               hostPath = "/dev/loop0";
               mountPoint = "/dev/loop0";
@@ -94,12 +91,20 @@ in
               isReadOnly = true;
               mountPoint = "/etc/ssh.host/";
             };
-            "dockercache" = lib.mkIf cont.needsDocker {
+
+          })
+          ++ (lib.lists.optional cont.needsDocker {
+            "dev-fuse" = {
+              hostPath = "/dev/fuse";
+              mountPoint = "/dev/fuse";
+            };
+            "dockercache" = {
               hostPath = "${cfg.dockerCache}/${name}";
               isReadOnly = false;
               mountPoint = "/var/lib/docker";
             };
-          };
+          })
+          );
           config = lib.mkMerge
             ([ cont.config ]
               ++ lib.lists.optional cont.defaults {
