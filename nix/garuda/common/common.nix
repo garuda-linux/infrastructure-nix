@@ -134,6 +134,7 @@
   virtualisation.docker = {
     autoPrune.enable = true;
     autoPrune.flags = [ "-a" ];
+    package = pkgs.docker_24;
   };
 
   # Environment
