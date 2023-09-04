@@ -82,4 +82,13 @@
     allowedTCPPorts = [ 80 443 ];
     allowedUDPPorts = [ 443 ];
   };
+
+  # Purge logfiles after 30 days
+  services.logrotate.settings.nginx = {
+    compress = true;
+    delaycompress = true;
+    files = "/var/log/nginx/*.log";
+    frequency = "daily";
+    rotate = 30;
+  };
 }
