@@ -14,15 +14,39 @@ _:
             category = "handbook";
           }
           {
+            name = "deploy";
+            category = "deployment";
+            command = ''
+              ansible-playbook playbooks/garuda.yml
+            '';
+          }
+          {
+            name = "apply";
+            category = "deployment";
+            command = ''
+              ansible-playbook playbooks/apply.yml
+            '';
+          }
+          {
+            name = "clean";
+            category = "tools";
+            command = ''
+              ansible-playbook playbooks/garbage_collect.yml
+            '';
+          }
+          {
+            name = "update";
+            category = "deployment";
+            command = ''
+              ansible-playbook playbooks/system_update.yml
+            '';
+          }
+          {
             package = "nixpkgs-fmt";
             category = "formatter";
           }
           {
             package = "ansible";
-            category = "deployment";
-          }
-          {
-            package = "rsync";
             category = "deployment";
           }
           {
@@ -34,7 +58,7 @@ _:
           {202}🔨 Welcome to the Garuda infra-nix shell ❄️{reset}
           $(type -p menu &>/dev/null && menu)
         '';
-        name = "dr460nixed";
+        name = "infra-nix";
       };
 
       # Pre-commit linters & formatters
