@@ -1,3 +1,4 @@
+---
 # Base values
 actual_hostname: immortalis
 ansible_host: 116.202.208.112

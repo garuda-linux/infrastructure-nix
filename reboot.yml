@@ -4,5 +4,4 @@
   tasks:
     - name: Reboot all servers
       reboot:
-        search_paths:
-          - "/run/current-system/sw/bin"
+        search_paths: [/run/current-system/sw/bin]

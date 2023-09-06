@@ -1,23 +1,18 @@
-version: "3.9"
+---
+version: '3.9'
 services:
   # Garuda Cloud
   nextcloud_app:
     image: linuxserver/nextcloud:latest
     container_name: nextcloud
-    depends_on:
-      - nextcloud_db
-      - nextcloud_redis
+    depends_on: [nextcloud_db, nextcloud_redis]
     environment:
       PUID: 1000
       PGID: 1000
       TZ: Europe/Berlin
-    ports:
-      - 443:443
-    volumes:
-      - "./nextcloud/config:/config"
-      - "./nextcloud/data:/data"
+    ports: [443:443]
+    volumes: [./nextcloud/config:/config, ./nextcloud/data:/data]
     restart: always
-
   nextcloud_db:
     image: mariadb:latest
     container_name: nextcloud_db
@@ -27,29 +22,25 @@ services:
       MYSQL_PASSWORD: ${NC_PASSWORD:-?err}
       MYSQL_DATABASE: ${NC_DATABASE:-?err}
       MYSQL_USER: ${NC_USER:-?err}
-    volumes:
-      - "./nextcloud/db:/var/lib/mysql"
+    volumes: [./nextcloud/db:/var/lib/mysql]
     restart: always
-
   nextcloud_redis:
     image: redis:latest
     container_name: nextcloud_redis
     environment:
-      ALLOW_EMPTY_PASSWORD: True
+      ALLOW_EMPTY_PASSWORD: true
     restart: always
 
   # Firefox syncserver
   syncserver:
     container_name: syncserver
     image: crazymax/firefox-syncserver:latest
-    volumes:
-      - "./syncserver:/data"
-    ports:
-      - 5001:5000
+    volumes: [./syncserver:/data]
+    ports: [5001:5000]
     environment:
-      FF_SYNCSERVER_ACCESSLOG: True
-      FF_SYNCSERVER_FORCE_WSGI_ENVIRON: True
-      FF_SYNCSERVER_FORWARDED_ALLOW_IPS: "*"
+      FF_SYNCSERVER_ACCESSLOG: true
+      FF_SYNCSERVER_FORCE_WSGI_ENVIRON: true
+      FF_SYNCSERVER_FORWARDED_ALLOW_IPS: '*'
       FF_SYNCSERVER_PUBLIC_URL: https://ffsync.garudalinux.org
       FF_SYNCSERVER_SECRET: ${FF_SYNCSERVER_SECRET:-?err}
       FF_SYNCSERVER_SQLURI: sqlite:////data/syncserver.db
@@ -60,31 +51,27 @@ services:
   thelounge:
     image: thelounge/thelounge:latest
     container_name: thelounge
-    volumes:
-      - "./thelounge:/var/opt/thelounge"
-    ports:
-      - 9000:9000
+    volumes: [./thelounge:/var/opt/thelounge]
+    ports: [9000:9000]
     restart: always
 
   # Password vault
   bitwarden:
     image: vaultwarden/server:testing
     container_name: bitwarden
-    volumes:
-      - "./bitwarden:/data"
-    ports:
-      - 8081:80
+    volumes: [./bitwarden:/data]
+    ports: [8081:80]
     environment:
       ADMIN_TOKEN: ${BW_ADMIN_TOKEN:-?err}
       DOMAIN: https://bitwarden.garudalinux.org
-      SIGNUPS_ALLOWED: True
+      SIGNUPS_ALLOWED: true
       SMTP_FROM: noreply@garudalinux.org
       SMTP_HOST: mail.garudalinux.org
       SMTP_PASSWORD: ${BW_SMTP_PASSWORD:-?err}
       SMTP_PORT: 587
-      SMTP_SSL: False
+      SMTP_SSL: false
       SMTP_USERNAME: noreply@garudalinux.org
-      WEBSOCKET_ENABLED: True
+      WEBSOCKET_ENABLED: true
       YUBICO_CLIENT_ID: ${BW_YUBICO_CLIENT_ID:-?err}
       YUBICO_SECRET_KEY: ${BW_YUBICO_ADMIN_SECRET:-?err}
     restart: always
@@ -94,42 +81,34 @@ services:
     image: privatebin/nginx-fpm-alpine:latest
     container_name: privatebin
     volumes:
-      - "./privatebin:/srv/data"
-      - "./configs/privatebin.cfg.php:/srv/cfg/conf.php"
-    ports:
-      - 8082:8080
+      - ./privatebin:/srv/data
+      - ./configs/privatebin.cfg.php:/srv/cfg/conf.php
+    ports: [8082:8080]
     restart: always
 
   # Garuda startpage
   homer:
     image: b4bz/homer:latest
     container_name: homer
-    volumes:
-      - "./startpage:/www/assets"
-    ports:
-      - 8083:8080
+    volumes: [./startpage:/www/assets]
+    ports: [8083:8080]
     restart: always
 
   # MongoDB instance
   mongodb:
     image: mongo:latest
     container_name: mongodb
-    volumes:
-      - "./mongo:/data/db"
-    ports:
-      - 27017:27017
+    volumes: [./mongo:/data/db]
+    ports: [27017:27017]
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-?err}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-?err}
     restart: always
-
   wikijs:
     image: requarks/wiki:latest
     container_name: wikijs
-    volumes:
-      - "./wikijs/assets:/wiki/assets/favicons"
-    ports:
-      - 3001:3000
+    volumes: [./wikijs/assets:/wiki/assets/favicons]
+    ports: [3001:3000]
     environment:
       DB_TYPE: postgres
       DB_HOST: 10.0.5.50
@@ -143,74 +122,58 @@ services:
   matrix:
     image: matrixdotorg/synapse:latest
     container_name: matrix
-    volumes:
-      - "./matrix/matrix:/data"
-    ports:
-      - 8008:8008
+    volumes: [./matrix/matrix:/data]
+    ports: [8008:8008]
     restart: always
-
   mautrix-telegram:
     image: dock.mau.dev/mautrix/telegram
     container_name: mautrix-telegram
-    volumes:
-      - "./matrix/mautrix-telegram:/data"
+    volumes: [./matrix/mautrix-telegram:/data]
     restart: always
     healthcheck:
       test:
-        [
-          "CMD-SHELL",
-          "! (grep -q 'System clock is wrong, set time offset to' /tmp/debug.log && rm /tmp/debug.log && kill -SIGINT 1)",
-        ]
+        - CMD-SHELL
+        - "! (grep -q 'System clock is wrong, set time offset to' /tmp/debug.log &&\
+          \ rm /tmp/debug.log && kill -SIGINT 1)"
       interval: 1m
       timeout: 10s
-
   matrix-appservice-discord:
     image: ghcr.io/matrix-org/matrix-appservice-discord:develop
     container_name: matrix-appservice-discord
-    volumes:
-      - "./matrix/matrix-appservice-discord:/data"
+    volumes: [./matrix/matrix-appservice-discord:/data]
     restart: always
 
   # Matrix web client
   matrix_web:
     image: vectorim/element-web
     container_name: element_web
-    depends_on:
-      - matrix
-    volumes:
-      - "./matrix/element/config.json:/app/config.json"
-    ports:
-      - 8084:80
+    depends_on: [matrix]
+    volumes: [./matrix/element/config.json:/app/config.json]
+    ports: [8084:80]
     restart: always
 
   # Admin interface for Matrix
   matrix_admin:
     image: awesometechnologies/synapse-admin:latest
     container_name: matrix_admin
-    depends_on:
-      - matrix
-    ports:
-      - 8085:80
+    depends_on: [matrix]
+    ports: [8085:80]
     restart: always
 
   # Matrix to IRC/Discord/Telegram relay
   matterbridge:
     image: 42wim/matterbridge:stable
     container_name: matterbridge
-    depends_on:
-      - matrix
+    depends_on: [matrix]
     volumes:
-      - "./matterbridge/matterbridge.toml:/etc/matterbridge/matterbridge.toml:ro"
+      - ./matterbridge/matterbridge.toml:/etc/matterbridge/matterbridge.toml:ro
     restart: always
-
   lemmy_seeder:
     image: nowsci/lcs
     container_name: lemmy_lcs
     environment:
       COMMUNITY_COUNT: 50
-      COMMUNITY_SORT_METHODS: '[
-        "TopAll",
-        "TopDay" ]'
+      COMMUNITY_SORT_METHODS: '[ "TopAll", "TopDay" ]'
       COMMUNITY_TYPE: All
       LOCAL_URL: https://lemmy.garudalinux.org
       LOCAL_USERNAME: ${LOCAL_USERNAME:-?err}
@@ -218,11 +181,7 @@ services:
       MINUTES_BETWEEN_RUNS: 240
       NSFW: false
       POST_COUNT: 50
-      REMOTE_INSTANCES: '[
-        "beehaw.org",
-        "lemmy.world",
-        "lemmy.ml",
-        "sh.itjust.works",
+      REMOTE_INSTANCES: '[ "beehaw.org", "lemmy.world", "lemmy.ml", "sh.itjust.works",
         "lemmy.one" ]'
       SECONDS_AFTER_COMMUNITY_ADD: 17
     restart: unless-stopped
@@ -231,7 +190,7 @@ services:
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
-    command: --cleanup matrix_web matrix_admin wikijs mongodb homer privatebin bitwarden thelounge syncserver nextcloud_app lemmy_seeder
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+    command: --cleanup matrix_web matrix_admin wikijs mongodb homer privatebin bitwarden
+      thelounge syncserver nextcloud_app lemmy_seeder
+    volumes: [/var/run/docker.sock:/var/run/docker.sock]
     restart: always

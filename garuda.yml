@@ -1,47 +1,42 @@
 ---
 - hosts: nix
   become: true
-  gather_facts: no
+  gather_facts: false
   tasks:
     - name: Copy static configurations to target directory
       synchronize:
-        src: "nix/"
+        src: nix/
         dest: /etc/nixos/
-        rsync_opts:
-          - "--exclude=garuda/secrets/"
-
+        rsync_opts: [--exclude=garuda/secrets/]
 - hosts: localhost
-  gather_facts: no
+  gather_facts: false
   tasks:
     - name: Remove old secrets
       synchronize:
-        src: "secrets/secrets/"
-        dest: "secrets/decrypted"
-        delete: yes
+        src: secrets/secrets/
+        dest: secrets/decrypted
+        delete: true
         perms: false
-        rsync_opts:
-          - "--ignore-existing"
+        rsync_opts: [--ignore-existing]
     - name: Decrypt secrets
       copy:
-        src: "secrets/secrets/"
-        dest: "secrets/decrypted/"
-        mode: "700"
-        directory_mode: "700"
-
+        src: secrets/secrets/
+        dest: secrets/decrypted/
+        mode: '700'
+        directory_mode: '700'
 - hosts: nix
   become: true
-  gather_facts: no
+  gather_facts: false
   tasks:
     - name: Copy buildtime secrets
       synchronize:
-        src: "secrets/decrypted/buildtime.json"
+        src: secrets/decrypted/buildtime.json
         dest: /etc/nixos/garuda/secrets/secrets.json
-        rsync_opts:
-          - "--mkpath --chown=root:root --chmod=D0700,F0600"
+        rsync_opts: ['--mkpath --chown=root:root --chmod=D0700,F0600']
     - name: Copy runtime secrets
       synchronize:
-        src: "secrets/decrypted/"
-        dest: "/var/garuda/secrets/"
-        delete: yes
+        src: secrets/decrypted/
+        dest: /var/garuda/secrets/
+        delete: true
         rsync_opts:
-          - "--exclude=garuda/buildtime.json --chown=root:root --chmod=D0700,F0600"
+          - --exclude=garuda/buildtime.json --chown=root:root --chmod=D0700,F0600

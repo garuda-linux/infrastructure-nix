@@ -1,27 +1,24 @@
-version: "3.9"
+---
+version: '3.9'
 services:
   # Whoogle search engine
   whoogle:
     image: benbusby/whoogle-search:latest
     container_name: whoogle
     user: whoogle
-    security_opt:
-      - no-new-privileges
-    cap_drop:
-      - ALL
+    security_opt: [no-new-privileges]
+    cap_drop: [ALL]
     tmpfs:
-      - "/var/lib/tor/:size=10M,uid=927,gid=927,mode=1700"
-      - "/run/tor/:size=1M,uid=927,gid=927,mode=1700"
-    volumes:
-      - "./whoogle:/config"
-    ports:
-      - 5000:5000
+      - /var/lib/tor/:size=10M,uid=927,gid=927,mode=1700
+      - /run/tor/:size=1M,uid=927,gid=927,mode=1700
+    volumes: [./whoogle:/config]
+    ports: [5000:5000]
     environment:
       WHOOGLE_AUTOCOMPLETE: 1
       WHOOGLE_CONFIG_LANGUAGE: lang_en
       WHOOGLE_CONFIG_NEW_TAB: 1
       WHOOGLE_CONFIG_SEARCH_LANGUAGE: lang_en
-      WHOOGLE_CONFIG_STYLE: ":root{--whoogle-logo:#c4a7e7;--whoogle-page-bg:#faf4ed;--whoogle-element-bg:#f2e9e1;--whoogle-text:#575279;--whoogle-contrast-text:#1f1d2e;--whoogle-secondary-text:#797593;--whoogle-result-bg:#faf4ed;--whoogle-result-title:#d7827e;--whoogle-result-url:#286983;--whoogle-result-visited:#907aa9;--whoogle-dark-logo:#c4a7e7;--whoogle-dark-page-bg:#191724;--whoogle-dark-element-bg:#1f1d2e;--whoogle-dark-text:#e0def4;--whoogle-dark-contrast-text:#e0def4;--whoogle-dark-secondary-text:#908caa;--whoogle-dark-result-bg:#393552;--whoogle-dark-result-title:#9ccfd8;--whoogle-dark-result-url:#3e8fb0;--whoogle-dark-result-visited:#c4a7e7}#whoogle-w{fill:#eb6f92}#whoogle-h{fill:#f6c177}#whoogle-o-1{fill:#ebbcba}#whoogle-o-2{fill:#31748f}#whoogle-g{fill:#9ccfd8}#whoogle-l{fill:#c4a7e7}#whoogle-e{fill:#908caa}"
+      WHOOGLE_CONFIG_STYLE: :root{--whoogle-logo:#c4a7e7;--whoogle-page-bg:#faf4ed;--whoogle-element-bg:#f2e9e1;--whoogle-text:#575279;--whoogle-contrast-text:#1f1d2e;--whoogle-secondary-text:#797593;--whoogle-result-bg:#faf4ed;--whoogle-result-title:#d7827e;--whoogle-result-url:#286983;--whoogle-result-visited:#907aa9;--whoogle-dark-logo:#c4a7e7;--whoogle-dark-page-bg:#191724;--whoogle-dark-element-bg:#1f1d2e;--whoogle-dark-text:#e0def4;--whoogle-dark-contrast-text:#e0def4;--whoogle-dark-secondary-text:#908caa;--whoogle-dark-result-bg:#393552;--whoogle-dark-result-title:#9ccfd8;--whoogle-dark-result-url:#3e8fb0;--whoogle-dark-result-visited:#c4a7e7}#whoogle-w{fill:#eb6f92}#whoogle-h{fill:#f6c177}#whoogle-o-1{fill:#ebbcba}#whoogle-o-2{fill:#31748f}#whoogle-g{fill:#9ccfd8}#whoogle-l{fill:#c4a7e7}#whoogle-e{fill:#908caa}
       WHOOGLE_CONFIG_THEME: dark
       WHOOGLE_CONFIG_URL: https://search.garudalinux.org
       WHOOGLE_CONFIG_VIEW_IMAGE: 1
@@ -33,63 +30,46 @@ services:
   searx:
     image: searxng/searxng:latest
     container_name: searx
-    depends_on:
-      - filtron
-      - morty
-    volumes:
-      - "./searxng:/etc/searxng"
-    ports:
-      - 8080:8080
+    depends_on: [filtron, morty]
+    volumes: [./searxng:/etc/searxng]
+    ports: [8080:8080]
     environment:
       BASE_URL: https://searx.garudalinux.org/
       BIND_ADDRESS: 0.0.0.0:8080
-      HTTPS_PROXY: "http://10.0.5.1:3128"
-      HTTP_PROXY: "http://10.0.5.1:3128"
-      NO_PROXY: "*.garudalinux.org"
+      HTTPS_PROXY: http://10.0.5.1:3128
+      HTTP_PROXY: http://10.0.5.1:3128
+      NO_PROXY: '*.garudalinux.org'
       MORTY_KEY: ${SX_MORTY_KEY:-?err}
       MORTY_URL: https://searx.garudalinux.org/morty/
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
-      - DAC_OVERRIDE
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETGID, SETUID, DAC_OVERRIDE]
     restart: always
-
   morty:
     image: dalf/morty:latest
     container_name: morty
-    ports:
-      - 3000:3000
+    ports: [3000:3000]
     command: -timeout 6 -ipv6
     environment:
-      HTTP_PROXY: "http://10.0.5.1:3128"
-      HTTPS_PROXY: "http://10.0.5.1:3128"
+      HTTP_PROXY: http://10.0.5.1:3128
+      HTTPS_PROXY: http://10.0.5.1:3128
       MORTY_KEY: ${SX_MORTY_KEY:-?err}
       MORTY_ADDRESS: 0.0.0.0:3000
     logging:
       driver: none
     read_only: true
-    cap_drop:
-      - ALL
+    cap_drop: [ALL]
     restart: always
-
   filtron:
     image: dalf/filtron:latest
     container_name: filtron
-    ports:
-      - 4040:4040
-      - 4041:4041
+    ports: [4040:4040, 4041:4041]
     command: -listen 0.0.0.0:4040 -api 0.0.0.0:4041 -target searxng:8080
-    volumes:
-      - "./searxng/rules.json:/etc/filtron/rules.json:rw"
+    volumes: [./searxng/rules.json:/etc/filtron/rules.json:rw]
     read_only: true
-    cap_drop:
-      - ALL
+    cap_drop: [ALL]
     environment:
-      HTTP_PROXY: "http://10.0.5.1:3128"
-      HTTPS_PROXY: "http://10.0.5.1:3128"
+      HTTP_PROXY: http://10.0.5.1:3128
+      HTTPS_PROXY: http://10.0.5.1:3128
     restart: always
 
   # Lingva
@@ -97,25 +77,23 @@ services:
     image: thedaviddelta/lingva-translate:latest
     container_name: lingva
     environment:
-      DARK_THEME: "true"
+      DARK_THEME: 'true'
       DEFAULT_SOURCE_LANG: auto
       DEFAULT_TARGET_LANG: en
-      HTTP_PROXY: "http://10.0.5.1:3128"
-      HTTPS_PROXY: "http://10.0.5.1:3128"
+      HTTP_PROXY: http://10.0.5.1:3128
+      HTTPS_PROXY: http://10.0.5.1:3128
       SITE_DOMAIN: lingva.garudalinux.org
-    ports:
-      - 3002:3000
+    ports: [3002:3000]
     restart: always
 
   # Invious YouTube frontend
   invidious:
     image: quay.io/invidious/invidious:latest
     container_name: invidious
-    depends_on:
-      - invidious_db
+    depends_on: [invidious_db]
     environment:
-      HTTP_PROXY: "http://10.0.5.1:3128"
-      HTTPS_PROXY: "http://10.0.5.1:3128"
+      HTTP_PROXY: http://10.0.5.1:3128
+      HTTPS_PROXY: http://10.0.5.1:3128
       INVIDIOUS_CONFIG: |
         db:
           dbname: invidious
@@ -138,16 +116,15 @@ services:
         statistics_enabled: true
         use_pubsub_feeds: true
         use_quic: true
-      NO_PROXY: "*.lbry.com"
-    ports:
-      - 3003:3000
+      NO_PROXY: '*.lbry.com'
+    ports: [3003:3000]
     healthcheck:
-      test: wget -nv --tries=1 --spider http://10.0.5.20:3003/api/v1/comments/jNQXAC9IVRw || exit 1
+      test: wget -nv --tries=1 --spider http://10.0.5.20:3003/api/v1/comments/jNQXAC9IVRw
+        || exit 1
       interval: 30s
       timeout: 5s
       retries: 2
     restart: always
-
   invidious_db:
     image: docker.io/library/postgres:14
     container_name: invidious_db
@@ -158,44 +135,38 @@ services:
     environment:
       POSTGRES_DB: invidious
       POSTGRES_USER: kemal
-      POSTGRES_PASSWORD: "${INVIDIOUS_DB_PASSWORD:?err}"
+      POSTGRES_PASSWORD: ${INVIDIOUS_DB_PASSWORD:?err}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      test: [CMD-SHELL, pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB]
     restart: always
 
   # Piped
   piped_backend:
     image: 1337kavin/piped:latest
     container_name: piped_backend
-    depends_on:
-      - piped_postgres
-    volumes:
-      - ./piped/config.properties:/app/config.properties:ro
+    depends_on: [piped_postgres]
+    volumes: [./piped/config.properties:/app/config.properties:ro]
     environment:
-      HTTP_PROXY: "http://10.0.5.1:3128"
-      HTTPS_PROXY: "http://10.0.5.1:3128"
-      NO_PROXY: "garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com"
+      HTTP_PROXY: http://10.0.5.1:3128
+      HTTPS_PROXY: http://10.0.5.1:3128
+      NO_PROXY: garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com
     restart: always
-
   piped_frontend:
     image: 1337kavin/piped-frontend:latest
     container_name: piped_frontend
-    entrypoint: ash -c 'sed -i s/pipedapi.kavin.rocks/piped-api.garudalinux.org/g /usr/share/nginx/html/assets/* && /docker-entrypoint.sh && nginx -g "daemon off;"'
+    entrypoint: ash -c 'sed -i s/pipedapi.kavin.rocks/piped-api.garudalinux.org/g
+      /usr/share/nginx/html/assets/* && /docker-entrypoint.sh && nginx -g "daemon
+      off;"'
     environment:
-      HTTP_PROXY: "http://10.0.5.1:3128"
-      HTTPS_PROXY: "http://10.0.5.1:3128"
-      NO_PROXY: "garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com"
-    depends_on:
-      - piped_backend
+      HTTP_PROXY: http://10.0.5.1:3128
+      HTTPS_PROXY: http://10.0.5.1:3128
+      NO_PROXY: garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com
+    depends_on: [piped_backend]
     restart: always
-
   piped_nginx:
     image: nginx:mainline-alpine
     container_name: piped_nginx
-    depends_on:
-      - piped_backend
-      - piped_frontend
-      - piped_proxy
+    depends_on: [piped_backend, piped_frontend, piped_proxy]
     volumes:
       - ./piped/config/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./piped/config/pipedapi.conf:/etc/nginx/conf.d/pipedapi.conf:ro
@@ -203,45 +174,39 @@ services:
       - ./piped/config/pipedproxy.conf:/etc/nginx/conf.d/pipedproxy.conf:ro
       - ./piped/config/ytproxy.conf:/etc/nginx/snippets/ytproxy.conf:ro
       - piped_proxy:/var/run/ytproxy
-    ports:
-      - 8088:80
+    ports: [8088:80]
     environment:
-      HTTP_PROXY: "http://10.0.5.1:3128"
-      HTTPS_PROXY: "http://10.0.5.1:3128"
-      NO_PROXY: "garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com"
+      HTTP_PROXY: http://10.0.5.1:3128
+      HTTPS_PROXY: http://10.0.5.1:3128
+      NO_PROXY: garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com
     restart: always
-
   piped_postgres:
     image: postgres:13-alpine
     container_name: piped_postgres
-    volumes:
-      - ./piped/db:/var/lib/postgresql/data
+    volumes: [./piped/db:/var/lib/postgresql/data]
     environment:
       POSTGRES_DB: piped
-      POSTGRES_PASSWORD: "${INVIDIOUS_DB_PASSWORD:?err}"
+      POSTGRES_PASSWORD: ${INVIDIOUS_DB_PASSWORD:?err}
       POSTGRES_USER: piped
     restart: always
-
   piped_proxy:
     image: 1337kavin/piped-proxy:latest
     container_name: piped_proxy
     environment:
-      HTTP_PROXY: "http://10.0.5.1:3128"
-      HTTPS_PROXY: "http://10.0.5.1:3128"
-      NO_PROXY: "garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com"
+      HTTP_PROXY: http://10.0.5.1:3128
+      HTTPS_PROXY: http://10.0.5.1:3128
+      NO_PROXY: garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com
       UDS: 1
-    volumes:
-      - piped_proxy:/app/socket
+    volumes: [piped_proxy:/app/socket]
     restart: always
 
   # Automated container updates
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
-    command: --cleanup piped_backend piped_frontend piped_proxy invidious searx lingva whoogle
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+    command: --cleanup piped_backend piped_frontend piped_proxy invidious searx lingva
+      whoogle
+    volumes: [/var/run/docker.sock:/var/run/docker.sock]
     restart: always
-
 volumes:
-  piped_proxy: null
+  piped_proxy:

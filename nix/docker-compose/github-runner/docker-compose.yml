@@ -1,4 +1,5 @@
-version: "3.9"
+---
+version: '3.9'
 services:
   github-runner:
     image: myoung34/github-runner:latest
@@ -11,10 +12,9 @@ services:
       LABELS: nyxbuilder
       ORG_NAME: chaotic-cx
       RUNNER_NAME: immortalis
-      RUNNER_SCOPE: "org"
+      RUNNER_SCOPE: org
       RUNNER_WORKDIR: /tmp/runner/work
-    volumes:
-      - "/tmp/runner:/tmp/runner"
+    volumes: [/tmp/runner:/tmp/runner]
     restart: never
 
   # Automated container updates
@@ -22,6 +22,5 @@ services:
     image: containrrr/watchtower
     container_name: watchtower
     command: --cleanup
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+    volumes: [/var/run/docker.sock:/var/run/docker.sock]
     restart: always
