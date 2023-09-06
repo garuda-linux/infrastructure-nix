@@ -62,6 +62,7 @@
   outputs =
     { flake-parts
     , pre-commit-hooks
+    , self
     , ...
     } @ inputs:
     flake-parts.lib.mkFlake { inherit inputs; }
@@ -74,7 +75,11 @@
 
         systems = [ "x86_64-linux" "aarch64-linux" ];
 
-        perSystem = { pkgs, ... }: {
+        perSystem = { pkgs, system, ... }: {
+          # Enter devshell via "nix run .#apps.x86_64-linux.devshell"
+          apps.devshell = self.outputs.devShells.${system}.default.flakeApp;
+
+          # Run nixpkgs-fmt via "nix fmt"
           formatter = pkgs.nixpkgs-fmt;
         };
       };
