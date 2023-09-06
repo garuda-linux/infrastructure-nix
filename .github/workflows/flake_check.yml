@@ -1,0 +1,21 @@
+---
+name: Run nix flake check
+on:
+  pull_request_target:
+    types: [labeled]
+  push:
+    branches: [main]
+jobs:
+  flake_check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@6a9a9e84a173d90b3ffb42c5ddaf9ea033fad011 # v23
+        with:
+          extra_nix_config: |
+            accept-flake-config = true
+            experimental-features = nix-command flakes
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          nix_path: nixpkgs=channel:nixos-unstable
+      - name: Run nix flake check
+        run: nix flake check
