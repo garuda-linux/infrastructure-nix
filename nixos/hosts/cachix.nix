@@ -1,7 +1,10 @@
-{ lib, pkgs, config, ... }: {
-  imports = [
-    ../modules/garuda.nix
-  ];
+{ config
+, lib
+, pkgs
+, sources
+, ...
+}: {
+  imports = sources.defaultModules ++ [ ../modules ];
 
   options.cachix = lib.mkOption { type = lib.types.package; };
 

@@ -1,6 +1,6 @@
 { ... }: {
   imports = [
-    ../modules/garuda.nix
+    ../modules
     ./garuda-build/hardware-configuration.nix
   ];
 

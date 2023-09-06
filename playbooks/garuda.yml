@@ -3,16 +3,18 @@
   become: true
   gather_facts: false
   tasks:
-    - name: Copy Nix files /etc/nixos/
+    - name: Deploy Nix files
       synchronize:
-        dest: /etc/nixos/nix
-        rsync_opts:
-          - --exclude="*"
-          - --include=nixos
-          - --include="flake.lock"
-          - --include="flake.nix"
-          - --include=devshell
-        src: ../
+        dest: /etc/nixos/
+        archive: true
+        src: ../{{ item}}
+      loop: # Filtering was for whatever reason not working properly
+        - docker-compose
+        - devshell
+        - flake.lock
+        - flake.nix
+        - home-manager
+        - nixos
 - hosts: localhost
   gather_facts: false
   tasks:

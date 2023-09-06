@@ -2,9 +2,7 @@
 , sources
 , ...
 }: {
-  imports = sources.defaultModules ++ [
-    ../modules/garuda.nix
-  ];
+  imports = sources.defaultModules ++ [ ../modules ];
 
   # This container is just for docker-compose stuff
   services.docker-compose-runner.all-in-one = {

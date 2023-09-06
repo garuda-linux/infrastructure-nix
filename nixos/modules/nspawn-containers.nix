@@ -134,15 +134,15 @@ in
       cfg.containers;
 
     environment.etc = lib.mapAttrs'
-      (name: lib.nameValuePair "systemd/nspawn/${name}.nspawn" {
+      (name: value: lib.nameValuePair "systemd/nspawn/${name}.nspawn" {
         text = ''
           [Exec]
           SystemCallFilter=add_key keyctl bpf
         '';
       })
-      (lib.filterAttrs (value: value.needsDocker) cfg.containers);
+      (lib.filterAttrs (name: value: value.needsDocker) cfg.containers);
 
-    systemd.tmpfiles.rules = lib.mapAttrsToList (name: "d ${cfg.dockerCache}/${name} 1555 root root") (lib.filterAttrs (value: value.needsDocker) cfg.containers);
+    systemd.tmpfiles.rules = lib.mapAttrsToList (name: value: "d ${cfg.dockerCache}/${name} 1555 root root") (lib.filterAttrs (name: value: value.needsDocker) cfg.containers);
 
     # Bridge setup
     networking = lib.mkIf (cfg.containers != { }) {

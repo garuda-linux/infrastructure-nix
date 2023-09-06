@@ -2,9 +2,7 @@
 , sources
 , ...
 }: {
-  imports = sources.defaultModules ++ [
-    ../modules/garuda.nix
-  ];
+  imports = sources.defaultModules ++ [ ../modules ];
 
   # Enable Chaotic-AUR building
   services.chaotic.enable = true;
@@ -26,7 +24,7 @@
   '';
   services.chaotic.db-name = "chaotic-aur-kde";
   services.chaotic.routines = [ "hourly" "nightly" "afternoon" ];
-  services.chaotic.patches = [ ./garuda/services/chaotic/add-chaotic-repo.diff ./garuda/services/chaotic/prepend-repo.diff ];
+  services.chaotic.patches = [ ../services/chaotic/add-chaotic-repo.diff ../services/chaotic/prepend-repo.diff ];
   services.chaotic.useACMEHost = "garudalinux.org";
 
   # Allow systemd-nspawn to create subcgroups (for Chaotic-AUR builders)

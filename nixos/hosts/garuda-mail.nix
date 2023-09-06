@@ -3,7 +3,7 @@
 , ...
 }: {
   imports = [
-    ../modules/garuda.nix
+    ../modules
     ./garuda-mail/hardware-configuration.nix
   ];
 

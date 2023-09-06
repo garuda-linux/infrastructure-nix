@@ -3,7 +3,7 @@
 , ...
 }: {
   imports = [
-    ../modules/garuda.nix
+    ../modules
     ./immortalis/containers.nix
     ./immortalis/hardware-configuration.nix
   ];

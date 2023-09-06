@@ -2,9 +2,7 @@
 , sources
 , ...
 }: {
-  imports = sources.defaultModules ++ [
-    ../modules/garuda.nix
-  ];
+  imports = sources.defaultModules ++ [ ../modules ];
 
   # Lets build Garuda ISO here, serving is done via
   # Temeraire already 

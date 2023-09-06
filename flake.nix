@@ -43,6 +43,8 @@
     keys_alexjp.flake = false;
     keys_xiota.url = "https://github.com/xiota.keys";
     keys_xiota.flake = false;
+    keys_pedrohlc.url = "https://github.com/pedrohlc.keys";
+    keys_pedrohlc.flake = false;
 
     # Sources for custom applications and files
     src-chaotic-toolbox.url = "github:chaotic-aur/toolbox";
@@ -69,6 +71,7 @@
       {
         imports = [
           ./devshell/flake-module.nix
+          ./nixos/flake-module.nix
           inputs.devshell.flakeModule
           inputs.pre-commit-hooks.flakeModule
         ];

@@ -1,21 +1,12 @@
 { config
 , garuda-lib
+, inputs
 , lib
 , meshagent
 , pkgs
-, sources
 , ...
-}: {
-  imports = [
-    ./acme.nix
-    ./hardening.nix
-    ./motd.nix
-    ./nginx.nix
-    ./nspawn-containers.nix
-    ./tailscale.nix
-    ./users.nix
-  ];
-
+}:
+{
   # Network stuff - DNS gets overridden by Tailscale magic DNS
   networking = lib.mkIf (!garuda-lib.minimalContainer) {
     nameservers = [ "1.1.1.1" "1.0.0.1" ];
@@ -140,7 +131,7 @@
       enable = true;
       flags = [ "-a" ];
     };
-    package = pkgs.docker_24;
+    package = pkgs.docker_24; # Until the man pages are fixed in pkgs.docker
   };
 
   # Environment
@@ -193,7 +184,7 @@
       auto-optimise-store = true;
       builders-use-substitutes = true;
     };
-    nixPath = [ "nixpkgs=${sources.nixpkgs}" ];
+    nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
   };
 
   services.cloudflared.user = "root";

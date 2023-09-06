@@ -21,7 +21,7 @@ in
           default = null;
         };
         args = mkOption {
-          type = types.string;
+          type = types.str;
           description = "Additional arguments to pass to docker-compose up";
           default = "up";
         };

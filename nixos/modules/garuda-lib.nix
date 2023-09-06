@@ -30,8 +30,8 @@ in
         meshagent_msh = "/var/garuda/secrets/meshagent.msh";
         syncthing = {
           esxi-build = {
-            key = "/var/garuda/secrets/syncthing/esxi-build-key.pem";
             cert = "/var/garuda/secrets/syncthing/esxi-build-cert.pem";
+            key = "/var/garuda/secrets/syncthing/esxi-build-key.pem";
           };
         };
         chaotic = {

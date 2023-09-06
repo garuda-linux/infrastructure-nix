@@ -1,6 +1,4 @@
-{ pkgs
-, ...
-}:
+{ pkgs, ... }:
 let
   initscript = pkgs.writeShellScript "motdscript" ''
     if [ $USER != nico ]; then

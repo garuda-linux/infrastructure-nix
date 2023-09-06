@@ -47,7 +47,7 @@ in
     dockerCache = "/data_1/dockercache/";
     containers = {
       chaotic-kde = {
-        config = import ./chaotic-kde.nix;
+        config = import ../chaotic-kde.nix;
         extraOptions = {
           bindMounts = lib.mkMerge [{
             "chaotic-aur-kde" = {
@@ -69,7 +69,7 @@ in
         needsNesting = true;
       };
       docker = {
-        config = import ./docker.nix;
+        config = import ../docker.nix;
         extraOptions = {
           bindMounts = {
             "compose" = {
@@ -95,7 +95,7 @@ in
         needsDocker = true;
       };
       docker-proxied = {
-        config = import ./docker-proxied.nix;
+        config = import ../docker-proxied.nix;
         extraOptions = {
           bindMounts = {
             "compose" = {
@@ -109,7 +109,7 @@ in
         needsDocker = true;
       };
       forum = {
-        config = import ./forum.nix;
+        config = import ../forum.nix;
         extraOptions = {
           bindMounts = {
             "forum" = {
@@ -129,8 +129,29 @@ in
         ipAddress = "10.0.5.70";
         needsDocker = true;
       };
+      github-runner = {
+        config = import ../github-runner.nix;
+        defaults = false;
+        extraOptions = {
+          bindMounts."token" = {
+            hostPath = garuda-lib.secrets.docker-compose.github-runner;
+            isReadOnly = true;
+            mountPoint = "/var/garuda/secrets/github-runner.env";
+          };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 230;
+              protocol = "tcp";
+            }
+          ];
+          ephemeral = lib.mkForce true;
+        };
+        ipAddress = "10.0.5.130";
+        needsDocker = true;
+      };
       iso-runner = {
-        config = import ./iso-runner.nix;
+        config = import ../iso-runner.nix;
         extraOptions = {
           bindMounts = {
             "iso" = {
@@ -154,7 +175,7 @@ in
         needsDocker = true;
       };
       lemmy = {
-        config = import ./lemmy.nix;
+        config = import ../lemmy.nix;
         extraOptions = {
           bindMounts = {
             "pict-rs" = {
@@ -167,7 +188,7 @@ in
         ipAddress = "10.0.5.120";
       };
       mastodon = {
-        config = import ./mastodon.nix;
+        config = import ../mastodon.nix;
         extraOptions = {
           bindMounts = {
             "mastodon" = {
@@ -187,7 +208,7 @@ in
         ipAddress = "10.0.5.80";
       };
       meshcentral = {
-        config = import ./meshcentral.nix;
+        config = import ../meshcentral.nix;
         extraOptions = {
           bindMounts = {
             "meshcentral" = {
@@ -200,7 +221,7 @@ in
         ipAddress = "10.0.5.60";
       };
       postgres = {
-        config = import ./postgres.nix;
+        config = import ../postgres.nix;
         extraOptions = {
           bindMounts = {
             "postgres_backup" = {
@@ -225,7 +246,7 @@ in
         ipAddress = "10.0.5.50";
       };
       repo = {
-        config = import ./repo.nix;
+        config = import ../repo.nix;
         extraOptions = {
           bindMounts = lib.mkMerge [{
             "garuda" = {
@@ -247,7 +268,7 @@ in
         needsNesting = true;
       };
       temeraire = {
-        config = import ./temeraire.nix;
+        config = import ../temeraire.nix;
         extraOptions = {
           bindMounts = lib.mkMerge [{
             "garuda" = {
@@ -310,7 +331,7 @@ in
         needsNesting = true;
       };
       web-front = {
-        config = import ./web-front.nix;
+        config = import ../web-front.nix;
         extraOptions = {
           bindMounts = {
             "acme" = {
@@ -331,22 +352,6 @@ in
           }];
         };
         ipAddress = "10.0.5.10";
-      };
-      github-runner = {
-        config = import ./github-runner.nix;
-        defaults = false;
-        needsDocker = true;
-        extraOptions = {
-          ephemeral = lib.mkForce true;
-          bindMounts = {
-            "token" = {
-              hostPath = garuda-lib.secrets.docker-compose.github-runner;
-              isReadOnly = true;
-              mountPoint = "/var/garuda/secrets/github-runner.env";
-            };
-          };
-        };
-        ipAddress = "10.0.5.130";
       };
     };
   };

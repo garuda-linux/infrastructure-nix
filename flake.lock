@@ -170,6 +170,18 @@
         "url": "https://github.com/dr460nf1r3.keys"
       }
     },
+    "keys_pedrohlc": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-ktIsuzkwvnFIxm0zSltiNA/BLz3aJ7Y0x2ayYfp6YU4=",
+        "type": "file",
+        "url": "https://github.com/pedrohlc.keys"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/pedrohlc.keys"
+      }
+    },
     "keys_technetium1": {
       "flake": false,
       "locked": {
@@ -379,6 +391,7 @@
         "home-manager": "home-manager",
         "keys_alexjp": "keys_alexjp",
         "keys_nico": "keys_nico",
+        "keys_pedrohlc": "keys_pedrohlc",
         "keys_technetium1": "keys_technetium1",
         "keys_tne": "keys_tne",
         "keys_xiota": "keys_xiota",

@@ -3,8 +3,8 @@ let
   system = "x86_64-linux";
 
   defaultModules = [
-    "${inputs.nixpkgs}/nixpkgs/modules/profiles/hardened.nix"
-    inputs.home-manager.nixpkgsModules.home-manager
+    "${inputs.nixpkgs}/nixos/modules/profiles/hardened.nix"
+    inputs.home-manager.nixosModules.home-manager
     overlay-unstable
   ];
 
@@ -19,6 +19,7 @@ let
   };
 
   specialArgs = {
+    inherit inputs;
     meshagent = {
       aarch64 = inputs.meshagent_aarch64;
       x86_64 = inputs.meshagent_x86_64;

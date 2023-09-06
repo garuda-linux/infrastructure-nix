@@ -1,9 +1,5 @@
-{ sources
-, ...
-}: {
-  imports = sources.defaultModules ++ [
-    ../modules/garuda.nix
-  ];
+{ sources, ... }: {
+  imports = sources.defaultModules ++ [ ../modules ];
 
   # Enable Docker since we use the official Docker image in /var/discourse
   virtualisation.docker.enable = true;

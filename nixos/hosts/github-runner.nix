@@ -14,10 +14,10 @@
   };
 
   # This container is just for docker-compose stuff
-  services.docker-compose-runner.iso-runner = {
+  services.docker-compose-runner.github-runner = {
     args = "run github-runner";
     envfile = "/var/garuda/secrets/github-runner.env";
-    source = ./docker-compose/github-runner;
+    source = ../../docker-compose/github-runner;
   };
 
   system.stateVersion = "23.05";

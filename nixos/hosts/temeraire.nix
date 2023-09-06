@@ -4,9 +4,7 @@
 , sources
 , ...
 }: {
-  imports = sources.defaultModules ++ [
-    ../modules/garuda.nix
-  ];
+  imports = sources.defaultModules ++ [ ../modules ];
 
   # This disables HTTPS certificates and forced redirects
   garuda-lib.behind_proxy = true;
