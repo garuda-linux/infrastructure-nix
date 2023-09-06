@@ -16,8 +16,8 @@ in {
     services.netdata.claimTokenFile = "/var/garuda/secrets/netdata_claim_token";
     services.netdata.config = {
       db = {
-        "dbengine disk space MB" = "512";
-        "dbengine multihost disk space MB" = "512";
+        "dbengine disk space MB" = "10240";
+        "dbengine multihost disk space MB" = "10240";
         "mode" = "dbengine";
         "update every" = "2";
       };
