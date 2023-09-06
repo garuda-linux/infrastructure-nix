@@ -16,7 +16,7 @@
     ./users.nix
   ];
 
-  # Network stuff
+  # Network stuff - DNS gets overridden by Tailscale magic DNS
   networking = lib.mkIf (!garuda-lib.minimalContainer) {
     nameservers = [ "1.1.1.1" "1.0.0.1" ];
     useDHCP = false;
@@ -49,8 +49,10 @@
   home-manager = lib.mkIf (!garuda-lib.minimalContainer) {
     useGlobalPkgs = true;
     useUserPackages = true;
-    users.nico = import ../home/nico.nix;
-    users.alexjp = import ../home/alexjp.nix;
+    users = {
+      alexjp = import ../../home-manager/alexjp.nix;
+      nico = import ../../home-manager/nico.nix;
+    };
   };
 
   # Programs & global config
@@ -99,6 +101,8 @@
       set fish_greeting
     '';
   };
+
+  # This does not work in containers
   programs.mosh.enable = true;
 
   # Services 
@@ -132,8 +136,10 @@
 
   # Docker
   virtualisation.docker = {
-    autoPrune.enable = true;
-    autoPrune.flags = [ "-a" ];
+    autoPrune = {
+      enable = true;
+      flags = [ "-a" ];
+    };
     package = pkgs.docker_24;
   };
 
