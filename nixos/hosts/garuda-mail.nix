@@ -3,8 +3,8 @@
 , ...
 }: {
   imports = [
-    ../garuda/garuda.nix
-    ./hardware-configuration.nix
+    ../modules/garuda.nix
+    ./garuda-mail/hardware-configuration.nix
   ];
 
   # Base configuration

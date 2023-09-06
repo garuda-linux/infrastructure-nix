@@ -5,7 +5,7 @@
   # ];
 
   imports = [
-    ../garuda/services/docker-compose-runner/docker-compose-runner.nix
+    ../services/docker-compose-runner/docker-compose-runner.nix
   ];
 
   virtualisation.docker = {

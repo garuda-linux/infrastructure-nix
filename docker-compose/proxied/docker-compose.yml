@@ -1,5 +1,5 @@
 ---
-version: '3.9'
+version: "3.9"
 services:
   # Whoogle search engine
   whoogle:
@@ -38,7 +38,7 @@ services:
       BIND_ADDRESS: 0.0.0.0:8080
       HTTPS_PROXY: http://10.0.5.1:3128
       HTTP_PROXY: http://10.0.5.1:3128
-      NO_PROXY: '*.garudalinux.org'
+      NO_PROXY: "*.garudalinux.org"
       MORTY_KEY: ${SX_MORTY_KEY:-?err}
       MORTY_URL: https://searx.garudalinux.org/morty/
     cap_drop: [ALL]
@@ -77,7 +77,7 @@ services:
     image: thedaviddelta/lingva-translate:latest
     container_name: lingva
     environment:
-      DARK_THEME: 'true'
+      DARK_THEME: "true"
       DEFAULT_SOURCE_LANG: auto
       DEFAULT_TARGET_LANG: en
       HTTP_PROXY: http://10.0.5.1:3128
@@ -116,10 +116,11 @@ services:
         statistics_enabled: true
         use_pubsub_feeds: true
         use_quic: true
-      NO_PROXY: '*.lbry.com'
+      NO_PROXY: "*.lbry.com"
     ports: [3003:3000]
     healthcheck:
-      test: wget -nv --tries=1 --spider http://10.0.5.20:3003/api/v1/comments/jNQXAC9IVRw
+      test:
+        wget -nv --tries=1 --spider http://10.0.5.20:3003/api/v1/comments/jNQXAC9IVRw
         || exit 1
       interval: 30s
       timeout: 5s
@@ -154,7 +155,8 @@ services:
   piped_frontend:
     image: 1337kavin/piped-frontend:latest
     container_name: piped_frontend
-    entrypoint: ash -c 'sed -i s/pipedapi.kavin.rocks/piped-api.garudalinux.org/g
+    entrypoint:
+      ash -c 'sed -i s/pipedapi.kavin.rocks/piped-api.garudalinux.org/g
       /usr/share/nginx/html/assets/* && /docker-entrypoint.sh && nginx -g "daemon
       off;"'
     environment:
@@ -204,7 +206,8 @@ services:
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
-    command: --cleanup piped_backend piped_frontend piped_proxy invidious searx lingva
+    command:
+      --cleanup piped_backend piped_frontend piped_proxy invidious searx lingva
       whoogle
     volumes: [/var/run/docker.sock:/var/run/docker.sock]
     restart: always

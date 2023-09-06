@@ -51,7 +51,7 @@ in
         {
           wantedBy = [ "multi-user.target" ];
           description = "docker-compose runner for ${name}";
-          path = [ pkgs.rsync pkgs.docker-compose pkgs.docker pkgs.bash ];
+          path = with pkgs; [ rsync docker-compose docker bash ];
           startLimitIntervalSec = 30;
           startLimitBurst = 3;
           serviceConfig = {

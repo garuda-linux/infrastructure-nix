@@ -1,7 +1,7 @@
 { ... }: {
   imports = [
-    ../garuda/garuda.nix
-    ./hardware-configuration.nix
+    ../modules/garuda.nix
+    ./garuda-build/hardware-configuration.nix
   ];
 
   # Base configuration

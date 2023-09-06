@@ -3,7 +3,7 @@
 , ...
 }: {
   imports = sources.defaultModules ++ [
-    ../garuda/garuda.nix
+    ../modules/garuda.nix
   ];
 
   # Enable Chaotic-AUR building

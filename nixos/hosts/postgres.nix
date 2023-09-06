@@ -4,7 +4,7 @@
 , ...
 }: {
   imports = sources.defaultModules ++ [
-    ../garuda/garuda.nix
+    ../modules/garuda.nix
   ];
 
   # Our Postgres database

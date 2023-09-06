@@ -5,7 +5,7 @@
 , ...
 }: {
   imports = sources.defaultModules ++ [
-    ../garuda/garuda.nix
+    ../modules/garuda.nix
   ];
 
   # This disables HTTPS certificates and forced redirects

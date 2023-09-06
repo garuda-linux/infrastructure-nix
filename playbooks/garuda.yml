@@ -25,7 +25,7 @@
         src: ../secrets/secrets/
     - name: Decrypt secrets
       copy:
-        dest: secrets/decrypted/
+        dest: ../secrets/decrypted/
         directory_mode: "700"
         mode: "700"
         src: ../secrets/secrets/
@@ -35,7 +35,7 @@
   tasks:
     - name: Copy buildtime secrets
       synchronize:
-        dest: /etc/nixos/garuda/secrets/secrets.json
+        dest: /etc/nixos/nixos/secrets/secrets.json
         rsync_opts: ["--mkpath --chown=root:root --chmod=D0700,F0600"]
         src: ../secrets/decrypted/buildtime.json
     - name: Copy runtime secrets

@@ -41,8 +41,8 @@ let
 in
 {
   imports = [
-    ./hardware-configuration.nix
-    ../garuda/garuda.nix
+    ../modules/garuda.nix
+    ./immortalis/hardware-configuration.nix
   ];
 
   # Increase /tmp & /run size to make better use of RAM

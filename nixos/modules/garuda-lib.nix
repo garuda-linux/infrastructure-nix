@@ -5,7 +5,7 @@
 }:
 with lib;
 let
-  secrets = builtins.fromJSON (builtins.readFile ./secrets/secrets.json);
+  secrets = builtins.fromJSON (builtins.readFile ../secrets/secrets.json);
   setRealIpFromConfig = lib.concatMapStrings
     (ip: ''
       set_real_ip_from ${ip};

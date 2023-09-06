@@ -3,13 +3,13 @@
 , ...
 }: {
   imports = sources.defaultModules ++ [
-    ../garuda/garuda.nix
+    ../modules/garuda.nix
   ];
 
   # This container runs proxied docker containers
   services.docker-compose-runner.proxied = {
     envfile = garuda-lib.secrets.docker-compose.proxied;
-    source = ./docker-compose/proxied;
+    source = ../../docker-compose/proxied;
   };
 
   # Let Docker use squid as outgoig proxy

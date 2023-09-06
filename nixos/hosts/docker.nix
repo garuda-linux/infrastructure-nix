@@ -3,13 +3,13 @@
 , ...
 }: {
   imports = sources.defaultModules ++ [
-    ../garuda/garuda.nix
+    ../modules/garuda.nix
   ];
 
   # This container is just for docker-compose stuff
   services.docker-compose-runner.all-in-one = {
     envfile = garuda-lib.secrets.docker-compose.all-in-one;
-    source = ./docker-compose/all-in-one;
+    source = ../../docker-compose/all-in-one;
   };
 
   # MongoDB port is being forwarded to this container

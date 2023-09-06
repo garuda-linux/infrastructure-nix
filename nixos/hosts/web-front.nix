@@ -3,7 +3,7 @@
 , ...
 }: {
   imports = sources.defaultModules ++ [
-    ../garuda/garuda.nix
+    ../modules/garuda.nix
   ];
 
   # Reverse proxy for our docker-compose stack

@@ -1,5 +1,5 @@
 ---
-version: '3.9'
+version: "3.9"
 services:
   # Garuda Cloud
   nextcloud_app:
@@ -40,7 +40,7 @@ services:
     environment:
       FF_SYNCSERVER_ACCESSLOG: true
       FF_SYNCSERVER_FORCE_WSGI_ENVIRON: true
-      FF_SYNCSERVER_FORWARDED_ALLOW_IPS: '*'
+      FF_SYNCSERVER_FORWARDED_ALLOW_IPS: "*"
       FF_SYNCSERVER_PUBLIC_URL: https://ffsync.garudalinux.org
       FF_SYNCSERVER_SECRET: ${FF_SYNCSERVER_SECRET:-?err}
       FF_SYNCSERVER_SQLURI: sqlite:////data/syncserver.db
@@ -181,7 +181,8 @@ services:
       MINUTES_BETWEEN_RUNS: 240
       NSFW: false
       POST_COUNT: 50
-      REMOTE_INSTANCES: '[ "beehaw.org", "lemmy.world", "lemmy.ml", "sh.itjust.works",
+      REMOTE_INSTANCES:
+        '[ "beehaw.org", "lemmy.world", "lemmy.ml", "sh.itjust.works",
         "lemmy.one" ]'
       SECONDS_AFTER_COMMUNITY_ADD: 17
     restart: unless-stopped
@@ -190,7 +191,8 @@ services:
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
-    command: --cleanup matrix_web matrix_admin wikijs mongodb homer privatebin bitwarden
+    command:
+      --cleanup matrix_web matrix_admin wikijs mongodb homer privatebin bitwarden
       thelounge syncserver nextcloud_app lemmy_seeder
     volumes: [/var/run/docker.sock:/var/run/docker.sock]
     restart: always
