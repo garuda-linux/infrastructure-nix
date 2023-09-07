@@ -1,0 +1,3 @@
+---
+profile: production
+skip_list: [run-once, command-instead-of-module]

@@ -1,0 +1,26 @@
+---
+version: "3.9"
+services:
+  github-runner:
+    image: myoung34/github-runner:latest
+    depends_on: [watchtower]
+    container_name: github-runner
+    privileged: true
+    environment:
+      ACCESS_TOKEN: ${ACCESS_TOKEN:-?err}
+      EPHEMERAL: true
+      LABELS: nyxbuilder
+      ORG_NAME: chaotic-cx
+      RUNNER_NAME: immortalis
+      RUNNER_SCOPE: org
+      RUNNER_WORKDIR: /tmp/runner/work
+    volumes: [/tmp/runner:/tmp/runner]
+    restart: never
+
+  # Automated container updates
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    command: --cleanup
+    volumes: [/var/run/docker.sock:/var/run/docker.sock]
+    restart: always

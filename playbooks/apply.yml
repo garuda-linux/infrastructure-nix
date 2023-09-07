@@ -1,0 +1,9 @@
+---
+- name: Apply NixOS configuration
+  hosts: nix
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Build system
+      ansible.builtin.command: nixos-rebuild switch
+      changed_when: false

@@ -1,7 +1,0 @@
----
-- hosts: all
-  become: true
-  tasks:
-    - name: Reboot all servers
-      reboot:
-        search_paths: [/run/current-system/sw/bin]
