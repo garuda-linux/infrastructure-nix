@@ -1,3 +1,4 @@
+.github/**
 flake.lock
 docker-compose/**
 secrets/**
