@@ -24,7 +24,7 @@
   '';
   services.chaotic.db-name = "garuda";
   services.chaotic.routines = [ "hourly" ];
-  services.chaotic.patches = [ ./garuda/services/chaotic/add-chaotic-repo.diff ];
+  services.chaotic.patches = [ ../services/chaotic/add-chaotic-repo.diff ];
   services.chaotic.useACMEHost = "garudalinux.org";
 
   # Allow systemd-nspawn to create subcgroups (for Chaotic-AUR builders)

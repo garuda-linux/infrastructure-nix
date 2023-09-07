@@ -81,8 +81,10 @@
 
   # Sudo configuration
   security.sudo.extraRules = [{
-    users = [ "ansible" "tne" "nico" "sgs" ]
-      ++ lib.mkIf (config.networking.hostName == "github-runner") [ "pedrohlc" ];
+    users =
+      if config.networking.hostName == "github-runner"
+      then [ "ansible" "tne" "nico" "sgs" "pedrohlc" ]
+      else [ "ansible" "tne" "nico" "sgs" ];
     commands = [{
       command = "ALL";
       options = [ "NOPASSWD" ];
