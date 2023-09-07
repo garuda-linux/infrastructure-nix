@@ -71,20 +71,10 @@
     shell = lib.mkIf (!config.services.chaotic.enable) "${pkgs.util-linux}/bin/nologin";
     uid = lib.mkIf garuda-lib.unifiedUID 1006;
   };
-  users.users.pedrohlc = {
-    home = "/home/pedrohlc";
-    isNormalUser = true;
-    openssh.authorizedKeys.keyFiles = lib.mkIf (config.networking.hostName == "github-runner") [ keys.pedrohlc ];
-    shell = lib.mkIf (config.networking.hostName != "github-runner") "${pkgs.util-linux}/bin/nologin";
-    uid = lib.mkIf garuda-lib.unifiedUID 1007;
-  };
 
   # Sudo configuration
   security.sudo.extraRules = [{
-    users =
-      if config.networking.hostName == "github-runner"
-      then [ "ansible" "tne" "nico" "sgs" "pedrohlc" ]
-      else [ "ansible" "tne" "nico" "sgs" ];
+    users = [ "ansible" "tne" "nico" "sgs" ];
     commands = [{
       command = "ALL";
       options = [ "NOPASSWD" ];
