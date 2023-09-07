@@ -9,12 +9,12 @@
         archive: true
         src: ../{{ item}}
       loop: # Filtering was for whatever reason not working properly
-        - docker-compose
-        - devshell
-        - flake.lock
+        - nixos # No alphabetical order to be able to push this first
         - flake.nix
+        - flake.lock
+        - devshell
+        - docker-compose
         - home-manager
-        - nixos
 - hosts: localhost
   gather_facts: false
   tasks:

@@ -1,6 +1,6 @@
 _:
 {
-  perSystem = { pkgs, ... }:
+  perSystem = { devShells, pkgs, ... }:
     {
       # The default development shell spawned by "nix develop"
       devshells.default = {
@@ -64,10 +64,12 @@ _:
       # Pre-commit linters & formatters
       pre-commit = {
         check.enable = true;
+        devShell = devShells.default;
         inherit pkgs;
         settings = {
           hooks = {
             actionlint.enable = true;
+            ansible-lint.enable = true;
             commitizen.enable = true;
             deadnix.enable = true;
             nil.enable = true;
