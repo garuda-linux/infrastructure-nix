@@ -200,6 +200,7 @@
   };
 
   # A proxy server making use of our IPv6 IP addresses
+  # traffic sent through the proxy is only allowing IPv6 connections
   services.squid = {
     enable = true;
     extraConfig = ''
@@ -244,6 +245,9 @@
     '';
     proxyAddress = "10.0.5.1";
   };
+  # Shut off all logging but level 1 errors as we get spamming a lot due to
+  # not being able to use our invalid address 10.254.254.254
+  systemd.services.squid.serviceConfig.LogLevelMax = 1;
 
   # Adapt Nix to our core-count
   nix.settings.max-jobs = 8;
