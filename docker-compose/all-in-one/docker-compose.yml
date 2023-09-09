@@ -3,7 +3,7 @@ version: "3.9"
 services:
   # Garuda Cloud
   nextcloud_app:
-    image: linuxserver/nextcloud:latest
+    image: linuxserver/nextcloud:27.0.2
     container_name: nextcloud
     depends_on: [nextcloud_db, nextcloud_redis]
     environment:
@@ -14,7 +14,7 @@ services:
     volumes: [./nextcloud/config:/config, ./nextcloud/data:/data]
     restart: always
   nextcloud_db:
-    image: mariadb:latest
+    image: mariadb:11.1.2
     container_name: nextcloud_db
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     environment:
@@ -25,7 +25,7 @@ services:
     volumes: [./nextcloud/db:/var/lib/mysql]
     restart: always
   nextcloud_redis:
-    image: redis:latest
+    image: redis:7.2.1
     container_name: nextcloud_redis
     environment:
       ALLOW_EMPTY_PASSWORD: true
@@ -34,7 +34,7 @@ services:
   # Firefox syncserver
   syncserver:
     container_name: syncserver
-    image: crazymax/firefox-syncserver:latest
+    image: crazymax/firefox-syncserver:edge # newest, versioned one 3 years old
     volumes: [./syncserver:/data]
     ports: [5001:5000]
     environment:
@@ -49,7 +49,7 @@ services:
 
   # Web IRC access
   thelounge:
-    image: thelounge/thelounge:latest
+    image: thelounge/thelounge:4.4.1
     container_name: thelounge
     volumes: [./thelounge:/var/opt/thelounge]
     ports: [9000:9000]
@@ -57,7 +57,7 @@ services:
 
   # Password vault
   bitwarden:
-    image: vaultwarden/server:testing
+    image: vaultwarden/server:1.29.2
     container_name: bitwarden
     volumes: [./bitwarden:/data]
     ports: [8081:80]
@@ -78,7 +78,7 @@ services:
 
   # Secure pastebin
   privatebin:
-    image: privatebin/nginx-fpm-alpine:latest
+    image: privatebin/nginx-fpm-alpine:1.5.2
     container_name: privatebin
     volumes:
       - ./privatebin:/srv/data
@@ -88,7 +88,7 @@ services:
 
   # Garuda startpage
   homer:
-    image: b4bz/homer:latest
+    image: b4bz/homer:v23.05.1
     container_name: homer
     volumes: [./startpage:/www/assets]
     ports: [8083:8080]
@@ -96,7 +96,7 @@ services:
 
   # MongoDB instance
   mongodb:
-    image: mongo:latest
+    image: mongo:7.0.1
     container_name: mongodb
     volumes: [./mongo:/data/db]
     ports: [27017:27017]
@@ -105,7 +105,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-?err}
     restart: always
   wikijs:
-    image: requarks/wiki:latest
+    image: requarks/wiki:2.5
     container_name: wikijs
     volumes: [./wikijs/assets:/wiki/assets/favicons]
     ports: [3001:3000]
@@ -120,7 +120,7 @@ services:
 
   # Matrix homeserver
   matrix:
-    image: matrixdotorg/synapse:latest
+    image: matrixdotorg/synapse:v1.91.2
     container_name: matrix
     volumes: [./matrix/matrix:/data]
     ports: [8008:8008]
@@ -145,7 +145,7 @@ services:
 
   # Matrix web client
   matrix_web:
-    image: vectorim/element-web
+    image: vectorim/element-web:v1.11.40
     container_name: element_web
     depends_on: [matrix]
     volumes: [./matrix/element/config.json:/app/config.json]
@@ -154,7 +154,7 @@ services:
 
   # Admin interface for Matrix
   matrix_admin:
-    image: awesometechnologies/synapse-admin:latest
+    image: awesometechnologies/synapse-admin:latest # Versioned lags behind 7 months
     container_name: matrix_admin
     depends_on: [matrix]
     ports: [8085:80]
@@ -162,14 +162,14 @@ services:
 
   # Matrix to IRC/Discord/Telegram relay
   matterbridge:
-    image: 42wim/matterbridge:stable
+    image: 42wim/matterbridge:1.26
     container_name: matterbridge
     depends_on: [matrix]
     volumes:
       - ./matterbridge/matterbridge.toml:/etc/matterbridge/matterbridge.toml:ro
     restart: always
   lemmy_seeder:
-    image: nowsci/lcs
+    image: nowsci/lcs:20230901035206
     container_name: lemmy_lcs
     environment:
       COMMUNITY_COUNT: 50
@@ -189,7 +189,7 @@ services:
 
   # Automated container updates
   watchtower:
-    image: containrrr/watchtower
+    image: containrrr/watchtower:1.5.3
     container_name: watchtower
     command:
       --cleanup matrix_web matrix_admin wikijs mongodb homer privatebin bitwarden

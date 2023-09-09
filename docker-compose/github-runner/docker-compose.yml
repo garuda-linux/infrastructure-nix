@@ -2,7 +2,7 @@
 version: "3.9"
 services:
   github-runner:
-    image: myoung34/github-runner:latest
+    image: myoung34/github-runner:2.309.0
     depends_on: [watchtower]
     container_name: github-runner
     privileged: true
@@ -19,7 +19,7 @@ services:
 
   # Automated container updates
   watchtower:
-    image: containrrr/watchtower
+    image: containrrr/watchtower:1.5.3
     container_name: watchtower
     command: --cleanup
     volumes: [/var/run/docker.sock:/var/run/docker.sock]

@@ -3,7 +3,7 @@ version: "3.9"
 services:
   # Whoogle search engine
   whoogle:
-    image: benbusby/whoogle-search:latest
+    image: benbusby/whoogle-search:latest # It tends do be important to stay current
     container_name: whoogle
     user: whoogle
     security_opt: [no-new-privileges]
@@ -28,7 +28,7 @@ services:
 
   # Searxng search engine
   searx:
-    image: searxng/searxng:latest
+    image: searxng/searxng:latest # It tends do be important to stay current
     container_name: searx
     depends_on: [filtron, morty]
     volumes: [./searxng:/etc/searxng]
@@ -38,43 +38,15 @@ services:
       BIND_ADDRESS: 0.0.0.0:8080
       HTTPS_PROXY: http://10.0.5.1:3128
       HTTP_PROXY: http://10.0.5.1:3128
+      INSTANCE_NAME: Garuda's SearxNG
       NO_PROXY: "*.garudalinux.org"
-      MORTY_KEY: ${SX_MORTY_KEY:-?err}
-      MORTY_URL: https://searx.garudalinux.org/morty/
     cap_drop: [ALL]
     cap_add: [CHOWN, SETGID, SETUID, DAC_OVERRIDE]
-    restart: always
-  morty:
-    image: dalf/morty:latest
-    container_name: morty
-    ports: [3000:3000]
-    command: -timeout 6 -ipv6
-    environment:
-      HTTP_PROXY: http://10.0.5.1:3128
-      HTTPS_PROXY: http://10.0.5.1:3128
-      MORTY_KEY: ${SX_MORTY_KEY:-?err}
-      MORTY_ADDRESS: 0.0.0.0:3000
-    logging:
-      driver: none
-    read_only: true
-    cap_drop: [ALL]
-    restart: always
-  filtron:
-    image: dalf/filtron:latest
-    container_name: filtron
-    ports: [4040:4040, 4041:4041]
-    command: -listen 0.0.0.0:4040 -api 0.0.0.0:4041 -target searxng:8080
-    volumes: [./searxng/rules.json:/etc/filtron/rules.json:rw]
-    read_only: true
-    cap_drop: [ALL]
-    environment:
-      HTTP_PROXY: http://10.0.5.1:3128
-      HTTPS_PROXY: http://10.0.5.1:3128
     restart: always
 
   # Lingva
   lingva:
-    image: thedaviddelta/lingva-translate:latest
+    image: thedaviddelta/lingva-translate:latest # Only latest tag is available
     container_name: lingva
     environment:
       DARK_THEME: "true"
@@ -88,7 +60,7 @@ services:
 
   # Invious YouTube frontend
   invidious:
-    image: quay.io/invidious/invidious:latest
+    image: quay.io/invidious/invidious:latest # It tends do be important to stay current
     container_name: invidious
     depends_on: [invidious_db]
     environment:
@@ -127,7 +99,7 @@ services:
       retries: 2
     restart: always
   invidious_db:
-    image: docker.io/library/postgres:14
+    image: docker.io/library/postgres:14.9
     container_name: invidious_db
     volumes:
       - ./invidious/db:/var/lib/postgresql/data
@@ -143,7 +115,7 @@ services:
 
   # Piped
   piped_backend:
-    image: 1337kavin/piped:latest
+    image: 1337kavin/piped:latest # It tends do be important to stay current
     container_name: piped_backend
     depends_on: [piped_postgres]
     volumes: [./piped/config.properties:/app/config.properties:ro]
@@ -166,7 +138,7 @@ services:
     depends_on: [piped_backend]
     restart: always
   piped_nginx:
-    image: nginx:mainline-alpine
+    image: nginx:1.25.2-alpine
     container_name: piped_nginx
     depends_on: [piped_backend, piped_frontend, piped_proxy]
     volumes:
@@ -183,7 +155,7 @@ services:
       NO_PROXY: garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com
     restart: always
   piped_postgres:
-    image: postgres:13-alpine
+    image: postgres:13.12-alpine
     container_name: piped_postgres
     volumes: [./piped/db:/var/lib/postgresql/data]
     environment:
@@ -192,7 +164,7 @@ services:
       POSTGRES_USER: piped
     restart: always
   piped_proxy:
-    image: 1337kavin/piped-proxy:latest
+    image: 1337kavin/piped-proxy:latest # It tends do be important to stay current
     container_name: piped_proxy
     environment:
       HTTP_PROXY: http://10.0.5.1:3128
@@ -204,7 +176,7 @@ services:
 
   # Automated container updates
   watchtower:
-    image: containrrr/watchtower
+    image: containrrr/watchtower:1.5.3
     container_name: watchtower
     command:
       --cleanup piped_backend piped_frontend piped_proxy invidious searx lingva
