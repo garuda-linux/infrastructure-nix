@@ -154,7 +154,7 @@ services:
       NO_PROXY: garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com
     restart: always
   piped_postgres:
-    image: postgres:13.12-alpine
+    image: postgres:15.4-alpine
     container_name: piped_postgres
     volumes: [./piped/db:/var/lib/postgresql/data]
     environment:
