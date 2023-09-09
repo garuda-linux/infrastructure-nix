@@ -7,8 +7,33 @@
 - Our current infrastructure is hosted in one of [these](https://www.hetzner.com/dedicated-rootserver/ax102).
 - The only other server not being contained in this dedicated server is our mail server.
 - Both servers are being backed up to Hetzner storage boxes via [Borg](https://www.borgbackup.org/).
-- After multiple different setups, we settled on NixOS as our main OS.
+- After multiple different setups, we settled on NixOS as our main OS as it provides reproducible and atomically updated system states
 - Most (sub)domains are protected by Cloudflare while also making use of its caching feature. Exemptions are services such as our mailserver and parts violating Cloudflares rules such as proxying Piped content.
+
+## Devshell and tooling
+
+This NixOS flake provides a [devshell](https://github.com/numtide/devshell) which contains all deployment tools as well as handy aliases for common tasks.
+The only requirement for using it is having the Nix packge manager available and having flakes enabled. It can be installed on various distributions via:
+
+```
+sh <(curl -L https://nixos.org/nix/install) --daemon
+```
+
+After that, the shell can be invoked as follows:
+
+```
+nix-shell # assuming flakes are not enabled, this bootstraps the needed files and sets up the pre-commit hook
+nix develop # the intended way to use the devshell, contains all the aliases
+```
+
+To enable flakes and the direct usage of `nix develop` follow this [wiki article](https://nixos.wiki/wiki/Flakes#Other_Distros:_Without_Home-Manager). After running nix develop, new commands are available to perform the following actions:
+
+- `apply` - applies NixOS configuration by executing `nixos-rebuild switch`, mostly used after using `deploy`
+- `buildiso` - spawns a buildiso shell on our `iso-runner` container
+- `clean` - runs the garbage collector on all servers
+- `deploy` - transfers the local configurations to the servers
+- `update` - runs a full infrastructure update including a flake.lock bump
+- `update-forum` - updates the Discourse container by running `./launcher rebuild app`
 
 ## Immortalis (Hetzner dedicated)
 
@@ -40,11 +65,11 @@ web-front      container systemd-nspawn nixos 23.11   10.0.5.10
 
 We are seeing:
 
-- 3 Chaotic-AUR builders (`chaotic-kde`, `repo` & `temeraire`)
-- 1 ISO builder / GitHub runner (`iso-runner`)
-- 2 Docker dedicated nspawn containers (`docker` & `docker-proxied)
-- 5 app dedicated containers (`forum`, `lemmy`, `mastodon`, `meshcentral` & `postgres`)
+- 1 ISO builder (`iso-runner`)
 - 1 reverse proxy serving all the websites and services (`web-front`)
+- 2 Docker dedicated nspawn containers (`docker` & `docker-proxied)
+- 4 Chaotic-AUR builders (`chaotic-kde`, `github-runner`, `repo` & `temeraire`)
+- 5 app dedicated containers (`forum`, `lemmy`, `mastodon`, `meshcentral` & `postgres`)
 
 ### Connecting to the server
 

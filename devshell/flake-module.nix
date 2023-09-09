@@ -1,6 +1,9 @@
 _:
 {
-  perSystem = { devShells, pkgs, ... }:
+  perSystem = { pkgs, ... }:
+    let
+      immortalis = "116.202.208.112";
+    in
     {
       # The default development shell spawned by "nix develop"
       devshells.default = {
@@ -15,28 +18,32 @@ _:
           }
           {
             name = "deploy";
-            category = "deployment";
+            help = "Deploy the local NixOS configuration to the servers";
+            category = "infra-nix";
             command = ''
               ansible-playbook playbooks/garuda.yml
             '';
           }
           {
             name = "apply";
-            category = "deployment";
+            help = "Apply the infra-nix configuration pushed to the servers";
+            category = "infra-nix";
             command = ''
               ansible-playbook playbooks/apply.yml
             '';
           }
           {
             name = "clean";
-            category = "tools";
+            help = "Runs the garbage collection on the servers";
+            category = "infra-nix";
             command = ''
               ansible-playbook playbooks/garbage_collect.yml
             '';
           }
           {
             name = "update";
-            category = "deployment";
+            help = "Performs a full system update on the servers bumping flake lock";
+            category = "infra-nix";
             command = ''
               ansible-playbook playbooks/system_update.yml
             '';
@@ -47,7 +54,25 @@ _:
           }
           {
             package = "ansible";
-            category = "deployment";
+            category = "infra-nix";
+          }
+          {
+            name = "update-forum";
+            help = "Updates the Discourse container of our forum";
+            category = "infra-nix";
+            command = ''
+              # We are assuming the MixOS user is named the same as the one using it
+              ssh -p224 ${immortalis} "cd /var/disourse; sudo ./launcher rebuild app"
+            '';
+          }
+          {
+            name = "buildiso";
+            help = "Spawn a buildiso shell on the builder";
+            category = "infra-nix";
+            command = ''
+              # We are assuming the NixOS user is named the same as the one using it
+              ssh -p227 -t ${immortalis} "buildiso"
+            '';
           }
           {
             package = "yamlfix";
@@ -55,7 +80,7 @@ _:
           }
         ];
         motd = ''
-          {202}🔨 Welcome to the Garuda infra-nix shell ❄️{reset}
+          {202}🔨 Welcome to Garuda's infra-nix shell{reset} ❄️
           $(type -p menu &>/dev/null && menu)
         '';
         name = "infra-nix";
@@ -64,7 +89,6 @@ _:
       # Pre-commit linters & formatters
       pre-commit = {
         check.enable = true;
-        devShell = devShells.default;
         inherit pkgs;
         settings = {
           hooks = {
