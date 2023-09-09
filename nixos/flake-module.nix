@@ -57,8 +57,8 @@ in
         inherit system;
         inherit specialArgs;
         modules = defaultModules ++ [
-          ./garuda-mail.nix
-          inputs.nixpkgs-mailserver.nixpkgsModule
+          ./hosts/garuda-mail.nix
+          inputs.nixos-mailserver.nixosModule
         ];
       };
       "immortalis" = nixpkgs.lib.nixosSystem {
