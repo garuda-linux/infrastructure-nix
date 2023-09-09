@@ -28,12 +28,19 @@ nix develop # The intended way to use the devshell, contains all the aliases
 
 To enable flakes and the direct usage of `nix develop` follow this [wiki article](https://nixos.wiki/wiki/Flakes#Other_Distros:_Without_Home-Manager). After running `nix develop``, new commands are available to perform the following actions:
 
-- `apply` - applies NixOS configuration by executing `nixos-rebuild switch`, mostly used after using `deploy`
-- `buildiso` - spawns a buildiso shell on our `iso-runner` container
-- `clean` - runs the garbage collector on all servers
-- `deploy` - transfers the local configurations to the servers
-- `update` - runs a full infrastructure update including a flake.lock bump
-- `update-forum` - updates the Discourse container by running `./launcher rebuild app`
+```
+[infra-nix]
+
+ ansible-core   - Radically simple IT automation
+ apply          - Apply the infra-nix configuration pushed to the servers
+ buildiso       - Spawn a buildiso shell on the builder
+ clean          - Runs the garbage collection on the servers
+ deploy         - Deploy the local NixOS configuration to the servers
+ update         - Performs a full system update on the servers bumping flake lock
+ update-forum   - Updates the Discourse container of our forum
+ update-toolbox - Updates the locked Chaotic toolbox commit and deploys the changes
+ update-website - Updates the locked website commit and deploys the changes
+```
 
 ## General structure
 
