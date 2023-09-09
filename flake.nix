@@ -7,6 +7,11 @@
   inputs = {
     # Devshell to set up a development environment
     devshell.url = "github:numtide/devshell";
+    devshell.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Used by multiple flakes, have them use the same version
+    flake-compat.url = "github:edolstra/flake-compat";
+    flake-compat.flake = false;
 
     # Flake parts for easy flake management
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -21,6 +26,7 @@
 
     # Our mailserver
     nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
+    nixos-mailserver.inputs.flake-compat.follows = "flake-compat";
     nixos-mailserver.inputs.nixpkgs.follows = "nixpkgs";
 
     # Meshagent agents for remote management
@@ -31,6 +37,8 @@
 
     # Pre-commit hooks via nix-shell or nix develop
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
+    pre-commit-hooks.inputs.flake-compat.follows = "flake-compat";
+    pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
 
     # SSH keys of maintainers
     keys_nico.url = "https://github.com/dr460nf1r3.keys";
