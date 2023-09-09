@@ -3,10 +3,11 @@
   "assigneesFromCodeOwners": true,
   "commitMessageAction": "update",
   "extends": ["config:base", ":gitSignOff"],
+  "gitAuthor": "Chaotic Temeraire <actions@chaotic.cx>",
   "packageRules": [
     {
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-      "automerge": true
+      "automerge": true,
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
     },
     {
       "additionalBranchPrefix": "minor-",
@@ -23,8 +24,7 @@
       "matchUpdateTypes": ["major"]
     }
   ],
-  "gitAuthor": "Chaotic Temeraire <actions@chaotic.cx",
-  "prHourlyLimit": 3,
   "prConcurrentLimit": 5,
+  "prHourlyLimit": 3,
   "reviewersFromCodeOwners": true
 }
