@@ -30,7 +30,6 @@ services:
   searx:
     image: searxng/searxng:latest # It tends do be important to stay current
     container_name: searx
-    depends_on: [filtron, morty]
     volumes: [./searxng:/etc/searxng]
     ports: [8080:8080]
     environment:
