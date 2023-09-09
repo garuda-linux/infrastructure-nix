@@ -17,5 +17,7 @@ jobs:
             experimental-features = nix-command flakes
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
           nix_path: nixpkgs=channel:nixos-unstable
+      - name: Supply dummy buildtime.json to let nix flake check pass
+        run: sed -i 's&../secrets/secrets.json&../../assets/dummy.json&g' ./nixos/modules/garuda-lib.nix
       - name: Run nix flake check
         run: nix flake check

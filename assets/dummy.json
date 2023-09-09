@@ -1,0 +1,36 @@
+{
+  "tailscale": {
+    "authkey": "tskey-auth-xxxxxxx"
+  },
+  "telegram": {
+    "token": "123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+    "monitoring_channel": "-10000000",
+    "updates_channel": "-10000000"
+  },
+  "lemmy": {
+    "database": "abcdefghijklmnop",
+    "smtp_password": "abcdefghijklmnop"
+  },
+  "matrix": {
+    "db_string": "abcdefg:abcdefg"
+  },
+  "netdata": {
+    "stream_token": "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+  },
+  "syncthing": {
+    "esxi-build": {
+      "id": "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+    },
+    "folders": {
+      "chaotic-aur": "abcd-efgh"
+    }
+  },
+  "meshcentral": {
+    "cfaccess-user": "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+  },
+  "ssh": {
+    "team": {
+      "public": "ssh-ed25519 ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 team@garudalinux.org"
+    }
+  }
+}
