@@ -13,7 +13,7 @@
 ## Devshell and tooling
 
 This NixOS flake provides a [devshell](https://github.com/numtide/devshell) which contains all deployment tools as well as handy aliases for common tasks.
-The only requirement for using it is having the Nix package manager available and having flakes enabled. It can be installed on various distributions via:
+The only requirement for using it is having the Nix package manager available and having flakes enabled. It can be installed on various distributions via the package manager or the following script:
 
 ```
 sh <(curl -L https://nixos.org/nix/install) --daemon
@@ -26,7 +26,7 @@ nix-shell # Assuming flakes are not enabled, this bootstraps the needed files an
 nix develop # The intended way to use the devshell, contains all the aliases
 ```
 
-To enable flakes and the direct usage of `nix develop` follow this [wiki article](https://nixos.wiki/wiki/Flakes#Other_Distros:_Without_Home-Manager). After running `nix develop``, new commands are available to perform the following actions:
+To enable flakes and the direct usage of `nix develop` follow this [wiki article](https://nixos.wiki/wiki/Flakes#Other_Distros:_Without_Home-Manager). After running `nix develop`, new commands are available to perform the following actions:
 
 ```
 [infra-nix]
@@ -138,7 +138,7 @@ chaotic bump $package # increment pkgver of $package by 0.1 to allow a rebuild
 chaotic rm $package # remove package from the repository
 ```
 
-Further information may be obtained by clicking `chaotic seen above`. The corresponding builders are:
+Further information may be obtained by clicking `chaotic` seen above. The corresponding builders are:
 
 - `[chaotic-aur]`: `temeraire`
 - `[garuda]`: `repo`
@@ -181,7 +181,7 @@ We have using pull/push based mirroring for this git repository. This allows eas
 
 Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends. The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations. Might switch to Prometheus/Grafana/Loki stack in the future. We used to set up children -> parent streaming in the past, though after transitioning to one big host this didn't really make sense anymore. Instead, up to 10GB of data gets stored on individual hosts. While Netdata agents do have their own dashboard, the [Dashboard provided by Netdata](https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes) is far superior and allows a better insight, eg. by offering the functions feature. Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its [documentation](https://learn.netdata.cloud/).
 
-To access the dashboard (linked before), use `team@garudalinux.org` as login, the login will be completed after opening the link sent here.
+To access the previously linked dashboard, use `team@garudalinux.org` as login, the login will be completed after opening the link sent here.
 
 ## Common maintenance tasks
 
@@ -293,7 +293,7 @@ To check whether backups to Hetzner are still working as expected, connect to th
 systemctl status borgbackup-job-backupToHetzner
 ```
 
-This should yield a successful unit state. The only exception is having an exit code != `0`` due to files having changed during the run.
+This should yield a successful unit state. The only exception is having an exit code != `0` due to files having changed during the run.
 
 ### Updating the website content or Chaotic-AUR toolbox
 
@@ -305,7 +305,7 @@ nix flake lock --update-input src-garuda-website # website
 nix flake lock --update-input src-chaotic-toolbox # toolbox
 ```
 
-After that deploy as usual (by running `deploy`). The commit and corresponding hash will be updated and NixOS will use it to build the website or toolbox using the new revision automatically.
+After that deploy as usual by running `deploy` and `apply`. The commit and corresponding hash will be updated and NixOS will use it to build the website or toolbox using the new revision automatically.
 
 ### Updating the Garuda startpage content
 
