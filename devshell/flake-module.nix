@@ -1,7 +1,23 @@
-_:
+{ inputs, ... }:
 {
   perSystem = { pkgs, ... }:
     let
+      buildiso = ''
+        if ! command -v docker &>/dev/null; then
+          echo "This command requires docker to be installed. Please install Docker and try again."
+          exit 1
+        fi
+        if ! docker images | grep buildiso &>/dev/null; then 
+          docker build ${inputs.src-buildiso} -t buildiso
+        fi
+        docker run --rm -it --privileged --name buildiso \
+               -v "./buildiso/buildiso:/var/cache/garuda-tools/garuda-chroots/buildiso" \
+               -v "./buildiso/cron:/var/spool/anacron" \
+               -v "./buildiso/pkg:/var/cache/pacman/pkg/" \
+               -v "./buildiso/iso:/var/cache/garuda-tools/garuda-builds/iso/" \
+               -v "./buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
+               buildiso /bin/bash
+      '';
       immortalis = "116.202.208.112";
     in
     {
@@ -18,7 +34,7 @@ _:
           }
           {
             name = "deploy";
-            help = "Deploy the local NixOS configuration to the servers";
+            help = "Deploys the local NixOS configuration to the servers";
             category = "infra-nix";
             command = ''
               ansible-playbook playbooks/garuda.yml
@@ -26,7 +42,7 @@ _:
           }
           {
             name = "apply";
-            help = "Apply the infra-nix configuration pushed to the servers";
+            help = "Applies the infra-nix configuration pushed to the servers";
             category = "infra-nix";
             command = ''
               ansible-playbook playbooks/apply.yml
@@ -66,12 +82,20 @@ _:
             '';
           }
           {
-            name = "buildiso";
-            help = "Spawn a buildiso shell on the builder";
+            name = "buildiso-remote";
+            help = "Spawn a buildiso shell on the iso-runner builder";
             category = "infra-nix";
             command = ''
               # We are assuming the NixOS user is named the same as the one using it
               ssh -p227 -t ${immortalis} "buildiso"
+            '';
+          }
+          {
+            name = "buildiso-local";
+            help = "Spawns a local buildiso shell to build to ./buildiso (needs Docker)";
+            category = "infra-nix";
+            command = ''
+              ${buildiso}
             '';
           }
           {

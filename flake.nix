@@ -88,7 +88,9 @@
 
         perSystem = { pkgs, system, ... }: {
           # Enter devshell via "nix run .#apps.x86_64-linux.devshell"
-          apps.devshell = self.outputs.devShells.${system}.default.flakeApp;
+          apps = {
+            devshell = self.outputs.devShells.${system}.default.flakeApp;
+          };
 
           # Run nixpkgs-fmt via "nix fmt"
           formatter = pkgs.nixpkgs-fmt;

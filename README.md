@@ -37,15 +37,16 @@ To enable flakes and the direct usage of `nix develop` follow this [wiki article
 ```
 [infra-nix]
 
- ansible-core   - Radically simple IT automation
- apply          - Apply the infra-nix configuration pushed to the servers
- buildiso       - Spawn a buildiso shell on the builder
- clean          - Runs the garbage collection on the servers
- deploy         - Deploy the local NixOS configuration to the servers
- update         - Performs a full system update on the servers bumping flake lock
- update-forum   - Updates the Discourse container of our forum
- update-toolbox - Updates the locked Chaotic toolbox commit and deploys the changes
- update-website - Updates the locked website commit and deploys the changes
+ansible-core    - Radically simple IT automation
+apply           - Applies the infra-nix configuration pushed to the servers
+buildiso-local  - Spawns a local buildiso shell to build to ./buildiso (needs Docker)
+buildiso-remote - Spawn a buildiso shell on the iso-runner builder
+clean           - Runs the garbage collection on the servers
+deploy          - Deploys the local NixOS configuration to the servers
+update          - Performs a full system update on the servers by bumping flake lock
+update-forum    - Updates the Discourse container of our forum
+update-toolbox  - Updates the locked Chaotic toolbox commit and deploys the changes
+update-website  - Updates the locked website commit and deploys the changes
 ```
 
 ## General structure
