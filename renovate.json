@@ -3,7 +3,13 @@
   "assigneesFromCodeOwners": true,
   "commitMessageAction": "update",
   "extends": ["config:base", ":gitSignOff"],
-  "gitAuthor": "Chaotic Temeraire <actions@chaotic.cx>",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "extends": ["schedule:weekly"]
+  },
+  "nix": {
+    "enabled": true
+  },
   "packageRules": [
     {
       "automerge": true,
