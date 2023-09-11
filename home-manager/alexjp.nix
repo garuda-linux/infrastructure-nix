@@ -18,10 +18,6 @@
       enable = true;
       config.theme = "GitHub";
     };
-    exa = {
-      enable = true;
-      enableAliases = true;
-    };
     fish.enable = true;
     git = {
       enable = true;

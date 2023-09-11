@@ -83,7 +83,7 @@
           }
           {
             name = "buildiso-remote";
-            help = "Spawn a buildiso shell on the iso-runner builder";
+            help = "Spawns a buildiso shell on the iso-runner builder";
             category = "infra-nix";
             command = ''
               # We are assuming the NixOS user is named the same as the one using it

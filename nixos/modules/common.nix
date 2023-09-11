@@ -54,7 +54,7 @@
     "egrep" = "egrep --color=auto";
     "fgrep" = "fgrep --color=auto";
     "ip" = "ip --color=auto";
-    "ls" = "exa -al --color=always --group-directories-first --icons";
+    "ls" = "eza -al --color=always --group-directories-first --icons";
     "micro" = "micro -colorscheme geany -autosu true -mkparents true";
     "psmem" = "ps auxf | sort -nr -k 4";
     "psmem10" = "ps auxf | sort -nr -k 4 | head -1";
@@ -79,7 +79,7 @@
       "egrep" = "egrep --color=auto";
       "fgrep" = "fgrep --color=auto";
       "ip" = "ip --color=auto";
-      "ls" = "exa -al --color=always --group-directories-first --icons";
+      "ls" = "eza -al --color=always --group-directories-first --icons";
       "micro" = "micro -colorscheme geany -autosu true -mkparents true";
       "psmem" = "ps auxf | sort -nr -k 4";
       "psmem10" = "ps auxf | sort -nr -k 4 | head -1";
@@ -140,7 +140,7 @@
     systemPackages = with pkgs; [
       btop
       cachix
-      exa
+      eza
       fancy-motd
       fishPlugins.autopair
       fishPlugins.puffer

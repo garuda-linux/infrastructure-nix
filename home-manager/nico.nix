@@ -26,10 +26,6 @@
         theme_background = false;
       };
     };
-    exa = {
-      enable = true;
-      enableAliases = true;
-    };
     fish = {
       enable = true;
     };

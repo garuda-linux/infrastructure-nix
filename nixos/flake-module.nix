@@ -37,6 +37,7 @@ let
     };
     keys = {
       alexjp = inputs.keys_alexjp;
+      frank = inputs.keys_frank;
       nico = inputs.keys_nico;
       pedrohlc = inputs.keys_pedrohlc;
       technetium1 = inputs.keys_technetium1;

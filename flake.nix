@@ -8,6 +8,7 @@
     # Devshell to set up a development environment
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
+    devshell.inputs.systems.follows = "systems";
 
     # Used by multiple flakes, have them use the same version
     flake-compat.url = "github:edolstra/flake-compat";
@@ -17,12 +18,21 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
 
+    # Required by pre-commit-hooks
+    flake-utils.url = "github:numtide/flake-utils";
+    flake-utils.inputs.systems.follows = "systems";
+
+    # Gitignore common input
+    gitignore.url = "github:hercules-ci/gitignore.nix";
+    gitignore.inputs.nixpkgs.follows = "nixpkgs";
+
     # Home-manager for dotfile management
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # The single source of truth
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-23.05";
 
     # Our mailserver
     nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
@@ -38,14 +48,19 @@
     # Pre-commit hooks via nix-shell or nix develop
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
     pre-commit-hooks.inputs.flake-compat.follows = "flake-compat";
+    pre-commit-hooks.inputs.flake-utils.follows = "flake-utils";
+    pre-commit-hooks.inputs.gitignore.follows = "gitignore";
     pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
+    pre-commit-hooks.inputs.nixpkgs-stable.follows = "nixpkgs-stable";
 
     # SSH keys of maintainers
     keys_nico.url = "https://github.com/dr460nf1r3.keys";
     keys_nico.flake = false;
     keys_tne.url = "https://github.com/justtne.keys";
     keys_tne.flake = false;
-    keys_technetium1.url = "https://github.com/Technetium1.keys";
+    keys_frank.url = "https://github.com/fgd-garuda.keys";
+    keys_frank.flake = false;
+    keys_technetium1.url = "https://github.com/technetium1.keys";
     keys_technetium1.flake = false;
     keys_alexjp.url = "https://github.com/alexjp.keys";
     keys_alexjp.flake = false;
@@ -67,6 +82,9 @@
     src-garuda-website.flake = false;
     src-cloudflare-ipv4.url = "https://www.cloudflare.com/ips-v4";
     src-cloudflare-ipv4.flake = false;
+
+    # Common input
+    systems.url = "github:nix-systems/default";
   };
 
   outputs =
@@ -88,9 +106,7 @@
 
         perSystem = { pkgs, system, ... }: {
           # Enter devshell via "nix run .#apps.x86_64-linux.devshell"
-          apps = {
-            devshell = self.outputs.devShells.${system}.default.flakeApp;
-          };
+          apps.devshell = self.outputs.devShells.${system}.default.flakeApp;
 
           # Run nixpkgs-fmt via "nix fmt"
           formatter = pkgs.nixpkgs-fmt;
