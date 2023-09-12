@@ -188,14 +188,14 @@
 </ul>
 <h2 id="devshell-and-tooling"><a class="header" href="#devshell-and-tooling">Devshell and tooling</a></h2>
 <p>This NixOS flake provides a <a href="https://github.com/numtide/devshell">devshell</a> which contains all deployment tools as well as handy aliases for common tasks.
-The only requirement for using it is having the Nix package manager available and having flakes enabled. It can be installed on various distributions via the package manager or the following script:</p>
+The only requirement for using it is having the Nix package manager available. It can be installed on various distributions via the package manager or the following script:</p>
 <pre><code class="language-sh">sh &lt;(curl -L https://nixos.org/nix/install) --daemon
 </code></pre>
 <p>After that, the shell can be invoked as follows:</p>
 <pre><code class="language-sh">nix-shell # Legacy, non-flakes way
 nix develop # The intended way to use the devshell
 </code></pre>
-<p>To enable flakes and the direct usage of <code>nix develop</code> follow this <a href="https://nixos.wiki/wiki/Flakes#Other_Distros:_Without_Home-Manager">wiki article</a>. After running <code>nix develop</code>, new commands are available to perform the following actions:</p>
+<p>To enable flakes and the direct usage of <code>nix develop</code> follow this <a href="https://nixos.wiki/wiki/Flakes#Other_Distros:_Without_Home-Manager">wiki article</a>. After running either command, new commands are available to perform the following actions:</p>
 <pre><code class="language-sh">[infra-nix]
 
 ansible-core    - Radically simple IT automation
@@ -212,28 +212,29 @@ update-website  - Updates the locked website commit and deploys the changes
 <div style="break-before: page; page-break-before: always;"></div><h2 id="general-structure"><a class="header" href="#general-structure">General structure</a></h2>
 <p>A general overview of the folder structure can be found below:</p>
 <pre><code class="language-sh">├── assets
-├── devshell
 ├── docker-compose
-│   ├── all-in-one
-│   ├── github-runner
-│   └── proxied
+│   ├── all-in-one
+│   ├── github-runner
+│   └── proxied
 ├── docs
+│   ├── hosts
+│   └── theme
 ├── home-manager
 ├── host_vars
-│   ├── garuda-build
-│   ├── garuda-mail
-│   └── immortalis
+│   ├── garuda-build
+│   ├── garuda-mail
+│   └── immortalis
 ├── nixos
-│   ├── hosts
-│   │   ├── garuda-build
-│   │   ├── garuda-mail
-│   │   └── immortalis
-│   ├── modules
-│   │   └── static
-│   └── services
-│       ├── chaotic
-│       ├── docker-compose-runner
-│       └── monitoring
+│   ├── hosts
+│   │   ├── garuda-build
+│   │   ├── garuda-mail
+│   │   └── immortalis
+│   ├── modules
+│   │   └── static
+│   └── services
+│       ├── chaotic
+│       ├── docker-compose-runner
+│       └── monitoring
 ├── playbooks
 ├── scripts
 └── secrets
@@ -247,11 +248,11 @@ ansible-vault encrypt secrets/pathtofile
 <p>Further information on <code>ansible-vault</code> can be found in its <a href="https://docs.ansible.com/ansible/latest/vault_guide/index.html">documentation</a>.
 It is important to keep the <code>secrets</code> directory in the latest state before deploying a new configuration as misconfigurations might happen otherwise.</p>
 <h2 id="linting-and-formatting"><a class="header" href="#linting-and-formatting">Linting and formatting</a></h2>
-<p>We utilize <a href="https://github.com/cachix/pre-commit-hooks.nix">pre-commit-hooks</a> to automatically set up the pre-commit-hook with all the tools once <code>nix-shell</code> is run for the first time. Checks can then be executed by running either</p>
+<p>We utilize <a href="https://github.com/cachix/pre-commit-hooks.nix">pre-commit-hooks</a> to automatically set up the pre-commit-hook with all the tools once <code>nix-shell</code> or <code>nix develop</code> is run for the first time. Checks can then be executed by running one of the following configs:</p>
 <pre><code class="language-sh">nix flake check # checks flake outputs and runs pre-commit at the end
 pre-commit run --all-files # only runs the pre-commit tools on all files
 </code></pre>
-<p>Its configuration can be found in the <code>devshell</code> folder (<a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/devshell/flake-module.nix?ref_type=heads#L110">click me</a>). At the time of writing, the following tools are being run:</p>
+<p>Its configuration can be found in the <code>flake.nix</code> file. (<a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/flake.nix">click me</a>). At the time of writing, the following tools are being run:</p>
 <ul>
 <li><a href="https://github.com/rhysd/actionlint">actionlint</a></li>
 <li><a href="https://github.com/ansible/ansible-lint">ansible-lint</a></li>
@@ -260,20 +261,19 @@ pre-commit run --all-files # only runs the pre-commit tools on all files
 <li><a href="https://github.com/oxalica/nil">nil</a></li>
 <li><a href="https://github.com/nix-community/nixpkgs-fmt">nixpkgs-fmt</a></li>
 <li><a href="https://prettier.io/">prettier</a></li>
-<li><a href="https://github.com/koalaman/shellcheck">shellcheck</a></li>
-<li><a href="https://github.com/mvdan/sh">shfmt</a></li>
 <li><a href="https://github.com/nerdypepper/statix">statix</a></li>
 <li><a href="https://github.com/adrienverge/yamllint">yamllint</a></li>
 </ul>
-<p>It is recommended to run <code>pre-commit run --all-files</code> before commiting any files. Then use <code>cz commit</code> to generate a <code>commitizen</code> complying commit message.</p>
-<h2 id="ci-tooling"><a class="header" href="#ci-tooling">CI tooling</a></h2>
-<p>We have using pull/push based mirroring for this git repository. This allows easy access to Renovate without having to run a custom instance mirroring changes to both Github and GitLab. The following tasks have been automated as of now:</p>
+<p>It is recommended to run <code>pre-commit run --all-files</code> before committing any files. Then use <code>cz commit</code> to generate a <code>commitizen</code> complying commit message.</p>
+<h2 id="cicd"><a class="header" href="#cicd">CI/CD</a></h2>
+<p>We have used pull-/push-based mirroring for this git repository. This allows easy access to Renovate without having to run a custom instance mirroring changes to both GitHub and GitLab. The following tasks have been automated as of now:</p>
 <ul>
 <li><code>nix flake check</code> runs for every labeled PR and commit on main.</li>
 <li><a href="https://renovatebot.com/">Renovate</a> periodically checks <code>docker-compose.yml</code> and other supported files for version updates. It has a <a href="https://github.com/garuda-linux/infrastructure-nix/issues/5">dependency dashboard</a> as well as the <a href="https://developer.mend.io/github/garuda-linux/infrastructure-nix">developer interface</a> to check logs of individual runs. Minor updates appear as grouped PRs while major updates are separated from those. Note that this only applies to the GitHub side.</li>
+<li>Deployment of our mdBook-based documentation to GitHub pages.</li>
 </ul>
 <h2 id="monitoring"><a class="header" href="#monitoring">Monitoring</a></h2>
-<p>Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends. The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations. Might switch to Prometheus/Grafana/Loki stack in the future. We used to set up children -&gt; parent streaming in the past, though after transitioning to one big host this didn't really make sense anymore. Instead, up to 10GB of data gets stored on individual hosts. While Netdata agents do have their own dashboard, the <a href="https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes">Dashboard provided by Netdata</a> is far superior and allows a better insight, eg. by offering the functions feature. Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its <a href="https://learn.netdata.cloud/">documentation</a>. To access the previously linked dashboard, use <code>team@garudalinux.org</code> as login, the login will be completed after opening the link sent here.</p>
+<p>Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends. The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations. Might switch to the Prometheus/Grafana/Loki stack in the future. We used to set up children -&gt; parent streaming in the past, though after transitioning to one big host this didn't make sense anymore. Instead, up to 10GB of data gets stored on individual hosts. While Netdata agents do have their dashboard, the <a href="https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes">Dashboard provided by Netdata</a> is far superior and allows a better insight, eg. by offering the functions feature. Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its <a href="https://learn.netdata.cloud/">documentation</a>. To access the previously linked dashboard, use <code>team@garudalinux.org</code> as login, the login will be completed after opening the link sent here.</p>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="common-maintenance-tasks"><a class="header" href="#common-maintenance-tasks">Common maintenance tasks</a></h2>
 <h3 id="rebuilding--updating-the-forum-container"><a class="header" href="#rebuilding--updating-the-forum-container">Rebuilding / updating the forum container</a></h3>
 <p>Sometimes Discourse needs its container to build rebuild via cli rather than the webinterface. This can be done with:</p>
@@ -293,7 +293,7 @@ After the build process is finished, builds can be found on <a href="https://iso
 <h3 id="deploying-a-new-iso-release"><a class="header" href="#deploying-a-new-iso-release">Deploying a new ISO release</a></h3>
 <p>We are assuming all ISOs have been tested for functionality before executing any of those commands.</p>
 <pre><code class="language-sh">ssh -p 227 $user@116.202.208.112
-buildall # builds all ISO provided in the buildall command
+build all # builds all ISO provided in the buildall command
 deployiso -FS # sync to Cloudflare R2 and Sourceforge
 deployiso -FSR # sync to Cloudflare R2 and Sourceforge while also updating the latest (stable, non-nightly) release
 deployiso -Sd # to delete the old ISOs on Sourceforge once they aren't needed anymore
@@ -303,14 +303,14 @@ deployiso -FSRd # oneliner for the above-given commands
 <p>One needs to have the <a href="https://gitlab.com/garuda-linux/infra-nix">infra-nix</a> repo cloned locally. Then proceed by updating the <code>flake.lock</code> file, pushing it to the server &amp; building the configurations:</p>
 <pre><code class="language-sh">nix flake update
 ansible-playbook garuda.yml -l $servername # Eg. immortalis for the Hetzner host
-deploy # Skip using above command and use this one in case nix develop was used
+deploy # Skip using the above command and use this one in case nix develop was used
 </code></pre>
 <p>Then you can either apply it via Ansible or connect to the host to view more details about the process while it runs:</p>
 <pre><code class="language-sh">ansible-playbook apply.yml -l $servername # Ansible
 
 apply # Nix develop shell
 
-ssh -p 666 $user@116.202.208.112 # Manually, examplary on immortalis
+ssh -p 666 $user@116.202.208.112 # Manually, exemplary on immortalis
 sudo nixos-rebuild switch
 </code></pre>
 <p>Keep in mind that this will restart every service whose files changed since the last system update. On our Hetzner server, this includes a restart of every declarative <code>nixos-container</code> if needed, causing a small downtime.</p>
@@ -338,7 +338,7 @@ sudo nixos-rebuild switch
 <h3 id="changing-docker-configurations"><a class="header" href="#changing-docker-configurations">Changing Docker configurations</a></h3>
 <p>If configurations of services running in Docker containers need to be altered, one needs to edit the corresponding <code>docker-compose.yml</code> (<code>./nix/docker-compose/$name</code>) file or .env file in the <code>secrets</code> directory (see the secrets section for details on that topic). The deployment is done the same way as with normal system configuration.</p>
 <h3 id="updating-docker-containers"><a class="header" href="#updating-docker-containers">Updating Docker containers</a></h3>
-<p>Docker containers sometimes use the <code>latest</code> tag in case no current tag is available or in case of services like Piped and Searx, where it is often crucial to have the latest build to bypass Google's restrictions. Containers using the <code>latest</code> tag are automatically updated via <a href="https://containrrr.dev/watchtower/">watchtower</a> on a daily basis. The remaining ones can be updated changing its version in the corresponding <code>docker-compose.yml</code> and then running <code>deploy</code> &amp; <code>apply</code>. If containers are to be updated manually, this can be achieved by connecting to the host, running <code>nixos-container root-login $containername</code> and executing:</p>
+<p>Docker containers sometimes use the <code>latest</code> tag in case no current tag is available or in the case of services like Piped and Searx, where it is often crucial to have the latest build to bypass Google's restrictions. Containers using the <code>latest</code> tag are automatically updated via <a href="https://containrrr.dev/watchtower/">watchtower</a> daily. The remaining ones can be updated by changing their version in the corresponding <code>docker-compose.yml</code> and then running <code>deploy</code> &amp; <code>apply</code>. If containers are to be updated manually, this can be achieved by connecting to the host, running <code>nixos-container root-login $containername</code>, and executing:</p>
 <pre><code class="language-sh">cd /var/garuda/docker-compose-runner/$name/ # replace $name with the actual docker-compose.yml or autocomplete via tab
 sudo docker compose pull
 sudo docker compose up -d
@@ -371,10 +371,10 @@ sudo docker restart homer
 <li><a href="./hosts/immortalis.html">immortalis</a></li>
 <li><a href="./hosts/garuda-mail.html">garuda-mail</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="immortalis-hetzner-dedicated"><a class="header" href="#immortalis-hetzner-dedicated">Immortalis (Hetzner dedicated)</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="immortalis-hetzner-dedicated"><a class="header" href="#immortalis-hetzner-dedicated">immortalis (Hetzner dedicated)</a></h2>
 <h3 id="general"><a class="header" href="#general">General</a></h3>
 <p>This system utilizes a NixOS host which uses <a href="https://nixos.wiki/wiki/NixOS_Containers">nixos-containers</a> to build declarative <code>systemd-nspawn</code> machines for different purposes. To make the best use of the available resources, common directories are shared between containers. This includes <code>/home</code> (home-manager / NixOS configurations writing to home are generated by the host and disabled for the containers), Pacman and Chaotic cache, the <code>/nix</code> directory, and a few others. Further details can be found in the <a href="hhttps://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis/containers.nix">Nix expression</a> of the host.</p>
-<p>All directories containing important data were mapped to <code>/data_1</code> and <code>/data_2</code> in order to have them all in one place. The first mostly contains web services' files, the latter only builds related directories such as the Pacman cache.</p>
+<p>All directories containing important data were mapped to <code>/data_1</code> and <code>/data_2</code> to have them all in one place. The first mostly contains web services' files, the latter only builds related directories such as the Pacman cache.</p>
 <p>The current line-up looks as follows:</p>
 <pre><code>nico@immortalis ~ (main)&gt; machinectl
 MACHINE        CLASS     SERVICE        OS    VERSION ADDRESSES
@@ -413,13 +413,13 @@ web-front      container systemd-nspawn nixos 23.11   10.0.5.10
 <li>229: <code>postgres</code> (access the database in <code>127.0.0.1</code> via <code>ssh -p 229 nico@116.202.208.112 -L 5432:127.0.0.1:5432</code>)</li>
 </ul>
 <h3 id="docker-containers"><a class="header" href="#docker-containers">Docker containers</a></h3>
-<p>Some services not packaged in NixOS or being easier to deploy this way are serviced via the Docker engine. This contains services like Piped, Whoogle, and Matrix. We use a custom <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/garuda/services/docker-compose-runner/docker-compose-runner.nix?ref_type=heads">NixOS module</a> to deploy those with the rest of the system. Secrets are handled via our own secret management which consists of a git submodule <code>secret</code> (private repo with <code>ansible-vault</code> encrypted files) and <code>garuda-lib</code> (see secrets section). Those contain a <code>docker-compose</code> directory in which the <code>.env</code> files for the <code>docker-compose.yml</code> are stored.</p>
+<p>Some services not packaged in NixOS or are easier to deploy this way are serviced via the Docker engine. This contains services like Piped, Whoogle, and Matrix. We use a custom <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/garuda/services/docker-compose-runner/docker-compose-runner.nix?ref_type=heads">NixOS module</a> to deploy those with the rest of the system. Secrets are handled via our secret management which consists of a git submodule <code>secret</code> (private repo with <code>ansible-vault</code> encrypted files) and <code>garuda-lib</code> (see secrets section). Those contain a <code>docker-compose</code> directory in which the <code>.env</code> files for the <code>docker-compose.yml</code> are stored.</p>
 <h3 id="chaotic-aur--repository"><a class="header" href="#chaotic-aur--repository">Chaotic-AUR / repository</a></h3>
 <p>Our repository leverages <a href="https://aur.chaotic.cx">Chaotic-AUR's</a> <a href="https://github.com/chaotic-aur/toolbox">toolbox</a> to provide the main node for the <code>[chaotic-aur]</code> repository as well as two more instances building the <code>[garuda]</code> and <code>[chaotic-kde]</code> repositories. Users of the <code>chaotic_op</code> group may build packages on the corresponding nixos-container via the <a href="https://github.com/chaotic-aur/toolbox/blob/main/README.md">chaotic</a> command:</p>
 <pre><code>chaotic get $package # pull PKGBUILD
 chaotic mkd $package # build package in the previously cloned directory
 chaotic bump $package # increment pkgver of $package by 0.1 to allow a rebuild
-chaotic rm $package # remove package from the repository
+chaotic rm $package # remove the package from the repository
 </code></pre>
 <p>Further information may be obtained by clicking <code>chaotic</code> seen above. The corresponding builders are:</p>
 <ul>
@@ -429,12 +429,12 @@ chaotic rm $package # remove package from the repository
 </ul>
 <h3 id="squid-proxy"><a class="header" href="#squid-proxy">Squid proxy</a></h3>
 <p>Squid is being installed on the host machine to proxy outgoing requests via random IPv6 addresses of the /64 subnet Hetzner provides for services that need it, eg. Piped, the Chaotic-AUR builders, and other services that are getting rate limited quickly. The process is not entirely automated, which means that we currently have a pool of IPv6 addresses active and need to switch them whenever those are getting rate-limited again.
-Since we supply an invalid IPv4 to force outgoing IPv6, the log files were somewhat cluttered by (expected) errors. Systemd-unit logging has been set to <code>LogLevelMax=1</code> to un-clutter the journal and needs to increased again if debugging needs to be done.</p>
+Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were somewhat cluttered by (expected) errors. Systemd-unit logging has been set to <code>LogLevelMax=1</code> to un-clutter the journal and needs to be increased again if debugging needs to be done.</p>
 <h3 id="backups"><a class="header" href="#backups">Backups</a></h3>
-<p>Backups are provided by daily Borg runs. Only the <code>/data_1</code> directory is backed up (minus <code>/data_1/{dockercache,dockerdata}</code>) as the rest are either Nix generated or build-related files which can easily recovered from another repository mirror. The corresponding systemd-unit is named <code>borgbackup-job-backupToHetzner</code>.</p>
+<p>Backups are provided by daily Borg runs. Only the <code>/data_1</code> directory is backed up (minus <code>/data_1/{dockercache,dockerdata}</code>) as the rest are either Nix-generated or build-related files that can easily recovered from another repository mirror. The corresponding systemd-unit is named <code>borgbackup-job-backupToHetzner</code>.</p>
 <h3 id="tailscale--mesh-network"><a class="header" href="#tailscale--mesh-network">Tailscale / mesh network</a></h3>
 <p>While Tailscale was commonly used to connect multiple VMs before, this server only has it active on the host. However, we are leveraging Tailscale's <a href="https://tailscale.com/kb/1019/subnets/">subnet router</a> feature to serve the <code>10.0.5.0/24</code> subnet via Tailscale, which means that other Tailscale clients may access the <code>nixos-containers</code> via their IP if <code>tailscale up --accept-routes</code> was used to set up the service.</p>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="garuda-mail-netcup-vps"><a class="header" href="#garuda-mail-netcup-vps">Garuda-mail (Netcup VPS)</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="garuda-mail-netcup-vps"><a class="header" href="#garuda-mail-netcup-vps">garuda-mail (Netcup VPS)</a></h2>
 <h3 id="general-1"><a class="header" href="#general-1">General</a></h3>
 <p>This system mainly consists of the <a href="https://gitlab.com/simple-nixos-mailserver/nixos-mailserver">simple-nixos-mailserver</a>. Its only purpose is providing a mail service to team members. The current config looks like <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/garuda-mail.nix?ref_type=heads#L47">this</a>.
 In case of issues, the <a href="https://nixos-mailserver.readthedocs.io/en/latest/">documentation</a> can be consulted.</p>

@@ -187,14 +187,14 @@
 </ul>
 <h2 id="devshell-and-tooling"><a class="header" href="#devshell-and-tooling">Devshell and tooling</a></h2>
 <p>This NixOS flake provides a <a href="https://github.com/numtide/devshell">devshell</a> which contains all deployment tools as well as handy aliases for common tasks.
-The only requirement for using it is having the Nix package manager available and having flakes enabled. It can be installed on various distributions via the package manager or the following script:</p>
+The only requirement for using it is having the Nix package manager available. It can be installed on various distributions via the package manager or the following script:</p>
 <pre><code class="language-sh">sh &lt;(curl -L https://nixos.org/nix/install) --daemon
 </code></pre>
 <p>After that, the shell can be invoked as follows:</p>
 <pre><code class="language-sh">nix-shell # Legacy, non-flakes way
 nix develop # The intended way to use the devshell
 </code></pre>
-<p>To enable flakes and the direct usage of <code>nix develop</code> follow this <a href="https://nixos.wiki/wiki/Flakes#Other_Distros:_Without_Home-Manager">wiki article</a>. After running <code>nix develop</code>, new commands are available to perform the following actions:</p>
+<p>To enable flakes and the direct usage of <code>nix develop</code> follow this <a href="https://nixos.wiki/wiki/Flakes#Other_Distros:_Without_Home-Manager">wiki article</a>. After running either command, new commands are available to perform the following actions:</p>
 <pre><code class="language-sh">[infra-nix]
 
 ansible-core    - Radically simple IT automation

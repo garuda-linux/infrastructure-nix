@@ -188,7 +188,7 @@ After the build process is finished, builds can be found on <a href="https://iso
 <h3 id="deploying-a-new-iso-release"><a class="header" href="#deploying-a-new-iso-release">Deploying a new ISO release</a></h3>
 <p>We are assuming all ISOs have been tested for functionality before executing any of those commands.</p>
 <pre><code class="language-sh">ssh -p 227 $user@116.202.208.112
-buildall # builds all ISO provided in the buildall command
+build all # builds all ISO provided in the buildall command
 deployiso -FS # sync to Cloudflare R2 and Sourceforge
 deployiso -FSR # sync to Cloudflare R2 and Sourceforge while also updating the latest (stable, non-nightly) release
 deployiso -Sd # to delete the old ISOs on Sourceforge once they aren't needed anymore
@@ -198,14 +198,14 @@ deployiso -FSRd # oneliner for the above-given commands
 <p>One needs to have the <a href="https://gitlab.com/garuda-linux/infra-nix">infra-nix</a> repo cloned locally. Then proceed by updating the <code>flake.lock</code> file, pushing it to the server &amp; building the configurations:</p>
 <pre><code class="language-sh">nix flake update
 ansible-playbook garuda.yml -l $servername # Eg. immortalis for the Hetzner host
-deploy # Skip using above command and use this one in case nix develop was used
+deploy # Skip using the above command and use this one in case nix develop was used
 </code></pre>
 <p>Then you can either apply it via Ansible or connect to the host to view more details about the process while it runs:</p>
 <pre><code class="language-sh">ansible-playbook apply.yml -l $servername # Ansible
 
 apply # Nix develop shell
 
-ssh -p 666 $user@116.202.208.112 # Manually, examplary on immortalis
+ssh -p 666 $user@116.202.208.112 # Manually, exemplary on immortalis
 sudo nixos-rebuild switch
 </code></pre>
 <p>Keep in mind that this will restart every service whose files changed since the last system update. On our Hetzner server, this includes a restart of every declarative <code>nixos-container</code> if needed, causing a small downtime.</p>
@@ -233,7 +233,7 @@ sudo nixos-rebuild switch
 <h3 id="changing-docker-configurations"><a class="header" href="#changing-docker-configurations">Changing Docker configurations</a></h3>
 <p>If configurations of services running in Docker containers need to be altered, one needs to edit the corresponding <code>docker-compose.yml</code> (<code>./nix/docker-compose/$name</code>) file or .env file in the <code>secrets</code> directory (see the secrets section for details on that topic). The deployment is done the same way as with normal system configuration.</p>
 <h3 id="updating-docker-containers"><a class="header" href="#updating-docker-containers">Updating Docker containers</a></h3>
-<p>Docker containers sometimes use the <code>latest</code> tag in case no current tag is available or in case of services like Piped and Searx, where it is often crucial to have the latest build to bypass Google's restrictions. Containers using the <code>latest</code> tag are automatically updated via <a href="https://containrrr.dev/watchtower/">watchtower</a> on a daily basis. The remaining ones can be updated changing its version in the corresponding <code>docker-compose.yml</code> and then running <code>deploy</code> &amp; <code>apply</code>. If containers are to be updated manually, this can be achieved by connecting to the host, running <code>nixos-container root-login $containername</code> and executing:</p>
+<p>Docker containers sometimes use the <code>latest</code> tag in case no current tag is available or in the case of services like Piped and Searx, where it is often crucial to have the latest build to bypass Google's restrictions. Containers using the <code>latest</code> tag are automatically updated via <a href="https://containrrr.dev/watchtower/">watchtower</a> daily. The remaining ones can be updated by changing their version in the corresponding <code>docker-compose.yml</code> and then running <code>deploy</code> &amp; <code>apply</code>. If containers are to be updated manually, this can be achieved by connecting to the host, running <code>nixos-container root-login $containername</code>, and executing:</p>
 <pre><code class="language-sh">cd /var/garuda/docker-compose-runner/$name/ # replace $name with the actual docker-compose.yml or autocomplete via tab
 sudo docker compose pull
 sudo docker compose up -d

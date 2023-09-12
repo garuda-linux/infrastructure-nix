@@ -172,28 +172,29 @@
                         <h2 id="general-structure"><a class="header" href="#general-structure">General structure</a></h2>
 <p>A general overview of the folder structure can be found below:</p>
 <pre><code class="language-sh">├── assets
-├── devshell
 ├── docker-compose
-│   ├── all-in-one
-│   ├── github-runner
-│   └── proxied
+│   ├── all-in-one
+│   ├── github-runner
+│   └── proxied
 ├── docs
+│   ├── hosts
+│   └── theme
 ├── home-manager
 ├── host_vars
-│   ├── garuda-build
-│   ├── garuda-mail
-│   └── immortalis
+│   ├── garuda-build
+│   ├── garuda-mail
+│   └── immortalis
 ├── nixos
-│   ├── hosts
-│   │   ├── garuda-build
-│   │   ├── garuda-mail
-│   │   └── immortalis
-│   ├── modules
-│   │   └── static
-│   └── services
-│       ├── chaotic
-│       ├── docker-compose-runner
-│       └── monitoring
+│   ├── hosts
+│   │   ├── garuda-build
+│   │   ├── garuda-mail
+│   │   └── immortalis
+│   ├── modules
+│   │   └── static
+│   └── services
+│       ├── chaotic
+│       ├── docker-compose-runner
+│       └── monitoring
 ├── playbooks
 ├── scripts
 └── secrets
@@ -207,11 +208,11 @@ ansible-vault encrypt secrets/pathtofile
 <p>Further information on <code>ansible-vault</code> can be found in its <a href="https://docs.ansible.com/ansible/latest/vault_guide/index.html">documentation</a>.
 It is important to keep the <code>secrets</code> directory in the latest state before deploying a new configuration as misconfigurations might happen otherwise.</p>
 <h2 id="linting-and-formatting"><a class="header" href="#linting-and-formatting">Linting and formatting</a></h2>
-<p>We utilize <a href="https://github.com/cachix/pre-commit-hooks.nix">pre-commit-hooks</a> to automatically set up the pre-commit-hook with all the tools once <code>nix-shell</code> is run for the first time. Checks can then be executed by running either</p>
+<p>We utilize <a href="https://github.com/cachix/pre-commit-hooks.nix">pre-commit-hooks</a> to automatically set up the pre-commit-hook with all the tools once <code>nix-shell</code> or <code>nix develop</code> is run for the first time. Checks can then be executed by running one of the following configs:</p>
 <pre><code class="language-sh">nix flake check # checks flake outputs and runs pre-commit at the end
 pre-commit run --all-files # only runs the pre-commit tools on all files
 </code></pre>
-<p>Its configuration can be found in the <code>devshell</code> folder (<a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/devshell/flake-module.nix?ref_type=heads#L110">click me</a>). At the time of writing, the following tools are being run:</p>
+<p>Its configuration can be found in the <code>flake.nix</code> file. (<a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/flake.nix">click me</a>). At the time of writing, the following tools are being run:</p>
 <ul>
 <li><a href="https://github.com/rhysd/actionlint">actionlint</a></li>
 <li><a href="https://github.com/ansible/ansible-lint">ansible-lint</a></li>
@@ -220,20 +221,19 @@ pre-commit run --all-files # only runs the pre-commit tools on all files
 <li><a href="https://github.com/oxalica/nil">nil</a></li>
 <li><a href="https://github.com/nix-community/nixpkgs-fmt">nixpkgs-fmt</a></li>
 <li><a href="https://prettier.io/">prettier</a></li>
-<li><a href="https://github.com/koalaman/shellcheck">shellcheck</a></li>
-<li><a href="https://github.com/mvdan/sh">shfmt</a></li>
 <li><a href="https://github.com/nerdypepper/statix">statix</a></li>
 <li><a href="https://github.com/adrienverge/yamllint">yamllint</a></li>
 </ul>
-<p>It is recommended to run <code>pre-commit run --all-files</code> before commiting any files. Then use <code>cz commit</code> to generate a <code>commitizen</code> complying commit message.</p>
-<h2 id="ci-tooling"><a class="header" href="#ci-tooling">CI tooling</a></h2>
-<p>We have using pull/push based mirroring for this git repository. This allows easy access to Renovate without having to run a custom instance mirroring changes to both Github and GitLab. The following tasks have been automated as of now:</p>
+<p>It is recommended to run <code>pre-commit run --all-files</code> before committing any files. Then use <code>cz commit</code> to generate a <code>commitizen</code> complying commit message.</p>
+<h2 id="cicd"><a class="header" href="#cicd">CI/CD</a></h2>
+<p>We have used pull-/push-based mirroring for this git repository. This allows easy access to Renovate without having to run a custom instance mirroring changes to both GitHub and GitLab. The following tasks have been automated as of now:</p>
 <ul>
 <li><code>nix flake check</code> runs for every labeled PR and commit on main.</li>
 <li><a href="https://renovatebot.com/">Renovate</a> periodically checks <code>docker-compose.yml</code> and other supported files for version updates. It has a <a href="https://github.com/garuda-linux/infrastructure-nix/issues/5">dependency dashboard</a> as well as the <a href="https://developer.mend.io/github/garuda-linux/infrastructure-nix">developer interface</a> to check logs of individual runs. Minor updates appear as grouped PRs while major updates are separated from those. Note that this only applies to the GitHub side.</li>
+<li>Deployment of our mdBook-based documentation to GitHub pages.</li>
 </ul>
 <h2 id="monitoring"><a class="header" href="#monitoring">Monitoring</a></h2>
-<p>Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends. The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations. Might switch to Prometheus/Grafana/Loki stack in the future. We used to set up children -&gt; parent streaming in the past, though after transitioning to one big host this didn't really make sense anymore. Instead, up to 10GB of data gets stored on individual hosts. While Netdata agents do have their own dashboard, the <a href="https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes">Dashboard provided by Netdata</a> is far superior and allows a better insight, eg. by offering the functions feature. Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its <a href="https://learn.netdata.cloud/">documentation</a>. To access the previously linked dashboard, use <code>team@garudalinux.org</code> as login, the login will be completed after opening the link sent here.</p>
+<p>Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends. The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations. Might switch to the Prometheus/Grafana/Loki stack in the future. We used to set up children -&gt; parent streaming in the past, though after transitioning to one big host this didn't make sense anymore. Instead, up to 10GB of data gets stored on individual hosts. While Netdata agents do have their dashboard, the <a href="https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes">Dashboard provided by Netdata</a> is far superior and allows a better insight, eg. by offering the functions feature. Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its <a href="https://learn.netdata.cloud/">documentation</a>. To access the previously linked dashboard, use <code>team@garudalinux.org</code> as login, the login will be completed after opening the link sent here.</p>
 
                     </main>
 
