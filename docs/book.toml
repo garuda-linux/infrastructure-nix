@@ -7,6 +7,8 @@ src = "src"
 title = "Garuda's infra documentation"
 
 [output.html]
-default-theme = "dark"
+cname = "docs.garudalinux.net"
+default-theme = "navy"
 git-repository-icon = "fa-code-fork"
 git-repository-url = "https://github.com/garuda-linux/infrastructure-nix"
+site-url = "https://docs.garudalinux.net"
