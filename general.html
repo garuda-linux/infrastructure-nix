@@ -1,0 +1,288 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js dark">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>General information - Garuda&#x27;s infra documentation</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Contains the documentation for the Garuda Linux infrastructure">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "dark";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('dark')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="general.html" class="active"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="hosts.html"><strong aria-hidden="true">4.</strong> Hosts</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="hosts/immortalis.html"><strong aria-hidden="true">4.1.</strong> immortalis</a></li><li class="chapter-item expanded "><a href="hosts/garuda-mail.html"><strong aria-hidden="true">4.2.</strong> garuda-mail</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Garuda&#x27;s infra documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/garuda-linux/infrastructure-nix" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-code-fork"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2 id="general-structure"><a class="header" href="#general-structure">General structure</a></h2>
+<p>A general overview of the folder structure can be found below:</p>
+<pre><code class="language-sh">├── assets
+├── devshell
+├── docker-compose
+│   ├── all-in-one
+│   ├── github-runner
+│   └── proxied
+├── docs
+├── home-manager
+├── host_vars
+│   ├── garuda-build
+│   ├── garuda-mail
+│   └── immortalis
+├── nixos
+│   ├── hosts
+│   │   ├── garuda-build
+│   │   ├── garuda-mail
+│   │   └── immortalis
+│   ├── modules
+│   │   └── static
+│   └── services
+│       ├── chaotic
+│       ├── docker-compose-runner
+│       └── monitoring
+├── playbooks
+├── scripts
+└── secrets
+</code></pre>
+<h2 id="secrets"><a class="header" href="#secrets">Secrets</a></h2>
+<p>Secrets are managed via a custom Git submodule that contains <code>ansible-vault</code> encrypted files as well as a custom NixOS module <code>garuda-lib</code> which makes them available to our services. The submodule is available in the <code>secrets</code> directory. To view or edit any of these files, one can use the following commands:</p>
+<pre><code class="language-sh">ansible-vault decrypt secrets/pathtofile
+ansible-vault edit secrets/pathtofile
+ansible-vault encrypt secrets/pathtofile
+</code></pre>
+<p>Further information on <code>ansible-vault</code> can be found in its <a href="https://docs.ansible.com/ansible/latest/vault_guide/index.html">documentation</a>.
+It is important to keep the <code>secrets</code> directory in the latest state before deploying a new configuration as misconfigurations might happen otherwise.</p>
+<h2 id="linting-and-formatting"><a class="header" href="#linting-and-formatting">Linting and formatting</a></h2>
+<p>We utilize <a href="https://github.com/cachix/pre-commit-hooks.nix">pre-commit-hooks</a> to automatically set up the pre-commit-hook with all the tools once <code>nix-shell</code> is run for the first time. Checks can then be executed by running either</p>
+<pre><code class="language-sh">nix flake check # checks flake outputs and runs pre-commit at the end
+pre-commit run --all-files # only runs the pre-commit tools on all files
+</code></pre>
+<p>Its configuration can be found in the <code>devshell</code> folder (<a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/devshell/flake-module.nix?ref_type=heads#L110">click me</a>). At the time of writing, the following tools are being run:</p>
+<ul>
+<li><a href="https://github.com/rhysd/actionlint">actionlint</a></li>
+<li><a href="https://github.com/ansible/ansible-lint">ansible-lint</a></li>
+<li><a href="https://github.com/commitizen-tools/commitizen">commitizen</a></li>
+<li><a href="https://github.com/astro/deadnix">deadnix</a></li>
+<li><a href="https://github.com/oxalica/nil">nil</a></li>
+<li><a href="https://github.com/nix-community/nixpkgs-fmt">nixpkgs-fmt</a></li>
+<li><a href="https://prettier.io/">prettier</a></li>
+<li><a href="https://github.com/koalaman/shellcheck">shellcheck</a></li>
+<li><a href="https://github.com/mvdan/sh">shfmt</a></li>
+<li><a href="https://github.com/nerdypepper/statix">statix</a></li>
+<li><a href="https://github.com/adrienverge/yamllint">yamllint</a></li>
+</ul>
+<p>It is recommended to run <code>pre-commit run --all-files</code> before commiting any files. Then use <code>cz commit</code> to generate a <code>commitizen</code> complying commit message.</p>
+<h2 id="ci-tooling"><a class="header" href="#ci-tooling">CI tooling</a></h2>
+<p>We have using pull/push based mirroring for this git repository. This allows easy access to Renovate without having to run a custom instance mirroring changes to both Github and GitLab. The following tasks have been automated as of now:</p>
+<ul>
+<li><code>nix flake check</code> runs for every labeled PR and commit on main.</li>
+<li><a href="https://renovatebot.com/">Renovate</a> periodically checks <code>docker-compose.yml</code> and other supported files for version updates. It has a <a href="https://github.com/garuda-linux/infrastructure-nix/issues/5">dependency dashboard</a> as well as the <a href="https://developer.mend.io/github/garuda-linux/infrastructure-nix">developer interface</a> to check logs of individual runs. Minor updates appear as grouped PRs while major updates are separated from those. Note that this only applies to the GitHub side.</li>
+</ul>
+<h2 id="monitoring"><a class="header" href="#monitoring">Monitoring</a></h2>
+<p>Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends. The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations. Might switch to Prometheus/Grafana/Loki stack in the future. We used to set up children -&gt; parent streaming in the past, though after transitioning to one big host this didn't really make sense anymore. Instead, up to 10GB of data gets stored on individual hosts. While Netdata agents do have their own dashboard, the <a href="https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes">Dashboard provided by Netdata</a> is far superior and allows a better insight, eg. by offering the functions feature. Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its <a href="https://learn.netdata.cloud/">documentation</a>. To access the previously linked dashboard, use <code>team@garudalinux.org</code> as login, the login will be completed after opening the link sent here.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="intro.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="common.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="intro.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="common.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
