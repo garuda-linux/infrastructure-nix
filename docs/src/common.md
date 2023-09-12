@@ -4,7 +4,7 @@
 
 Sometimes Discourse needs its container to build rebuild via cli rather than the webinterface. This can be done with:
 
-```
+```sh
 ssh -p 224 $user@116.202.208.112
 cd /var/discourse
 sudo ./launcher rebuild app
@@ -14,7 +14,7 @@ sudo ./launcher rebuild app
 
 To build Garuda ISO, one needs to connect to the `iso-runner` container and execute the `buildiso` command, which opens a shell containing the needed environment:
 
-```
+```sh
 ssh -p 227 $user@116.202.208.112 # if one ran nix develop before, this can be skipped
 buildiso
 buildiso -i # updates the iso-profiles repo
@@ -28,7 +28,7 @@ After the build process is finished, builds can be found on [iso.builds.garudali
 
 We are assuming all ISOs have been tested for functionality before executing any of those commands.
 
-```
+```sh
 ssh -p 227 $user@116.202.208.112
 buildall # builds all ISO provided in the buildall command
 deployiso -FS # sync to Cloudflare R2 and Sourceforge
@@ -41,7 +41,7 @@ deployiso -FSRd # oneliner for the above-given commands
 
 One needs to have the [infra-nix](https://gitlab.com/garuda-linux/infra-nix) repo cloned locally. Then proceed by updating the `flake.lock` file, pushing it to the server & building the configurations:
 
-```
+```sh
 nix flake update
 ansible-playbook garuda.yml -l $servername # Eg. immortalis for the Hetzner host
 deploy # Skip using above command and use this one in case nix develop was used
@@ -49,7 +49,7 @@ deploy # Skip using above command and use this one in case nix develop was used
 
 Then you can either apply it via Ansible or connect to the host to view more details about the process while it runs:
 
-```
+```sh
 ansible-playbook apply.yml -l $servername # Ansible
 
 apply # Nix develop shell
@@ -64,14 +64,14 @@ Keep in mind that this will restart every service whose files changed since the 
 
 Most system configurations are contained in individual Nix files in the `nix` directory of this repo. This means changing anything must not be done manually but by editing the corresponding file and pushing/applying the configuration afterward.
 
-```
+```sh
 ansible-playbook garuda.yml -l $servername # Eg. immortalis for the Hetzner host
 deploy # In case nix develop is used
 ```
 
 As with the system update, one can either apply via Ansible or manually:
 
-```
+```sh
 ansible-playbook apply.yml -l $servername # Ansible
 
 apply # Nix develop shell
@@ -97,7 +97,7 @@ If configurations of services running in Docker containers need to be altered, o
 
 Docker containers sometimes use the `latest` tag in case no current tag is available or in case of services like Piped and Searx, where it is often crucial to have the latest build to bypass Google's restrictions. Containers using the `latest` tag are automatically updated via [watchtower](https://containrrr.dev/watchtower/) on a daily basis. The remaining ones can be updated changing its version in the corresponding `docker-compose.yml` and then running `deploy` & `apply`. If containers are to be updated manually, this can be achieved by connecting to the host, running `nixos-container root-login $containername` and executing:
 
-```
+```sh
 cd /var/garuda/docker-compose-runner/$name/ # replace $name with the actual docker-compose.yml or autocomplete via tab
 sudo docker compose pull
 sudo docker compose up -d
@@ -113,7 +113,7 @@ Sometimes it is needed to rotate the available IPv6 addresses to solve the curre
 
 To check whether backups to Hetzner are still working as expected, connect to the server and execute the following:
 
-```
+```sh
 systemctl status borgbackup-job-backupToHetzner
 ```
 
@@ -123,7 +123,7 @@ This should yield a successful unit state. The only exception is having an exit 
 
 This needs to be done by updating the flake input (git repo URL of the website) [src-garuda-website](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/flake.nix?ref_type=heads#L60) or [src-chaotic-toolbox](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/flake.nix?ref_type=heads#L44):
 
-```
+```sh
 cd nix
 nix flake lock --update-input src-garuda-website # website
 nix flake lock --update-input src-chaotic-toolbox # toolbox
@@ -135,7 +135,7 @@ After that deploy as usual by running `deploy` and `apply`. The commit and corre
 
 Our startpage consists of a simple [homer](https://github.com/bastienwirtz/homer) deployment. Its configuration is stored in the [startpage](https://gitlab.com/garuda-linux/website/startpage) repo, which gets cloned to the docker-compose.yml's directory to serve the files. In order, updating is currently done manually after pushing the changes to the repo (might automate this soon via systemd timer!):
 
-```
+```sh
 ssh -p 225 $user@116.202.208.112
 cd /var/garuda/docker-compose-runner/all-in-one/startpage
 git pull

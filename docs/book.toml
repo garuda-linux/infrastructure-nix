@@ -1,0 +1,6 @@
+[book]
+authors = ["dr460nf1r3", "TNE"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Garuda's infra documentation"
