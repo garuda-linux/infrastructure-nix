@@ -9,9 +9,9 @@ In case of issues, the [documentation](https://nixos-mailserver.readthedocs.io/e
 
 The mail server details are as follows:
 
-- host: mail.garudalinux.net
-- incoming: IMAP via 993
-- outgoing: SMTP via 587/465
+- host: `mail.garudalinux.net`
+- incoming: IMAP via `993`
+- outgoing: SMTP via `587/465`
 
 ### Backups
 

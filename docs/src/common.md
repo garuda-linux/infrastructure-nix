@@ -91,7 +91,7 @@ Adding users needs to be done in `users.nix`:
 
 ### Changing Docker configurations
 
-If configurations of services running in Docker containers need to be altered, one needs to edit the corresponding `docker-compose.yml` (`./nix/docker-compose/$name`) file or .env file in the `secrets` directory (see the secrets section for details on that topic). The deployment is done the same way as with normal system configuration.
+If configurations of services running in Docker containers need to be altered, one needs to edit the corresponding `docker-compose.yml` (`./nix/docker-compose/$name`) file or `.env` file in the `secrets` directory (see the secrets section for details on that topic). The deployment is done the same way as with normal system configuration.
 
 ### Updating Docker containers
 
