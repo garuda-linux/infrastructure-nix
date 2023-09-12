@@ -1,6 +1,6 @@
 # Garuda Linux server configurations
 
-[![built with nix](https://img.shields.io/static/v1?logo=nixos&logoColor=white&label=&message=Built%20with%20Nix&color=41439a)](https://builtwithnix.org) [![run nix flake check](https://github.com/garuda-linux/infrastructure-nix/actions/workflows/flake_check.yml/badge.svg?branch=main)](https://github.com/garuda-linux/infrastructure-nix/actions/workflows/flake_check.yml)
+[![built with nix](https://img.shields.io/static/v1?logo=nixos&logoColor=white&label=&message=Built%20with%20Nix&color=41439a)](https://builtwithnix.org) [![run nix flake check](https://github.com/garuda-linux/infrastructure-nix/actions/workflows/flake_check.yml/badge.svg?branch=main)](https://github.com/garuda-linux/infrastructure-nix/actions/workflows/flake_check.yml) [![deploy docs](https://github.com/garuda-linux/infrastructure-nix/actions/workflows/pages.yml/badge.svg)](https://github.com/garuda-linux/infrastructure-nix/actions/workflows/pages.yml)
 
 ## General information
 
@@ -16,23 +16,24 @@
 - [Host: garuda-mail](./hosts/garuda-mail.md)
 - [Host: immortalis](./hosts/immortalis.md)
 
-## Devshell and tooling
+## Devshell and how to enter it
 
 This NixOS flake provides a [devshell](https://github.com/numtide/devshell) which contains all deployment tools as well as handy aliases for common tasks.
-The only requirement for using it is having the Nix package manager available. It can be installed on various distributions via the package manager or the following script:
+The only requirement for using it is having the Nix package manager available. It can be installed on various distributions via the package manager or the following script ([click me for more information](https://zero-to-nix.com/start/install)):
 
 ```sh
-sh <(curl -L https://nixos.org/nix/install) --daemon
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix -o nix-install.sh # Check its content afterwards
+sh ./nix-install.sh install --diagnostic-endpoint=""
 ```
 
-After that, the shell can be invoked as follows:
+This installs the Nix packages with flakes already pre-enabled. After that, the shell can be invoked as follows:
 
 ```sh
-nix-shell # Legacy, non-flakes way
 nix develop # The intended way to use the devshell
+nix-shell # Legacy, non-flakes way if flakes are not available for some reason
 ```
 
-To enable flakes and the direct usage of `nix develop` follow this [wiki article](https://nixos.wiki/wiki/Flakes#Other_Distros:_Without_Home-Manager). After running either command, new commands are available to perform the following actions:
+This also sets up pre-commit-hooks and shows the currently implemented tasks, which can be executed by running the command.
 
 ```sh
 [infra-nix]
