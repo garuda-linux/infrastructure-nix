@@ -88,28 +88,183 @@
   };
 
   outputs =
-    { flake-parts
+    { devshell
+    , flake-parts
+    , nixpkgs
     , pre-commit-hooks
     , self
     , ...
-    } @ inputs:
-    flake-parts.lib.mkFlake { inherit inputs; }
-      {
-        imports = [
-          ./devshell/flake-module.nix
-          ./nixos/flake-module.nix
-          inputs.devshell.flakeModule
-          inputs.pre-commit-hooks.flakeModule
-        ];
+    } @ inp:
+    let
+      inputs = inp;
+      perSystem =
+        { pkgs
+        , system
+        , ...
+        }: {
+          apps.default = self.outputs.devShells.${system}.default.flakeApp;
 
-        systems = [ "x86_64-linux" "aarch64-linux" ];
+          checks.pre-commit-check = pre-commit-hooks.lib.${system}.run {
+            hooks = {
+              actionlint.enable = true;
+              ansible-lint.enable = true;
+              commitizen.enable = true;
+              deadnix.enable = true;
+              nil.enable = true;
+              nixpkgs-fmt.enable = true;
+              prettier.enable = true;
+              statix.enable = true;
+              yamllint.enable = true;
+            };
+            src = ./.;
+          };
 
-        perSystem = { pkgs, system, ... }: {
-          # Enter devshell via "nix run .#apps.x86_64-linux.devshell"
-          apps.devshell = self.outputs.devShells.${system}.default.flakeApp;
+          devShells =
+            let
+              buildiso = ''
+                if ! command -v docker &>/dev/null; then
+                  echo "This command requires docker to be installed. Please install Docker and try again."
+                  exit 1
+                fi
+                if ! docker images | grep buildiso &>/dev/null; then 
+                  docker build ${inputs.src-buildiso} -t buildiso
+                fi
+                docker run --rm -it --privileged --name buildiso \
+                       -v "./buildiso/buildiso:/var/cache/garuda-tools/garuda-chroots/buildiso" \
+                       -v "./buildiso/cron:/var/spool/anacron" \
+                       -v "./buildiso/pkg:/var/cache/pacman/pkg/" \
+                       -v "./buildiso/iso:/var/cache/garuda-tools/garuda-builds/iso/" \
+                       -v "./buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
+                       buildiso /bin/bash
+              '';
+              immortalis = "116.202.208.112";
+              makeDevshell = import "${inp.devshell}/modules" pkgs;
+              mkShell = config: (makeDevshell {
+                configuration = {
+                  inherit config;
+                  imports = [ ];
+                };
+              }).shell;
+            in
+            rec {
+              default = infra-nix-shell;
+              infra-nix-shell = mkShell {
+                devshell = {
+                  name = "infra-nix";
+                  startup = {
+                    preCommitHooks.text = self.checks.${system}.pre-commit-check.shellHook;
+                    dr460nixedEnv.text = ''
+                      export NIX_PATH=nixpkgs=${nixpkgs}
+                    '';
+                  };
+                };
+                commands = [
+                  { package = "ansible"; }
+                  { package = "commitizen"; }
+                  { package = "manix"; }
+                  { package = "pre-commit"; }
+                  { package = "yamlfix"; }
+                  {
+                    name = "apply";
+                    help = "Applies the infra-nix configuration pushed to the servers";
+                    command = ''
+                      ansible-playbook playbooks/apply.yml
+                    '';
+                  }
+                  {
+                    name = "clean";
+                    help = "Runs the garbage collection on the servers";
+                    command = ''
+                      ansible-playbook playbooks/garbage_collect.yml
+                    '';
+                  }
+                  {
+                    name = "deploy";
+                    help = "Deploys the local NixOS configuration to the servers";
+                    command = ''
+                      ansible-playbook playbooks/garuda.yml
+                    '';
+                  }
+                  {
+                    name = "update";
+                    help = "Performs a full system update on the servers bumping flake lock";
+                    command = ''
+                      ansible-playbook playbooks/system_update.yml
+                    '';
+                  }
+                  {
+                    name = "update-forum";
+                    help = "Updates the Discourse container of our forum";
+                    category = "infra-nix";
+                    command = ''
+                      # We are assuming the MixOS user is named the same as the one using it
+                      ssh -p224 ${immortalis} "cd /var/disourse; sudo ./launcher rebuild app"
+                    '';
+                  }
+                  {
+                    name = "buildiso-remote";
+                    help = "Spawns a buildiso shell on the iso-runner builder";
+                    category = "infra-nix";
+                    command = ''
+                      # We are assuming the NixOS user is named the same as the one using it
+                      ssh -p227 -t ${immortalis} "buildiso"
+                    '';
+                  }
+                  {
+                    name = "buildiso-local";
+                    help = "Spawns a local buildiso shell to build to ./buildiso (needs Docker)";
+                    category = "infra-nix";
+                    command = ''
+                      ${buildiso}
+                    '';
+                  }
+                  {
+                    name = "update-website";
+                    help = "Updates the locked website commit and deploys the changes";
+                    category = "infra-nix";
+                    command = ''
+                      nix flake lock --update-input src-garuda-website
+                      ansible-playbook playbooks/garuda.yml -l immortalis
+                      ansible-playbook playbooks/apply.yml -l immortalis
+                    '';
+                  }
+                  {
+                    name = "update-toolbox";
+                    help = "Updates the locked Chaotic toolbox commit and deploys the changes";
+                    category = "infra-nix";
+                    command = ''
+                      nix flake lock --update-input src-chaotic-toolbox
+                      ansible-playbook playbooks/garuda.yml -l immortalis
+                      ansible-playbook playbooks/apply.yml -l immortalis
+                    '';
+                  }
+                ];
+                motd = ''
+                  {202}🔨 Welcome to Garuda's infra-nix shell{reset} ❄️
+                  $(type -p menu &>/dev/null && menu)
+                '';
+              };
+            };
 
-          # Run nixpkgs-fmt via "nix fmt"
           formatter = pkgs.nixpkgs-fmt;
+
+          packages.docs = pkgs.runCommand "garuda-infra-docs"
+            { nativeBuildInputs = with pkgs; [ bash mdbook ]; }
+            ''
+              bash -c "errors=$(mdbook build -d $out ${./.}/docs |& grep ERROR)
+              if [ \"$errors\" ]; then
+                exit 1
+              fi"
+            '';
         };
-      };
+    in
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [
+        ./nixos/flake-module.nix
+        inputs.devshell.flakeModule
+        inputs.pre-commit-hooks.flakeModule
+      ];
+      systems = [ "x86_64-linux" "aarch64-linux" ];
+      inherit perSystem;
+    };
 }
