@@ -19,7 +19,7 @@
 ## Devshell and tooling
 
 This NixOS flake provides a [devshell](https://github.com/numtide/devshell) which contains all deployment tools as well as handy aliases for common tasks.
-The only requirement for using it is having the Nix package manager available and having flakes enabled. It can be installed on various distributions via the package manager or the following script:
+The only requirement for using it is having the Nix package manager available. It can be installed on various distributions via the package manager or the following script:
 
 ```sh
 sh <(curl -L https://nixos.org/nix/install) --daemon
@@ -32,7 +32,7 @@ nix-shell # Legacy, non-flakes way
 nix develop # The intended way to use the devshell
 ```
 
-To enable flakes and the direct usage of `nix develop` follow this [wiki article](https://nixos.wiki/wiki/Flakes#Other_Distros:_Without_Home-Manager). After running `nix develop`, new commands are available to perform the following actions:
+To enable flakes and the direct usage of `nix develop` follow this [wiki article](https://nixos.wiki/wiki/Flakes#Other_Distros:_Without_Home-Manager). After running either command, new commands are available to perform the following actions:
 
 ```sh
 [infra-nix]

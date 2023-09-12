@@ -16,8 +16,8 @@ jobs:
             experimental-features = nix-command flakes
           nix_path: nixpkgs=channel:nixos-unstable
       - name: Build documentation book
-        run: nix build -L --show-trace .#docs
-      - name: Deploy
+        run: nix build --accept-flake-config -L --show-trace .#docs
+      - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/main' }}
         with:

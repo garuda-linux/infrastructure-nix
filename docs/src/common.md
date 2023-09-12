@@ -30,7 +30,7 @@ We are assuming all ISOs have been tested for functionality before executing any
 
 ```sh
 ssh -p 227 $user@116.202.208.112
-buildall # builds all ISO provided in the buildall command
+build all # builds all ISO provided in the buildall command
 deployiso -FS # sync to Cloudflare R2 and Sourceforge
 deployiso -FSR # sync to Cloudflare R2 and Sourceforge while also updating the latest (stable, non-nightly) release
 deployiso -Sd # to delete the old ISOs on Sourceforge once they aren't needed anymore
@@ -44,7 +44,7 @@ One needs to have the [infra-nix](https://gitlab.com/garuda-linux/infra-nix) rep
 ```sh
 nix flake update
 ansible-playbook garuda.yml -l $servername # Eg. immortalis for the Hetzner host
-deploy # Skip using above command and use this one in case nix develop was used
+deploy # Skip using the above command and use this one in case nix develop was used
 ```
 
 Then you can either apply it via Ansible or connect to the host to view more details about the process while it runs:
@@ -54,7 +54,7 @@ ansible-playbook apply.yml -l $servername # Ansible
 
 apply # Nix develop shell
 
-ssh -p 666 $user@116.202.208.112 # Manually, examplary on immortalis
+ssh -p 666 $user@116.202.208.112 # Manually, exemplary on immortalis
 sudo nixos-rebuild switch
 ```
 
@@ -95,7 +95,7 @@ If configurations of services running in Docker containers need to be altered, o
 
 ### Updating Docker containers
 
-Docker containers sometimes use the `latest` tag in case no current tag is available or in case of services like Piped and Searx, where it is often crucial to have the latest build to bypass Google's restrictions. Containers using the `latest` tag are automatically updated via [watchtower](https://containrrr.dev/watchtower/) on a daily basis. The remaining ones can be updated changing its version in the corresponding `docker-compose.yml` and then running `deploy` & `apply`. If containers are to be updated manually, this can be achieved by connecting to the host, running `nixos-container root-login $containername` and executing:
+Docker containers sometimes use the `latest` tag in case no current tag is available or in the case of services like Piped and Searx, where it is often crucial to have the latest build to bypass Google's restrictions. Containers using the `latest` tag are automatically updated via [watchtower](https://containrrr.dev/watchtower/) daily. The remaining ones can be updated by changing their version in the corresponding `docker-compose.yml` and then running `deploy` & `apply`. If containers are to be updated manually, this can be achieved by connecting to the host, running `nixos-container root-login $containername`, and executing:
 
 ```sh
 cd /var/garuda/docker-compose-runner/$name/ # replace $name with the actual docker-compose.yml or autocomplete via tab

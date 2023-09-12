@@ -4,28 +4,29 @@ A general overview of the folder structure can be found below:
 
 ```sh
 ├── assets
-├── devshell
 ├── docker-compose
-│   ├── all-in-one
-│   ├── github-runner
-│   └── proxied
+│   ├── all-in-one
+│   ├── github-runner
+│   └── proxied
 ├── docs
+│   ├── hosts
+│   └── theme
 ├── home-manager
 ├── host_vars
-│   ├── garuda-build
-│   ├── garuda-mail
-│   └── immortalis
+│   ├── garuda-build
+│   ├── garuda-mail
+│   └── immortalis
 ├── nixos
-│   ├── hosts
-│   │   ├── garuda-build
-│   │   ├── garuda-mail
-│   │   └── immortalis
-│   ├── modules
-│   │   └── static
-│   └── services
-│       ├── chaotic
-│       ├── docker-compose-runner
-│       └── monitoring
+│   ├── hosts
+│   │   ├── garuda-build
+│   │   ├── garuda-mail
+│   │   └── immortalis
+│   ├── modules
+│   │   └── static
+│   └── services
+│       ├── chaotic
+│       ├── docker-compose-runner
+│       └── monitoring
 ├── playbooks
 ├── scripts
 └── secrets
@@ -46,14 +47,14 @@ It is important to keep the `secrets` directory in the latest state before deplo
 
 ## Linting and formatting
 
-We utilize [pre-commit-hooks](https://github.com/cachix/pre-commit-hooks.nix) to automatically set up the pre-commit-hook with all the tools once `nix-shell` is run for the first time. Checks can then be executed by running either
+We utilize [pre-commit-hooks](https://github.com/cachix/pre-commit-hooks.nix) to automatically set up the pre-commit-hook with all the tools once `nix-shell` or `nix develop` is run for the first time. Checks can then be executed by running one of the following configs:
 
 ```sh
 nix flake check # checks flake outputs and runs pre-commit at the end
 pre-commit run --all-files # only runs the pre-commit tools on all files
 ```
 
-Its configuration can be found in the `devshell` folder ([click me](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/devshell/flake-module.nix?ref_type=heads#L110)). At the time of writing, the following tools are being run:
+Its configuration can be found in the `flake.nix` file. ([click me](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/flake.nix)). At the time of writing, the following tools are being run:
 
 - [actionlint](https://github.com/rhysd/actionlint)
 - [ansible-lint](https://github.com/ansible/ansible-lint)
@@ -62,20 +63,19 @@ Its configuration can be found in the `devshell` folder ([click me](https://gitl
 - [nil](https://github.com/oxalica/nil)
 - [nixpkgs-fmt](https://github.com/nix-community/nixpkgs-fmt)
 - [prettier](https://prettier.io/)
-- [shellcheck](https://github.com/koalaman/shellcheck)
-- [shfmt](https://github.com/mvdan/sh)
 - [statix](https://github.com/nerdypepper/statix)
 - [yamllint](https://github.com/adrienverge/yamllint)
 
-It is recommended to run `pre-commit run --all-files` before commiting any files. Then use `cz commit` to generate a `commitizen` complying commit message.
+It is recommended to run `pre-commit run --all-files` before committing any files. Then use `cz commit` to generate a `commitizen` complying commit message.
 
-## CI tooling
+## CI/CD
 
-We have using pull/push based mirroring for this git repository. This allows easy access to Renovate without having to run a custom instance mirroring changes to both Github and GitLab. The following tasks have been automated as of now:
+We have used pull-/push-based mirroring for this git repository. This allows easy access to Renovate without having to run a custom instance mirroring changes to both GitHub and GitLab. The following tasks have been automated as of now:
 
 - `nix flake check` runs for every labeled PR and commit on main.
 - [Renovate](https://renovatebot.com/) periodically checks `docker-compose.yml` and other supported files for version updates. It has a [dependency dashboard](https://github.com/garuda-linux/infrastructure-nix/issues/5) as well as the [developer interface](https://developer.mend.io/github/garuda-linux/infrastructure-nix) to check logs of individual runs. Minor updates appear as grouped PRs while major updates are separated from those. Note that this only applies to the GitHub side.
+- Deployment of our mdBook-based documentation to GitHub pages.
 
 ## Monitoring
 
-Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends. The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations. Might switch to Prometheus/Grafana/Loki stack in the future. We used to set up children -> parent streaming in the past, though after transitioning to one big host this didn't really make sense anymore. Instead, up to 10GB of data gets stored on individual hosts. While Netdata agents do have their own dashboard, the [Dashboard provided by Netdata](https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes) is far superior and allows a better insight, eg. by offering the functions feature. Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its [documentation](https://learn.netdata.cloud/). To access the previously linked dashboard, use `team@garudalinux.org` as login, the login will be completed after opening the link sent here.
+Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends. The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations. Might switch to the Prometheus/Grafana/Loki stack in the future. We used to set up children -> parent streaming in the past, though after transitioning to one big host this didn't make sense anymore. Instead, up to 10GB of data gets stored on individual hosts. While Netdata agents do have their dashboard, the [Dashboard provided by Netdata](https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes) is far superior and allows a better insight, eg. by offering the functions feature. Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its [documentation](https://learn.netdata.cloud/). To access the previously linked dashboard, use `team@garudalinux.org` as login, the login will be completed after opening the link sent here.

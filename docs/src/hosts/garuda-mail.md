@@ -1,4 +1,4 @@
-## Garuda-mail (Netcup VPS)
+## garuda-mail (Netcup VPS)
 
 ### General
 
