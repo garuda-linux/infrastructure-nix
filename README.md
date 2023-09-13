@@ -35,13 +35,13 @@ nix-shell # Legacy, non-flakes way if flakes are not available for some reason
 
 This also sets up pre-commit-hooks and shows the currently implemented tasks, which can be executed by running the command.
 
-```sh
+```
 [infra-nix]
 
 ansible-core    - Radically simple IT automation
-apply           - Applies the infra-nix configuration pushed to the servers
+apply           - Applies the infra-nix configuration previously deployed to the servers
 buildiso-local  - Spawns a local buildiso shell to build to ./buildiso (needs Docker)
-buildiso-remote - Spawn a buildiso shell on the iso-runner builder
+buildiso-remote - Spawns a buildiso shell on the iso-runner builder
 clean           - Runs the garbage collection on the servers
 deploy          - Deploys the local NixOS configuration to the servers
 update          - Performs a full system update on the servers by bumping flake lock

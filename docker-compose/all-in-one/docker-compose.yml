@@ -172,6 +172,8 @@ services:
     volumes:
       - ./matterbridge/matterbridge.toml:/etc/matterbridge/matterbridge.toml:ro
     restart: always
+
+  # Makes world content available for our Lemmy instance
   lemmy_seeder:
     image: nowsci/lcs:20230901035206
     container_name: lemmy_lcs
