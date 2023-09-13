@@ -84,7 +84,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="hosts.html"><strong aria-hidden="true">4.</strong> Hosts</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="hosts/immortalis.html"><strong aria-hidden="true">4.1.</strong> immortalis</a></li><li class="chapter-item expanded "><a href="hosts/garuda-mail.html"><strong aria-hidden="true">4.2.</strong> garuda-mail</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="hosts/immortalis.html"><strong aria-hidden="true">5.</strong> immortalis</a></li><li class="chapter-item expanded "><a href="hosts/garuda-mail.html"><strong aria-hidden="true">6.</strong> garuda-mail</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><div><strong aria-hidden="true">7.</strong> Bitwarden</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Chaotic-AUR </div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> Discourse</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Firefox syncserver</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Invidious (Youtube frontend)</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> Lemmy</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> Lingva</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> Mastodon</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">15.</strong> Matrix</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">16.</strong> Nextcloud</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">17.</strong> Piped</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">18.</strong> PrivateBin</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">19.</strong> Searx</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">20.</strong> TheLounge</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">21.</strong> Whoogle</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">22.</strong> WikiJs</div></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><div><strong aria-hidden="true">23.</strong> Privacy policy</div></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -197,12 +197,12 @@ sh ./nix-install.sh install --diagnostic-endpoint=&quot;&quot;
 nix-shell # Legacy, non-flakes way if flakes are not available for some reason
 </code></pre>
 <p>This also sets up pre-commit-hooks and shows the currently implemented tasks, which can be executed by running the command.</p>
-<pre><code class="language-sh">[infra-nix]
+<pre><code>[infra-nix]
 
 ansible-core    - Radically simple IT automation
-apply           - Applies the infra-nix configuration pushed to the servers
+apply           - Applies the infra-nix configuration previously deployed to the servers
 buildiso-local  - Spawns a local buildiso shell to build to ./buildiso (needs Docker)
-buildiso-remote - Spawn a buildiso shell on the iso-runner builder
+buildiso-remote - Spawns a buildiso shell on the iso-runner builder
 clean           - Runs the garbage collection on the servers
 deploy          - Deploys the local NixOS configuration to the servers
 update          - Performs a full system update on the servers by bumping flake lock
@@ -240,14 +240,20 @@ update-website  - Updates the locked website commit and deploys the changes
 ├── scripts
 └── secrets
 </code></pre>
-<h2 id="secrets"><a class="header" href="#secrets">Secrets</a></h2>
-<p>Secrets are managed via a custom Git submodule that contains <code>ansible-vault</code> encrypted files as well as a custom NixOS module <code>garuda-lib</code> which makes them available to our services. The submodule is available in the <code>secrets</code> directory. To view or edit any of these files, one can use the following commands:</p>
+<h2 id="secrets-in-this-repository"><a class="header" href="#secrets-in-this-repository">Secrets in this repository</a></h2>
+<p>Secrets are managed via a custom Git submodule that contains <code>ansible-vault</code> encrypted files as well as a custom NixOS module <code>garuda-lib</code> which makes them available to our services. The submodule is available in the <code>secrets</code> directory once it has been set up for the first time. It can be initialized by running:</p>
+<pre><code>git submodule init
+git submodule update
+</code></pre>
+<p>To view or edit any of these files, one can use the following commands:</p>
 <pre><code class="language-sh">ansible-vault decrypt secrets/pathtofile
 ansible-vault edit secrets/pathtofile
 ansible-vault encrypt secrets/pathtofile
 </code></pre>
 <p>Further information on <code>ansible-vault</code> can be found in its <a href="https://docs.ansible.com/ansible/latest/vault_guide/index.html">documentation</a>.
 It is important to keep the <code>secrets</code> directory in the latest state before deploying a new configuration as misconfigurations might happen otherwise.</p>
+<h2 id="passwords-in-general"><a class="header" href="#passwords-in-general">Passwords in general</a></h2>
+<p>Our mission-critical passwords that maintainers and team members need to have access to are stored in our <a href="vault.garudalinux.org">Bitwarden instance</a>. After creating an account, maintainers need to be invited to the Garuda Linux organisation in order to access the stored credentials.</p>
 <h2 id="linting-and-formatting"><a class="header" href="#linting-and-formatting">Linting and formatting</a></h2>
 <p>We utilize <a href="https://github.com/cachix/pre-commit-hooks.nix">pre-commit-hooks</a> to automatically set up the pre-commit-hook with all the tools once <code>nix-shell</code> or <code>nix develop</code> is run for the first time. Checks can then be executed by running one of the following configs:</p>
 <pre><code class="language-sh">nix flake check # checks flake outputs and runs pre-commit at the end
@@ -265,14 +271,15 @@ pre-commit run --all-files # only runs the pre-commit tools on all files
 <li><a href="https://github.com/nerdypepper/statix">statix</a></li>
 <li><a href="https://github.com/adrienverge/yamllint">yamllint</a></li>
 </ul>
-<p>It is recommended to run <code>pre-commit run --all-files</code> before committing any files. Then use <code>cz commit</code> to generate a <code>commitizen</code> complying commit message.</p>
+<p>It is recommended to run <code>pre-commit run --all-files</code> before trying to commit changes. Then use <code>cz commit</code> to generate a <code>commitizen</code> complying commit message.</p>
 <h2 id="cicd"><a class="header" href="#cicd">CI/CD</a></h2>
-<p>We have used pull-/push-based mirroring for this git repository. This allows easy access to Renovate without having to run a custom instance mirroring changes to both GitHub and GitLab. The following tasks have been automated as of now:</p>
+<p>We have used pull-/push-based mirroring for this git repository, which allows easy access to Renovate without having to run a custom instance of it. The following tasks have been implemented as of now:</p>
 <ul>
 <li><code>nix flake check</code> runs for every labeled PR and commit on main.</li>
 <li><a href="https://renovatebot.com/">Renovate</a> periodically checks <code>docker-compose.yml</code> and other supported files for version updates. It has a <a href="https://github.com/garuda-linux/infrastructure-nix/issues/5">dependency dashboard</a> as well as the <a href="https://developer.mend.io/github/garuda-linux/infrastructure-nix">developer interface</a> to check logs of individual runs. Minor updates appear as grouped PRs while major updates are separated from those. Note that this only applies to the GitHub side.</li>
-<li>Deployment of our mdBook-based documentation to Cloudflare pages.</li>
+<li>Deployment of our <a href="https://github.com/rust-lang/mdBook">mdBook-based</a> documentation to Cloudflare pages.</li>
 </ul>
+<p>Workflows will generally only be executed if a relevant file has been changed, eg. <code>nix flake check</code> won't run if only the README was changed.</p>
 <h2 id="monitoring"><a class="header" href="#monitoring">Monitoring</a></h2>
 <p>Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends. The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations. Might switch to the Prometheus/Grafana/Loki stack in the future. We used to set up children -&gt; parent streaming in the past, though after transitioning to one big host this didn't make sense anymore. Instead, up to 10GB of data gets stored on individual hosts. While Netdata agents do have their dashboard, the <a href="https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes">Dashboard provided by Netdata</a> is far superior and allows a better insight, eg. by offering the functions feature. Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its <a href="https://learn.netdata.cloud/">documentation</a>. To access the previously linked dashboard, use <code>team@garudalinux.org</code> as login, the login will be completed after opening the link sent here.</p>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="common-maintenance-tasks"><a class="header" href="#common-maintenance-tasks">Common maintenance tasks</a></h2>
@@ -366,11 +373,69 @@ cd /var/garuda/docker-compose-runner/all-in-one/startpage
 git pull
 sudo docker restart homer
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="hosts"><a class="header" href="#hosts">Hosts</a></h1>
-<p>These are our currently available servers:</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="important-links"><a class="header" href="#important-links">Important links</a></h1>
+<p>This is a collection of important links when working with the infrastructure:</p>
+<h2 id="most-important"><a class="header" href="#most-important">Most important</a></h2>
 <ul>
-<li><a href="./hosts/immortalis.html">immortalis</a></li>
-<li><a href="./hosts/garuda-mail.html">garuda-mail</a></li>
+<li><a href="https://github.com/garuda-linux/infrastructure-nix">The infrastructure-nix repository</a></li>
+</ul>
+<h2 id="nix-related"><a class="header" href="#nix-related">Nix-related</a></h2>
+<ul>
+<li><a href="https://numtide.github.io/devshell/">Devshell documentation</a></li>
+<li><a href="https://flake.parts">Flake-parts documentation</a>
+<ul>
+<li><a href="https://flake.parts/options/pre-commit-hooks-nix">Pre-commit-hooks flake-module</a></li>
+</ul>
+</li>
+<li><a href="https://mipmip.github.io/home-manager-option-search/">Home Manager options search</a></li>
+<li><a href="https://nixos-mailserver.readthedocs.io/en/latest/setup-guide.html">NixOS mailserver documentation</a></li>
+<li><a href="https://nixos.org/manual/nixos/stable/">The Nix documentation</a></li>
+<li><a href="https://search.nixos.org">The Nix package and option search</a></li>
+</ul>
+<h2 id="tools-documentation"><a class="header" href="#tools-documentation">Tools documentation</a></h2>
+<ul>
+<li><a href="https://github.com/chaotic-aur/toolbox">Chaotic toolbox</a></li>
+<li><a href="https://github.com/rust-lang/mdBook">mdBook</a></li>
+</ul>
+<h2 id="web-interfaces"><a class="header" href="#web-interfaces">Web interfaces</a></h2>
+<ul>
+<li><a href="https://syncthing-build.garudalinux.net/">Chaotic-AUR Syncthing</a></li>
+<li><a href="https://dash.cloudflare.com">Cloudflare Dashboard</a></li>
+<li><a href="https://garudalinux.freshping.io/">Freshping</a></li>
+<li><a href="https://garudalinux.freshstatus.io/admin/incidents/public">Freshstatus</a></li>
+<li><a href="https://accounts.hetzner.com/">Hetzner Robot</a></li>
+<li><a href="https://matrixadmin.garudalinux.net">Matrix Admin</a></li>
+<li><a href="https://mesh.garudalinux.net">Meshcentral</a></li>
+<li><a href="https://app.netdata.cloud">Netdata</a></li>
+<li><a href="https://developer.mend.io/github/garuda-linux">Renovate Dashboard</a></li>
+<li><a href="https://login.tailscale.com/">Tailscale</a></li>
+</ul>
+<h2 id="services-to-be-administrated"><a class="header" href="#services-to-be-administrated">Services to be administrated</a></h2>
+<ul>
+<li><a href="https://vault.garudalinux.org">Bitwarden</a></li>
+<li><a href="https://forum.garudalinux.org">Discourse</a></li>
+<li><a href="https://aur.chaotic.cx">Chaotic-AUR</a></li>
+<li><a href="https://element.garudalinux.org">Element</a></li>
+<li><a href="https://ffsync.garudalinux.org">Firefox syncserver</a></li>
+<li><a href="https://invidious.garudalinux.org">Invidious</a></li>
+<li><a href="https://lemmy.garudalinux.org">Lemmy</a></li>
+<li><a href="https://lingva.garudalinux.org">Lingva</a></li>
+<li><a href="https://social.garudalinux.org">Mastodon</a></li>
+<li><a href="https://matrix.garudalinux.org">Matrix</a></li>
+<li>Matrix Discord bridge (internal only)</li>
+<li>Matrix IRC bridge (internal only)</li>
+<li>Matrix Telegram bridge (internal only)</li>
+<li><a href="https://cloud.garudalinux.org">Nextcloud</a></li>
+<li><a href="https://piped.garudalinux.org">Piped</a></li>
+<li><a href="https://bin.garudalinux.org">PrivateBin</a></li>
+<li><a href="https://searx.garudalinux.org">Searx</a></li>
+<li><a href="https://irc.garudalinux.org">TheLounge</a></li>
+<li><a href="https://search.garudalinux.org">Whoogle</a></li>
+<li><a href="https://wiki.garudalinux.org">WikiJs</a></li>
+</ul>
+<h2 id="additional-pages"><a class="header" href="#additional-pages">Additional pages</a></h2>
+<ul>
+<li><a href="https://start.garudalinux.org">Startpage</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="immortalis-hetzner-dedicated"><a class="header" href="#immortalis-hetzner-dedicated">immortalis (Hetzner dedicated)</a></h2>
 <h3 id="general"><a class="header" href="#general">General</a></h3>

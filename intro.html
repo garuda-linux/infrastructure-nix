@@ -83,7 +83,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html" class="active"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="hosts.html"><strong aria-hidden="true">4.</strong> Hosts</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="hosts/immortalis.html"><strong aria-hidden="true">4.1.</strong> immortalis</a></li><li class="chapter-item expanded "><a href="hosts/garuda-mail.html"><strong aria-hidden="true">4.2.</strong> garuda-mail</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="intro.html" class="active"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="hosts/immortalis.html"><strong aria-hidden="true">5.</strong> immortalis</a></li><li class="chapter-item expanded "><a href="hosts/garuda-mail.html"><strong aria-hidden="true">6.</strong> garuda-mail</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><div><strong aria-hidden="true">7.</strong> Bitwarden</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Chaotic-AUR </div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> Discourse</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Firefox syncserver</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Invidious (Youtube frontend)</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> Lemmy</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> Lingva</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> Mastodon</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">15.</strong> Matrix</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">16.</strong> Nextcloud</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">17.</strong> Piped</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">18.</strong> PrivateBin</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">19.</strong> Searx</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">20.</strong> TheLounge</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">21.</strong> Whoogle</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">22.</strong> WikiJs</div></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><div><strong aria-hidden="true">23.</strong> Privacy policy</div></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -196,12 +196,12 @@ sh ./nix-install.sh install --diagnostic-endpoint=&quot;&quot;
 nix-shell # Legacy, non-flakes way if flakes are not available for some reason
 </code></pre>
 <p>This also sets up pre-commit-hooks and shows the currently implemented tasks, which can be executed by running the command.</p>
-<pre><code class="language-sh">[infra-nix]
+<pre><code>[infra-nix]
 
 ansible-core    - Radically simple IT automation
-apply           - Applies the infra-nix configuration pushed to the servers
+apply           - Applies the infra-nix configuration previously deployed to the servers
 buildiso-local  - Spawns a local buildiso shell to build to ./buildiso (needs Docker)
-buildiso-remote - Spawn a buildiso shell on the iso-runner builder
+buildiso-remote - Spawns a buildiso shell on the iso-runner builder
 clean           - Runs the garbage collection on the servers
 deploy          - Deploys the local NixOS configuration to the servers
 update          - Performs a full system update on the servers by bumping flake lock

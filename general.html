@@ -83,7 +83,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="general.html" class="active"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="hosts.html"><strong aria-hidden="true">4.</strong> Hosts</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="hosts/immortalis.html"><strong aria-hidden="true">4.1.</strong> immortalis</a></li><li class="chapter-item expanded "><a href="hosts/garuda-mail.html"><strong aria-hidden="true">4.2.</strong> garuda-mail</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="general.html" class="active"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="hosts/immortalis.html"><strong aria-hidden="true">5.</strong> immortalis</a></li><li class="chapter-item expanded "><a href="hosts/garuda-mail.html"><strong aria-hidden="true">6.</strong> garuda-mail</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><div><strong aria-hidden="true">7.</strong> Bitwarden</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">8.</strong> Chaotic-AUR </div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">9.</strong> Discourse</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">10.</strong> Firefox syncserver</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">11.</strong> Invidious (Youtube frontend)</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">12.</strong> Lemmy</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">13.</strong> Lingva</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">14.</strong> Mastodon</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">15.</strong> Matrix</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">16.</strong> Nextcloud</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">17.</strong> Piped</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">18.</strong> PrivateBin</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">19.</strong> Searx</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">20.</strong> TheLounge</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">21.</strong> Whoogle</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">22.</strong> WikiJs</div></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><div><strong aria-hidden="true">23.</strong> Privacy policy</div></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -199,14 +199,20 @@
 ├── scripts
 └── secrets
 </code></pre>
-<h2 id="secrets"><a class="header" href="#secrets">Secrets</a></h2>
-<p>Secrets are managed via a custom Git submodule that contains <code>ansible-vault</code> encrypted files as well as a custom NixOS module <code>garuda-lib</code> which makes them available to our services. The submodule is available in the <code>secrets</code> directory. To view or edit any of these files, one can use the following commands:</p>
+<h2 id="secrets-in-this-repository"><a class="header" href="#secrets-in-this-repository">Secrets in this repository</a></h2>
+<p>Secrets are managed via a custom Git submodule that contains <code>ansible-vault</code> encrypted files as well as a custom NixOS module <code>garuda-lib</code> which makes them available to our services. The submodule is available in the <code>secrets</code> directory once it has been set up for the first time. It can be initialized by running:</p>
+<pre><code>git submodule init
+git submodule update
+</code></pre>
+<p>To view or edit any of these files, one can use the following commands:</p>
 <pre><code class="language-sh">ansible-vault decrypt secrets/pathtofile
 ansible-vault edit secrets/pathtofile
 ansible-vault encrypt secrets/pathtofile
 </code></pre>
 <p>Further information on <code>ansible-vault</code> can be found in its <a href="https://docs.ansible.com/ansible/latest/vault_guide/index.html">documentation</a>.
 It is important to keep the <code>secrets</code> directory in the latest state before deploying a new configuration as misconfigurations might happen otherwise.</p>
+<h2 id="passwords-in-general"><a class="header" href="#passwords-in-general">Passwords in general</a></h2>
+<p>Our mission-critical passwords that maintainers and team members need to have access to are stored in our <a href="vault.garudalinux.org">Bitwarden instance</a>. After creating an account, maintainers need to be invited to the Garuda Linux organisation in order to access the stored credentials.</p>
 <h2 id="linting-and-formatting"><a class="header" href="#linting-and-formatting">Linting and formatting</a></h2>
 <p>We utilize <a href="https://github.com/cachix/pre-commit-hooks.nix">pre-commit-hooks</a> to automatically set up the pre-commit-hook with all the tools once <code>nix-shell</code> or <code>nix develop</code> is run for the first time. Checks can then be executed by running one of the following configs:</p>
 <pre><code class="language-sh">nix flake check # checks flake outputs and runs pre-commit at the end
@@ -224,14 +230,15 @@ pre-commit run --all-files # only runs the pre-commit tools on all files
 <li><a href="https://github.com/nerdypepper/statix">statix</a></li>
 <li><a href="https://github.com/adrienverge/yamllint">yamllint</a></li>
 </ul>
-<p>It is recommended to run <code>pre-commit run --all-files</code> before committing any files. Then use <code>cz commit</code> to generate a <code>commitizen</code> complying commit message.</p>
+<p>It is recommended to run <code>pre-commit run --all-files</code> before trying to commit changes. Then use <code>cz commit</code> to generate a <code>commitizen</code> complying commit message.</p>
 <h2 id="cicd"><a class="header" href="#cicd">CI/CD</a></h2>
-<p>We have used pull-/push-based mirroring for this git repository. This allows easy access to Renovate without having to run a custom instance mirroring changes to both GitHub and GitLab. The following tasks have been automated as of now:</p>
+<p>We have used pull-/push-based mirroring for this git repository, which allows easy access to Renovate without having to run a custom instance of it. The following tasks have been implemented as of now:</p>
 <ul>
 <li><code>nix flake check</code> runs for every labeled PR and commit on main.</li>
 <li><a href="https://renovatebot.com/">Renovate</a> periodically checks <code>docker-compose.yml</code> and other supported files for version updates. It has a <a href="https://github.com/garuda-linux/infrastructure-nix/issues/5">dependency dashboard</a> as well as the <a href="https://developer.mend.io/github/garuda-linux/infrastructure-nix">developer interface</a> to check logs of individual runs. Minor updates appear as grouped PRs while major updates are separated from those. Note that this only applies to the GitHub side.</li>
-<li>Deployment of our mdBook-based documentation to Cloudflare pages.</li>
+<li>Deployment of our <a href="https://github.com/rust-lang/mdBook">mdBook-based</a> documentation to Cloudflare pages.</li>
 </ul>
+<p>Workflows will generally only be executed if a relevant file has been changed, eg. <code>nix flake check</code> won't run if only the README was changed.</p>
 <h2 id="monitoring"><a class="header" href="#monitoring">Monitoring</a></h2>
 <p>Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends. The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations. Might switch to the Prometheus/Grafana/Loki stack in the future. We used to set up children -&gt; parent streaming in the past, though after transitioning to one big host this didn't make sense anymore. Instead, up to 10GB of data gets stored on individual hosts. While Netdata agents do have their dashboard, the <a href="https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes">Dashboard provided by Netdata</a> is far superior and allows a better insight, eg. by offering the functions feature. Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its <a href="https://learn.netdata.cloud/">documentation</a>. To access the previously linked dashboard, use <code>team@garudalinux.org</code> as login, the login will be completed after opening the link sent here.</p>
 
