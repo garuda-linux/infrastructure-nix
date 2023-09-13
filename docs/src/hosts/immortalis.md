@@ -80,3 +80,9 @@ Backups are provided by daily Borg runs. Only the `/data_1` directory is backed 
 ### Tailscale / mesh network
 
 While Tailscale was commonly used to connect multiple VMs before, this server only has it active on the host. However, we are leveraging Tailscale's [subnet router](https://tailscale.com/kb/1019/subnets/) feature to serve the `10.0.5.0/24` subnet via Tailscale, which means that other Tailscale clients may access the `nixos-containers` via their IP if `tailscale up --accept-routes` was used to set up the service.
+
+### Nix expression
+
+```nix
+{{#include ../../../nixos/hosts/immortalis.nix}}
+```

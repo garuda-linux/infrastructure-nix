@@ -12,7 +12,22 @@
 - [immortalis](./hosts/immortalis.md)
 - [garuda-mail](./hosts/garuda-mail.md)
 
-# Services and websites
+# NixOS containers on immortalis
+
+- [chaotic-kde](./nixos-containers/chaotic-kde.md)
+- [docker-proxied](./nixos-containers/docker-proxied.md)
+- [docker](./nixos-containers/docker.md)
+- [forum](./nixos-containers/forum.md)
+- [github-runner](./nixos-containers/github-runner.md)
+- [lemmy](./nixos-containers/lemmy.md)
+- [mastodon](./nixos-containers/mastodon.md)
+- [meshcentral](./nixos-containers/meshcentral.md)
+- [postgres](./nixos-containers/postgres.md)
+- [repo](./nixos-containers/repo.md)
+- [temeraire](./nixos-containers/temeraire.md)
+- [web-front](./nixos-containers/web-front.md)
+
+# Services
 
 - [Bitwarden]()
 - [Chaotic-AUR ]()
