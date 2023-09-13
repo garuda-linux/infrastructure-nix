@@ -12,11 +12,12 @@
 - [immortalis](./hosts/immortalis.md)
 - [garuda-mail](./hosts/garuda-mail.md)
 
-# Services
+# Services and websites
 
 - [Bitwarden]()
 - [Chaotic-AUR ]()
-- [Discourse]()
+- [Discourse](./services/discourse.md)
+- [Documentation](./websites/documentation.md)
 - [Firefox syncserver]()
 - [Invidious (Youtube frontend)]()
 - [Lemmy]()

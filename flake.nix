@@ -243,6 +243,7 @@
                   {202}🔨 Welcome to Garuda's infra-nix shell{reset} ❄️
                   $(type -p menu &>/dev/null && menu)
                 '';
+                packages = [ "mdbook-emojicodes" "mdbook-linkcheck" "mdbook-admonish" ];
               };
             };
 
