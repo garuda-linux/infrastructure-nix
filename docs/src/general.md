@@ -74,7 +74,7 @@ We have used pull-/push-based mirroring for this git repository. This allows eas
 
 - `nix flake check` runs for every labeled PR and commit on main.
 - [Renovate](https://renovatebot.com/) periodically checks `docker-compose.yml` and other supported files for version updates. It has a [dependency dashboard](https://github.com/garuda-linux/infrastructure-nix/issues/5) as well as the [developer interface](https://developer.mend.io/github/garuda-linux/infrastructure-nix) to check logs of individual runs. Minor updates appear as grouped PRs while major updates are separated from those. Note that this only applies to the GitHub side.
-- Deployment of our mdBook-based documentation to GitHub pages.
+- Deployment of our mdBook-based documentation to Cloudflare pages.
 
 ## Monitoring
 
