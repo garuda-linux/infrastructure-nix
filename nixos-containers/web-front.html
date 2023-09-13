@@ -1,0 +1,727 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js navy">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>web-front - Garuda&#x27;s infra documentation</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Contains the documentation for the Garuda Linux infrastructure">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="../intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="../common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="../important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="../hosts/immortalis.html"><strong aria-hidden="true">5.</strong> immortalis</a></li><li class="chapter-item expanded "><a href="../hosts/garuda-mail.html"><strong aria-hidden="true">6.</strong> garuda-mail</a></li><li class="chapter-item expanded affix "><li class="part-title">NixOS containers on immortalis</li><li class="chapter-item expanded "><a href="../nixos-containers/chaotic-kde.html"><strong aria-hidden="true">7.</strong> chaotic-kde</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker-proxied.html"><strong aria-hidden="true">8.</strong> docker-proxied</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker.html"><strong aria-hidden="true">9.</strong> docker</a></li><li class="chapter-item expanded "><a href="../nixos-containers/forum.html"><strong aria-hidden="true">10.</strong> forum</a></li><li class="chapter-item expanded "><a href="../nixos-containers/github-runner.html"><strong aria-hidden="true">11.</strong> github-runner</a></li><li class="chapter-item expanded "><a href="../nixos-containers/lemmy.html"><strong aria-hidden="true">12.</strong> lemmy</a></li><li class="chapter-item expanded "><a href="../nixos-containers/mastodon.html"><strong aria-hidden="true">13.</strong> mastodon</a></li><li class="chapter-item expanded "><a href="../nixos-containers/meshcentral.html"><strong aria-hidden="true">14.</strong> meshcentral</a></li><li class="chapter-item expanded "><a href="../nixos-containers/postgres.html"><strong aria-hidden="true">15.</strong> postgres</a></li><li class="chapter-item expanded "><a href="../nixos-containers/repo.html"><strong aria-hidden="true">16.</strong> repo</a></li><li class="chapter-item expanded "><a href="../nixos-containers/temeraire.html"><strong aria-hidden="true">17.</strong> temeraire</a></li><li class="chapter-item expanded "><a href="../nixos-containers/web-front.html" class="active"><strong aria-hidden="true">18.</strong> web-front</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><div><strong aria-hidden="true">19.</strong> Bitwarden</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">20.</strong> Chaotic-AUR </div></li><li class="chapter-item expanded "><a href="../services/discourse.html"><strong aria-hidden="true">21.</strong> Discourse</a></li><li class="chapter-item expanded "><a href="../websites/documentation.html"><strong aria-hidden="true">22.</strong> Documentation</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">23.</strong> Firefox syncserver</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">24.</strong> Invidious (Youtube frontend)</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">25.</strong> Lemmy</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">26.</strong> Lingva</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">27.</strong> Mastodon</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">28.</strong> Matrix</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">29.</strong> Nextcloud</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">30.</strong> Piped</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">31.</strong> PrivateBin</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">32.</strong> Searx</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">33.</strong> TheLounge</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">34.</strong> Whoogle</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">35.</strong> WikiJs</div></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><div><strong aria-hidden="true">36.</strong> Privacy policy</div></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Garuda&#x27;s infra documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/garuda-linux/infrastructure-nix" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-code-fork"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="web-front"><a class="header" href="#web-front">web-front</a></h1>
+<pre><code class="language-nix">{ garuda-lib
+, sources
+, ...
+}: {
+  imports = sources.defaultModules ++ [ ../modules ];
+
+  # Reverse proxy for our docker-compose stack
+  services.nginx = {
+    enable = true;
+    virtualHosts = {
+      &quot;garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          &quot;/&quot; = {
+            index = &quot;index.html&quot;;
+            root = sources.garuda-website;
+          };
+          &quot;/discord&quot; = {
+            extraConfig = &quot;expires 12h;&quot;;
+            return = &quot;307 https://discord.gg/w5jbhq3juh&quot;;
+          };
+          &quot;/telegram&quot; = {
+            extraConfig = &quot;expires 12h;&quot;;
+            return = &quot;307 https://t.me/garudalinux&quot;;
+          };
+          &quot;/os/garuda-update/backuprepo&quot; = {
+            extraConfig = ''
+              rewrite ^/os/garuda-update/backuprepo/(.*)$ https://geo-mirror.chaotic.cx/chaotic-aur/$1 redirect;
+            '';
+          };
+          &quot;/os/garuda-update/remote-update&quot; = {
+            extraConfig = &quot;expires 12h;&quot;;
+            return =
+              &quot;301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update&quot;;
+          };
+          &quot;/os/garuda-update/garuda-hotfixes-version&quot; = {
+            extraConfig = &quot;expires 5m;&quot;;
+            return = &quot;200 '1'&quot;;
+          };
+          &quot;/.well-known/webfinger&quot; = {
+            extraConfig = &quot;expires 12h;&quot;;
+            return = &quot;301 https://social.garudalinux.org$request_uri&quot;;
+          };
+        };
+        quic = true;
+        serverAliases = [ &quot;www.garudalinux.org&quot; ];
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;cloud.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          &quot;/&quot; = {
+            extraConfig = ''
+              # Increase our buffer size to allow bigger up- &amp; downloads
+              client_max_body_size                  2048M;
+              proxy_max_temp_file_size              2048M;
+              proxy_request_buffering               off;
+
+              # HSTS headers
+              add_header Strict-Transport-Security &quot;max-age=31536000; includeSubdomains; preload&quot; always;
+
+              # Allow accessing through trusted domain
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              set_real_ip_from      172.0.0.0/16;
+            '';
+            proxyPass = &quot;https://10.0.5.100:443&quot;;
+          };
+          &quot;/.well-known/carddav&quot; = {
+            extraConfig = &quot;expires 12h;&quot;;
+            return = &quot;301 $scheme://$host/remote.php/dav&quot;;
+          };
+          &quot;/.well-known/caldav&quot; = {
+            extraConfig = &quot;expires 12h;&quot;;
+            return = &quot;301 $scheme://$host/remote.php/dav&quot;;
+          };
+          &quot;/.well-known/webfinger&quot; = {
+            return = &quot;301 $scheme://$host/index.php/.well-known/webfinger&quot;;
+            extraConfig = ''
+              access_log    off;
+              log_not_found off;
+            '';
+          };
+          &quot;/.well-known/nodeinfo&quot; = {
+            extraConfig = ''
+              access_log    off;
+              log_not_found off;
+            '';
+            return = &quot;301 $scheme://$host/index.php/.well-known/nodeinfo&quot;;
+          };
+        };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;search.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.110:5000&quot;; }; };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;searx.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.110:8080&quot;; }; };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;ffsync.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.100:5001&quot;; }; };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;repo.garudalinux.org&quot; = {
+        addSSL = true;
+        http3 = true;
+        locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.30:80&quot;; }; };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;start.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.100:8083&quot;; }; };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;irc.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.100:9000&quot;; }; };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;bin.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.100:8082&quot;; }; };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;bitwarden.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          &quot;/&quot; = {
+            proxyPass = &quot;http://10.0.5.100:8081&quot;;
+            proxyWebsockets = true;
+          };
+        };
+        quic = true;
+        serverAliases = [ &quot;vault.garudalinux.org&quot; ];
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;status.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          &quot;/&quot; = { tryFiles = &quot;/status.html /status.html&quot;; };
+          &quot;=/status.html&quot; = {
+            extraConfig = &quot;expires 30d;&quot;;
+            root = &quot;${sources.garuda-website}/internal&quot;;
+          };
+        };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;stats.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          &quot;/&quot; = { tryFiles = &quot;/stats.html /stats.html&quot;; };
+          &quot;=/stats.html&quot; = {
+            extraConfig = &quot;expires 30d;&quot;;
+            root = &quot;${sources.garuda-website}/internal&quot;;
+          };
+        };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;forum.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          client_max_body_size 100M;
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+          proxy_set_header X-Forwarded-For $remote_addr;
+        '';
+        http3 = true;
+        locations = {
+          &quot;/&quot; = { proxyPass = &quot;http://10.0.5.70:80&quot;; };
+          &quot;/c/announcements/announcements-maintenance/45.json&quot; = {
+            extraConfig = &quot;expires 2m;&quot;;
+            proxyPass = &quot;http://10.0.5.70:80&quot;;
+          };
+        };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;social.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          client_max_body_size 100M;
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          &quot;/&quot; = {
+            proxyPass = &quot;https://10.0.5.80:443&quot;;
+            proxyWebsockets = true;
+            extraConfig = ''
+              proxy_set_header Host social.garudalinux.org;
+            '';
+          };
+          &quot;/.well-known/webfinger&quot; = {
+            proxyPass = &quot;https://10.0.5.80:443&quot;;
+            proxyWebsockets = true;
+            extraConfig = ''
+              proxy_set_header Host social.garudalinux.org;
+              if ($args ~* &quot;resource=acct:(.*)@(chaotic.cx|social.garudalinux.org)$&quot;) {
+                set $w1 $1;
+                rewrite .* /.well-known/webfinger?resource=acct:$w1@garudalinux.org? break;
+              }
+            '';
+          };
+        };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;social-video.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          client_max_body_size 100M;
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+          location ~* .(mp4|webm)$ {
+            proxy_pass https://10.0.5.80:443;
+            proxy_set_header Host social.garudalinux.org;
+          }
+        '';
+        locations = {
+          &quot;/&quot; = { return = &quot;301 https://social.garudalinux.org$request_uri&quot;; };
+        };
+        http3 = true;
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;builds.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          proxy_buffering off;
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+          proxy_set_header Host $host;
+        '';
+        http3 = true;
+        locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.20:80&quot;; }; };
+        quic = true;
+        serverAliases = [ &quot;cf-builds.garudalinux.org&quot; &quot;iso.builds.garudalinux.org&quot; ];
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;element.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          &quot;/&quot; = { proxyPass = &quot;http://10.0.5.100:8084&quot;; };
+        };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;wiki.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.100:3001&quot;; }; };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;mesh.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          &quot;/&quot; = {
+            proxyPass = &quot;http://10.0.5.60:22260&quot;;
+            extraConfig = ''
+              proxy_http_version 1.1;
+              proxy_read_timeout 330s;
+              proxy_send_timeout 330s;
+              proxy_set_header Connection $http_connection;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Host $host:$server_port;
+              proxy_set_header X-Forwarded-Proto $scheme;
+            '';
+          };
+        };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;mesh.garudalinux.net&quot; = {
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        listen = [
+          {
+            addr = &quot;127.0.0.1&quot;;
+            port = 80;
+          }
+        ];
+        locations = {
+          &quot;/&quot; = {
+            extraConfig = ''
+              proxy_send_timeout 330s;
+              proxy_read_timeout 330s;
+              proxy_set_header Connection $http_connection;
+              proxy_set_header Upgrade $http_upgrade;
+
+              allow 127.0.0.1;
+              deny all;
+
+              set $delimeter &quot;&quot;;
+              if ($is_args) {
+                set $delimeter &quot;&amp;&quot;;
+              }
+              set $args &quot;$args''${delimeter}user=cfaccess&amp;pass=${garuda-lib.secrets.meshcentral.cfaccess-user}&quot;;
+              proxy_pass http://10.0.5.60:22260;
+            '';
+          };
+        };
+      };
+      &quot;matrix.garudalinux.org&quot; = {
+        addSSL = true;
+        http3 = true;
+        listen = [
+          {
+            addr = &quot;0.0.0.0&quot;;
+            port = 443;
+            ssl = true;
+          }
+          {
+            addr = &quot;0.0.0.0&quot;;
+            port = 8448;
+            ssl = true;
+          }
+        ];
+        locations = {
+          &quot;/&quot; = {
+            extraConfig = &quot;client_max_body_size 50M;&quot;;
+            proxyPass = &quot;http://10.0.5.100:8008&quot;;
+          };
+        };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;piped.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            ${garuda-lib.setRealIpFromConfig}
+            real_ip_header CF-Connecting-IP;
+            proxy_buffering off;
+            proxy_pass http://10.0.5.110:8088;
+            proxy_set_header Host $host;
+          }
+        '';
+        http3 = true;
+        quic = true;
+        serverAliases = [ &quot;piped-api.garudalinux.org&quot; &quot;piped-proxy.garudalinux.org&quot; ];
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;invidious.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          &quot;/&quot; = {
+            extraConfig = ''
+              proxy_buffering off;
+              proxy_set_header Connection &quot;&quot;;
+              proxy_http_version 1.1;
+            '';
+            proxyPass = &quot;http://10.0.5.110:3003&quot;;
+          };
+        };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;lemmy.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          &quot;/&quot; = {
+            extraConfig = ''
+              proxy_set_header Host $host;
+            '';
+            proxyPass = &quot;http://10.0.5.120:80&quot;;
+          };
+        };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      &quot;lingva.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          &quot;/&quot; = {
+            proxyPass = &quot;http://10.0.5.110:3002&quot;;
+          };
+        };
+        quic = true;
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+    };
+  };
+
+  # Cloudflared access to Meshcentral webinterface
+  services.garuda-cloudflared = {
+    enable = true;
+    ingress = {
+      &quot;matrixadmin.garudalinux.net&quot; = &quot;http://10.0.5.100:8085&quot;;
+      &quot;mesh.garudalinux.net&quot; = &quot;http://127.0.0.1:80&quot;;
+      &quot;test.garudalinux.net&quot; = &quot;http://10.0.5.40:8080&quot;;
+      &quot;test2.garudalinux.net&quot; = &quot;http://10.0.5.40:8081&quot;;
+    };
+    tunnel-credentials =
+      garuda-lib.secrets.cloudflare.cloudflared.esxi-web.cred;
+  };
+
+  system.stateVersion = &quot;23.05&quot;;
+}
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../nixos-containers/temeraire.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../services/discourse.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../nixos-containers/temeraire.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../services/discourse.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

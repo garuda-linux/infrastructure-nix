@@ -1,0 +1,534 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js navy">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>temeraire - Garuda&#x27;s infra documentation</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Contains the documentation for the Garuda Linux infrastructure">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="../intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="../common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="../important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="../hosts/immortalis.html"><strong aria-hidden="true">5.</strong> immortalis</a></li><li class="chapter-item expanded "><a href="../hosts/garuda-mail.html"><strong aria-hidden="true">6.</strong> garuda-mail</a></li><li class="chapter-item expanded affix "><li class="part-title">NixOS containers on immortalis</li><li class="chapter-item expanded "><a href="../nixos-containers/chaotic-kde.html"><strong aria-hidden="true">7.</strong> chaotic-kde</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker-proxied.html"><strong aria-hidden="true">8.</strong> docker-proxied</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker.html"><strong aria-hidden="true">9.</strong> docker</a></li><li class="chapter-item expanded "><a href="../nixos-containers/forum.html"><strong aria-hidden="true">10.</strong> forum</a></li><li class="chapter-item expanded "><a href="../nixos-containers/github-runner.html"><strong aria-hidden="true">11.</strong> github-runner</a></li><li class="chapter-item expanded "><a href="../nixos-containers/lemmy.html"><strong aria-hidden="true">12.</strong> lemmy</a></li><li class="chapter-item expanded "><a href="../nixos-containers/mastodon.html"><strong aria-hidden="true">13.</strong> mastodon</a></li><li class="chapter-item expanded "><a href="../nixos-containers/meshcentral.html"><strong aria-hidden="true">14.</strong> meshcentral</a></li><li class="chapter-item expanded "><a href="../nixos-containers/postgres.html"><strong aria-hidden="true">15.</strong> postgres</a></li><li class="chapter-item expanded "><a href="../nixos-containers/repo.html"><strong aria-hidden="true">16.</strong> repo</a></li><li class="chapter-item expanded "><a href="../nixos-containers/temeraire.html" class="active"><strong aria-hidden="true">17.</strong> temeraire</a></li><li class="chapter-item expanded "><a href="../nixos-containers/web-front.html"><strong aria-hidden="true">18.</strong> web-front</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><div><strong aria-hidden="true">19.</strong> Bitwarden</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">20.</strong> Chaotic-AUR </div></li><li class="chapter-item expanded "><a href="../services/discourse.html"><strong aria-hidden="true">21.</strong> Discourse</a></li><li class="chapter-item expanded "><a href="../websites/documentation.html"><strong aria-hidden="true">22.</strong> Documentation</a></li><li class="chapter-item expanded "><div><strong aria-hidden="true">23.</strong> Firefox syncserver</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">24.</strong> Invidious (Youtube frontend)</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">25.</strong> Lemmy</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">26.</strong> Lingva</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">27.</strong> Mastodon</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">28.</strong> Matrix</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">29.</strong> Nextcloud</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">30.</strong> Piped</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">31.</strong> PrivateBin</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">32.</strong> Searx</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">33.</strong> TheLounge</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">34.</strong> Whoogle</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">35.</strong> WikiJs</div></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><div><strong aria-hidden="true">36.</strong> Privacy policy</div></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Garuda&#x27;s infra documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/garuda-linux/infrastructure-nix" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-code-fork"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="temeraire"><a class="header" href="#temeraire">temeraire</a></h1>
+<pre><code class="language-nix">{ config
+, garuda-lib
+, pkgs
+, sources
+, ...
+}: {
+  imports = sources.defaultModules ++ [ ../modules ];
+
+  # This disables HTTPS certificates and forced redirects
+  garuda-lib.behind_proxy = true;
+
+  # Enable Chaotic-AUR building
+  services.chaotic.enable = true;
+  services.chaotic.cluster-name = &quot;garuda-cluster&quot;;
+  # Let nginx set itself up for this local domain
+  services.chaotic.host = &quot;local.chaotic.invalid&quot;;
+  services.chaotic.extraConfig = ''
+    export CAUR_DEPLOY_LABEL=&quot;Temeraire 🐉&quot;
+    export CAUR_PACKAGER=&quot;Garuda Builder &lt;team@garudalinux.org&gt;&quot;
+    export CAUR_ROUTINES=/tmp/chaotic/routines
+    export CAUR_SIGN_KEY=D6C9442437365605
+    export CAUR_SIGN_USER=root
+    export CAUR_TELEGRAM_TAG=&quot;@dr460nf1r3&quot;
+    export CAUR_TYPE=primary
+    export CAUR_URL=https://builds.garudalinux.org/repos/chaotic-aur/x86_64
+    export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
+
+    export GIT_SSH_COMMAND=&quot;ssh -i /var/garuda/secrets/chaotic/interfere_ed25519&quot;
+    export HTTPS_PROXY=http://10.0.5.1:3128/
+    export HTTP_PROXY=http://10.0.5.1:3128/
+    export NO_PROXY=mirror.rackspace.com,cloudflaremirrors.com,github.com,downloads.sentry-cdn.com
+  '';
+  services.chaotic.db-name = &quot;chaotic-aur&quot;;
+  services.chaotic.routines = [ &quot;afternoon&quot; &quot;hourly.1&quot; &quot;hourly.2&quot; &quot;morning&quot; &quot;nightly&quot; &quot;tkg-wine&quot; ];
+
+  # Special Syncthing configuration allowing to push to main node
+  services.syncthing = {
+    enable = true;
+    openDefaultPorts = true;
+    configDir = config.services.syncthing.dataDir;
+    inherit (garuda-lib.secrets.syncthing.esxi-build) cert;
+    inherit (garuda-lib.secrets.syncthing.esxi-build) key;
+    overrideFolders = false;
+    overrideDevices = false;
+    user = &quot;root&quot;;
+    group = &quot;chaotic_op&quot;;
+    settings = {
+      gui = {
+        apikey = &quot;garudalinux&quot;;
+        insecureSkipHostcheck = true;
+      };
+    };
+  };
+
+  # Cloudflared access to Syncthing webinterface
+  services.garuda-cloudflared = {
+    enable = true;
+    ingress = { &quot;syncthing-build.garudalinux.net&quot; = &quot;http://localhost:8384&quot;; };
+    tunnel-credentials =
+      garuda-lib.secrets.cloudflare.cloudflared.esxi-build.cred;
+  };
+
+  # Allow systemd-nspawn to create subcgroups (for Chaotic-AUR builders)
+  systemd.services.remount-sysfscgroup = {
+    description = &quot;Remount cgroup2 to allow systemd-nspawn to create subcgroups&quot;;
+    wantedBy = [ &quot;multi-user.target&quot; ];
+    serviceConfig.Type = &quot;oneshot&quot;;
+    script = ''
+      ${pkgs.mount}/bin/mount -t cgroup2 -o rw,nosuid,nodev,noexec,relatime none /sys/fs/cgroup
+    '';
+  };
+
+  # Auto reset syncthing stuff
+  systemd.services.syncthing-reset = {
+    serviceConfig.Type = &quot;oneshot&quot;;
+    script = ''
+      &quot;${pkgs.curl}/bin/curl&quot; -X POST -H &quot;X-API-Key: garudalinux&quot; http://localhost:8384/rest/db/override?folder=${garuda-lib.secrets.syncthing.folders.chaotic-aur}
+    '';
+  };
+  systemd.timers.syncthing-reset = {
+    wantedBy = [ &quot;timers.target&quot; ];
+    timerConfig.OnCalendar = [ &quot;hourly&quot; ];
+  };
+
+  # Chaotic-AUR builders need to upload their packages
+  users.users.ufscar_hpc = {
+    extraGroups = [ &quot;chaotic_op&quot; ];
+    isNormalUser = true;
+    openssh.authorizedKeys.keys = [
+      &quot;ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFslN7a613H3hztK/yzHE4ZBOJ4448+EN867Y/IDpAfc u726578@c6.cluster.infra.ufscar.br&quot;
+    ];
+  };
+  users.users.catbuilder = {
+    extraGroups = [ &quot;chaotic_op&quot; ];
+    isNormalUser = true;
+    openssh.authorizedKeys.keys = [
+      &quot;ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDHELhrMFNvxgAYMdzwerszypuvQc3uCFjkR6xCbcQnrcCrueJqTQ4y8WzddwxhRzKbSTQVhPdB5l95IYk7eOtmBmaMp4LAV2osMWDI/x3NyoY5s7YgpW815qNX9Io7VnrFUr0LK7hJ+Uw87nyxGp3zGddPVMUK7PIdJf2GxTxKPryycdLa9QWijfm3YBdN10yBMp6KrfPEnhtmNPMrc3wuBG4+xBoJxNOy0DJdIf2PRwU2CddP0zdDWwlMbGeHGcaJmlAx0u9e1jL8KWB/oyGT1D9q4l+fU8E9nZG+kAFMO1yG25je9bJnYNPMV1gdRT47G3J/B982XYO4G4AiOER0v0M0MN0qWTvIVBG6Vnly81ME91Qao34Lw2QOhZMVFwWz01u8KLLQy/Z2rX7jKyqeUyGXgs5NPmkeJ1vzpSRLXY+5GX5yva8A041Nft7sfKYPFjMsDaxAKVPz7LkKX1dYdiC4c3a/RcCzLKY+Uabjr0QAK4MKwmMW+SNF0QHr9mk= root@Chaotic&quot;
+    ];
+  };
+  users.users.chaotic-dragon = {
+    extraGroups = [ &quot;chaotic_op&quot; ];
+    isNormalUser = true;
+    openssh.authorizedKeys.keys = [
+      &quot;ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC0zLuPM4IE4xsxen2XBqWKSQz5CpHONgguOhVuR5rTxRqijiwGro0VR4gPhpmuZjLkms4CJ2YGyjTbjDkh48+wAoiPjdvVqF6kJ9TLkHZabMJfx5chKMCVFcHM+0/F768fF/nRsfusbRO7H2nLGMXJ1eObemiCGg0e8Ccs0XA4PF9bGaDm+4bblNasVyT6PsnaYziyBtwU3fzBVbdQmErw37sjXV9jNsEq3XF9wSaFf/Dfzh9xY1CR1KC7Af84lL1vOj7QL06tEmDO6W4JJCpRS4OonpuahwaaR4gn6wW09eDgrpXUI5DhxGizwGPLdwENRONpcXP0xnWetC9IaUADHb9yZwQKZhN9RCoO5ytqrt/NkGfn7Si+mWSfMQRGvfgJocC89peIhbchXalT+JS1XWD+Isvj2I+sqmAcoKgji09MTF0lMW+m83/+YA7Jdhn5CLVs9RxZ5cwz1TqveuUaq4i9P867iKCltrqZxxgXD4emZXhHGvGrw8cNQZOVAhc= root@chaotic-dragon&quot;
+    ];
+  };
+  users.users.dragons-ryzen = {
+    extraGroups = [ &quot;chaotic_op&quot; ];
+    isNormalUser = true;
+    openssh.authorizedKeys.keys = [
+      &quot;ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAd8nLLjysVefmk3I6BI/IkooUvnGSy7966T54gWNvgW nico@slim-lair&quot;
+    ];
+  };
+
+  # Ufscar-HPC needs diffie-hellman-group-exchange-sha1
+  services.openssh.settings = {
+    KexAlgorithms = [
+      &quot;curve25519-sha256&quot;
+      &quot;curve25519-sha256@libssh.org&quot;
+      &quot;diffie-hellman-group-exchange-sha1&quot;
+      &quot;diffie-hellman-group16-sha512&quot;
+      &quot;diffie-hellman-group18-sha512&quot;
+      &quot;sntrup761x25519-sha512@openssh.com&quot;
+    ];
+  };
+
+  # Our main webserver on this machine
+  services.nginx = {
+    enable = true;
+    virtualHosts = {
+      &quot;builds.garudalinux.org&quot; = {
+        extraConfig = ''
+          # Our beautiful autoindex theme
+          autoindex on;
+          autoindex_exact_size off;
+          autoindex_format xml;
+          xslt_string_param path $uri;
+          xslt_string_param hostname &quot;Chaotic-AUR main node - Temeraire&quot;;
+
+          # Security
+          add_header X-XSS-Protection          &quot;1; mode=block&quot; always;
+          add_header X-Content-Type-Options    &quot;nosniff&quot; always;
+          add_header Referrer-Policy           &quot;no-referrer-when-downgrade&quot; always;
+          add_header Content-Security-Policy   &quot;default-src 'self' http: https: data: blob: 'unsafe-inline'; frame-ancestors 'self';&quot; always;
+          add_header Permissions-Policy        &quot;interest-cohort=()&quot; always;
+
+          # Locations
+          location ~* ^.+\.log {
+              default_type text/plain;
+          }
+          location ~* /repos/(chaotic-aur|garuda)/x86_64/(?!.*(chaotic-aur|garuda)\.(db|files)).+\.tar.* {
+              return 301 https://cf-builds.garudalinux.org$request_uri;
+              expires 2d;
+          }
+          location / {
+              xslt_string_param path $uri;
+              xslt_string_param hostname &quot;Chaotic-AUR main node - Temeraire 🐉&quot;;
+              xslt_stylesheet &quot;${garuda-lib.xslt_style}&quot;;
+              location /iso {
+                  expires 2d;
+                  return 301 https://iso.builds.garudalinux.org$request_uri;
+              }
+          }
+        '';
+        http3 = true;
+        root = &quot;/srv/http/&quot;;
+      };
+      &quot;cf-builds.garudalinux.org&quot; = {
+        extraConfig = ''
+          location ~* /repos/(chaotic-aur|garuda)/x86_64/(?!.*(chaotic-aur|garuda)\.(db|files)).+\.tar.* {
+              add_header Cache-Control &quot;max-age=150, stale-while-revalidate=150, stale-if-error=86400&quot;;
+          }
+          location ~* /repos/(chaotic-aur|garuda)/x86_64/(chaotic-aur|garuda)\.db.* {
+              add_header Cache-Control 'no-cache';
+          }
+          location /repos/chaotic-aur {
+              expires 5m;
+              error_page 403 =301 https://builds.garudalinux.org$request_uri;
+              error_page 404 =301 https://builds.garudalinux.org$request_uri;
+          }
+          location /repos/garuda {
+              expires 5m;
+              error_page 403 =301 https://builds.garudalinux.org$request_uri;
+              error_page 404 =301 https://builds.garudalinux.org$request_uri;
+          }
+          location / {
+              expires 2d;
+              return 301 https://builds.garudalinux.org$request_uri;
+          }
+        '';
+        http3 = true;
+        root = &quot;/srv/http/&quot;;
+      };
+      &quot;iso.builds.garudalinux.org&quot; = {
+        extraConfig = ''
+          autoindex on;
+          autoindex_format xml;
+          xslt_string_param path $uri;
+          xslt_string_param hostname &quot;Garuda Linux ISO Builds&quot;;
+        '';
+        locations.&quot;/iso&quot; = {
+          root = &quot;/var/garuda/buildiso&quot;;
+          extraConfig = ''
+            xslt_stylesheet &quot;${garuda-lib.xslt_style}&quot;;
+            if ($symlink_target_rel != &quot;&quot;) {
+              rewrite ^ https://$server_name/iso/$symlink_target_rel redirect;
+            }
+            if ($arg_usa) {
+              rewrite ^/iso/(.*)$ https://us-ny-mirror.garudalinux.org/iso/$1? permanent;
+            }
+            if ($arg_sourceforge) {
+              rewrite ^/iso/(.*)$ https://sourceforge.net/projects/garuda-linux/files/$1? permanent;
+            }
+            if ($arg_osdn) {
+              rewrite ^/iso/(.*)$ https://osdn.net/projects/garuda-linux/storage/$1? permanent;
+            }
+            if ($arg_r2) {
+              set $args &quot;&quot;;
+              rewrite ^/iso/(.*)$ https://r2.garudalinux.org/iso/$1?r2request permanent;
+            }
+            break;
+          '';
+        };
+      };
+    };
+  };
+
+  # Explicitly open our firewall ports - HTTPS &amp; rsyncd
+  networking.firewall.allowedTCPPorts = [ config.services.rsyncd.port ];
+
+  # Our rsyncd server
+  services.rsyncd = {
+    enable = true;
+    settings = {
+      chaotic = {
+        &quot;read only&quot; = &quot;yes&quot;;
+        comment = &quot;Chaotic-AUR repository&quot;;
+        exclude = &quot;/chaotic-aur/archive/*** /chaotic-aur/logs/***&quot;;
+        path = &quot;/srv/http/repos/&quot;;
+      };
+      chaotic-minimal = {
+        &quot;read only&quot; = &quot;yes&quot;;
+        comment = &quot;Chaotic-AUR repository minus largest packages&quot;;
+        exclude = &quot;/chaotic-aur/archive/*** /chaotic-aur/logs/*** /chaotic-aur/x86_64/quartus* /chaotic-aur/x86_64/unrealtournament4* /chaotic-aur/x86_64/urbanterror*&quot;;
+        path = &quot;/srv/http/repos/&quot;;
+      };
+      iso = {
+        path = &quot;/var/garuda/buildiso/iso/&quot;;
+        comment = &quot;ISO downloads&quot;;
+        &quot;read only&quot; = &quot;yes&quot;;
+      };
+      global = {
+        &quot;max connections&quot; = 80;
+        &quot;max verbosity&quot; = 3;
+        &quot;transfer logging&quot; = true;
+        &quot;use chroot&quot; = false;
+        gid = &quot;nobody&quot;;
+        uid = &quot;nobody&quot;;
+      };
+    };
+  };
+
+  # Push chaotic to r2 hourly automatically
+  services.garuda-rclone.chaotic = {
+    src = &quot;/srv/http/repos/&quot;;
+    dest = &quot;r2:/mirror/repos&quot;;
+    config = garuda-lib.secrets.cloudflare.r2.rclone;
+    args = &quot;--s3-upload-cutoff 5G --s3-chunk-size 4G --fast-list --s3-no-head --s3-no-check-bucket --ignore-checksum --s3-disable-checksum -u --use-server-modtime --delete-during --delete-excluded --include /*/x86_64/*.pkg.tar.zst --include /*/lastupdate --order-by modtime,ascending --stats-log-level NOTICE&quot;;
+    startAt = &quot;hourly&quot;;
+  };
+  systemd.services.chaotic-rclone-inotify = {
+    wantedBy = [ &quot;multi-user.target&quot; ];
+    after = [ &quot;network-online.target&quot; ];
+    # Get all file changes, upload pkg.tar.zst. Not more than 5 per 5 seconds queued and only one uploaded at the same time. Queue dropped if uploading takes longer than 15 seconds.
+    # This prevents the queue from getting overloaded with nonsense requests if that ever were to happen. The hourly sync should take care of this.
+    script = ''
+      upload() {
+        operation=&quot;''${1%%|*}&quot;
+        path=&quot;''${1#*|}&quot;
+        relative=&quot;$(realpath --relative-to=&quot;.&quot; &quot;$path&quot;)&quot;
+        relative=&quot;''${relative#./}&quot;
+        destpath=&quot;r2:/mirror/$relative&quot;
+        if [ &quot;$operation&quot; != &quot;MOVED_FROM&quot; ]; then
+        ${pkgs.flock}/bin/flock -w 30 /tmp/chaotic-rclone-inotify.lock \
+          ${pkgs.rclone}/bin/rclone copyto &quot;$path&quot; &quot;$destpath&quot; --s3-upload-cutoff 5G --s3-chunk-size 4G --s3-no-head --no-check-dest --s3-no-check-bucket --ignore-checksum --s3-disable-checksum --config &quot;${garuda-lib.secrets.cloudflare.r2.rclone}&quot; --stats-one-line -v
+        else
+          ${pkgs.flock}/bin/flock -w 30 /tmp/chaotic-rclone-inotify.lock ${pkgs.rclone}/bin/rclone deletefile &quot;$destpath&quot; --s3-no-head --no-check-dest --s3-no-check-bucket --config &quot;${garuda-lib.secrets.cloudflare.r2.rclone}&quot; --stats-one-line -v
+          (
+            ${pkgs.flock}/bin/flock -w 200 -s 200
+            ${pkgs.curl}/bin/curl -s -X POST &quot;https://api.cloudflare.com/client/v4/zones/$CF_ZONE_GARUDALINUX_ORG/purge_cache&quot; -H &quot;Authorization: Bearer $CF_CACHE_API_TOKEN&quot; -H &quot;Content-Type:application/json&quot; --data &quot;{\&quot;files\&quot;:[\&quot;https://r2.garudalinux.org/''${relative}\&quot;]}&quot;
+            sleep 0.5
+          ) 200&gt;/tmp/chaotic-rclone-inotify-invalidate.lock
+        fi
+      }
+      export -f upload
+      ${pkgs.inotify-tools}/bin/inotifywait -m ./repos/*/x86_64 -e CLOSE_WRITE,MOVED_TO,MOVED_FROM --format &quot;%e|%w%f&quot; | \
+        ${pkgs.gawk}/bin/awk '/\.pkg\.tar\.zst$/ { print $0; fflush(); }' | \
+        xargs -rP 0 -I % ${pkgs.bash}/bin/bash -c 'upload &quot;%&quot;'
+    '';
+    serviceConfig = {
+      EnvironmentFile = garuda-lib.secrets.cloudflare.apikeys;
+      Restart = &quot;always&quot;;
+      WorkingDirectory = &quot;/srv/http&quot;;
+    };
+  };
+
+  system.stateVersion = &quot;23.05&quot;;
+}
+
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../nixos-containers/repo.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../nixos-containers/web-front.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../nixos-containers/repo.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../nixos-containers/web-front.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
