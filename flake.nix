@@ -104,19 +104,21 @@
         }: {
           apps.default = self.outputs.devShells.${system}.default.flakeApp;
 
-          checks.pre-commit-check = pre-commit-hooks.lib.${system}.run {
-            hooks = {
-              actionlint.enable = true;
-              ansible-lint.enable = true;
-              commitizen.enable = true;
-              deadnix.enable = true;
-              nil.enable = true;
-              nixpkgs-fmt.enable = true;
-              prettier.enable = true;
-              statix.enable = true;
-              yamllint.enable = true;
+          checks = {
+            pre-commit-check = pre-commit-hooks.lib.${system}.run {
+              hooks = {
+                actionlint.enable = true;
+                ansible-lint.enable = true;
+                commitizen.enable = true;
+                deadnix.enable = true;
+                nil.enable = true;
+                nixpkgs-fmt.enable = true;
+                prettier.enable = true;
+                statix.enable = true;
+                yamllint.enable = true;
+              };
+              src = ./.;
             };
-            src = ./.;
           };
 
           devShells =
@@ -162,6 +164,7 @@
                   { package = "ansible"; }
                   { package = "commitizen"; }
                   { package = "manix"; }
+                  { package = "nixos-install-tools"; }
                   { package = "pre-commit"; }
                   { package = "yamlfix"; }
                   {
@@ -243,20 +246,21 @@
                   {202}🔨 Welcome to Garuda's infra-nix shell{reset} ❄️
                   $(type -p menu &>/dev/null && menu)
                 '';
-                packages = [ "mdbook-emojicodes" "mdbook-linkcheck" "mdbook-admonish" ];
               };
             };
 
           formatter = pkgs.nixpkgs-fmt;
 
-          packages.docs = pkgs.runCommand "garuda-infra-docs"
-            { nativeBuildInputs = with pkgs; [ bash mdbook ]; }
-            ''
-              bash -c "errors=$(mdbook build -d $out ${./.}/docs |& grep ERROR)
-              if [ \"$errors\" ]; then
-                exit 1
-              fi"
-            '';
+          packages = {
+            docs = pkgs.runCommand "infra-docs"
+              { nativeBuildInputs = with pkgs; [ bash mdbook ]; }
+              ''
+                bash -c "errors=$(mdbook build -d $out ${./.}/docs |& grep ERROR)
+                if [ \"$errors\" ]; then
+                  exit 1
+                fi"
+              '';
+          };
         };
     in
     flake-parts.lib.mkFlake { inherit inputs; } {

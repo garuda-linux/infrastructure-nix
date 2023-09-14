@@ -8,7 +8,7 @@ All directories containing important data were mapped to `/data_1` and `/data_2`
 
 The current line-up looks as follows:
 
-```
+```sh
 nico@immortalis ~ (main)> machinectl
 MACHINE        CLASS     SERVICE        OS    VERSION ADDRESSES
 chaotic-kde    container systemd-nspawn nixos 23.11   10.0.5.90
@@ -55,7 +55,7 @@ Some services not packaged in NixOS or are easier to deploy this way are service
 
 Our repository leverages [Chaotic-AUR's](https://aur.chaotic.cx) [toolbox](https://github.com/chaotic-aur/toolbox) to provide the main node for the `[chaotic-aur]` repository as well as two more instances building the `[garuda]` and `[chaotic-kde]` repositories. Users of the `chaotic_op` group may build packages on the corresponding nixos-container via the [chaotic](https://github.com/chaotic-aur/toolbox/blob/main/README.md) command:
 
-```
+```sh
 chaotic get $package # pull PKGBUILD
 chaotic mkd $package # build package in the previously cloned directory
 chaotic bump $package # increment pkgver of $package by 0.1 to allow a rebuild

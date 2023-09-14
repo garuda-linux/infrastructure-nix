@@ -60,3 +60,4 @@ This is a collection of important links when working with the infrastructure:
 ## Additional pages
 
 - [Startpage](https://start.garudalinux.org)
+- [Website](https://garudalinux.org)
