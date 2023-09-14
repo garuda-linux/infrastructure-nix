@@ -1,12 +1,13 @@
 [book]
 authors = ["dr460nf1r3", "TNE"]
-description = "Contains the documentation for the Garuda Linux infrastructure"
+description = "Contains the documentation for the Garuda Linux infrastructure."
 language = "en"
 multilingual = false
 src = "src"
 title = "Garuda's infra documentation"
 
 [output.html]
+additional-css = ["theme/css/custom.css"]
 default-theme = "navy"
 git-repository-icon = "fa-code-fork"
 git-repository-url = "https://github.com/garuda-linux/infrastructure-nix"

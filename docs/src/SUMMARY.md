@@ -47,3 +47,4 @@
 # Misc
 
 - [Privacy policy]()
+- [Credits](./credits.md)
