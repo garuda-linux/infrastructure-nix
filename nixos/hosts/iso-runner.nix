@@ -21,6 +21,7 @@
       options = [ "NOPASSWD" ];
     }];
   }];
+  users.users.frank.extraGroups = [ "docker" ];
 
   system.stateVersion = "23.05";
 }
