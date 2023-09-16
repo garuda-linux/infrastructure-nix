@@ -26,8 +26,6 @@
 
 # Services
 
-- [Bitwarden]()
-- [Chaotic-AUR ]()
 - [Discourse](./services/discourse.md)
 - [Documentation](./websites/documentation.md)
 - [Firefox syncserver]()
@@ -46,5 +44,5 @@
 
 # Misc
 
-- [Privacy policy]()
+- [Privacy policy](./privacy-policy.md)
 - [Credits](./credits.md)
