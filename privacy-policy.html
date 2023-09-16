@@ -1,0 +1,285 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js navy">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Privacy policy - Garuda&#x27;s infra documentation</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Contains the documentation for the Garuda Linux infrastructure.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="theme/css/custom.css">
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="hosts/immortalis.html"><strong aria-hidden="true">5.</strong> immortalis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="nixos-containers/chaotic-kde.html"><strong aria-hidden="true">5.1.</strong> chaotic-kde</a></li><li class="chapter-item expanded "><a href="nixos-containers/docker-proxied.html"><strong aria-hidden="true">5.2.</strong> docker-proxied</a></li><li class="chapter-item expanded "><a href="nixos-containers/docker.html"><strong aria-hidden="true">5.3.</strong> docker</a></li><li class="chapter-item expanded "><a href="nixos-containers/forum.html"><strong aria-hidden="true">5.4.</strong> forum</a></li><li class="chapter-item expanded "><a href="nixos-containers/github-runner.html"><strong aria-hidden="true">5.5.</strong> github-runner</a></li><li class="chapter-item expanded "><a href="nixos-containers/lemmy.html"><strong aria-hidden="true">5.6.</strong> lemmy</a></li><li class="chapter-item expanded "><a href="nixos-containers/mastodon.html"><strong aria-hidden="true">5.7.</strong> mastodon</a></li><li class="chapter-item expanded "><a href="nixos-containers/meshcentral.html"><strong aria-hidden="true">5.8.</strong> meshcentral</a></li><li class="chapter-item expanded "><a href="nixos-containers/postgres.html"><strong aria-hidden="true">5.9.</strong> postgres</a></li><li class="chapter-item expanded "><a href="nixos-containers/repo.html"><strong aria-hidden="true">5.10.</strong> repo</a></li><li class="chapter-item expanded "><a href="nixos-containers/temeraire.html"><strong aria-hidden="true">5.11.</strong> temeraire</a></li><li class="chapter-item expanded "><a href="nixos-containers/web-front.html"><strong aria-hidden="true">5.12.</strong> web-front</a></li></ol></li><li class="chapter-item expanded "><a href="hosts/garuda-mail.html"><strong aria-hidden="true">6.</strong> garuda-mail</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><a href="services/discourse.html"><strong aria-hidden="true">7.</strong> Discourse</a></li><li class="chapter-item expanded "><a href="websites/documentation.html"><strong aria-hidden="true">8.</strong> Documentation</a></li><li class="chapter-item expanded "><a href="services/tailscale.html"><strong aria-hidden="true">9.</strong> Tailscale</a></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><a href="privacy-policy.html" class="active"><strong aria-hidden="true">10.</strong> Privacy policy</a></li><li class="chapter-item expanded "><a href="credits.html"><strong aria-hidden="true">11.</strong> Credits</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Garuda&#x27;s infra documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/garuda-linux/infrastructure-nix" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-code-fork"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="privacy-policy-for-garuda-linux"><a class="header" href="#privacy-policy-for-garuda-linux">Privacy policy for Garuda Linux</a></h1>
+<h2 id="about-this-document"><a class="header" href="#about-this-document">About this document</a></h2>
+<p>This Privacy Policy governs the manner in which Garuda Linux collects, uses, maintains and discloses information collected from users (each, a “User”) of our website and web services..</p>
+<h2 id="what-information-do-we-collect"><a class="header" href="#what-information-do-we-collect">What information do we collect?</a></h2>
+<p>We collect information from you when you register on our site and gather data when you participate in the forum by reading, writing, and evaluating the content shared here.</p>
+<p>When registering on our site, you may be asked to enter your name and e-mail address. You may, however, visit our site without registering. Your e-mail address will be verified by an email containing a unique link. If that link is visited, we know that you control the e-mail address. Your IP address will be checked against a database of known spammers to prevent such actions.</p>
+<p>If you contact us directly, we may receive additional information about you such as your name, email address, the contents of the message and/or attachments you may send us, and any other information you may choose to provide.</p>
+<p>When registered and posting, we record the IP address that the post originated from. We also may retain server logs which include the IP address of every request to our server, which will be purged after 30 days.</p>
+<h2 id="what-do-we-use-your-information-for"><a class="header" href="#what-do-we-use-your-information-for">What do we use your information for?</a></h2>
+<p>Any of the information we collect from you may be used in one of the following ways:</p>
+<ul>
+<li>To provide, operate, and maintain our infrastructure</li>
+<li>To allow using our services that require a login, as well as to provide convenience features such as staying logged in or keeping personally chosen settings.</li>
+<li>To send periodic emails that are generated by our services such as the forum, which may however be turned off if desired.</li>
+</ul>
+<p>We have no interest in your data and only store the minimum needed to operate the services we provide to our users.</p>
+<h2 id="how-do-we-protect-your-information"><a class="header" href="#how-do-we-protect-your-information">How do we protect your information?</a></h2>
+<p>We implement a variety of security measures to maintain the safety of your personal information when you enter, submit, or access your personal information.</p>
+<h2 id="what-is-your-data-retention-policy"><a class="header" href="#what-is-your-data-retention-policy">What is your data retention policy?</a></h2>
+<p>We will make a good faith effort to:</p>
+<ul>
+<li>Retain server logs containing the IP address of all requests to this server no more than 90 days.</li>
+<li>Retain the IP addresses associated with registered users and their posts no more than 5 years.</li>
+</ul>
+<h2 id="third-party-privacy-policies"><a class="header" href="#third-party-privacy-policies">Third Party Privacy Policies</a></h2>
+<p>Garuda Linux's Privacy Policy does not apply to some of the services we utilize in our infrastructure. Thus, we are advising you to consult the respective Privacy Policies of these third-party services for more detailed information.</p>
+<p>This includes, but may not be limited to:</p>
+<ul>
+<li><a href="https://www.cloudflare.com/">Cloudflare</a> to protect against common threats and enhance our infrastructure</li>
+<li><a href="www.hetzner.com/">Hetzner</a> as server and backup storage provider (located in Germany)</li>
+<li><a href="https://translate.google.com/">Google Translate</a> to offer translations on our website</li>
+<li><a href="https://opencollective.org/">OpenCollective</a>, <a href="https://liberapay.com/">Liberapay</a> and <a href="https://www.paypal.com/">Paypal</a> to allow the collection of donations that sustain our infrastructure</li>
+</ul>
+<h2 id="cookies"><a class="header" href="#cookies">Cookies</a></h2>
+<p>Our Site may use “cookies” to enhance User experience. User’s web browser places cookies on their hard drive for record-keeping purposes and sometimes to track information about them. The user may choose to set their web browser to refuse cookies or to alert you when cookies are being sent. If they do so, note that some parts of the Site may not function properly.</p>
+<h2 id="sharing-your-personal-information"><a class="header" href="#sharing-your-personal-information">Sharing your personal information</a></h2>
+<p>We do not sell, trade, or rent User’s personal identification information to others.</p>
+<h2 id="how-long-do-we-retain-your-data"><a class="header" href="#how-long-do-we-retain-your-data">How long do we retain your data</a></h2>
+<p>If you leave a comment, the comment and its metadata are retained indefinitely. This is so we can recognize and approve any follow-up comments automatically instead of holding them in a moderation queue.</p>
+<p>For users that register on our website (if any), we also store the personal information they provide in their user profile. All users can see, edit, or delete their personal information at any time (except they cannot change their username). Website administrators can also see and edit that information.</p>
+<h2 id="embedded-content-from-other-websites"><a class="header" href="#embedded-content-from-other-websites">Embedded content from other websites</a></h2>
+<p>Articles on this site may include embedded content (e.g. videos, images, articles, etc.). Embedded content from other websites behaves in the exact same way as if the visitor has visited the other website.</p>
+<p>These websites may collect data about you, use cookies, embed additional third-party tracking, and monitor your interaction with that embedded content, including tracing your interaction with the embedded content if you have an account and are logged in to that website.</p>
+<h2 id="media"><a class="header" href="#media">Media</a></h2>
+<p>If you upload images to the website, you should avoid uploading images with embedded location data (EXIF GPS) included. Visitors to the website can download and extract any location data from images on the website.</p>
+<h2 id="free-software"><a class="header" href="#free-software">Free software</a></h2>
+<p>Garuda Linux develops free software. All our tools are and will always be free software. Garuda Linux is part of OIN since November 2020. The current license can be viewed here. Additional information about packages covered by this license can be viewed here.</p>
+<p>If you want to check the license of a package, you can do so with Pacman.</p>
+<h2 id="what-rights-you-have-over-your-data"><a class="header" href="#what-rights-you-have-over-your-data">What rights you have over your data</a></h2>
+<p>If you have an account on this site or have left comments, you can request to receive an exported file of the personal data we hold about you, including any data you have provided to us. You can also request that we erase any personal data we hold about you. This does not include any data we are obliged to keep for administrative, legal, or security purposes.</p>
+<h2 id="childrens-information"><a class="header" href="#childrens-information">Children's Information</a></h2>
+<p>Another part of our priority is adding protection for children while using the internet. We encourage parents and guardians to observe, participate in, and/or monitor and guide their online activity.</p>
+<p>Garuda Linux does not knowingly collect any personal identifiable information from children under the age of 13. If you think that your child provided this kind of information on our website, we strongly encourage you to contact us immediately and we will do our best efforts to promptly remove such information from our records.</p>
+<h2 id="changes-to-this-privacy-policy"><a class="header" href="#changes-to-this-privacy-policy">Changes to This Privacy Policy</a></h2>
+<p>We may update our Privacy Policy from time to time. Thus, we advise you to review this page periodically for any changes. We will notify you of any
+changes by posting the new Privacy Policy on this page. These changes are effective immediately, after they are posted on this page.</p>
+<h2 id="your-acceptance-of-these-terms"><a class="header" href="#your-acceptance-of-these-terms">Your acceptance of these terms</a></h2>
+<p>By using this Site, you signify your acceptance of this policy. If you do not agree to this policy, please do not use our services. Your continued use of them following the posting of changes to this policy will be deemed your acceptance of those changes.</p>
+<h2 id="contact-us"><a class="header" href="#contact-us">Contact Us</a></h2>
+<p>If you have any questions about this Privacy Policy, the practices of this site, or your dealings with this site, please contact us via <a href="mailto:team@garudalinux.org">email</a>.</p>
+<p><strong>This privacy policy has been updated in September 2023.</strong></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="services/tailscale.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="credits.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="services/tailscale.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="credits.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
