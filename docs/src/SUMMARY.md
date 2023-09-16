@@ -28,19 +28,7 @@
 
 - [Discourse](./services/discourse.md)
 - [Documentation](./websites/documentation.md)
-- [Firefox syncserver]()
-- [Invidious (Youtube frontend)]()
-- [Lemmy]()
-- [Lingva]()
-- [Mastodon]()
-- [Matrix]()
-- [Nextcloud]()
-- [Piped]()
-- [PrivateBin]()
-- [Searx]()
-- [TheLounge]()
-- [Whoogle]()
-- [WikiJs]()
+- [Tailscale](./services/tailscale.md)
 
 # Misc
 
