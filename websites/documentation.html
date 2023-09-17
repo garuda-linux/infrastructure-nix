@@ -175,7 +175,9 @@
 <p>The documentation is created by using <a href="https://rust-lang.github.io/mdBook/index.html">mdBook</a>, which generates Markdown files and generates HTML pages for them. The documentation can be build by running:</p>
 <pre><code class="language-sh">nix build .#docs # plain simple
 </code></pre>
-<p>The files can then be found at <code>./result/</code>, which is a symlink to the corresponding path in <code>/nix/store</code>. mdBook is also able automatically serve the current content and update it automatically whenever a change is detected. This makes testing and previewing content easy.</p>
+<p>The files can then be found at <code>./result/</code>, which is a symlink to the corresponding path in <code>/nix/store</code>.
+mdBook is also able automatically serve the current content and update it automatically whenever a change is detected.
+This makes testing and previewing content easy.</p>
 <pre><code class="language-sh">mdbook serve --open # the latter additionally opens the website in a browser
 </code></pre>
 <h2 id="useful-information"><a class="header" href="#useful-information">Useful information</a></h2>
@@ -186,7 +188,8 @@
 </ul>
 <p>Especially importing code blocks as Markdown is really handy to keep content always up-to-date and helps providing a full text searchable code documentation.</p>
 <h2 id="deployment"><a class="header" href="#deployment">Deployment</a></h2>
-<p>Deployment to Cloudflare pages automated and happens whenever a commit to main occurs. A <a href="https://github.com/garuda-linux/infrastructure-nix/blob/main/.github/workflows/pages.yml">GitHub actions workflow</a> builds and pushes it to the <code>cf-pages</code> branch, which will then be used by the Cloudflare pages app to deploy the new version from.</p>
+<p>Deployment to Cloudflare pages automated and happens whenever a commit to main occurs.
+A <a href="https://github.com/garuda-linux/infrastructure-nix/blob/main/.github/workflows/pages.yml">GitHub actions workflow</a> builds and pushes it to the <code>cf-pages</code> branch, which will then be used by the Cloudflare pages app to deploy the new version from.</p>
 <pre><code class="language-yaml">---
 name: Cloudflare pages
 on:

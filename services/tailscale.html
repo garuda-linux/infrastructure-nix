@@ -177,7 +177,7 @@
 	// Define access control lists for users, groups, autogroups, tags,
 	// Tailscale IP addresses, and subnet ranges
 	&quot;acls&quot;: [
-		// All servers can connect to each other
+		// All servers can connect to each other, use exit nodes and oracle-dragon as DNS
 		{
 			&quot;action&quot;: &quot;accept&quot;,
 			&quot;src&quot;:    [&quot;tag:infra&quot;],
@@ -189,6 +189,12 @@
 			&quot;src&quot;:    [&quot;autogroup:admin&quot;],
 			&quot;dst&quot;:    [&quot;*:*&quot;],
 		},
+		// Shared out nodes can be accessed on SSH / Mosh ports
+		{
+			&quot;action&quot;: &quot;accept&quot;,
+			&quot;src&quot;:    [&quot;autogroup:shared&quot;],
+			&quot;dst&quot;:    [&quot;*:22,222-230,666,60000-61000&quot;],
+		},
 	],
 	// Current infra maintainers
 	&quot;groups&quot;: {
@@ -199,22 +205,6 @@
 		// Admins may apply the &quot;infra&quot; tag
 		&quot;tag:infra&quot;: [&quot;group:admins&quot;],
 	},
-	// Define settings for Tailscale SSH
-	&quot;ssh&quot;: [
-		// Allow admins to authenticate via Tailscale
-		{
-			&quot;action&quot;: &quot;accept&quot;,
-			&quot;src&quot;:    [&quot;dr460nf1r3@github&quot;],
-			&quot;dst&quot;:    [&quot;tag:infra&quot;],
-			&quot;users&quot;:  [&quot;nico&quot;],
-		},
-		{
-			&quot;action&quot;: &quot;accept&quot;,
-			&quot;src&quot;:    [&quot;JustTNE@github&quot;],
-			&quot;dst&quot;:    [&quot;tag:infra&quot;],
-			&quot;users&quot;:  [&quot;tne&quot;],
-		},
-	],
 }
 </code></pre>
 

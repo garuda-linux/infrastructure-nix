@@ -170,9 +170,9 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="general-structure"><a class="header" href="#general-structure">General structure</a></h2>
+                        <h1 id="general-structure"><a class="header" href="#general-structure">General structure</a></h1>
 <p>A general overview of the folder structure can be found below:</p>
-<pre><code class="language-sh">├── assets
+<pre><code class="language-shell">├── assets
 ├── docker-compose
 │   ├── all-in-one
 │   ├── github-runner
@@ -201,8 +201,9 @@
 └── secrets
 </code></pre>
 <h2 id="secrets-in-this-repository"><a class="header" href="#secrets-in-this-repository">Secrets in this repository</a></h2>
-<p>Secrets are managed via a custom Git submodule that contains <code>ansible-vault</code> encrypted files as well as a custom NixOS module <code>garuda-lib</code> which makes them available to our services. The submodule is available in the <code>secrets</code> directory once it has been set up for the first time. It can be initialized by running:</p>
-<pre><code>git submodule init
+<p>Secrets are managed via a custom Git submodule that contains <code>ansible-vault</code> encrypted files as well as a custom NixOS module <code>garuda-lib</code> which makes them available to our services.
+The submodule is available in the <code>secrets</code> directory once it has been set up for the first time. It can be initialized by running:</p>
+<pre><code class="language-sh">git submodule init
 git submodule update
 </code></pre>
 <p>To view or edit any of these files, one can use the following commands:</p>
@@ -213,9 +214,11 @@ ansible-vault encrypt secrets/pathtofile
 <p>Further information on <code>ansible-vault</code> can be found in its <a href="https://docs.ansible.com/ansible/latest/vault_guide/index.html">documentation</a>.
 It is important to keep the <code>secrets</code> directory in the latest state before deploying a new configuration as misconfigurations might happen otherwise.</p>
 <h2 id="passwords-in-general"><a class="header" href="#passwords-in-general">Passwords in general</a></h2>
-<p>Our mission-critical passwords that maintainers and team members need to have access to are stored in our <a href="vault.garudalinux.org">Bitwarden instance</a>. After creating an account, maintainers need to be invited to the Garuda Linux organisation in order to access the stored credentials.</p>
+<p>Our mission-critical passwords that maintainers and team members need to have access to are stored in our <a href="vault.garudalinux.org">Bitwarden instance</a>.
+After creating an account, maintainers need to be invited to the Garuda Linux organisation in order to access the stored credentials.</p>
 <h2 id="linting-and-formatting"><a class="header" href="#linting-and-formatting">Linting and formatting</a></h2>
-<p>We utilize <a href="https://github.com/cachix/pre-commit-hooks.nix">pre-commit-hooks</a> to automatically set up the pre-commit-hook with all the tools once <code>nix-shell</code> or <code>nix develop</code> is run for the first time. Checks can then be executed by running one of the following configs:</p>
+<p>We utilize <a href="https://github.com/cachix/pre-commit-hooks.nix">pre-commit-hooks</a> to automatically set up the pre-commit-hook with all the tools once <code>nix-shell</code> or <code>nix develop</code> is run for the first time.
+Checks can then be executed by running one of the following configs:</p>
 <pre><code class="language-sh">nix flake check # checks flake outputs and runs pre-commit at the end
 pre-commit run --all-files # only runs the pre-commit tools on all files
 </code></pre>
@@ -241,7 +244,13 @@ pre-commit run --all-files # only runs the pre-commit tools on all files
 </ul>
 <p>Workflows will generally only be executed if a relevant file has been changed, eg. <code>nix flake check</code> won't run if only the README was changed.</p>
 <h2 id="monitoring"><a class="header" href="#monitoring">Monitoring</a></h2>
-<p>Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends. The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations. Might switch to the Prometheus/Grafana/Loki stack in the future. We used to set up children -&gt; parent streaming in the past, though after transitioning to one big host this didn't make sense anymore. Instead, up to 10GB of data gets stored on individual hosts. While Netdata agents do have their dashboard, the <a href="https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes">Dashboard provided by Netdata</a> is far superior and allows a better insight, eg. by offering the functions feature. Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its <a href="https://learn.netdata.cloud/">documentation</a>. To access the previously linked dashboard, use <code>team@garudalinux.org</code> as login, the login will be completed after opening the link sent here.</p>
+<p>Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends.
+The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations.
+Might switch to the Prometheus/Grafana/Loki stack in the future. We used to set up children -&gt; parent streaming in the past, though after transitioning to one big host this didn't make sense anymore.
+Instead, up to 10GB of data gets stored on individual hosts.
+While Netdata agents do have their dashboard, the <a href="https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes">Dashboard provided by Netdata</a> is far superior and allows a better insight, eg. by offering the functions feature.
+Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its <a href="https://learn.netdata.cloud/">documentation</a>.
+To access the previously linked dashboard, use <code>team@garudalinux.org</code> as login, the login will be completed after opening the link sent here.</p>
 
                     </main>
 

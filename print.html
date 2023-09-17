@@ -183,22 +183,22 @@
 </ul>
 <h2 id="quick-links"><a class="header" href="#quick-links">Quick links</a></h2>
 <ul>
-<li><a href="./hosts/common.html">Common maintenance tasks</a></li>
-<li><a href="./hosts/garuda-mail.html">Host: garuda-mail</a></li>
-<li><a href="./hosts/immortalis.html">Host: immortalis</a></li>
+<li><a href="https://docs.garudalinux.net/common">Common maintenance tasks</a></li>
+<li><a href="https://docs.garudalinux.net/hosts/garuda-mail">Host: garuda-mail</a></li>
+<li><a href="https://docs.garudalinux.net/hosts/immortalis">Host: immortalis</a></li>
 </ul>
 <h2 id="devshell-and-how-to-enter-it"><a class="header" href="#devshell-and-how-to-enter-it">Devshell and how to enter it</a></h2>
 <p>This NixOS flake provides a <a href="https://github.com/numtide/devshell">devshell</a> which contains all deployment tools as well as handy aliases for common tasks.
 The only requirement for using it is having the Nix package manager available. It can be installed on various distributions via the package manager or the following script (<a href="https://zero-to-nix.com/start/install">click me for more information</a>):</p>
-<pre><code class="language-sh">curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix -o nix-install.sh # Check its content afterwards
+<pre><code class="language-shell">curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix -o nix-install.sh # Check its content afterwards
 sh ./nix-install.sh install --diagnostic-endpoint=&quot;&quot;
 </code></pre>
 <p>This installs the Nix packages with flakes already pre-enabled. After that, the shell can be invoked as follows:</p>
-<pre><code class="language-sh">nix develop # The intended way to use the devshell
+<pre><code class="language-shell">nix develop # The intended way to use the devshell
 nix-shell # Legacy, non-flakes way if flakes are not available for some reason
 </code></pre>
 <p>This also sets up pre-commit-hooks and shows the currently implemented tasks, which can be executed by running the command.</p>
-<pre><code>[infra-nix]
+<pre><code class="language-shell">[infra-nix]
 
 ansible-core    - Radically simple IT automation
 apply           - Applies the infra-nix configuration previously deployed to the servers
@@ -211,9 +211,9 @@ update-forum    - Updates the Discourse container of our forum
 update-toolbox  - Updates the locked Chaotic toolbox commit and deploys the changes
 update-website  - Updates the locked website commit and deploys the changes
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="general-structure"><a class="header" href="#general-structure">General structure</a></h2>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="general-structure"><a class="header" href="#general-structure">General structure</a></h1>
 <p>A general overview of the folder structure can be found below:</p>
-<pre><code class="language-sh">├── assets
+<pre><code class="language-shell">├── assets
 ├── docker-compose
 │   ├── all-in-one
 │   ├── github-runner
@@ -242,8 +242,9 @@ update-website  - Updates the locked website commit and deploys the changes
 └── secrets
 </code></pre>
 <h2 id="secrets-in-this-repository"><a class="header" href="#secrets-in-this-repository">Secrets in this repository</a></h2>
-<p>Secrets are managed via a custom Git submodule that contains <code>ansible-vault</code> encrypted files as well as a custom NixOS module <code>garuda-lib</code> which makes them available to our services. The submodule is available in the <code>secrets</code> directory once it has been set up for the first time. It can be initialized by running:</p>
-<pre><code>git submodule init
+<p>Secrets are managed via a custom Git submodule that contains <code>ansible-vault</code> encrypted files as well as a custom NixOS module <code>garuda-lib</code> which makes them available to our services.
+The submodule is available in the <code>secrets</code> directory once it has been set up for the first time. It can be initialized by running:</p>
+<pre><code class="language-sh">git submodule init
 git submodule update
 </code></pre>
 <p>To view or edit any of these files, one can use the following commands:</p>
@@ -254,9 +255,11 @@ ansible-vault encrypt secrets/pathtofile
 <p>Further information on <code>ansible-vault</code> can be found in its <a href="https://docs.ansible.com/ansible/latest/vault_guide/index.html">documentation</a>.
 It is important to keep the <code>secrets</code> directory in the latest state before deploying a new configuration as misconfigurations might happen otherwise.</p>
 <h2 id="passwords-in-general"><a class="header" href="#passwords-in-general">Passwords in general</a></h2>
-<p>Our mission-critical passwords that maintainers and team members need to have access to are stored in our <a href="vault.garudalinux.org">Bitwarden instance</a>. After creating an account, maintainers need to be invited to the Garuda Linux organisation in order to access the stored credentials.</p>
+<p>Our mission-critical passwords that maintainers and team members need to have access to are stored in our <a href="vault.garudalinux.org">Bitwarden instance</a>.
+After creating an account, maintainers need to be invited to the Garuda Linux organisation in order to access the stored credentials.</p>
 <h2 id="linting-and-formatting"><a class="header" href="#linting-and-formatting">Linting and formatting</a></h2>
-<p>We utilize <a href="https://github.com/cachix/pre-commit-hooks.nix">pre-commit-hooks</a> to automatically set up the pre-commit-hook with all the tools once <code>nix-shell</code> or <code>nix develop</code> is run for the first time. Checks can then be executed by running one of the following configs:</p>
+<p>We utilize <a href="https://github.com/cachix/pre-commit-hooks.nix">pre-commit-hooks</a> to automatically set up the pre-commit-hook with all the tools once <code>nix-shell</code> or <code>nix develop</code> is run for the first time.
+Checks can then be executed by running one of the following configs:</p>
 <pre><code class="language-sh">nix flake check # checks flake outputs and runs pre-commit at the end
 pre-commit run --all-files # only runs the pre-commit tools on all files
 </code></pre>
@@ -282,7 +285,13 @@ pre-commit run --all-files # only runs the pre-commit tools on all files
 </ul>
 <p>Workflows will generally only be executed if a relevant file has been changed, eg. <code>nix flake check</code> won't run if only the README was changed.</p>
 <h2 id="monitoring"><a class="header" href="#monitoring">Monitoring</a></h2>
-<p>Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends. The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations. Might switch to the Prometheus/Grafana/Loki stack in the future. We used to set up children -&gt; parent streaming in the past, though after transitioning to one big host this didn't make sense anymore. Instead, up to 10GB of data gets stored on individual hosts. While Netdata agents do have their dashboard, the <a href="https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes">Dashboard provided by Netdata</a> is far superior and allows a better insight, eg. by offering the functions feature. Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its <a href="https://learn.netdata.cloud/">documentation</a>. To access the previously linked dashboard, use <code>team@garudalinux.org</code> as login, the login will be completed after opening the link sent here.</p>
+<p>Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends.
+The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations.
+Might switch to the Prometheus/Grafana/Loki stack in the future. We used to set up children -&gt; parent streaming in the past, though after transitioning to one big host this didn't make sense anymore.
+Instead, up to 10GB of data gets stored on individual hosts.
+While Netdata agents do have their dashboard, the <a href="https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes">Dashboard provided by Netdata</a> is far superior and allows a better insight, eg. by offering the functions feature.
+Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its <a href="https://learn.netdata.cloud/">documentation</a>.
+To access the previously linked dashboard, use <code>team@garudalinux.org</code> as login, the login will be completed after opening the link sent here.</p>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="common-maintenance-tasks"><a class="header" href="#common-maintenance-tasks">Common maintenance tasks</a></h2>
 <h3 id="rebuilding--updating-the-forum-container"><a class="header" href="#rebuilding--updating-the-forum-container">Rebuilding / updating the forum container</a></h3>
 <p>Sometimes Discourse needs its container to build rebuild via cli rather than the webinterface. This can be done with:</p>
@@ -298,11 +307,12 @@ buildiso -i # updates the iso-profiles repo
 buildiso -p dr460nized
 </code></pre>
 <p>Further information on available commands can be found in the <a href="https://gitlab.com/garuda-linux/tools/garuda-tools">garuda-tools</a> repository.
-After the build process is finished, builds can be found on <a href="https://iso.builds.garudalinux.org/iso/garuda/">iso.builds.garudalinux.org</a> - no automatic pushing to Sourceforge and Cloudflare R2 happens by default, see below for more information on how to achieve this.</p>
+After the build process is finished, builds can be found on <a href="https://iso.builds.garudalinux.org/iso/garuda/">iso.builds.garudalinux.org</a>.
+No automatic pushing to Sourceforge and Cloudflare R2 happens by default, see below for more information on how to achieve this.</p>
 <h3 id="deploying-a-new-iso-release"><a class="header" href="#deploying-a-new-iso-release">Deploying a new ISO release</a></h3>
 <p>We are assuming all ISOs have been tested for functionality before executing any of those commands.</p>
 <pre><code class="language-sh">ssh -p 227 $user@116.202.208.112
-build all # builds all ISO provided in the buildall command
+buildall # builds all ISO provided in the buildall command
 deployiso -FS # sync to Cloudflare R2 and Sourceforge
 deployiso -FSR # sync to Cloudflare R2 and Sourceforge while also updating the latest (stable, non-nightly) release
 deployiso -Sd # to delete the old ISOs on Sourceforge once they aren't needed anymore
@@ -345,16 +355,22 @@ sudo nixos-rebuild switch
 <li>Deploy &amp; apply the configuration</li>
 </ul>
 <h3 id="changing-docker-configurations"><a class="header" href="#changing-docker-configurations">Changing Docker configurations</a></h3>
-<p>If configurations of services running in Docker containers need to be altered, one needs to edit the corresponding <code>docker-compose.yml</code> (<code>./nix/docker-compose/$name</code>) file or <code>.env</code> file in the <code>secrets</code> directory (see the secrets section for details on that topic). The deployment is done the same way as with normal system configuration.</p>
+<p>If configurations of services running in Docker containers need to be altered, one needs to edit the corresponding <code>docker-compose.yml</code> (<code>./nix/docker-compose/$name</code>) file or <code>.env</code> file in the <code>secrets</code> directory (see the secrets section for details on that topic).
+The deployment is done the same way as with normal system configuration.</p>
 <h3 id="updating-docker-containers"><a class="header" href="#updating-docker-containers">Updating Docker containers</a></h3>
-<p>Docker containers sometimes use the <code>latest</code> tag in case no current tag is available or in the case of services like Piped and Searx, where it is often crucial to have the latest build to bypass Google's restrictions. Containers using the <code>latest</code> tag are automatically updated via <a href="https://containrrr.dev/watchtower/">watchtower</a> daily. The remaining ones can be updated by changing their version in the corresponding <code>docker-compose.yml</code> and then running <code>deploy</code> &amp; <code>apply</code>. If containers are to be updated manually, this can be achieved by connecting to the host, running <code>nixos-container root-login $containername</code>, and executing:</p>
+<p>Docker containers sometimes use the <code>latest</code> tag in case no current tag is available or in the case of services like Piped and Searx, where it is often crucial to have the latest build to bypass Google's restrictions.
+Containers using the <code>latest</code> tag are automatically updated via <a href="https://containrrr.dev/watchtower/">watchtower</a> daily.
+The remaining ones can be updated by changing their version in the corresponding <code>docker-compose.yml</code> and then running <code>deploy</code> &amp; <code>apply</code>.
+If containers are to be updated manually, this can be achieved by connecting to the host, running <code>nixos-container root-login $containername</code>, and executing:</p>
 <pre><code class="language-sh">cd /var/garuda/docker-compose-runner/$name/ # replace $name with the actual docker-compose.yml or autocomplete via tab
 sudo docker compose pull
 sudo docker compose up -d
 </code></pre>
 <p>The updated containers will be pulled and automatically recreated using the new images.</p>
 <h3 id="rotating-ipv6"><a class="header" href="#rotating-ipv6">Rotating IPv6</a></h3>
-<p>Sometimes it is needed to rotate the available IPv6 addresses to solve the current ones being rate-limited for outgoing requests of Piped, Searx, etc. This can be achieved by editing the hosts Nix file <code>immortalis.nix</code>, replacing the existing values of the <code>networking.interfaces.&quot;eth0&quot;.ipv6.addresses</code> keys seen <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis.nix?ref_type=heads#L30">here</a>. Then, proceed doing the same with the <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis.nix?ref_type=heads#L219">squid configuration</a>:</p>
+<p>Sometimes it is needed to rotate the available IPv6 addresses to solve the current ones being rate-limited for outgoing requests of Piped, Searx, etc.
+This can be achieved by editing the hosts Nix file <code>immortalis.nix</code>, replacing the existing values of the <code>networking.interfaces.&quot;eth0&quot;.ipv6.addresses</code> keys seen <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis.nix?ref_type=heads#L30">here</a>.
+Then, proceed doing the same with the <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis.nix?ref_type=heads#L219">squid configuration</a>:</p>
 <p>. Possible IPv6 addresses need to be generated from our available /64 subnet space and can't be chosen completely random.</p>
 <h3 id="checking-whether-backups-were-successful"><a class="header" href="#checking-whether-backups-were-successful">Checking whether backups were successful</a></h3>
 <p>To check whether backups to Hetzner are still working as expected, connect to the server and execute the following:</p>
@@ -369,7 +385,9 @@ nix flake lock --update-input src-chaotic-toolbox # toolbox
 </code></pre>
 <p>After that deploy as usual by running <code>deploy</code> and <code>apply</code>. The commit and corresponding hash will be updated and NixOS will use it to build the website or toolbox using the new revision automatically.</p>
 <h3 id="updating-the-garuda-startpage-content"><a class="header" href="#updating-the-garuda-startpage-content">Updating the Garuda startpage content</a></h3>
-<p>Our startpage consists of a simple <a href="https://github.com/bastienwirtz/homer">homer</a> deployment. Its configuration is stored in the <a href="https://gitlab.com/garuda-linux/website/startpage">startpage</a> repo, which gets cloned to the docker-compose.yml's directory to serve the files. In order, updating is currently done manually after pushing the changes to the repo (might automate this soon via systemd timer!):</p>
+<p>Our startpage consists of a simple <a href="https://github.com/bastienwirtz/homer">homer</a> deployment.
+Its configuration is stored in the <a href="https://gitlab.com/garuda-linux/website/startpage">startpage</a> repo, which gets cloned to the docker-compose.yml's directory to serve the files.
+In order, updating is currently done manually after pushing the changes to the repo (might automate this soon via systemd timer!):</p>
 <pre><code class="language-sh">ssh -p 225 $user@116.202.208.112
 cd /var/garuda/docker-compose-runner/all-in-one/startpage
 git pull
@@ -1277,7 +1295,8 @@ services:
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="github-runner"><a class="header" href="#github-runner">github-runner</a></h1>
 <h2 id="general-5"><a class="header" href="#general-5">General</a></h2>
-<p>With this container, we provide a GitHub runner. This container does <strong>not</strong> have the regular Garuda configurations because it is considered untrusted. Access needs to happen by running <code>nixos-container root-login</code> on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortalis.html#connecting-to-the-server">click me</a>).</p>
+<p>With this container, we provide a GitHub runner. This container does <strong>not</strong> have the regular Garuda configurations because it is considered untrusted.
+Access needs to happen by running <code>nixos-container root-login</code> on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortalis.html#connecting-to-the-server">click me</a>).</p>
 <h2 id="nix-expression-5"><a class="header" href="#nix-expression-5">Nix expression</a></h2>
 <pre><code class="language-nix">{ keys
 , pkgs
@@ -2718,7 +2737,9 @@ In case of issues, the <a href="https://nixos-mailserver.readthedocs.io/en/lates
 <p>The documentation is created by using <a href="https://rust-lang.github.io/mdBook/index.html">mdBook</a>, which generates Markdown files and generates HTML pages for them. The documentation can be build by running:</p>
 <pre><code class="language-sh">nix build .#docs # plain simple
 </code></pre>
-<p>The files can then be found at <code>./result/</code>, which is a symlink to the corresponding path in <code>/nix/store</code>. mdBook is also able automatically serve the current content and update it automatically whenever a change is detected. This makes testing and previewing content easy.</p>
+<p>The files can then be found at <code>./result/</code>, which is a symlink to the corresponding path in <code>/nix/store</code>.
+mdBook is also able automatically serve the current content and update it automatically whenever a change is detected.
+This makes testing and previewing content easy.</p>
 <pre><code class="language-sh">mdbook serve --open # the latter additionally opens the website in a browser
 </code></pre>
 <h2 id="useful-information"><a class="header" href="#useful-information">Useful information</a></h2>
@@ -2729,7 +2750,8 @@ In case of issues, the <a href="https://nixos-mailserver.readthedocs.io/en/lates
 </ul>
 <p>Especially importing code blocks as Markdown is really handy to keep content always up-to-date and helps providing a full text searchable code documentation.</p>
 <h2 id="deployment"><a class="header" href="#deployment">Deployment</a></h2>
-<p>Deployment to Cloudflare pages automated and happens whenever a commit to main occurs. A <a href="https://github.com/garuda-linux/infrastructure-nix/blob/main/.github/workflows/pages.yml">GitHub actions workflow</a> builds and pushes it to the <code>cf-pages</code> branch, which will then be used by the Cloudflare pages app to deploy the new version from.</p>
+<p>Deployment to Cloudflare pages automated and happens whenever a commit to main occurs.
+A <a href="https://github.com/garuda-linux/infrastructure-nix/blob/main/.github/workflows/pages.yml">GitHub actions workflow</a> builds and pushes it to the <code>cf-pages</code> branch, which will then be used by the Cloudflare pages app to deploy the new version from.</p>
 <pre><code class="language-yaml">---
 name: Cloudflare pages
 on:
@@ -2765,7 +2787,7 @@ jobs:
 	// Define access control lists for users, groups, autogroups, tags,
 	// Tailscale IP addresses, and subnet ranges
 	&quot;acls&quot;: [
-		// All servers can connect to each other
+		// All servers can connect to each other, use exit nodes and oracle-dragon as DNS
 		{
 			&quot;action&quot;: &quot;accept&quot;,
 			&quot;src&quot;:    [&quot;tag:infra&quot;],
@@ -2777,6 +2799,12 @@ jobs:
 			&quot;src&quot;:    [&quot;autogroup:admin&quot;],
 			&quot;dst&quot;:    [&quot;*:*&quot;],
 		},
+		// Shared out nodes can be accessed on SSH / Mosh ports
+		{
+			&quot;action&quot;: &quot;accept&quot;,
+			&quot;src&quot;:    [&quot;autogroup:shared&quot;],
+			&quot;dst&quot;:    [&quot;*:22,222-230,666,60000-61000&quot;],
+		},
 	],
 	// Current infra maintainers
 	&quot;groups&quot;: {
@@ -2787,22 +2815,6 @@ jobs:
 		// Admins may apply the &quot;infra&quot; tag
 		&quot;tag:infra&quot;: [&quot;group:admins&quot;],
 	},
-	// Define settings for Tailscale SSH
-	&quot;ssh&quot;: [
-		// Allow admins to authenticate via Tailscale
-		{
-			&quot;action&quot;: &quot;accept&quot;,
-			&quot;src&quot;:    [&quot;dr460nf1r3@github&quot;],
-			&quot;dst&quot;:    [&quot;tag:infra&quot;],
-			&quot;users&quot;:  [&quot;nico&quot;],
-		},
-		{
-			&quot;action&quot;: &quot;accept&quot;,
-			&quot;src&quot;:    [&quot;JustTNE@github&quot;],
-			&quot;dst&quot;:    [&quot;tag:infra&quot;],
-			&quot;users&quot;:  [&quot;tne&quot;],
-		},
-	],
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="privacy-policy-for-garuda-linux"><a class="header" href="#privacy-policy-for-garuda-linux">Privacy policy for Garuda Linux</a></h1>
@@ -2848,8 +2860,6 @@ jobs:
 <h2 id="embedded-content-from-other-websites"><a class="header" href="#embedded-content-from-other-websites">Embedded content from other websites</a></h2>
 <p>Articles on this site may include embedded content (e.g. videos, images, articles, etc.). Embedded content from other websites behaves in the exact same way as if the visitor has visited the other website.</p>
 <p>These websites may collect data about you, use cookies, embed additional third-party tracking, and monitor your interaction with that embedded content, including tracing your interaction with the embedded content if you have an account and are logged in to that website.</p>
-<h2 id="media"><a class="header" href="#media">Media</a></h2>
-<p>If you upload images to the website, you should avoid uploading images with embedded location data (EXIF GPS) included. Visitors to the website can download and extract any location data from images on the website.</p>
 <h2 id="free-software"><a class="header" href="#free-software">Free software</a></h2>
 <p>Garuda Linux develops free software. All our tools are and will always be free software. Garuda Linux is part of OIN since November 2020. The current license can be viewed here. Additional information about packages covered by this license can be viewed here.</p>
 <p>If you want to check the license of a package, you can do so with Pacman.</p>
@@ -2868,8 +2878,8 @@ changes by posting the new Privacy Policy on this page. These changes are effect
 <p><strong>This privacy policy has been updated in September 2023.</strong></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="credits"><a class="header" href="#credits">Credits</a></h1>
 <ul>
-<li>https://github.com/mozilla</li>
-<li>https://github.com/JetBrains/JetBrainsMono</li>
+<li><a href="https://github.com/mozilla">https://github.com/mozilla</a></li>
+<li><a href="https://github.com/JetBrains/JetBrainsMono">https://github.com/JetBrains/JetBrainsMono</a></li>
 </ul>
 
                     </main>
