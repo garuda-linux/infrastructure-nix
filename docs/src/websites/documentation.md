@@ -8,7 +8,9 @@ The documentation is created by using [mdBook](https://rust-lang.github.io/mdBoo
 nix build .#docs # plain simple
 ```
 
-The files can then be found at `./result/`, which is a symlink to the corresponding path in `/nix/store`. mdBook is also able automatically serve the current content and update it automatically whenever a change is detected. This makes testing and previewing content easy.
+The files can then be found at `./result/`, which is a symlink to the corresponding path in `/nix/store`.
+mdBook is also able automatically serve the current content and update it automatically whenever a change is detected.
+This makes testing and previewing content easy.
 
 ```sh
 mdbook serve --open # the latter additionally opens the website in a browser
@@ -25,7 +27,8 @@ Especially importing code blocks as Markdown is really handy to keep content alw
 
 ## Deployment
 
-Deployment to Cloudflare pages automated and happens whenever a commit to main occurs. A [GitHub actions workflow](https://github.com/garuda-linux/infrastructure-nix/blob/main/.github/workflows/pages.yml) builds and pushes it to the `cf-pages` branch, which will then be used by the Cloudflare pages app to deploy the new version from.
+Deployment to Cloudflare pages automated and happens whenever a commit to main occurs.
+A [GitHub actions workflow](https://github.com/garuda-linux/infrastructure-nix/blob/main/.github/workflows/pages.yml) builds and pushes it to the `cf-pages` branch, which will then be used by the Cloudflare pages app to deploy the new version from.
 
 ```yaml
 {{#include ../../../.github/workflows/pages.yml}}

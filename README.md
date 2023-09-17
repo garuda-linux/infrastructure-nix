@@ -12,30 +12,30 @@
 
 ## Quick links
 
-- [Common maintenance tasks](./hosts/common.md)
-- [Host: garuda-mail](./hosts/garuda-mail.md)
-- [Host: immortalis](./hosts/immortalis.md)
+- [Common maintenance tasks](https://docs.garudalinux.net/common)
+- [Host: garuda-mail](https://docs.garudalinux.net/hosts/garuda-mail)
+- [Host: immortalis](https://docs.garudalinux.net/hosts/immortalis)
 
 ## Devshell and how to enter it
 
 This NixOS flake provides a [devshell](https://github.com/numtide/devshell) which contains all deployment tools as well as handy aliases for common tasks.
 The only requirement for using it is having the Nix package manager available. It can be installed on various distributions via the package manager or the following script ([click me for more information](https://zero-to-nix.com/start/install)):
 
-```sh
+```shell
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix -o nix-install.sh # Check its content afterwards
 sh ./nix-install.sh install --diagnostic-endpoint=""
 ```
 
 This installs the Nix packages with flakes already pre-enabled. After that, the shell can be invoked as follows:
 
-```sh
+```shell
 nix develop # The intended way to use the devshell
 nix-shell # Legacy, non-flakes way if flakes are not available for some reason
 ```
 
 This also sets up pre-commit-hooks and shows the currently implemented tasks, which can be executed by running the command.
 
-```
+```shell
 [infra-nix]
 
 ansible-core    - Radically simple IT automation

@@ -22,7 +22,8 @@ buildiso -p dr460nized
 ```
 
 Further information on available commands can be found in the [garuda-tools](https://gitlab.com/garuda-linux/tools/garuda-tools) repository.
-After the build process is finished, builds can be found on [iso.builds.garudalinux.org](https://iso.builds.garudalinux.org/iso/garuda/) - no automatic pushing to Sourceforge and Cloudflare R2 happens by default, see below for more information on how to achieve this.
+After the build process is finished, builds can be found on [iso.builds.garudalinux.org](https://iso.builds.garudalinux.org/iso/garuda/).
+No automatic pushing to Sourceforge and Cloudflare R2 happens by default, see below for more information on how to achieve this.
 
 ### Deploying a new ISO release
 
@@ -30,7 +31,7 @@ We are assuming all ISOs have been tested for functionality before executing any
 
 ```sh
 ssh -p 227 $user@116.202.208.112
-build all # builds all ISO provided in the buildall command
+buildall # builds all ISO provided in the buildall command
 deployiso -FS # sync to Cloudflare R2 and Sourceforge
 deployiso -FSR # sync to Cloudflare R2 and Sourceforge while also updating the latest (stable, non-nightly) release
 deployiso -Sd # to delete the old ISOs on Sourceforge once they aren't needed anymore
@@ -91,11 +92,15 @@ Adding users needs to be done in `users.nix`:
 
 ### Changing Docker configurations
 
-If configurations of services running in Docker containers need to be altered, one needs to edit the corresponding `docker-compose.yml` (`./nix/docker-compose/$name`) file or `.env` file in the `secrets` directory (see the secrets section for details on that topic). The deployment is done the same way as with normal system configuration.
+If configurations of services running in Docker containers need to be altered, one needs to edit the corresponding `docker-compose.yml` (`./nix/docker-compose/$name`) file or `.env` file in the `secrets` directory (see the secrets section for details on that topic).
+The deployment is done the same way as with normal system configuration.
 
 ### Updating Docker containers
 
-Docker containers sometimes use the `latest` tag in case no current tag is available or in the case of services like Piped and Searx, where it is often crucial to have the latest build to bypass Google's restrictions. Containers using the `latest` tag are automatically updated via [watchtower](https://containrrr.dev/watchtower/) daily. The remaining ones can be updated by changing their version in the corresponding `docker-compose.yml` and then running `deploy` & `apply`. If containers are to be updated manually, this can be achieved by connecting to the host, running `nixos-container root-login $containername`, and executing:
+Docker containers sometimes use the `latest` tag in case no current tag is available or in the case of services like Piped and Searx, where it is often crucial to have the latest build to bypass Google's restrictions.
+Containers using the `latest` tag are automatically updated via [watchtower](https://containrrr.dev/watchtower/) daily.
+The remaining ones can be updated by changing their version in the corresponding `docker-compose.yml` and then running `deploy` & `apply`.
+If containers are to be updated manually, this can be achieved by connecting to the host, running `nixos-container root-login $containername`, and executing:
 
 ```sh
 cd /var/garuda/docker-compose-runner/$name/ # replace $name with the actual docker-compose.yml or autocomplete via tab
@@ -107,7 +112,9 @@ The updated containers will be pulled and automatically recreated using the new 
 
 ### Rotating IPv6
 
-Sometimes it is needed to rotate the available IPv6 addresses to solve the current ones being rate-limited for outgoing requests of Piped, Searx, etc. This can be achieved by editing the hosts Nix file `immortalis.nix`, replacing the existing values of the `networking.interfaces."eth0".ipv6.addresses` keys seen [here](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis.nix?ref_type=heads#L30). Then, proceed doing the same with the [squid configuration](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis.nix?ref_type=heads#L219):
+Sometimes it is needed to rotate the available IPv6 addresses to solve the current ones being rate-limited for outgoing requests of Piped, Searx, etc.
+This can be achieved by editing the hosts Nix file `immortalis.nix`, replacing the existing values of the `networking.interfaces."eth0".ipv6.addresses` keys seen [here](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis.nix?ref_type=heads#L30).
+Then, proceed doing the same with the [squid configuration](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis.nix?ref_type=heads#L219):
 
 . Possible IPv6 addresses need to be generated from our available /64 subnet space and can't be chosen completely random.
 
@@ -135,7 +142,9 @@ After that deploy as usual by running `deploy` and `apply`. The commit and corre
 
 ### Updating the Garuda startpage content
 
-Our startpage consists of a simple [homer](https://github.com/bastienwirtz/homer) deployment. Its configuration is stored in the [startpage](https://gitlab.com/garuda-linux/website/startpage) repo, which gets cloned to the docker-compose.yml's directory to serve the files. In order, updating is currently done manually after pushing the changes to the repo (might automate this soon via systemd timer!):
+Our startpage consists of a simple [homer](https://github.com/bastienwirtz/homer) deployment.
+Its configuration is stored in the [startpage](https://gitlab.com/garuda-linux/website/startpage) repo, which gets cloned to the docker-compose.yml's directory to serve the files.
+In order, updating is currently done manually after pushing the changes to the repo (might automate this soon via systemd timer!):
 
 ```sh
 ssh -p 225 $user@116.202.208.112
