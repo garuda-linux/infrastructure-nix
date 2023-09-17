@@ -66,10 +66,6 @@ Articles on this site may include embedded content (e.g. videos, images, article
 
 These websites may collect data about you, use cookies, embed additional third-party tracking, and monitor your interaction with that embedded content, including tracing your interaction with the embedded content if you have an account and are logged in to that website.
 
-## Media
-
-If you upload images to the website, you should avoid uploading images with embedded location data (EXIF GPS) included. Visitors to the website can download and extract any location data from images on the website.
-
 ## Free software
 
 Garuda Linux develops free software. All our tools are and will always be free software. Garuda Linux is part of OIN since November 2020. The current license can be viewed here. Additional information about packages covered by this license can be viewed here.
