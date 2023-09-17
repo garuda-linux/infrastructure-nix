@@ -3,7 +3,7 @@ version: "3.9"
 services:
   # Garuda Cloud
   nextcloud_app:
-    image: linuxserver/nextcloud:27.0.2
+    image: linuxserver/nextcloud:27.1.0
     container_name: nextcloud
     depends_on: [nextcloud_db, nextcloud_redis]
     environment:
@@ -122,7 +122,7 @@ services:
 
   # Matrix homeserver
   matrix:
-    image: matrixdotorg/synapse:v1.92.1
+    image: matrixdotorg/synapse:v1.92.2
     container_name: matrix
     volumes: [./matrix/matrix:/data]
     ports: [8008:8008]
@@ -149,7 +149,7 @@ services:
 
   # Matrix web client
   matrix_web:
-    image: vectorim/element-web:v1.11.41
+    image: vectorim/element-web:v1.11.43
     container_name: element_web
     depends_on: [matrix]
     volumes: [./matrix/element/config.json:/app/config.json]
