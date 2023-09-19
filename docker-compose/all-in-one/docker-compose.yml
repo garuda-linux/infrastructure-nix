@@ -122,7 +122,7 @@ services:
 
   # Matrix homeserver
   matrix:
-    image: matrixdotorg/synapse:v1.92.2
+    image: matrixdotorg/synapse:v1.92.3
     container_name: matrix
     volumes: [./matrix/matrix:/data]
     ports: [8008:8008]
