@@ -5,11 +5,11 @@
 , pkgs
 , ...
 }: {
-  # Generate password files with 
-  # nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt' > /path/to/passwordfile 
+  # Generate password files with
+  # nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt' > /path/to/hashedPasswordFile
   # and add them to infra-nix-secrets repo
   users = {
-    # All users are immuntable; if a password is required it needs to be set via passwordFile
+    # All users are immuntable; if a password is required it needs to be set via hashedPasswordFile
     mutableUsers = false;
     # Define our users
     users.ansible = {
@@ -25,7 +25,7 @@
       home = "/home/nico";
       isNormalUser = true;
       openssh.authorizedKeys.keyFiles = [ keys.nico ];
-      passwordFile = "/var/garuda/secrets/pass/nico";
+      hashedPasswordFile = "/var/garuda/secrets/pass/nico";
       uid = lib.mkIf garuda-lib.unifiedUID 1001;
     };
     users.sgs = {
@@ -35,7 +35,7 @@
       openssh.authorizedKeys.keys = [
         "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDxBY8TX0iEQkf3Bym+3XVlrk8OLOwHOrj7Uy+WxjncOkkutyZ1WsY9liF4j9yjptyQG7Lx8OM8q44NE6+Rk1OXJXMF7CZ4Jq/WvMVnh2zKyNnF8wHBcspsAdG90wCxo6OmNpnY/rRRlNwwnore7raF2PrERtSlsEvLsUgvspYQ8cnLwerJP43QeETlpE1oR0FrbXWQet0I63Ky6UDEp07x0yee21VHnAG74rjGeFGwJBmCPSxnfGVNhCaR0zyu9+hh222liBrlilYm8nqLlsYGZCXiVdOxXJbBy89EVpHds7Lutf+TAYwsPGZf7U4k+g2Jx8N0JHXyzVZa0zS+I48+tqBBflEOqU9oEfGuz4cU/qWys5soLcRX2p9td+RF3OEdBKlTW4UYsINJUri6QSEUrsGaXqQZy8Ds2FBdUpb4pmFVlo9+4qRouiI80a5xVa7a1E5eS5xK5BzWH4fNg5SqtT5L9i2i1ocZp7FA0oa+ixnXNiC1umPZaY/9s+5fh1s= sgs-linux@shell.sf.net"
       ];
-      passwordFile = "/var/garuda/secrets/pass/sgs";
+      hashedPasswordFile = "/var/garuda/secrets/pass/sgs";
       uid = lib.mkIf garuda-lib.unifiedUID 1002;
     };
     users.tne = {
@@ -43,7 +43,7 @@
       home = "/home/tne";
       isNormalUser = true;
       openssh.authorizedKeys.keyFiles = [ keys.tne ];
-      passwordFile = "/var/garuda/secrets/pass/tne";
+      hashedPasswordFile = "/var/garuda/secrets/pass/tne";
       uid = lib.mkIf garuda-lib.unifiedUID 1003;
     };
 
@@ -84,11 +84,15 @@
   };
 
   # Sudo configuration
-  security.sudo.extraRules = [{
-    users = [ "ansible" "tne" "nico" "sgs" ];
-    commands = [{
-      command = "ALL";
-      options = [ "NOPASSWD" ];
-    }];
-  }];
+  security.sudo.extraRules = [
+    {
+      users = [ "ansible" "tne" "nico" "sgs" ];
+      commands = [
+        {
+          command = "ALL";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
 }

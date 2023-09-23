@@ -26,6 +26,9 @@
     gitignore.url = "github:hercules-ci/gitignore.nix";
     gitignore.inputs.nixpkgs.follows = "nixpkgs";
 
+    # Hercules CI agent
+    hercules-ci-agent.url = "github:hercules-ci/hercules-ci-agent/stable";
+
     # Home-manager for dotfile management
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
@@ -128,7 +131,7 @@
                   echo "This command requires docker to be installed. Please install Docker and try again."
                   exit 1
                 fi
-                if ! docker images | grep buildiso &>/dev/null; then 
+                if ! docker images | grep buildiso &>/dev/null; then
                   docker build ${inputs.src-buildiso} -t buildiso
                 fi
                 docker run --rm -it --privileged --name buildiso \
@@ -141,12 +144,13 @@
               '';
               immortalis = "116.202.208.112";
               makeDevshell = import "${inp.devshell}/modules" pkgs;
-              mkShell = config: (makeDevshell {
-                configuration = {
-                  inherit config;
-                  imports = [ ];
-                };
-              }).shell;
+              mkShell = config:
+                (makeDevshell {
+                  configuration = {
+                    inherit config;
+                    imports = [ ];
+                  };
+                }).shell;
             in
             rec {
               default = infra-nix-shell;
@@ -252,14 +256,15 @@
           formatter = pkgs.nixpkgs-fmt;
 
           packages = {
-            docs = pkgs.runCommand "infra-docs"
-              { nativeBuildInputs = with pkgs; [ bash mdbook ]; }
-              ''
-                bash -c "errors=$(mdbook build -d $out ${./.}/docs |& grep ERROR)
-                if [ \"$errors\" ]; then
-                  exit 1
-                fi"
-              '';
+            docs =
+              pkgs.runCommand "infra-docs"
+                { nativeBuildInputs = with pkgs; [ bash mdbook ]; }
+                ''
+                  bash -c "errors=$(mdbook build -d $out ${./.}/docs |& grep ERROR)
+                  if [ \"$errors\" ]; then
+                    exit 1
+                  fi"
+                '';
           };
         };
     in

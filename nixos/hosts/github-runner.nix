@@ -1,4 +1,5 @@
-{ keys
+{ inputs
+, keys
 , pkgs
 , ...
 }: {
@@ -11,6 +12,7 @@
     ../modules/hardening.nix
     ../modules/motd.nix
     ../services/docker-compose-runner/docker-compose-runner.nix
+    inputs.hercules-ci-agent.nixosModules.agent-service
   ];
 
   # Common Docker configurations
@@ -27,6 +29,10 @@
     source = ../../docker-compose/github-runner;
   };
 
+  # Test out Hercules CI for deployments
+  services.hercules-ci-agent.enable = true;
+  services.hercules-ci-agent.settings.concurrentTasks = 10;
+
   # Enable SSH
   services.openssh.enable = true;
 
@@ -40,13 +46,17 @@
   };
 
   # Make Pedro god here
-  security.sudo.extraRules = [{
-    users = [ "pedrohlc" ];
-    commands = [{
-      command = "ALL";
-      options = [ "NOPASSWD" ];
-    }];
-  }];
+  security.sudo.extraRules = [
+    {
+      users = [ "pedrohlc" ];
+      commands = [
+        {
+          command = "ALL";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
 
   # OOM prevention
   systemd.oomd = {
