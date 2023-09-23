@@ -13,7 +13,6 @@
         - nixos # No alphabetical order to be able to push this first
         - flake.nix
         - flake.lock
-        - devshell
         - docker-compose
         - home-manager
 - name: Decrypt secrets locally
