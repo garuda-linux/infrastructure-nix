@@ -3,7 +3,7 @@ version: "3.9"
 services:
   # Garuda Cloud
   nextcloud_app:
-    image: linuxserver/nextcloud:27.1.0
+    image: linuxserver/nextcloud:27.1.1
     container_name: nextcloud
     depends_on: [nextcloud_db, nextcloud_redis]
     environment:
