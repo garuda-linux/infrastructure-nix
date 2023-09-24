@@ -1,7 +1,6 @@
 # Users
 
-There are multiple kinds of users which are able to make use of our infrastructure.
-A current list of users is available [here](./users/current_users.md).
+Multiple kinds of users can make use of our infrastructure. A current list of users is available [here](./users/current_users.md).
 
 ## Adding new users
 
@@ -13,16 +12,16 @@ nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt' > /path/to/hashedPasswordFile
 ```
 
 The file then needs to be `ansible-vault` encrypted and added to our [secrets](https://gitlab.com/garuda-linux/infra-nix-secrets) repository.
-This one is only available to members of our GitLab org and usually cloned as git submodule to `./secrets`.
+This one is only available to members of our GitLab org and usually is cloned as git submodule to `./secrets`.
 
 ## Onboarding a new admin
 
-After confirming the trustworthyness of a new admin, the following actions need to be executed:
+After confirming the trustworthiness of a new admin, the following actions need to be executed:
 
 - Add them to the [admin users](./users/current_users.md#admins)
 - Add their ssh public key to the [flake inputs](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/flake.nix?ref_type=heads#L59) and [specialArgs](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/flake-module.nix?ref_type=heads#L38)
-- Make them owner of the [GitLab organisation](https://gitlab.com/garuda-linux)
-- Add them to our [Bitwarden organisation](https://vault.garudalinux.org) to allow access to passwords and email accounts
+- Make them an owner of the [GitLab organization](https://gitlab.com/garuda-linux)
+- Add them to our [Bitwarden organization](https://vault.garudalinux.org) to allow access to passwords and email accounts
 - Add them to the Cloudflare Account
-- Make them admin of [Discourse](https://forum.garudalinux.org)
-- Make them admin of [Matrix](https://matrix.garudalinux.org)
+- Make them an admin of [Discourse](https://forum.garudalinux.org)
+- Make them an admin of [Matrix](https://matrix.garudalinux.org)

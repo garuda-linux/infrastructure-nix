@@ -38,4 +38,5 @@
 # Misc
 
 - [Privacy policy](./privacy-policy.md)
+- [Security](./security.md)
 - [Credits](./credits.md)
