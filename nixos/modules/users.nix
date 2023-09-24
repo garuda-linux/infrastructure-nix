@@ -19,7 +19,11 @@
       openssh.authorizedKeys.keyFiles = [ keys.nico keys.tne ];
       uid = lib.mkIf garuda-lib.unifiedUID 1000;
     };
+
     # Garuda admins - god mode
+    /*
+      ANCHOR: admins
+    */
     users.nico = {
       extraGroups = [ "wheel" "docker" "chaotic_op" ];
       home = "/home/nico";
@@ -46,8 +50,13 @@
       hashedPasswordFile = "/var/garuda/secrets/pass/tne";
       uid = lib.mkIf garuda-lib.unifiedUID 1003;
     };
-
+    /*
+      ANCHOR_END: admins
+    */
     # Garuda maintainers - limited access to buildiso
+    /*
+      ANCHOR: maintainers
+    */
     users.frank = {
       home = "/home/frank";
       isNormalUser = true;
@@ -55,8 +64,13 @@
       shell = lib.mkIf (!config.services.garuda-iso.enable) "${pkgs.util-linux}/bin/nologin";
       uid = lib.mkIf garuda-lib.unifiedUID 1007;
     };
-
+    /*
+      ANCHOR_END: maintainers
+    */
     # Chaotic-AUR maintainers - limited access to chaotic-aur builders
+    /*
+      ANCHOR: chaotic-aur
+    */
     users.technetium = {
       extraGroups = lib.mkIf config.services.chaotic.enable [ "chaotic_op" ];
       home = "/home/technetium";
@@ -81,6 +95,9 @@
       shell = lib.mkIf (!config.services.chaotic.enable) "${pkgs.util-linux}/bin/nologin";
       uid = lib.mkIf garuda-lib.unifiedUID 1006;
     };
+    /*
+      ANCHOR_END: chaotic-aur
+    */
   };
 
   # Sudo configuration

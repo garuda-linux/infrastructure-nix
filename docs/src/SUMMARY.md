@@ -7,6 +7,11 @@
 - [Common tasks](./common.md)
 - [Important links](./important-links.md)
 
+# Users
+
+- [Users](./users.md)
+  - [Current users](./users/current_users.md)
+
 # Hosts
 
 - [immortalis](./hosts/immortalis.md)
