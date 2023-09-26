@@ -143,6 +143,7 @@
                        buildiso /bin/bash
               '';
               immortalis = "116.202.208.112";
+              ipv6-generator = builtins.readFile ./scripts/ipv6-generator.sh;
               makeDevshell = import "${inp.devshell}/modules" pkgs;
               mkShell = config:
                 (makeDevshell {
@@ -224,6 +225,12 @@
                     command = ''
                       ${buildiso}
                     '';
+                  }
+                  {
+                    name = "ipv6-generator";
+                    help = "Generates random IPv6 addresses in our /64 subnet to help rorating them";
+                    category = "infra-nix";
+                    command = ipv6-generator;
                   }
                   {
                     name = "update-website";

@@ -114,9 +114,9 @@ The updated containers will be pulled and automatically recreated using the new 
 
 Sometimes it is needed to rotate the available IPv6 addresses to solve the current ones being rate-limited for outgoing requests of Piped, Searx, etc.
 This can be achieved by editing the hosts Nix file `immortalis.nix`, replacing the existing values of the `networking.interfaces."eth0".ipv6.addresses` keys seen [here](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis.nix?ref_type=heads#L30).
-Then, proceed doing the same with the [squid configuration](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis.nix?ref_type=heads#L219):
-
-. Possible IPv6 addresses need to be generated from our available /64 subnet space and can't be chosen completely random.
+Then, proceed doing the same with the [squid configuration](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis.nix?ref_type=heads#L219).
+IPv6 addresses need to be generated from our available /64 subnet space and can't be chosen completely random.
+To ease the process, a command called `ipv6-generator` is available in this git repos' devshell.
 
 ### Checking whether backups were successful
 
