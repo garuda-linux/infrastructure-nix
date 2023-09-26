@@ -198,7 +198,7 @@ version: &quot;3.9&quot;
 services:
   # Garuda Cloud
   nextcloud_app:
-    image: linuxserver/nextcloud:27.1.0
+    image: linuxserver/nextcloud:27.1.1
     container_name: nextcloud
     depends_on: [nextcloud_db, nextcloud_redis]
     environment:
@@ -283,7 +283,7 @@ services:
 
   # Garuda startpage
   homer:
-    image: b4bz/homer:v23.05.1
+    image: b4bz/homer:v23.09.1
     container_name: homer
     volumes: [./startpage:/www/assets]
     ports: [8083:8080]
