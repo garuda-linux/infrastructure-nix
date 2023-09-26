@@ -29,50 +29,52 @@
     hostName = "immortalis";
     interfaces = {
       "eth0" = {
-        ipv4.addresses = [{
-          address = "116.202.208.112";
-          prefixLength = 26;
-        }];
+        ipv4.addresses = [
+          {
+            address = "116.202.208.112";
+            prefixLength = 26;
+          }
+        ];
         ipv6.addresses = [
           # Random outgoing
           {
-            address = "2a01:4f8:2200:30ac:8bc3:87ca:7eb3:1445";
+            address = "2a01:4f8:2200:30ac:cae1:71f0:5a38:6dbf";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:b3e8:3e97:b9ea:4f4c";
+            address = "2a01:4f8:2200:30ac:b9ff:b501:bcfd:099e";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:3139:1040:65d2:f055";
+            address = "2a01:4f8:2200:30ac:a11e:3158:93cf:e639";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:1c69:9c53:0801:c089";
+            address = "2a01:4f8:2200:30ac:1a6e:cfc8:22df:2909";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:43ca:4c70:b3af:0713";
+            address = "2a01:4f8:2200:30ac:29ea:7789:ab2f:6d25";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:c164:d4da:d822:b5c0";
+            address = "2a01:4f8:2200:30ac:1e3a:c90f:863f:2126";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:33ab:784a:d947:6fe1";
+            address = "2a01:4f8:2200:30ac:4554:3b8e:50d9:ac50";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:370c:1719:6265:3137";
+            address = "2a01:4f8:2200:30ac:d848:60a0:c7fd:60de";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:c9c3:b7f6:fcc3:304e";
+            address = "2a01:4f8:2200:30ac:13dd:bdc1:f53a:12e1";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:5c1b:cfd5:7c0e:f2e5";
+            address = "2a01:4f8:2200:30ac:2dc7:3d2d:a4f2:fb89";
             prefixLength = 64;
           }
         ];
@@ -115,7 +117,7 @@
   # Make use of all threads!
   security.allowSimultaneousMultithreading = true;
 
-  # Raise limits to support many containers 
+  # Raise limits to support many containers
   # (from LXC's recommendedSysctlSettings)
   boot.kernel.sysctl = {
     "fs.inotify.max_user_instances" = 1048576;
@@ -219,29 +221,29 @@
 
       # Invalid IP
       tcp_outgoing_address 10.254.254.254
-      tcp_outgoing_address 2a01:4f8:2200:30ac:8bc3:87ca:7eb3:1445 tenth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:b3e8:3e97:b9ea:4f4c ninth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:3139:1040:65d2:f055 eighth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:1c69:9c53:0801:c089 seventh
-      tcp_outgoing_address 2a01:4f8:2200:30ac:43ca:4c70:b3af:0713 sixth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:c164:d4da:d822:b5c0 fifth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:33ab:784a:d947:6fe1 fourth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:370c:1719:6265:3137 third
-      tcp_outgoing_address 2a01:4f8:2200:30ac:c9c3:b7f6:fcc3:304e half
-      tcp_outgoing_address 2a01:4f8:2200:30ac:5c1b:cfd5:7c0e:f2e5
+      tcp_outgoing_address 2a01:4f8:2200:30ac:cae1:71f0:5a38:6dbf tenth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:b9ff:b501:bcfd:099e ninth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:a11e:3158:93cf:e639 eighth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:1a6e:cfc8:22df:2909 seventh
+      tcp_outgoing_address 2a01:4f8:2200:30ac:1a6e:cfc8:22df:2909 sixth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:29ea:7789:ab2f:6d25 fifth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:1e3a:c90f:863f:2126 fourth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:4554:3b8e:50d9:ac50 third
+      tcp_outgoing_address 2a01:4f8:2200:30ac:d848:60a0:c7fd:60de half
+      tcp_outgoing_address 2a01:4f8:2200:30ac:13dd:bdc1:f53a:12e1
 
       # Invalid IP
       udp_outgoing_address 10.254.254.254
-      udp_outgoing_address 2a01:4f8:2200:30ac:8bc3:87ca:7eb3:1445 tenth
-      udp_outgoing_address 2a01:4f8:2200:30ac:b3e8:3e97:b9ea:4f4c ninth
-      udp_outgoing_address 2a01:4f8:2200:30ac:3139:1040:65d2:f055 eighth
-      udp_outgoing_address 2a01:4f8:2200:30ac:1c69:9c53:0801:c089 seventh
-      udp_outgoing_address 2a01:4f8:2200:30ac:43ca:4c70:b3af:0713 sixth
-      udp_outgoing_address 2a01:4f8:2200:30ac:c164:d4da:d822:b5c0 fifth
-      udp_outgoing_address 2a01:4f8:2200:30ac:33ab:784a:d947:6fe1 fourth
-      udp_outgoing_address 2a01:4f8:2200:30ac:370c:1719:6265:3137 third
-      udp_outgoing_address 2a01:4f8:2200:30ac:c9c3:b7f6:fcc3:304e half
-      udp_outgoing_address 2a01:4f8:2200:30ac:5c1b:cfd5:7c0e:f2e5
+      udp_outgoing_address 2a01:4f8:2200:30ac:cae1:71f0:5a38:6dbf tenth
+      udp_outgoing_address 2a01:4f8:2200:30ac:b9ff:b501:bcfd:099e ninth
+      udp_outgoing_address 2a01:4f8:2200:30ac:a11e:3158:93cf:e639 eighth
+      udp_outgoing_address 2a01:4f8:2200:30ac:1a6e:cfc8:22df:2909 seventh
+      udp_outgoing_address 2a01:4f8:2200:30ac:1a6e:cfc8:22df:2909 sixth
+      udp_outgoing_address 2a01:4f8:2200:30ac:29ea:7789:ab2f:6d25 fifth
+      udp_outgoing_address 2a01:4f8:2200:30ac:1e3a:c90f:863f:2126 fourth
+      udp_outgoing_address 2a01:4f8:2200:30ac:4554:3b8e:50d9:ac50 third
+      udp_outgoing_address 2a01:4f8:2200:30ac:d848:60a0:c7fd:60de half
+      udp_outgoing_address 2a01:4f8:2200:30ac:13dd:bdc1:f53a:12e1
     '';
     proxyAddress = "10.0.5.1";
   };
@@ -254,4 +256,3 @@
 
   system.stateVersion = "23.05";
 }
-
