@@ -36,7 +36,7 @@
   # Enable SSH
   services.openssh.enable = true;
 
-  # No custom users - oonly Pedro and root via nixos-container root-login
+  # No custom users - only Pedro and root via nixos-container root-login
   users.allowNoPasswordLogin = true;
   users.mutableUsers = false;
   users.users.pedrohlc = {

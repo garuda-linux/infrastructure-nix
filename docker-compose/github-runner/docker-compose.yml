@@ -16,11 +16,3 @@ services:
       RUNNER_WORKDIR: /tmp/runner/work
     volumes: [/tmp/runner:/tmp/runner]
     restart: never
-
-  # Automated container updates
-  watchtower:
-    image: containrrr/watchtower:1.5.3
-    container_name: watchtower
-    command: --cleanup
-    volumes: [/var/run/docker.sock:/var/run/docker.sock]
-    restart: always
