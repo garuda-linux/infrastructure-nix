@@ -3,7 +3,6 @@ version: "3.9"
 services:
   github-runner:
     image: myoung34/github-runner:2.309.0
-    depends_on: [watchtower]
     container_name: github-runner
     privileged: true
     environment:
@@ -15,4 +14,4 @@ services:
       RUNNER_SCOPE: org
       RUNNER_WORKDIR: /tmp/runner/work
     volumes: [/tmp/runner:/tmp/runner]
-    restart: never
+    restart: on-failure
