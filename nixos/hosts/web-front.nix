@@ -35,8 +35,7 @@
           };
           "/os/garuda-update/remote-update" = {
             extraConfig = "expires 12h;";
-            return =
-              "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update";
+            return = "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update";
           };
           "/os/garuda-update/garuda-hotfixes-version" = {
             extraConfig = "expires 5m;";
@@ -477,6 +476,21 @@
         locations = {
           "/" = {
             proxyPass = "http://10.0.5.110:3002";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "websurfx.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.100:8086";
           };
         };
         quic = true;

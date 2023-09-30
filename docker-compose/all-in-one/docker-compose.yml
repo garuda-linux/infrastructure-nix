@@ -2,34 +2,34 @@
 version: "3.9"
 services:
   # Garuda Cloud
-  nextcloud_app:
-    image: linuxserver/nextcloud:27.1.1
-    container_name: nextcloud
-    depends_on: [nextcloud_db, nextcloud_redis]
-    environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: Europe/Berlin
-    ports: [443:443]
-    volumes: [./nextcloud/config:/config, ./nextcloud/data:/data]
-    restart: always
-  nextcloud_db:
-    image: mariadb:11.1.2
-    container_name: nextcloud_db
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-    environment:
-      MYSQL_ROOT_PASSWORD: ${NC_ROOT_PASSWORD:-?err}
-      MYSQL_PASSWORD: ${NC_PASSWORD:-?err}
-      MYSQL_DATABASE: ${NC_DATABASE:-?err}
-      MYSQL_USER: ${NC_USER:-?err}
-    volumes: [./nextcloud/db:/var/lib/mysql]
-    restart: always
-  nextcloud_redis:
-    image: redis:7.2.1
-    container_name: nextcloud_redis
-    environment:
-      ALLOW_EMPTY_PASSWORD: true
-    restart: always
+  # nextcloud_app:
+  #   image: linuxserver/nextcloud:27.1.1
+  #   container_name: nextcloud
+  #   depends_on: [nextcloud_db, nextcloud_redis]
+  #   environment:
+  #     PUID: 1000
+  #     PGID: 1000
+  #     TZ: Europe/Berlin
+  #   ports: [443:443]
+  #   volumes: [./nextcloud/config:/config, ./nextcloud/data:/data]
+  #   restart: always
+  # nextcloud_db:
+  #   image: mariadb:11.1.2
+  #   container_name: nextcloud_db
+  #   command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: ${NC_ROOT_PASSWORD:-?err}
+  #     MYSQL_PASSWORD: ${NC_PASSWORD:-?err}
+  #     MYSQL_DATABASE: ${NC_DATABASE:-?err}
+  #     MYSQL_USER: ${NC_USER:-?err}
+  #   volumes: [./nextcloud/db:/var/lib/mysql]
+  #   restart: always
+  # nextcloud_redis:
+  #   image: redis:7.2.1
+  #   container_name: nextcloud_redis
+  #   environment:
+  #     ALLOW_EMPTY_PASSWORD: true
+  #   restart: always
 
   # Firefox syncserver
   syncserver:
@@ -192,6 +192,18 @@ services:
         "lemmy.one" ]'
       SECONDS_AFTER_COMMUNITY_ADD: 17
     restart: unless-stopped
+
+  # Websurfx search engine
+  websurfx:
+    image: neonmmd/websurfx:latest
+    container_name: websurfx
+    ports: [8086:8080]
+    depends_on: [websurfx_redis]
+    links: [websurfx_redis]
+    volumes: [./websurfx/:/etc/xdg/websurfx/]
+  websurfx_redis:
+    container_name: websurfx_redis
+    image: redis:latest
 
   # Automated container updates
   watchtower:
