@@ -1,5 +1,4 @@
-{ inputs
-, keys
+{ keys
 , pkgs
 , ...
 }: {
@@ -12,7 +11,6 @@
     ../modules/hardening.nix
     ../modules/motd.nix
     ../services/docker-compose-runner/docker-compose-runner.nix
-    inputs.hercules-ci-agent.nixosModules.agent-service
   ];
 
   # Common Docker configurations
@@ -24,14 +22,9 @@
 
   # This container is just for docker-compose stuff
   services.docker-compose-runner.github-runner = {
-    args = "run github-runner";
     envfile = "/var/garuda/secrets/github-runner.env";
     source = ../../docker-compose/github-runner;
   };
-
-  # Test out Hercules CI for deployments
-  services.hercules-ci-agent.enable = true;
-  services.hercules-ci-agent.settings.concurrentTasks = 10;
 
   # Enable SSH
   services.openssh.enable = true;

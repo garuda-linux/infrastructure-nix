@@ -372,12 +372,5 @@ in
         "container@meshcentral.service"
       ];
     };
-    "container@github-runner".serviceConfig = {
-      Restart = lib.mkForce "always";
-      RestartSec = 1;
-      RestartSteps = 5;
-      RestartMaxDelaySec = 300;
-      RuntimeMaxSec = "1d";
-    };
   };
 }
