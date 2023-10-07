@@ -31,6 +31,20 @@ services:
       ALLOW_EMPTY_PASSWORD: true
     restart: always
 
+  # Nextcloud AIO (self-managed containers)
+  nextcloud-aio-mastercontainer:
+    image: nextcloud/all-in-one:latest
+    restart: always
+    container_name: nextcloud-aio-mastercontainer # Don't change this!
+    volumes:
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # Don't change this!
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 8080:8080
+    environment:
+      - APACHE_PORT=11000
+      - APACHE_IP_BINDING=10.0.5.100
+
   # Firefox syncserver
   syncserver:
     container_name: syncserver
@@ -214,3 +228,7 @@ services:
       thelounge syncserver nextcloud_app lemmy_seeder
     volumes: [/var/run/docker.sock:/var/run/docker.sock]
     restart: always
+
+volumes:
+  nextcloud_aio_mastercontainer:
+    name: nextcloud_aio_mastercontainer # Don't change this!
