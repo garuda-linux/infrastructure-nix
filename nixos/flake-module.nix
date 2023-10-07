@@ -67,6 +67,11 @@ in
         inherit specialArgs;
         modules = defaultModules ++ [ ./hosts/immortalis.nix ];
       };
+      "cachix" = nixpkgs.lib.nixosSystem {
+        inherit system;
+        inherit specialArgs;
+        modules = defaultModules ++ [ ./hosts/cachix.nix ];
+      };
     };
   };
 }
