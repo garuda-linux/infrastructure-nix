@@ -43,7 +43,7 @@
     eventsConfig = ''
       worker_connections 1024;
     '';
-    package = pkgs.nginxQuic.override {
+    package = pkgs.nginx.override {
       withPerl = true;
       doCheck = false;
     };

@@ -334,11 +334,6 @@ in
         config = import ../web-front.nix;
         extraOptions = {
           bindMounts = {
-            "acme" = {
-              hostPath = "/data_1/containers/web-front/acme";
-              isReadOnly = false;
-              mountPoint = "/var/lib/acme";
-            };
             "nginx" = {
               hostPath = "/var/log/nginx";
               isReadOnly = false;
