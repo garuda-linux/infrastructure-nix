@@ -112,7 +112,7 @@
     locate = {
       enable = true;
       localuser = null;
-      locate = pkgs.plocate;
+      package = pkgs.plocate;
     };
     openssh.enable = true;
     vnstat.enable = true;
