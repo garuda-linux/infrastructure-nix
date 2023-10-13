@@ -550,11 +550,11 @@
     "src-chaotic-toolbox": {
       "flake": false,
       "locked": {
-        "lastModified": 1695233583,
-        "narHash": "sha256-nx8cUN5UBiYuhp+ujXt23MLO45+bkCyFXbnX6oqoPLU=",
+        "lastModified": 1697219364,
+        "narHash": "sha256-yybEX5kQ/S4SHJmhSAF1pRsDVfB1B9Ynqqo26OHjHbo=",
         "owner": "chaotic-aur",
         "repo": "toolbox",
-        "rev": "b010e6a78a24688396f816e65b012cf6a3184ba0",
+        "rev": "21f0e5a024b3f23331430b155d54fca1142927f9",
         "type": "github"
       },
       "original": {
@@ -578,11 +578,11 @@
     "src-garuda-website": {
       "flake": false,
       "locked": {
-        "lastModified": 1697028296,
-        "narHash": "sha256-o8cCqNuPBGjs7uOP6sDYKhELJs3gqMsfCTkO2I5qSnQ=",
+        "lastModified": 1697220718,
+        "narHash": "sha256-1R8hCiupzyeGshxufq1Ufdy6bmjmPnFRZ8LWAQb6hrM=",
         "owner": "garuda-linux%2Fwebsite",
         "repo": "garuda",
-        "rev": "0168db0f6af3976cff865f603920909a06b7f1ae",
+        "rev": "f83f13501fa061ba386b579269051f20fdd8c63d",
         "type": "gitlab"
       },
       "original": {
