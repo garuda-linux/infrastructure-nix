@@ -161,6 +161,7 @@
                   startup = {
                     preCommitHooks.text = self.checks.${system}.pre-commit-check.shellHook;
                     dr460nixedEnv.text = ''
+                      export LC_ALL="C.UTF-8"
                       export NIX_PATH=nixpkgs=${nixpkgs}
                     '';
                   };

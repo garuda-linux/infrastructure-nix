@@ -111,20 +111,20 @@
         locations = {
           "/" = {
             extraConfig = ''
-              		        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              		        proxy_set_header X-Forwarded-Port $server_port;
-              		        proxy_set_header X-Forwarded-Scheme $scheme;
-              		        proxy_set_header X-Forwarded-Proto $scheme;
-              		        proxy_set_header X-Real-IP $remote_addr;
-              		        proxy_set_header Accept-Encoding "";
-              		        proxy_set_header Host $host;
-              		    
-              		        client_body_buffer_size 512k;
-              		        proxy_read_timeout 86400s;
-              		        client_max_body_size 0;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Port $server_port;
+              proxy_set_header X-Forwarded-Scheme $scheme;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header Accept-Encoding "";
+              proxy_set_header Host $host;
 
-              	            # Allow accessing through trusted domain
-              	            set_real_ip_from      172.0.0.0/16;
+              client_body_buffer_size 512k;
+              proxy_read_timeout 86400s;
+              client_max_body_size 0;
+
+              # Allow accessing through trusted domain
+              set_real_ip_from      172.0.0.0/16;
             '';
             proxyPass = "http://10.0.5.100:11000";
             proxyWebsockets = true;
@@ -143,20 +143,20 @@
         locations = {
           "/" = {
             extraConfig = ''
-              		        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              		        proxy_set_header X-Forwarded-Port $server_port;
-              		        proxy_set_header X-Forwarded-Scheme $scheme;
-              		        proxy_set_header X-Forwarded-Proto $scheme;
-              		        proxy_set_header X-Real-IP $remote_addr;
-              		        proxy_set_header Accept-Encoding "";
-              		        proxy_set_header Host $host;
-              		    
-              		        client_body_buffer_size 512k;
-              		        proxy_read_timeout 86400s;
-              		        client_max_body_size 0;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Port $server_port;
+              proxy_set_header X-Forwarded-Scheme $scheme;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header Accept-Encoding "";
+              proxy_set_header Host $host;
 
-              	            # Allow accessing through trusted domain
-              	            set_real_ip_from      172.0.0.0/16;
+              client_body_buffer_size 512k;
+              proxy_read_timeout 86400s;
+              client_max_body_size 0;
+
+                 # Allow accessing through trusted domain
+                 set_real_ip_from      172.0.0.0/16;
             '';
             proxyPass = "https://10.0.5.100:8080";
             proxyWebsockets = true;
