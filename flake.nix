@@ -223,9 +223,7 @@
                     name = "buildiso-local";
                     help = "Spawns a local buildiso shell to build to ./buildiso (needs Docker)";
                     category = "infra-nix";
-                    command = ''
-                      ${buildiso}
-                    '';
+                    command = buildiso;
                   }
                   {
                     name = "ipv6-generator";
