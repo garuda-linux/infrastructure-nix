@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js navy">
+<html lang="en" class="navy" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -10,7 +10,7 @@
         
         <meta name="description" content="Contains the documentation for the Garuda Linux infrastructure.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff">
 
         <link rel="icon" href="../favicon.svg">
         <link rel="shortcut icon" href="../favicon.png">
@@ -32,7 +32,7 @@
         <link rel="stylesheet" href="../theme/css/custom.css">
 
     </head>
-    <body>
+    <body class="sidebar-visible no-js">
     <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
@@ -62,24 +62,29 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('no-js')
             html.classList.remove('navy')
             html.classList.add(theme);
-            html.classList.add('js');
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
         </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var html = document.querySelector('html');
+            var body = document.querySelector('body');
             var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
             }
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
@@ -117,9 +122,9 @@
                                 <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
-                        </button>
+                        </label>
                         <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
                             <i class="fa fa-paint-brush"></i>
                         </button>
@@ -198,7 +203,7 @@ version: &quot;3.9&quot;
 services:
   # Garuda Cloud
   nextcloud_app:
-    image: linuxserver/nextcloud:27.1.1
+    image: linuxserver/nextcloud:27.0.1
     container_name: nextcloud
     depends_on: [nextcloud_db, nextcloud_redis]
     environment:
@@ -225,6 +230,20 @@ services:
     environment:
       ALLOW_EMPTY_PASSWORD: true
     restart: always
+
+  # Nextcloud AIO (self-managed containers)
+  nextcloud-aio-mastercontainer:
+    image: nextcloud/all-in-one:latest
+    restart: always
+    container_name: nextcloud-aio-mastercontainer # Don't change this!
+    volumes:
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # Don't change this!
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 8080:8080
+    environment:
+      - APACHE_PORT=11000
+      - APACHE_IP_BINDING=10.0.5.100
 
   # Firefox syncserver
   syncserver:
@@ -317,7 +336,7 @@ services:
 
   # Matrix homeserver
   matrix:
-    image: matrixdotorg/synapse:v1.92.3
+    image: matrixdotorg/synapse:v1.93.0
     container_name: matrix
     volumes: [./matrix/matrix:/data]
     ports: [8008:8008]
@@ -344,7 +363,7 @@ services:
 
   # Matrix web client
   matrix_web:
-    image: vectorim/element-web:v1.11.43
+    image: vectorim/element-web:v1.11.45
     container_name: element_web
     depends_on: [matrix]
     volumes: [./matrix/element/config.json:/app/config.json]
@@ -370,7 +389,7 @@ services:
 
   # Makes world content available for our Lemmy instance
   lemmy_seeder:
-    image: nowsci/lcs:20230901035206
+    image: nowsci/lcs:20231001035209
     container_name: lemmy_lcs
     environment:
       COMMUNITY_COUNT: 50
@@ -388,6 +407,18 @@ services:
       SECONDS_AFTER_COMMUNITY_ADD: 17
     restart: unless-stopped
 
+  # Websurfx search engine
+  websurfx:
+    image: neonmmd/websurfx:latest
+    container_name: websurfx
+    ports: [8086:8080]
+    depends_on: [websurfx_redis]
+    links: [websurfx_redis]
+    volumes: [./websurfx/:/etc/xdg/websurfx/]
+  websurfx_redis:
+    container_name: websurfx_redis
+    image: redis:latest
+
   # Automated container updates
   watchtower:
     image: containrrr/watchtower:1.5.3
@@ -397,6 +428,10 @@ services:
       thelounge syncserver nextcloud_app lemmy_seeder
     volumes: [/var/run/docker.sock:/var/run/docker.sock]
     restart: always
+
+volumes:
+  nextcloud_aio_mastercontainer:
+    name: nextcloud_aio_mastercontainer # Don't change this!
 </code></pre>
 
                     </main>
@@ -407,7 +442,7 @@ services:
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next" href="../nixos-containers/forum.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../nixos-containers/forum.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -421,7 +456,7 @@ services:
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next" href="../nixos-containers/forum.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../nixos-containers/forum.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
