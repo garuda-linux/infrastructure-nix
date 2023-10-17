@@ -232,16 +232,6 @@
                     command = ipv6-generator;
                   }
                   {
-                    name = "update-website";
-                    help = "Updates the locked website commit and deploys the changes";
-                    category = "infra-nix";
-                    command = ''
-                      nix flake lock --update-input src-garuda-website
-                      ansible-playbook playbooks/garuda.yml -l immortalis
-                      ansible-playbook playbooks/apply.yml -l immortalis
-                    '';
-                  }
-                  {
                     name = "update-toolbox";
                     help = "Updates the locked Chaotic toolbox commit and deploys the changes";
                     category = "infra-nix";

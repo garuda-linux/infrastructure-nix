@@ -8,48 +8,6 @@
   services.nginx = {
     enable = true;
     virtualHosts = {
-      "garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            index = "index.html";
-            root = sources.garuda-website;
-          };
-          "/discord" = {
-            extraConfig = "expires 12h;";
-            return = "307 https://discord.gg/w5jbhq3juh";
-          };
-          "/telegram" = {
-            extraConfig = "expires 12h;";
-            return = "307 https://t.me/garudalinux";
-          };
-          "/os/garuda-update/backuprepo" = {
-            extraConfig = ''
-              rewrite ^/os/garuda-update/backuprepo/(.*)$ https://geo-mirror.chaotic.cx/chaotic-aur/$1 redirect;
-            '';
-          };
-          "/os/garuda-update/remote-update" = {
-            extraConfig = "expires 12h;";
-            return = "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update";
-          };
-          "/os/garuda-update/garuda-hotfixes-version" = {
-            extraConfig = "expires 5m;";
-            return = "200 '1'";
-          };
-          "/.well-known/webfinger" = {
-            extraConfig = "expires 12h;";
-            return = "301 https://social.garudalinux.org$request_uri";
-          };
-        };
-        # quic = true;
-        serverAliases = [ "www.garudalinux.org" ];
-        useACMEHost = "garudalinux.org";
-      };
       "cloud.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
