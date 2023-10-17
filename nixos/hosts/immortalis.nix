@@ -175,6 +175,9 @@
     };
   };
 
+  # Fix permissions of nginx log files to allow Netdata to read it (gets reset frequently)
+  system.activationScripts.netdata = ''chown 60:netdata -R /var/log/nginx'';
+
   # Backup configurations to Hetzner storage box
   programs.ssh.macs = [ "hmac-sha2-512" ];
   services.borgbackup.jobs = {
