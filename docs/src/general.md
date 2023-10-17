@@ -89,6 +89,7 @@ We have used pull-/push-based mirroring for this git repository, which allows ea
 - `nix flake check` runs for every labeled PR and commit on main.
 - [Renovate](https://renovatebot.com/) periodically checks `docker-compose.yml` and other supported files for version updates. It has a [dependency dashboard](https://github.com/garuda-linux/infrastructure-nix/issues/5) as well as the [developer interface](https://developer.mend.io/github/garuda-linux/infrastructure-nix) to check logs of individual runs. Minor updates appear as grouped PRs while major updates are separated from those. Note that this only applies to the GitHub side.
 - Deployment of our [mdBook-based](https://github.com/rust-lang/mdBook) documentation to Cloudflare pages.
+- Deployment of our Website to Cloudflare pages.
 
 Workflows will generally only be executed if a relevant file has been changed, eg. `nix flake check` won't run if only the README was changed.
 

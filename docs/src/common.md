@@ -128,17 +128,16 @@ systemctl status borgbackup-job-backupToHetzner
 
 This should yield a successful unit state. The only exception is having an exit code != `0` due to files having changed during the run.
 
-### Updating the website content or Chaotic-AUR toolbox
+### Updating Chaotic-AUR toolbox
 
-This needs to be done by updating the flake input (git repo URL of the website) [src-garuda-website](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/flake.nix?ref_type=heads#L60) or [src-chaotic-toolbox](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/flake.nix?ref_type=heads#L44):
+This needs to be done by updating the flake input (git repo URL of the website) [src-chaotic-toolbox](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/flake.nix?ref_type=heads#L44):
 
 ```sh
 cd nix
-nix flake lock --update-input src-garuda-website # website
 nix flake lock --update-input src-chaotic-toolbox # toolbox
 ```
 
-After that deploy as usual by running `deploy` and `apply`. The commit and corresponding hash will be updated and NixOS will use it to build the website or toolbox using the new revision automatically.
+After that deploy as usual by running `deploy` and `apply`. The commit and corresponding hash will be updated and NixOS will use it to build the toolbox using the new revision automatically.
 
 ### Updating the Garuda startpage content
 
