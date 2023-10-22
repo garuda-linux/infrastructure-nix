@@ -175,7 +175,7 @@ services:
 
   # Automated container updates
   watchtower:
-    image: containrrr/watchtower:1.5.3
+    image: containrrr/watchtower:1.6.0
     container_name: watchtower
     command:
       --cleanup piped_backend piped_frontend piped_proxy invidious searx lingva
