@@ -16,7 +16,7 @@
     environment = {
       HTTPS_PROXY = "http://10.0.5.1:3128";
       HTTP_PROXY = "http://10.0.5.1:3128";
-      NO_PROXY = "localhost,127.0.0.1,*.docker.io";
+      NO_PROXY = "localhost,127.0.0.1,*.docker.io,ghcr.io";
     };
   };
 
