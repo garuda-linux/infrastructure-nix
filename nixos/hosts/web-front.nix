@@ -145,6 +145,17 @@
         # quic = true;
         useACMEHost = "garudalinux.org";
       };
+      "librey.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          real_ip_header CF-Connecting-IP;
+        '';
+        http3 = true;
+        locations = { "/" = { proxyPass = "http://10.0.5.110:8081"; }; };
+        # quic = true;
+        useACMEHost = "garudalinux.org";
+      };
       "ffsync.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''

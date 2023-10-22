@@ -43,6 +43,33 @@ services:
     cap_add: [CHOWN, SETGID, SETUID, DAC_OVERRIDE]
     restart: always
 
+  # Librey search engine
+  librey:
+    image: ghcr.io/ahwxorg/librey:latest
+    container_name: librey
+    ports:
+      - 8081:8080
+    environment:
+      - CONFIG_CACHE_TIME=20
+      - CONFIG_DISABLE_BITTORRENT_SEARCH=false
+      - CONFIG_GOOGLE_DOMAIN=com
+      - CONFIG_HIDDEN_SERVICE_SEARCH=true
+      - CONFIG_INSTANCE_FALLBACK=true
+      - CONFIG_INVIDIOUS_INSTANCE=https://invidious.snopyta.org
+      - CONFIG_LANGUAGE=en
+      - CONFIG_NUMBER_OF_RESULTS=10
+      - CONFIG_RATE_LIMIT_COOLDOWN=25
+      - CONFIG_TEXT_SEARCH_ENGINE=google
+      - CURLOPT_FOLLOWLOCATION=true
+      - CURLOPT_PROXY=192.0.2.53:8388
+      - CURLOPT_PROXYTYPE=CURLPROXY_HTTP
+      - CURLOPT_PROXY_ENABLED=false
+      - CURLOPT_USERAGENT=Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:116.0) Gecko/20100101 Firefox/116.0
+    volumes:
+      - ./librey/nginx_logs:/var/log/nginx
+      - ./librey/php_logs:/var/log/php7
+    restart: unless-stopped
+
   # Lingva
   lingva:
     image: thedaviddelta/lingva-translate:latest # Only latest tag is available
@@ -179,7 +206,7 @@ services:
     container_name: watchtower
     command:
       --cleanup piped_backend piped_frontend piped_proxy invidious searx lingva
-      whoogle
+      whoogle librey
     volumes: [/var/run/docker.sock:/var/run/docker.sock]
     restart: always
 volumes:
