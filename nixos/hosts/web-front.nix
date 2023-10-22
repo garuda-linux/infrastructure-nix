@@ -56,7 +56,7 @@
             return = "301 $scheme://$host/index.php/.well-known/nodeinfo";
           };
         };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "cloud-aio.garudalinux.org" = {
@@ -88,7 +88,7 @@
             proxyWebsockets = true;
           };
         };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "cloud-temp.garudalinux.org" = {
@@ -120,7 +120,7 @@
             proxyWebsockets = true;
           };
         };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "search.garudalinux.org" = {
@@ -131,7 +131,7 @@
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.110:5000"; }; };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "searx.garudalinux.org" = {
@@ -142,7 +142,7 @@
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.110:8080"; }; };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "librey.garudalinux.org" = {
@@ -153,7 +153,7 @@
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.110:8081"; }; };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "ffsync.garudalinux.org" = {
@@ -164,14 +164,14 @@
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:5001"; }; };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "repo.garudalinux.org" = {
         addSSL = true;
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.30:80"; }; };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "start.garudalinux.org" = {
@@ -182,7 +182,7 @@
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:8083"; }; };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "irc.garudalinux.org" = {
@@ -193,7 +193,7 @@
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:9000"; }; };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "bin.garudalinux.org" = {
@@ -204,7 +204,7 @@
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:8082"; }; };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "bitwarden.garudalinux.org" = {
@@ -220,7 +220,7 @@
             proxyWebsockets = true;
           };
         };
-        # quic = true;
+        quic = true;
         serverAliases = [ "vault.garudalinux.org" ];
         useACMEHost = "garudalinux.org";
       };
@@ -238,7 +238,7 @@
             root = "${sources.garuda-website}/internal";
           };
         };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "stats.garudalinux.org" = {
@@ -255,7 +255,7 @@
             root = "${sources.garuda-website}/internal";
           };
         };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "forum.garudalinux.org" = {
@@ -274,7 +274,7 @@
             proxyPass = "http://10.0.5.70:80";
           };
         };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "social.garudalinux.org" = {
@@ -305,7 +305,7 @@
             '';
           };
         };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "social-video.garudalinux.org" = {
@@ -323,7 +323,7 @@
           "/" = { return = "301 https://social.garudalinux.org$request_uri"; };
         };
         http3 = true;
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "builds.garudalinux.org" = {
@@ -336,7 +336,7 @@
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.20:80"; }; };
-        # quic = true;
+        quic = true;
         serverAliases = [ "cf-builds.garudalinux.org" "iso.builds.garudalinux.org" ];
         useACMEHost = "garudalinux.org";
       };
@@ -350,7 +350,7 @@
         locations = {
           "/" = { proxyPass = "http://10.0.5.100:8084"; };
         };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "wiki.garudalinux.org" = {
@@ -361,7 +361,7 @@
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:3001"; }; };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "mesh.garudalinux.org" = {
@@ -386,7 +386,7 @@
             '';
           };
         };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "mesh.garudalinux.net" = {
@@ -442,7 +442,7 @@
             proxyPass = "http://10.0.5.100:8008";
           };
         };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "piped.garudalinux.org" = {
@@ -457,7 +457,7 @@
           }
         '';
         http3 = true;
-        # quic = true;
+        quic = true;
         serverAliases = [ "piped-api.garudalinux.org" "piped-proxy.garudalinux.org" ];
         useACMEHost = "garudalinux.org";
       };
@@ -478,7 +478,7 @@
             proxyPass = "http://10.0.5.110:3003";
           };
         };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "lemmy.garudalinux.org" = {
@@ -496,7 +496,7 @@
             proxyPass = "http://10.0.5.120:80";
           };
         };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "lingva.garudalinux.org" = {
@@ -511,7 +511,7 @@
             proxyPass = "http://10.0.5.110:3002";
           };
         };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "websurfx.garudalinux.org" = {
@@ -526,7 +526,7 @@
             proxyPass = "http://10.0.5.100:8086";
           };
         };
-        # quic = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
     };
