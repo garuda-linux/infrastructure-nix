@@ -45,7 +45,7 @@ services:
 
   # Librey search engine
   librey:
-    image: ghcr.io/ahwxorg/librey:latest
+    image: ghcr.io/ahwxorg/librey:latest # It tends do be important to stay current
     container_name: librey
     ports:
       - 8081:8080
@@ -60,14 +60,6 @@ services:
       - CONFIG_NUMBER_OF_RESULTS=10
       - CONFIG_RATE_LIMIT_COOLDOWN=25
       - CONFIG_TEXT_SEARCH_ENGINE=google
-      - CURLOPT_FOLLOWLOCATION=true
-      - CURLOPT_PROXY=192.0.2.53:8388
-      - CURLOPT_PROXYTYPE=CURLPROXY_HTTP
-      - CURLOPT_PROXY_ENABLED=false
-      - CURLOPT_USERAGENT=Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:116.0) Gecko/20100101 Firefox/116.0
-    volumes:
-      - ./librey/nginx_logs:/var/log/nginx
-      - ./librey/php_logs:/var/log/php7
     restart: unless-stopped
 
   # Lingva
@@ -82,61 +74,6 @@ services:
       HTTPS_PROXY: http://10.0.5.1:3128
       SITE_DOMAIN: lingva.garudalinux.org
     ports: [3002:3000]
-    restart: always
-
-  # Invious YouTube frontend
-  invidious:
-    image: quay.io/invidious/invidious:latest # It tends do be important to stay current
-    container_name: invidious
-    depends_on: [invidious_db]
-    environment:
-      HTTP_PROXY: http://10.0.5.1:3128
-      HTTPS_PROXY: http://10.0.5.1:3128
-      INVIDIOUS_CONFIG: |
-        db:
-          dbname: invidious
-          user: kemal
-          password: ${INVIDIOUS_DB_PASSWORD:?err}
-          host: invidious_db
-          port: 5432
-        check_tables: true
-        default_user_preferences:
-          local: true
-          quality: dash
-        admins: ["nico"]
-        captcha_key: ${INVIDIOUS_CAPTCHA_KEY:?err}
-        disable_proxy: ["livestreams","downloads"]
-        domain: invidious.garudalinux.org
-        external_port: 443
-        hmac_key: ${INVIDIOUS_HMAC_KEY:?err}
-        https_only: true
-        popular_enabled: true
-        statistics_enabled: true
-        use_pubsub_feeds: true
-        use_quic: true
-      NO_PROXY: "*.lbry.com"
-    ports: [3003:3000]
-    healthcheck:
-      test:
-        wget -nv --tries=1 --spider http://10.0.5.20:3003/api/v1/comments/jNQXAC9IVRw
-        || exit 1
-      interval: 30s
-      timeout: 5s
-      retries: 2
-    restart: always
-  invidious_db:
-    image: docker.io/library/postgres:14.9
-    container_name: invidious_db
-    volumes:
-      - ./invidious/db:/var/lib/postgresql/data
-      - ./invidious/config:/config/sql
-      - ./invidious/init-invidious-db.sh:/docker-entrypoint-initdb.d/init-invidious-db.sh
-    environment:
-      POSTGRES_DB: invidious
-      POSTGRES_USER: kemal
-      POSTGRES_PASSWORD: ${INVIDIOUS_DB_PASSWORD:?err}
-    healthcheck:
-      test: [CMD-SHELL, pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB]
     restart: always
 
   # Piped

@@ -461,26 +461,6 @@
         serverAliases = [ "piped-api.garudalinux.org" "piped-proxy.garudalinux.org" ];
         useACMEHost = "garudalinux.org";
       };
-      "invidious.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            extraConfig = ''
-              proxy_buffering off;
-              proxy_set_header Connection "";
-              proxy_http_version 1.1;
-            '';
-            proxyPass = "http://10.0.5.110:3003";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
       "lemmy.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
