@@ -101,7 +101,7 @@ services:
     depends_on: [piped_backend]
     restart: always
   piped_nginx:
-    image: nginx:1.25.2-alpine
+    image: nginx:1.25.3-alpine
     container_name: piped_nginx
     depends_on: [piped_backend, piped_frontend, piped_proxy]
     volumes:
