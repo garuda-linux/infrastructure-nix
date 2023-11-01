@@ -118,7 +118,6 @@
                 nixpkgs-fmt.enable = true;
                 prettier.enable = true;
                 statix.enable = true;
-                yamllint.enable = true;
               };
               src = ./.;
             };
@@ -172,7 +171,6 @@
                   { package = "manix"; }
                   { package = "nixos-install-tools"; }
                   { package = "pre-commit"; }
-                  { package = "yamlfix"; }
                   {
                     name = "apply";
                     help = "Applies the infra-nix configuration pushed to the servers";

@@ -1,8 +1,8 @@
 { config
+, garuda-lib
 , lib
 , pkgs
 , sources
-, garuda-lib
 , ...
 }:
 with lib;
@@ -36,9 +36,7 @@ let
     propagatedBuildInputs = with pkgs.python3.pkgs; [
       appdirs
       colorama
-      # Pinned python-telegram-bot 13.15
       python-telegram-bot
-      # (callPackage (builtins.fetchurl { url = "https://raw.githubusercontent.com/NixOS/nixpkgs/a0389fe5c691f80bb794a0aa9731d5e4ad6752ac/pkgs/development/python-modules/python-telegram-bot/default.nix"; sha256 = "sha256:1xz49dzydfyv1xksm8apj9v6r2px15339xznkr8zqjgzzhvarjbg"; }) { })
     ];
   };
   repodir = "${cfg.repos-dir}/${cfg.db-name}";
