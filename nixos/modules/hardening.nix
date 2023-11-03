@@ -43,8 +43,7 @@ _: {
   security.apparmor.enable = false;
 
   # Timeout TTY after 1 hour
-  programs.bash.interactiveShellInit =
-    "if [[ $(tty) =~ /dev\\/tty[1-6] ]]; then TMOUT=3600; fi";
+  programs.bash.interactiveShellInit = "if [[ $(tty) =~ /dev\\/tty[1-6] ]]; then TMOUT=3600; fi";
 
   # Don't lock kernel modules, this is also enabled by the hardening profile by default
   security.lockKernelModules = false;
@@ -75,6 +74,7 @@ _: {
     kexAlgorithms = [
       "curve25519-sha256"
       "curve25519-sha256@libssh.org"
+      "diffie-hellman-group-exchange-sha256"
       "diffie-hellman-group16-sha512"
       "diffie-hellman-group18-sha512"
       "sntrup761x25519-sha512@openssh.com"

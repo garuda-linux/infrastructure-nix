@@ -1,7 +1,25 @@
 { pkgs
 , sources
 , ...
-}: {
+}:
+let
+  # Simple wrapper to dispatch SSH commands to NixOS
+  chaotictrigger = pkgs.writeShellScriptBin "chaotictrigger" ''
+    case "$SSH_ORIGINAL_COMMAND" in
+      "chaotictrigger routine")
+        chaotic -j 4 routine garuda
+        ;;
+      "chaotictrigger"* )
+        chaotic get "$1"
+        chaotic mkd "$1"
+        ;;
+      *)
+        echo "Access only allowed for building purposes!"
+        exit 666
+    esac
+  '';
+in
+{
   imports = sources.defaultModules ++ [ ../modules ];
 
   # Enable Chaotic-AUR building
@@ -37,6 +55,12 @@
     '';
   };
 
+  # Create a locked down user for GitLab CI
+  users.users.gitlab = {
+    isNormalUser = true;
+    extraGroups = [ "chaotic_op" ];
+    openssh.authorizedKeys.keys = [ "restrict,pty,command=\"${chaotictrigger}/bin/chaotictrigger\"  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN7W5KtNH5nsjIHBN1zBwEc0BZMhg6HfFurMIJoWf39p" ];
+  };
+
   system.stateVersion = "23.05";
 }
-
