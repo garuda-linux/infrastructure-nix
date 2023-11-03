@@ -10,8 +10,10 @@ let
         chaotic -j 4 routine garuda
         ;;
       "chaotictrigger"* )
-        chaotic get "$1"
-        chaotic mkd "$1"
+        git clone https://gitlab.com/garuda-linux/pkgbuilds /tmp/chaotictrigger
+        cd /tmp/chaotictrigger
+        chaotic mkd $(echo "$SSH_ORIGINAL_COMMAND" | cut -d' ' -f2-)
+        rm -rf /tmp/chaotictrigger
         ;;
       *)
         echo "Access only allowed for building purposes!"
