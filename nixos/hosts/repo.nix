@@ -5,15 +5,21 @@
 let
   # Simple wrapper to dispatch SSH commands to NixOS
   chaotictrigger = pkgs.writeShellScriptBin "chaotictrigger" ''
+    echo $SSH_ORIGINAL_COMMAND
+    _PACKAGE=$(echo $SSH_ORIGINAL_COMMAND | cut -d' ' -f2)
+    _BUILD_DIR=$(mktemp -d)
+
     case "$SSH_ORIGINAL_COMMAND" in
       "chaotictrigger routine")
+        echo "Building a full routine.."
         chaotic -j 4 routine garuda
         ;;
-      "chaotictrigger"* )
-        git clone https://gitlab.com/garuda-linux/pkgbuilds /tmp/chaotictrigger
-        cd /tmp/chaotictrigger
-        chaotic mkd $(echo "$SSH_ORIGINAL_COMMAND" | cut -d' ' -f2-)
-        rm -rf /tmp/chaotictrigger
+      "chaotictrigger "* )
+        echo "Building $_PACKAGE in $_BUILD_DIR.."
+        git clone https://gitlab.com/garuda-linux/pkgbuilds "$_BUILD_DIR"
+        cd "$_BUILD_DIR"
+        chaotic mkd "$_PACKAGE"
+        rm -rf "$_BUILD_DIR"
         ;;
       *)
         echo "Access only allowed for building purposes!"
@@ -57,7 +63,7 @@ in
     '';
   };
 
-  # Create a locked down user for GitLab CI
+  # Create a locked down user for GitLab CI who can only access our wrapper
   users.users.gitlab = {
     isNormalUser = true;
     extraGroups = [ "chaotic_op" ];
