@@ -3,7 +3,7 @@ version: "3.9"
 services:
   # Garuda Cloud
   nextcloud_app:
-    image: linuxserver/nextcloud:27.0.1
+    image: linuxserver/nextcloud:27.0.1 # locked, never versions can't be pulled!
     container_name: nextcloud
     depends_on: [nextcloud_db, nextcloud_redis]
     environment:
@@ -25,7 +25,7 @@ services:
     volumes: [./nextcloud/db:/var/lib/mysql]
     restart: always
   nextcloud_redis:
-    image: redis:7.2.2
+    image: redis:7.2.3
     container_name: nextcloud_redis
     environment:
       ALLOW_EMPTY_PASSWORD: true
@@ -71,7 +71,7 @@ services:
 
   # Password vault
   bitwarden:
-    image: vaultwarden/server:1.29.2
+    image: vaultwarden/server:1.30.0
     container_name: bitwarden
     volumes: [./bitwarden:/data]
     ports: [8081:80]
@@ -136,7 +136,7 @@ services:
 
   # Matrix homeserver
   matrix:
-    image: matrixdotorg/synapse:v1.95.0
+    image: matrixdotorg/synapse:v1.95.1
     container_name: matrix
     volumes: [./matrix/matrix:/data]
     ports: [8008:8008]
