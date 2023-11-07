@@ -1,5 +1,10 @@
 # Repositories
 
+## Notifications for new events at GitLab
+
+Since GitLab has an inbuilt Telegram integration, we can leverage this feature to send notifications to our a dedicated [Telegram development updates channel](https://t.me/garuda_updates).
+Posts are send for all kinds of relevent, but non-confidential events like commits, comments or new merge requests. Failed pipelines would also be reported here.
+
 ## Backing up current repositories
 
 Current repositories may be backed up using [ghorg](https://github.com/gabrie30/ghorg).
