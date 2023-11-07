@@ -1399,7 +1399,7 @@ volumes:
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="github-runner"><a class="header" href="#github-runner">github-runner</a></h1>
 <h2 id="general-5"><a class="header" href="#general-5">General</a></h2>
-<p>With this container, we provide a GitHub runner. This container does <strong>not</strong> have the regular Garuda configurations because it is considered untrusted.
+<p>With this container, we provide a GitHub runner as well as (more recently), a GitLab runner. This container does <strong>not</strong> have the regular Garuda configurations because it is considered untrusted.
 Access needs to happen by running <code>nixos-container root-login</code> on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortalis.html#connecting-to-the-server">click me</a>).</p>
 <h2 id="nix-expression-5"><a class="header" href="#nix-expression-5">Nix expression</a></h2>
 <pre><code class="language-nix">{ keys
@@ -1803,7 +1803,23 @@ Access needs to happen by running <code>nixos-container root-login</code> on <co
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="repo"><a class="header" href="#repo">repo</a></h1>
 <h2 id="general-10"><a class="header" href="#general-10">General</a></h2>
-<p>This is another package builder, that builds packages for our <code>[garuda]</code> repository.</p>
+<p>This is another package builder, that builds packages for our <code>[garuda]</code> repository.
+This builder is accessed by the <a href="https://gitlab.com/garuda-linux/pkgbuilds">PKGBUILD repos</a> CI pipelines via SSH to trigger package deployments.</p>
+<h2 id="how-to-request-a-build-via-ci"><a class="header" href="#how-to-request-a-build-via-ci">How to request a build via CI</a></h2>
+<p>To lock down any possible action, access has been restricted to a command wrapper. Allowed actions for the <code>gitlab</code> user are:</p>
+<ol>
+<li>Building a specific package</li>
+<li>Building a full routine</li>
+</ol>
+<p>In order to trigger these actions, one needs to do the following:</p>
+<ol>
+<li><code>ssh -p 223 gitlab@builds.garudalinux.org chaotictrigger $pkgname</code></li>
+<li><code>ssh -p 223 gitlab@builds.garudalinux.org chaotictrigger routine</code></li>
+</ol>
+<p>For our PKGBUILD repo, it has been implemented via this <a href="https://gitlab.com/garuda-linux/pkgbuilds/-/blob/main/.gitlab-ci.yml?ref_type=heads#L69">pipeline</a>.</p>
+<h2 id="how-packages-get-built"><a class="header" href="#how-packages-get-built">How packages get built</a></h2>
+<p>We switched to a CI-driven workflow for deploying new packages of the <code>garuda</code> repository, more details on how to operate the process can be found in the <a href="nixos-containers/../repositories/general.html">repository section</a>.
+The GitLab runner used to build the packages is located in the untrusted <a href="nixos-containers/./github-runner.html">github-runner</a> container.</p>
 <h2 id="nix-expression-10"><a class="header" href="#nix-expression-10">Nix expression</a></h2>
 <pre><code class="language-nix">{ pkgs
 , sources
@@ -2900,6 +2916,9 @@ In case of issues, the <a href="https://nixos-mailserver.readthedocs.io/en/lates
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="repositories"><a class="header" href="#repositories">Repositories</a></h1>
+<h2 id="notifications-for-new-events-at-gitlab"><a class="header" href="#notifications-for-new-events-at-gitlab">Notifications for new events at GitLab</a></h2>
+<p>Since GitLab has an inbuilt Telegram integration, we can leverage this feature to send notifications to our a dedicated <a href="https://t.me/garuda_updates">Telegram development updates channel</a>.
+Posts are send for all kinds of relevent, but non-confidential events like commits, comments or new merge requests. Failed pipelines would also be reported here.</p>
 <h2 id="backing-up-current-repositories"><a class="header" href="#backing-up-current-repositories">Backing up current repositories</a></h2>
 <p>Current repositories may be backed up using <a href="https://github.com/gabrie30/ghorg">ghorg</a>.
 In order to use ghorg, one needs a GitLab access token and the application itself. To generate a fitting token, follow <a href="https://github.com/gabrie30/ghorg?tab=readme-ov-file#gitlab-setup">these instructions</a>.</p>
