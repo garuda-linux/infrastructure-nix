@@ -1,0 +1,10 @@
+---
+stages: [check]
+check:
+  stage: check
+  image: nixpkgs/nix-flakes:latest
+  script:
+    - sed -i 's&../secrets/secrets.json&../../assets/dummy.json&g' ./nixos/modules/garuda-lib.nix
+    - nix flake check
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
