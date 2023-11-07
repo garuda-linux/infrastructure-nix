@@ -29,6 +29,11 @@
   - [web-front](./nixos-containers/web-front.md)
 - [garuda-mail](./hosts/garuda-mail.md)
 
+# Repository infrastructure
+
+- [General information](./repositories/general.md)
+- [PKGBUILDs](./repositories/pkgbuilds.md)
+
 # Services
 
 - [Discourse](./services/discourse.md)
