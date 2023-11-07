@@ -176,14 +176,15 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="garuda-linux-server-configurations"><a class="header" href="#garuda-linux-server-configurations">Garuda Linux server configurations</a></h1>
-<p><a href="https://builtwithnix.org"><img src="https://img.shields.io/static/v1?logo=nixos&amp;logoColor=white&amp;label=&amp;message=Built%20with%20Nix&amp;color=41439a" alt="built with nix" /></a> <a href="https://github.com/garuda-linux/infrastructure-nix/actions/workflows/flake_check.yml"><img src="https://github.com/garuda-linux/infrastructure-nix/actions/workflows/flake_check.yml/badge.svg?branch=main" alt="run nix flake check" /></a> <a href="https://github.com/garuda-linux/infrastructure-nix/actions/workflows/pages.yml"><img src="https://github.com/garuda-linux/infrastructure-nix/actions/workflows/pages.yml/badge.svg" alt="deploy docs" /></a></p>
+<p><a href="https://builtwithnix.org"><img src="https://img.shields.io/static/v1?logo=nixos&amp;logoColor=white&amp;label=&amp;message=Built%20with%20Nix&amp;color=41439a" alt="built with nix" /></a> <a href="https://github.com/garuda-linux/infrastructure-nix/actions/workflows/pages.yml"><img src="https://github.com/garuda-linux/infrastructure-nix/actions/workflows/pages.yml/badge.svg" alt="deploy docs" /></a></p>
 <h2 id="general-information"><a class="header" href="#general-information">General information</a></h2>
 <ul>
 <li>Our current infrastructure is hosted in one of <a href="https://www.hetzner.com/dedicated-rootserver/ax102">these</a>.</li>
 <li>The only other server not being contained in this dedicated server is our mail server.</li>
 <li>Both servers are being backed up to Hetzner storage boxes via <a href="https://www.borgbackup.org/">Borg</a>.</li>
 <li>After multiple different setups, we settled on <a href="https://nixos.org/">NixOS</a> as our main OS as it provides reproducible and atomically updated system states</li>
-<li>Most (sub)domains are protected by Cloudflare while also making use of its caching feature. Exemptions are services such as our mail server and parts violating Cloudflares rules such as proxying Piped content.</li>
+<li>Most (sub)domains are protected by Cloudflare while also making use of its caching feature.
+Exemptions are services such as our mail server and parts violating Cloudflares rules such as proxying Piped content.</li>
 </ul>
 <h2 id="quick-links"><a class="header" href="#quick-links">Quick links</a></h2>
 <ul>
