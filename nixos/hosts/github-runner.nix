@@ -25,6 +25,9 @@
     envfile = "/var/garuda/secrets/github-runner.env";
     source = ../../docker-compose/github-runner;
   };
+  services.docker-compose-runner.gitlab-runner = {
+    source = ../../docker-compose/gitlab-runner;
+  };
 
   # Enable SSH
   services.openssh.enable = true;

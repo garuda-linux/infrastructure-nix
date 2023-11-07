@@ -133,10 +133,17 @@ in
         config = import ../github-runner.nix;
         defaults = false;
         extraOptions = {
-          bindMounts."token" = {
-            hostPath = garuda-lib.secrets.docker-compose.github-runner;
-            isReadOnly = true;
-            mountPoint = "/var/garuda/secrets/github-runner.env";
+          bindMounts = {
+            "token" = {
+              hostPath = garuda-lib.secrets.docker-compose.github-runner;
+              isReadOnly = true;
+              mountPoint = "/var/garuda/secrets/github-runner.env";
+            };
+            "gitlab-config" = {
+              hostPath = "/data_1/containers/github-runner/gitlab-runner";
+              isReadOnly = false;
+              mountPoint = "/etc/gitlab-runner";
+            };
           };
           forwardPorts = [
             {
