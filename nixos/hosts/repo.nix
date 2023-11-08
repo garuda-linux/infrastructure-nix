@@ -12,13 +12,13 @@ let
     case "$SSH_ORIGINAL_COMMAND" in
       "chaotictrigger routine")
         echo "Building a full routine.."
-        chaotic -j 4 routine garuda
+        chaotic -j 4 routine garuda || exit 1
         ;;
       "chaotictrigger "* )
         echo "Building $_PACKAGE in $_BUILD_DIR.."
         git clone https://gitlab.com/garuda-linux/pkgbuilds "$_BUILD_DIR"
         cd "$_BUILD_DIR"
-        chaotic mkd "$_PACKAGE"
+        chaotic mkd "$_PACKAGE" || exit 2
         rm -rf "$_BUILD_DIR"
         ;;
       *)
