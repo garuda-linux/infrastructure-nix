@@ -263,13 +263,8 @@ in
             };
           }
             chaotic_mounts];
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 223;
-              protocol = "tcp";
-            }
-          ];
+          # Portforwarding happens via nat.forwardPorts so we
+          # can access the container from within our own GitLab runner too
         };
         ipAddress = "10.0.5.30";
         needsNesting = true;
