@@ -7,8 +7,8 @@ let
   # Simple wrapper to dispatch SSH commands to NixOS
   ci-trigger = pkgs.writeShellScriptBin "ci-trigger" ''
     echo $SSH_ORIGINAL_COMMAND
-    _FLAVOUR=$(echo $SSH_ORIGINAL_COMMAND | cut -d' ' -f2)
-    _KERNEL=$(echo $SSH_ORIGINAL_COMMAND | cut -d' ' -f3)
+    _FLAVOUR=$(echo "$SSH_ORIGINAL_COMMAND" | cut -d' ' -f2)
+    _KERNEL=$(echo "$SSH_ORIGINAL_COMMAND" | cut -d' ' -f3)
 
     case "$SSH_ORIGINAL_COMMAND" in
       "ci-trigger buildall")
@@ -18,8 +18,8 @@ let
       "ci-trigger "* )
         echo "Building $_FLAVOUR.."
         docker exec buildiso buildiso -i || exit 2
-        [[ $_KERNEL != "" ]] && docker exec buildiso buildiso -p $_FLAVOUR -k $_KERNEL || exit 3
-        docker exec buildiso buildiso -p $_FLAVOUR || exit 3
+        [[ $_KERNEL != "" ]] && (docker exec buildiso buildiso -p "$_FLAVOUR" -k "$_KERNEL" || exit 3)
+        docker exec buildiso buildiso -p "$_FLAVOUR" || exit 3
         ;;
       *)
         echo "Access only allowed for building purposes!"
