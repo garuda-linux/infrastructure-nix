@@ -113,6 +113,12 @@
         proto = "tcp";
         sourcePort = 223;
       }
+      {
+        destination = "10.0.5.40:22";
+        loopbackIPs = [ "116.202.208.112" ];
+        proto = "tcp";
+        sourcePort = 227;
+      }
     ];
     firewall.trustedInterfaces = [ "br0" ];
   };
