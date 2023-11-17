@@ -5,7 +5,6 @@
 let
   # Simple wrapper to dispatch SSH commands to NixOS
   chaotictrigger = pkgs.writeShellScriptBin "chaotictrigger" ''
-    echo $SSH_ORIGINAL_COMMAND
     _PACKAGE=$(echo $SSH_ORIGINAL_COMMAND | cut -d' ' -f2)
     _BUILD_DIR=$(mktemp -d)
 
@@ -25,6 +24,16 @@ let
         echo "Access only allowed for building purposes!"
         exit 666
     esac
+  '';
+  # Wrapper to allow only deploying packages to the repo
+  deploy-package = pkgs.writeShellScriptBin "deploy-package" ''
+    for pattern in "$@"; do
+        if echo "$SSH_ORIGINAL_COMMAND" | grep -Eq "^$pattern$"; then
+            exec $SSH_ORIGINAL_COMMAND
+        fi
+    done
+    echo "Access denied for command '$SSH_ORIGINAL_COMMAND'"
+    exit 666
   '';
 in
 {
@@ -63,12 +72,18 @@ in
     '';
   };
 
-  # Create a locked down user for GitLab CI who can only access our wrapper
+  # Create locked down users for GitLab CI who can only access our wrapper
   users.users.gitlab = {
     isNormalUser = true;
     extraGroups = [ "chaotic_op" ];
-    openssh.authorizedKeys.keys = [ "restrict,pty,command=\"${chaotictrigger}/bin/chaotictrigger\"  ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN7W5KtNH5nsjIHBN1zBwEc0BZMhg6HfFurMIJoWf39p" ];
+    openssh.authorizedKeys.keys = [ "restrict,pty,command=\"${chaotictrigger}/bin/chaotictrigger\" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN7W5KtNH5nsjIHBN1zBwEc0BZMhg6HfFurMIJoWf39p" ];
   };
+  users.users.package-deployer = {
+    isNormalUser = true;
+    extraGroups = [ "packaging" ];
+    openssh.authorizedKeys.keys = [ "restrict,pty,command=\"${deploy-package}/bin/deploy-package 'rsync --server -[a-zA-Z.]+( --(delete|partial|log-format=X))* [.] /home/package-deployer/repo/x86_64'\" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN7W5KtNH5nsjIHBN1zBwEc0BZMhg6HfFurMIJoWf39p" ];
+  };
+  users.groups.packaging = { };
 
   system.stateVersion = "23.05";
 }
