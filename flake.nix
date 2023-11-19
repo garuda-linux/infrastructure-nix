@@ -77,11 +77,13 @@
     src-chaotic-toolbox.flake = false;
     src-repoctl.url = "github:cassava/repoctl";
     src-repoctl.flake = false;
-    src-buildiso.url = "gitlab:garuda-linux%2Ftools/buildiso-docker";
+    # TODO: https://github.com/NixOS/nix/pull/9163
+    src-buildiso.url = "https://gitlab.com/garuda-linux/tools/buildiso-docker/-/archive/master/buildiso-docker-master.tar.gz";
     src-buildiso.flake = false;
     src-chaotic-mirror.url = "github:chaotic-aur/docker-mirror";
     src-chaotic-mirror.flake = false;
-    src-garuda-website.url = "gitlab:garuda-linux%2Fwebsite/garuda";
+    # TODO: https://github.com/NixOS/nix/pull/9163
+    src-garuda-website.url = "https://gitlab.com/garuda-linux/website/garuda/-/archive/master/garuda-master.tar.gz";
     src-garuda-website.flake = false;
     src-cloudflare-ipv4.url = "https://www.cloudflare.com/ips-v4";
     src-cloudflare-ipv4.flake = false;
@@ -167,6 +169,7 @@
                 };
                 commands = [
                   { package = "ansible"; }
+                  { package = "rsync"; }
                   { package = "commitizen"; }
                   { package = "manix"; }
                   { package = "nixos-install-tools"; }

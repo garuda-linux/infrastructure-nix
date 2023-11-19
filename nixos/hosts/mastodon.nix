@@ -32,6 +32,7 @@
       user = "noreply@garudalinux.org";
     };
     trustedProxy = "10.0.5.10";
+    streamingProcesses = 4;
   };
 
   # Run daily cleanup of statuses and media of Mastodon

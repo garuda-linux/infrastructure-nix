@@ -25,25 +25,6 @@ let
         exit 666
     esac
   '';
-  # Wrapper to allow only deploying packages to the repo
-  deploy-package = pkgs.writeShellScriptBin "deploy-package" ''
-    GPG_SIGN="gpg --detach-sign --use-agent --no-armor"
-    REPO_ADD="repo-add -v"
-    REPO_REMOVE="repo-remove -v"
-    RSYNC="rsync --server -[a-zA-Z.]+( --(delete|partial|log-format=X))* [.] /home/package-deployer/repo/x86_64"
-    
-    for pattern in "$RSYNC"; do
-        if echo "$SSH_ORIGINAL_COMMAND" | grep -Eq "^$pattern$"; then
-            exec $SSH_ORIGINAL_COMMAND
-        fi
-    done
-    [[ "$SSH_ORIGINAL_COMMAND" == "$GPG_SIGN"* ]] && exec $SSH_ORIGINAL_COMMAND
-    [[ "$SSH_ORIGINAL_COMMAND" == "$REPO_ADD"* ]] && exec $SSH_ORIGINAL_COMMAND
-    [[ "$SSH_ORIGINAL_COMMAND" == "$REPO_REMOVE"* ]] && exec $SSH_ORIGINAL_COMMAND
-
-    echo "Access only allowed for managing our repository!"
-    exit 666
-  '';
 in
 {
   imports = sources.defaultModules ++ [ ../modules ];
@@ -90,7 +71,7 @@ in
   users.users.package-deployer = {
     isNormalUser = true;
     extraGroups = [ "packaging" ];
-    openssh.authorizedKeys.keys = [ "restrict,pty,command=\"${deploy-package}/bin/deploy-package\" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN7W5KtNH5nsjIHBN1zBwEc0BZMhg6HfFurMIJoWf39p" ];
+    openssh.authorizedKeys.keys = [ "restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN7W5KtNH5nsjIHBN1zBwEc0BZMhg6HfFurMIJoWf39p" ];
   };
   users.groups.packaging = { };
 

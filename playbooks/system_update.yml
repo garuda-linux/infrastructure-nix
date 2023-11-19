@@ -15,14 +15,14 @@
       run_once: true
     - name: Download flake lock to repo
       ansible.builtin.fetch:
-        dest: nix/flake.lock
+        dest: ../flake.lock
         flat: true
         src: /etc/nixos/flake.lock
       run_once: true
     - name: Upload flake lock to hosts
       ansible.posix.synchronize:
         dest: /etc/nixos/flake.lock
-        src: nix/flake.lock
+        src: ../flake.lock
     - name: Update and build system
       ansible.builtin.command: nixos-rebuild boot
       changed_when: false

@@ -1,7 +1,7 @@
 { pkgs, ... }:
 let
   initscript = pkgs.writeShellScript "motdscript" ''
-    if [ $USER != nico ]; then
+    if [ $USER != nico ] && [ $USER != "package-deployer" ]; then
       ${pkgs.fancy-motd}/bin/motd
 
       # Own additions

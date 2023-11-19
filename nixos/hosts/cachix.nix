@@ -13,7 +13,7 @@
     boot.loader.grub.device = "nodev";
     cachix = pkgs.buildEnv {
       name = "cachix";
-      paths = [ config.services.nginx.package config.services.cloudflared.package ];
+      paths = [ config.services.nginx.package config.services.cloudflared.package config.services.netdata.package ];
     };
   };
 }

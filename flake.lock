@@ -78,11 +78,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1696343447,
-        "narHash": "sha256-B2xAZKLkkeRFG5XcHHSXXcP7To9Xzr59KXeZiRf4vdQ=",
+        "lastModified": 1698882062,
+        "narHash": "sha256-HkhafUayIqxXyHH1X8d9RDl1M2CkFgZLjKD3MzabiEo=",
         "owner": "hercules-ci",
         "repo": "flake-parts",
-        "rev": "c9afaba3dfa4085dbd2ccb38dfade5141e33d9d4",
+        "rev": "8c9fa2545007b49a5db5f650ae91f227672c3877",
         "type": "github"
       },
       "original": {
@@ -161,11 +161,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1698479159,
-        "narHash": "sha256-rJHBDwW4LbADEfhkgGHjKGfL2dF44NrlyXdXeZrQahs=",
+        "lastModified": 1700261686,
+        "narHash": "sha256-kplQg6hKFNuWKrOyGp9D//G/WH1nHGJ43r2m7fagTYY=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "f92a54fef4eacdbe86b0a2054054dd58b0e2a2a4",
+        "rev": "ecd0a800f716b80a6eac58a7ac34d6d33e6fa5ee",
         "type": "github"
       },
       "original": {
@@ -330,11 +330,11 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1695910380,
-        "narHash": "sha256-CyzeiXQGm8ceEOSK1dffBCfO7JNp8XhQeNkUiJ5HxgY=",
+        "lastModified": 1700085753,
+        "narHash": "sha256-qtib7f3eRwfaUF+VziJXiBcZFqpHCAXS4HlrFsnzzl4=",
         "owner": "simple-nixos-mailserver",
         "repo": "nixos-mailserver",
-        "rev": "84783b661ecf33927c534b6476beb74ea3308968",
+        "rev": "008d78cc21959e33d0d31f375b88353a7d7121ae",
         "type": "gitlab"
       },
       "original": {
@@ -406,11 +406,11 @@
     },
     "nixpkgs-stable": {
       "locked": {
-        "lastModified": 1698288402,
-        "narHash": "sha256-jIIjApPdm+4yt8PglX8pUOexAdEiAax/DXW3S/Mb21E=",
+        "lastModified": 1700097215,
+        "narHash": "sha256-ODQ3gBTv1iHd7lG21H+ErVISB5wVeOhd/dEogOqHs/I=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "60b9db998f71ea49e1a9c41824d09aa274be1344",
+        "rev": "9fb122519e9cd465d532f736a98c1e1eb541ef6f",
         "type": "github"
       },
       "original": {
@@ -422,11 +422,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1698318101,
-        "narHash": "sha256-gUihHt3yPD7bVqg+k/UVHgngyaJ3DMEBchbymBMvK1E=",
+        "lastModified": 1700204040,
+        "narHash": "sha256-xSVcS5HBYnD3LTer7Y2K8ZQCDCXMa3QUD1MzRjHzuhI=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "63678e9f3d3afecfeafa0acead6239cdb447574c",
+        "rev": "c757e9bd77b16ca2e03c89bf8bc9ecb28e0c06ad",
         "type": "github"
       },
       "original": {
@@ -455,11 +455,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1698227354,
-        "narHash": "sha256-Fi5H9jbaQLmLw9qBi/mkR33CoFjNbobo5xWdX4tKz1Q=",
+        "lastModified": 1700064067,
+        "narHash": "sha256-1ZWNDzhu8UlVCK7+DUN9dVQfiHX1bv6OQP9VxstY/gs=",
         "owner": "cachix",
         "repo": "pre-commit-hooks.nix",
-        "rev": "bd38df3d508dfcdff52cd243d297f218ed2257bf",
+        "rev": "e558068cba67b23b4fbc5537173dbb43748a17e8",
         "type": "github"
       },
       "original": {
@@ -518,17 +518,14 @@
     "src-buildiso": {
       "flake": false,
       "locked": {
-        "lastModified": 1686904822,
-        "narHash": "sha256-nSvoG2Nfczl99bnJb6TlvFGZQYDy46o6BbWyxv+CEF8=",
-        "owner": "garuda-linux%2Ftools",
-        "repo": "buildiso-docker",
-        "rev": "ab35671f23be9af3462848651b9cf66ec936b101",
-        "type": "gitlab"
+        "lastModified": 1699372355,
+        "narHash": "sha256-3XXy6+d6U1GLBlLD08/UzbqGFhsb5mgg65JIy0Z5jmc=",
+        "type": "tarball",
+        "url": "https://gitlab.com/garuda-linux/tools/buildiso-docker/-/archive/master/buildiso-docker-master.tar.gz"
       },
       "original": {
-        "owner": "garuda-linux%2Ftools",
-        "repo": "buildiso-docker",
-        "type": "gitlab"
+        "type": "tarball",
+        "url": "https://gitlab.com/garuda-linux/tools/buildiso-docker/-/archive/master/buildiso-docker-master.tar.gz"
       }
     },
     "src-chaotic-mirror": {
@@ -550,11 +547,11 @@
     "src-chaotic-toolbox": {
       "flake": false,
       "locked": {
-        "lastModified": 1699020942,
-        "narHash": "sha256-1wyg5doS4XVDCStwHC3rYz4QQrGpVpUrfKofcXv2A3g=",
+        "lastModified": 1700047915,
+        "narHash": "sha256-Gf4bkY0Ufkvs8xf3EiGolxJMtWWdkRVuP35XcZW64/8=",
         "owner": "chaotic-aur",
         "repo": "toolbox",
-        "rev": "c9351b907a11dfbe5c3c852948d3415d6d933cfb",
+        "rev": "ea437aef7a44896954f5ebaf4c1b1b4b3a7c90d1",
         "type": "github"
       },
       "original": {
@@ -578,17 +575,14 @@
     "src-garuda-website": {
       "flake": false,
       "locked": {
-        "lastModified": 1698082529,
-        "narHash": "sha256-Ww5yXjXHUxFx2wg0gVPk7PRj72LT0TP638ISvvDfRac=",
-        "owner": "garuda-linux%2Fwebsite",
-        "repo": "garuda",
-        "rev": "3ec85743329a83ad3c0af43473aa998025afa46f",
-        "type": "gitlab"
+        "lastModified": 1699680015,
+        "narHash": "sha256-8AI4PFGvcfeZUN6GvJur/ZuKHK3pXMFfkmHFDeedAm4=",
+        "type": "tarball",
+        "url": "https://gitlab.com/garuda-linux/website/garuda/-/archive/master/garuda-master.tar.gz"
       },
       "original": {
-        "owner": "garuda-linux%2Fwebsite",
-        "repo": "garuda",
-        "type": "gitlab"
+        "type": "tarball",
+        "url": "https://gitlab.com/garuda-linux/website/garuda/-/archive/master/garuda-master.tar.gz"
       }
     },
     "src-repoctl": {
