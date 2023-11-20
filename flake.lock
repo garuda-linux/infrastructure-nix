@@ -547,11 +547,11 @@
     "src-chaotic-toolbox": {
       "flake": false,
       "locked": {
-        "lastModified": 1700047915,
-        "narHash": "sha256-Gf4bkY0Ufkvs8xf3EiGolxJMtWWdkRVuP35XcZW64/8=",
+        "lastModified": 1700409803,
+        "narHash": "sha256-sOip5auB7ipfF+h2/pLbl+Eddudo/eSnRzc+QL5sMzM=",
         "owner": "chaotic-aur",
         "repo": "toolbox",
-        "rev": "ea437aef7a44896954f5ebaf4c1b1b4b3a7c90d1",
+        "rev": "901e0c819d3554a64a7d590b8d58bcfcc1b17367",
         "type": "github"
       },
       "original": {
