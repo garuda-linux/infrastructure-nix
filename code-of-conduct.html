@@ -1,0 +1,437 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Code of Conduct - Garuda&#x27;s infra documentation</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Contains the documentation for the Garuda Linux infrastructure.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="theme/css/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Users</li><li class="chapter-item expanded "><a href="users.html"><strong aria-hidden="true">5.</strong> Users</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="users/current_users.html"><strong aria-hidden="true">5.1.</strong> Current users</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="hosts/immortalis.html"><strong aria-hidden="true">6.</strong> immortalis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="nixos-containers/chaotic-kde.html"><strong aria-hidden="true">6.1.</strong> chaotic-kde</a></li><li class="chapter-item expanded "><a href="nixos-containers/docker-proxied.html"><strong aria-hidden="true">6.2.</strong> docker-proxied</a></li><li class="chapter-item expanded "><a href="nixos-containers/docker.html"><strong aria-hidden="true">6.3.</strong> docker</a></li><li class="chapter-item expanded "><a href="nixos-containers/forum.html"><strong aria-hidden="true">6.4.</strong> forum</a></li><li class="chapter-item expanded "><a href="nixos-containers/github-runner.html"><strong aria-hidden="true">6.5.</strong> github-runner</a></li><li class="chapter-item expanded "><a href="nixos-containers/lemmy.html"><strong aria-hidden="true">6.6.</strong> lemmy</a></li><li class="chapter-item expanded "><a href="nixos-containers/mastodon.html"><strong aria-hidden="true">6.7.</strong> mastodon</a></li><li class="chapter-item expanded "><a href="nixos-containers/meshcentral.html"><strong aria-hidden="true">6.8.</strong> meshcentral</a></li><li class="chapter-item expanded "><a href="nixos-containers/postgres.html"><strong aria-hidden="true">6.9.</strong> postgres</a></li><li class="chapter-item expanded "><a href="nixos-containers/repo.html"><strong aria-hidden="true">6.10.</strong> repo</a></li><li class="chapter-item expanded "><a href="nixos-containers/temeraire.html"><strong aria-hidden="true">6.11.</strong> temeraire</a></li><li class="chapter-item expanded "><a href="nixos-containers/web-front.html"><strong aria-hidden="true">6.12.</strong> web-front</a></li></ol></li><li class="chapter-item expanded "><a href="hosts/garuda-mail.html"><strong aria-hidden="true">7.</strong> garuda-mail</a></li><li class="chapter-item expanded affix "><li class="part-title">Repository infrastructure</li><li class="chapter-item expanded "><a href="repositories/general.html"><strong aria-hidden="true">8.</strong> General information</a></li><li class="chapter-item expanded "><a href="repositories/pkgbuilds.html"><strong aria-hidden="true">9.</strong> PKGBUILDs</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><a href="services/discourse.html"><strong aria-hidden="true">10.</strong> Discourse</a></li><li class="chapter-item expanded "><a href="websites/documentation.html"><strong aria-hidden="true">11.</strong> Documentation</a></li><li class="chapter-item expanded "><a href="services/tailscale.html"><strong aria-hidden="true">12.</strong> Tailscale</a></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><a href="code-of-conduct.html" class="active"><strong aria-hidden="true">13.</strong> Code of Conduct</a></li><li class="chapter-item expanded "><a href="privacy-policy.html"><strong aria-hidden="true">14.</strong> Privacy policy</a></li><li class="chapter-item expanded "><a href="security.html"><strong aria-hidden="true">15.</strong> Security</a></li><li class="chapter-item expanded "><a href="credits.html"><strong aria-hidden="true">16.</strong> Credits</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Garuda&#x27;s infra documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/garuda-linux/infrastructure-nix" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-code-fork"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="garuda-linux-code-of-conduct"><a class="header" href="#garuda-linux-code-of-conduct">Garuda Linux Code of Conduct</a></h1>
+<p>Thank you for being a part of the Garuda Linux community. We value your participation and want everyone to have an enjoyable and fulfilling experience. Accordingly, all participants are expected to follow this Code of Conduct, and to show respect, understanding, and consideration to one another. Thank you for helping make this a welcoming, friendly community for everyone.</p>
+<h2 id="scope"><a class="header" href="#scope">Scope</a></h2>
+<p>This Code of Conduct applies to all Garuda Linux community spaces, including, but not limited to:</p>
+<ul>
+<li>Code repositories - <code>gitlab.com/garuda-linux</code> and <code>github.com/garuda-linux</code></li>
+<li>Garuda Linux's Telegram channels and groups (including bridges to Matrix)</li>
+<li>Mailing <code>*@garudalinux.org</code></li>
+<li>Community spaces hosted on <code>garudalinux.org</code> infrastructure</li>
+</ul>
+<p>Communication channels and private conversations that are normally out of scope may be considered in scope if a Garuda Linux participant is being stalked or harassed. Social media conversations may be considered in-scope if the incident occurred under a Garuda Linux related hashtag, or when an official Garuda Linux account on social media is tagged, or within any other discussion about Garuda Linux. The Garuda Linux's staff reserves the right to take actions against behaviors that happen in any context, if they are deemed to be relevant to the Garuda Linux project and its participants.</p>
+<p>All participants in Garuda Linux community spaces are subject to the Code of Conduct. This includes founding members, staff members, corporate sponsors, and paid employees. This also includes volunteers, maintainers, leaders, contributors, contribution reviewers, issue reporters, Garuda Linux users, and anyone participating in discussion in Garuda Linux community spaces.</p>
+<h2 id="reporting-an-incident"><a class="header" href="#reporting-an-incident">Reporting an Incident</a></h2>
+<p>If you believe that someone is violating the Code of Conduct, or have any other concerns, please contact <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
+<h2 id="our-standards"><a class="header" href="#our-standards">Our Standards</a></h2>
+<p>The Garuda Linux community is dedicated to providing a positive experience for everyone, regardless of:</p>
+<ul>
+<li>age</li>
+<li>body size</li>
+<li>caste</li>
+<li>citizenship</li>
+<li>disability</li>
+<li>education</li>
+<li>ethnicity</li>
+<li>familial status</li>
+<li>gender expression</li>
+<li>gender identity</li>
+<li>genetic information</li>
+<li>immigration status</li>
+<li>level of experience</li>
+<li>nationality</li>
+<li>personal appearance</li>
+<li>pregnancy</li>
+<li>race</li>
+<li>religion</li>
+<li>sex characteristics</li>
+<li>sexual orientation</li>
+<li>sexual identity</li>
+<li>socio-economic status</li>
+<li>tribe</li>
+<li>veteran status</li>
+</ul>
+<h2 id="community-guidelines"><a class="header" href="#community-guidelines">Community Guidelines</a></h2>
+<p>Behaviors that contribute to creating a positive environment include:</p>
+<ul>
+<li><strong>Be friendly.</strong> Use welcoming and inclusive language.</li>
+<li><strong>Be empathetic.</strong> Be respectful of others' viewpoints and experiences.</li>
+<li><strong>Be respectful.</strong> Express disagreements in a polite and constructive manner.</li>
+<li><strong>Be considerate.</strong> Focus on what is best for the community. Keep discussions around technology choices constructive and respectful. Remember that decisions are often a difficult choice between competing priorities.</li>
+<li><strong>Be patient and generous.</strong> If someone asks for help, it is because they need it. When documentation is available that answers the question, politely point them to it. If the question is off-topic, suggest a more appropriate online space to seek help.</li>
+<li><strong>Try to be concise.</strong> Read the discussion before commenting in order to not repeat a point that has been made.</li>
+</ul>
+<h2 id="inappropriate-behavior"><a class="header" href="#inappropriate-behavior">Inappropriate Behavior</a></h2>
+<p>We want all participants in the Garuda Linux community have the best possible experience they can. Community members asked to stop any inappropriate behavior are expected to comply immediately.</p>
+<p>Inappropriate behaviors include, but are not limited to:</p>
+<ul>
+<li><strong>Deliberate intimidation, stalking, or following.</strong></li>
+<li><strong>Sustained disruption of online discussion, talks, or other events.</strong> Sustained disruption of events, online discussions, or meetings, including talks and presentations, will not be tolerated. This includes 'Talking over' or 'heckling' event speakers or influencing crowd actions that cause hostility in event sessions. Sustained disruption also includes drinking alcohol to excess or using recreational drugs to excess, or pushing others to do so.</li>
+<li><strong>Harassment of people who don't drink alcohol or other legal substances.</strong> We do not tolerate derogatory comments about those who abstain from alcohol or other legal substances. We do not tolerate pushing people to drink, talking about their abstinence or preferences to others, or pressuring them to drink - physically or through jeering.</li>
+<li><strong>Sexist, racist, homophobic, transphobic, ableist language or otherwise exclusionary language.</strong> This includes deliberately referring to someone by a gender that they do not identify with, and/or questioning the legitimacy of an individual's gender identity. If you're unsure if a word is derogatory, don't use it. This also includes repeated subtle and/or indirect discrimination.</li>
+<li><strong>Unwelcome sexual attention or behavior that contributes to a sexualized environment.</strong> This includes sexualized comments, jokes or imagery in interactions, communications or presentation materials, as well as inappropriate touching, groping, or sexual advances. Sponsors should not use sexualized images, activities, or other material. Meetup organizing staff and other volunteer organizers should not use sexualized clothing/uniforms/costumes, or otherwise create a sexualized environment.</li>
+<li><strong>Unwelcome physical contact.</strong> This includes touching a person without permission, including sensitive areas such as their hair, pregnant stomach, mobility device (wheelchair, scooter, etc) or tattoos. This also includes physically blocking or intimidating another person. Physical contact without affirmative consent is not acceptable. This includes sharing or distribution of sexualized images or text.</li>
+<li><strong>Violence or threats of violence.</strong> Violence and threats of violence are not acceptable - online or offline. This includes incitement of violence toward any individual, including encouraging a person to commit self-harm. This also includes posting or threatening to post other people's personally identifying information (&quot;doxxing&quot;) online.</li>
+<li><strong>Influencing or encouraging inappropriate behavior.</strong> If you influence or encourage another person to violate the Code of Conduct, you may face the same consequences as if you had violated the Code of Conduct.</li>
+</ul>
+<h3 id="safety-versus-comfort"><a class="header" href="#safety-versus-comfort">Safety versus Comfort</a></h3>
+<p>The Garuda Linux community prioritizes marginalized people's safety over privileged people's comfort. The following are not against the Code of Conduct.</p>
+<ul>
+<li>&quot;Reverse&quot;-isms, including &quot;reverse racism,&quot; &quot;reverse sexism,&quot; and &quot;cisphobia&quot;</li>
+<li>Reasonable communication of boundaries, such as &quot;leave me alone,&quot; &quot;go away,&quot; or &quot;I'm not discussing this with you.&quot;</li>
+<li>Criticizing racist, sexist, cissexist, or otherwise oppressive behavior or assumptions</li>
+<li>Communicating boundaries or criticizing oppressive behavior in a &quot;tone&quot; you don't find congenial</li>
+</ul>
+<p>If you have questions about the above statements, please read <a href="https://wiki.gnome.org/Foundation/CodeOfConduct/SupportingDiversity">GNOME Foundation's document on Supporting Diversity</a>.</p>
+<p>Outreach and diversity efforts directed at under-represented groups are permitted under the code of conduct. For example, a social event for women would not be classified as being outside the Code of Conduct under this provision.</p>
+<p>Basic expectations for conduct are not covered by the &quot;reverse-ism clause&quot; and would be enforced irrespective of the demographics of those involved. For example, racial discrimination will not be tolerated, irrespective of the race of those involved. Nor would unwanted sexual attention be tolerated, whatever someone's gender or sexual orientation. Members of our community have the right to expect that participants in the project will uphold these standards.</p>
+<p>If a participant engages in behavior that violates this code of conduct, the Garuda Linux's staff may take any action they deem appropriate. In cases involving the staff or founding members the immediate action is expelishment.</p>
+<h2 id="procedure-for-handling-incidents"><a class="header" href="#procedure-for-handling-incidents">Procedure for Handling Incidents</a></h2>
+<p>You can make a report by emailing <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
+<p>If you make a report via email, we hope you can provide us with some information that will help us identify the reported person. If you don’t remember all the details, we still encourage you to make a report.</p>
+<p>We encourage you to include the following information in your report:</p>
+<ul>
+<li>Your contact info (so we can get in touch with you if we need to follow up)</li>
+<li>Date and time of the incident</li>
+<li>Whether the incident is ongoing</li>
+<li>Which online community and which part of the online community space it occurred in</li>
+<li>Description of the incident</li>
+<li>Identifying information of the reported person such as name, online username, handle, email address, or IP address</li>
+<li>A link to the conversation</li>
+<li>Any logs or screenshots of the conversation</li>
+<li>Additional circumstances surrounding the incident</li>
+<li>Other people involved in or witnesses to the incident and their contact information or # Garuda Linux Code of Conduct</li>
+</ul>
+<p>Thank you for being a part of the Garuda Linux community. We value your participation and want everyone to have an enjoyable and fulfilling experience.
+Accordingly, all participants are expected to follow this Code of Conduct, and to show respect, understanding, and consideration to one another.
+Thank you for helping make this a welcoming, friendly community for everyone.</p>
+<h2 id="scope-1"><a class="header" href="#scope-1">Scope</a></h2>
+<p>This Code of Conduct applies to all Garuda Linux community spaces, including, but not limited to:</p>
+<ul>
+<li>Code repositories - <code>gitlab.com/garuda-linux</code> and <code>github.com/garuda-linux</code></li>
+<li>Garuda Linux's Telegram channels and groups (including bridges to Matrix)</li>
+<li>Mailing <code>*@garudalinux.org</code></li>
+<li>Community spaces hosted on <code>garudalinux.org</code> infrastructure</li>
+</ul>
+<p>Communication channels and private conversations that are normally out of scope may be considered in scope if a Garuda Linux participant is being stalked or harassed.
+Social media conversations may be considered in-scope if the incident occurred under a Garuda Linux related hashtag, or when an official Garuda Linux account on social media is tagged, or within any other discussion about Garuda Linux.
+The Garuda Linux's staff reserves the right to take actions against behaviors that happen in any context, if they are deemed to be relevant to the Garuda Linux project and its participants.</p>
+<p>All participants in Garuda Linux community spaces are subject to the Code of Conduct. This includes founding members, staff members, corporate sponsors, and paid employees.
+This also includes volunteers, maintainers, leaders, contributors, contribution reviewers, issue reporters, Garuda Linux users, and anyone participating in discussion in Garuda Linux community spaces.</p>
+<h2 id="reporting-an-incident-1"><a class="header" href="#reporting-an-incident-1">Reporting an Incident</a></h2>
+<p>If you believe that someone is violating the Code of Conduct, or have any other concerns, please contact <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
+<h2 id="our-standards-1"><a class="header" href="#our-standards-1">Our Standards</a></h2>
+<p>The Garuda Linux community is dedicated to providing a positive experience for everyone, regardless of:</p>
+<ul>
+<li>age</li>
+<li>body size</li>
+<li>caste</li>
+<li>citizenship</li>
+<li>disability</li>
+<li>education</li>
+<li>ethnicity</li>
+<li>familial status</li>
+<li>gender expression</li>
+<li>gender identity</li>
+<li>genetic information</li>
+<li>immigration status</li>
+<li>level of experience</li>
+<li>nationality</li>
+<li>personal appearance</li>
+<li>pregnancy</li>
+<li>race</li>
+<li>religion</li>
+<li>sex characteristics</li>
+<li>sexual orientation</li>
+<li>sexual identity</li>
+<li>socio-economic status</li>
+<li>tribe</li>
+<li>veteran status</li>
+</ul>
+<h2 id="community-guidelines-1"><a class="header" href="#community-guidelines-1">Community Guidelines</a></h2>
+<p>Behaviors that contribute to creating a positive environment include:</p>
+<ul>
+<li><strong>Be friendly.</strong> Use welcoming and inclusive language.</li>
+<li><strong>Be empathetic.</strong> Be respectful of others' viewpoints and experiences.</li>
+<li><strong>Be respectful.</strong> Express disagreements in a polite and constructive manner.</li>
+<li><strong>Be considerate.</strong> Focus on what is best for the community. Keep discussions around technology choices constructive and respectful.<br />
+Remember that decisions are often a difficult choice between competing priorities.</li>
+<li><strong>Be patient and generous.</strong> If someone asks for help, it is because they need it.
+When documentation is available that answers the question, politely point them to it. If the question is off-topic, suggest a more appropriate online space to seek help.</li>
+<li><strong>Try to be concise.</strong> Read the discussion before commenting in order to not repeat a point that has been made.</li>
+</ul>
+<h2 id="inappropriate-behavior-1"><a class="header" href="#inappropriate-behavior-1">Inappropriate Behavior</a></h2>
+<p>We want all participants in the Garuda Linux community have the best possible experience they can. Community members asked to stop any inappropriate behavior are expected to comply immediately.</p>
+<p>Inappropriate behaviors include, but are not limited to:</p>
+<ul>
+<li><strong>Deliberate intimidation, stalking, or following.</strong></li>
+<li><strong>Sustained disruption of online discussion, talks, or other events.</strong> Sustained disruption of events, online discussions, or meetings, including talks and presentations, will not be tolerated.
+This includes 'Talking over' or 'heckling' event speakers or influencing crowd actions that cause hostility in event sessions.
+Sustained disruption also includes drinking alcohol to excess or using recreational drugs to excess, or pushing others to do so.</li>
+<li><strong>Harassment of people who don't drink alcohol or other legal substances.</strong> We do not tolerate derogatory comments about those who abstain from alcohol or other legal substances.
+We do not tolerate pushing people to drink, talking about their abstinence or preferences to others, or pressuring them to drink - physically or through jeering.</li>
+<li><strong>Sexist, racist, homophobic, transphobic, ableist language or otherwise exclusionary language.</strong> This includes deliberately referring to someone by a gender that they do not identify with, and/or
+questioning the legitimacy of an individual's gender identity.
+If you're unsure if a word is derogatory, don't use it. This also includes repeated subtle and/or indirect discrimination.</li>
+<li><strong>Unwelcome sexual attention or behavior that contributes to a sexualized environment.</strong> This includes sexualized comments, jokes or imagery in interactions, communications or presentation materials, as well as inappropriate touching, groping, or sexual advances. Sponsors should not use sexualized images, activities, or other material. Meetup organizing staff and other volunteer organizers should not use sexualized clothing/uniforms/costumes, or otherwise create a sexualized environment.</li>
+<li><strong>Unwelcome physical contact.</strong> This includes touching a person without permission, including sensitive areas such as their hair, pregnant stomach, mobility device (wheelchair, scooter, etc) or tattoos. This also includes physically blocking or intimidating another person. Physical contact without affirmative consent is not acceptable. This includes sharing or distribution of sexualized images or text.</li>
+<li><strong>Violence or threats of violence.</strong> Violence and threats of violence are not acceptable - online or offline. This includes incitement of violence toward any individual, including encouraging a person to commit self-harm. This also includes posting or threatening to post other people's personally identifying information (&quot;doxxing&quot;) online.</li>
+<li><strong>Influencing or encouraging inappropriate behavior.</strong> If you influence or encourage another person to violate the Code of Conduct, you may face the same consequences as if you had violated the Code of Conduct.</li>
+</ul>
+<h3 id="safety-versus-comfort-1"><a class="header" href="#safety-versus-comfort-1">Safety versus Comfort</a></h3>
+<p>The Garuda Linux community prioritizes marginalized people's safety over privileged people's comfort. The following are not against the Code of Conduct.</p>
+<ul>
+<li>&quot;Reverse&quot;-isms, including &quot;reverse racism,&quot; &quot;reverse sexism,&quot; and &quot;cisphobia&quot;</li>
+<li>Reasonable communication of boundaries, such as &quot;leave me alone,&quot; &quot;go away,&quot; or &quot;I'm not discussing this with you.&quot;</li>
+<li>Criticizing racist, sexist, cissexist, or otherwise oppressive behavior or assumptions</li>
+<li>Communicating boundaries or criticizing oppressive behavior in a &quot;tone&quot; you don't find congenial</li>
+</ul>
+<p>If you have questions about the above statements, please read <a href="https://wiki.gnome.org/Foundation/CodeOfConduct/SupportingDiversity">GNOME Foundation's document on Supporting Diversity</a>.</p>
+<p>Outreach and diversity efforts directed at under-represented groups are permitted under the code of conduct. For example, a social event for women would not be classified as being outside the Code of Conduct under this provision.</p>
+<p>Basic expectations for conduct are not covered by the &quot;reverse-ism clause&quot; and would be enforced irrespective of the demographics of those involved. For example, racial discrimination will not be tolerated, irrespective of the race of those involved. Nor would unwanted sexual attention be tolerated, whatever someone's gender or sexual orientation. Members of our community have the right to expect that participants in the project will uphold these standards.</p>
+<p>If a participant engages in behavior that violates this code of conduct, the Garuda Linux's staff may take any action they deem appropriate. In cases involving the staff or founding members the immediate action is expelishment.</p>
+<h2 id="procedure-for-handling-incidents-1"><a class="header" href="#procedure-for-handling-incidents-1">Procedure for Handling Incidents</a></h2>
+<p>You can make a report by emailing <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
+<p>If you make a report via email, we hope you can provide us with some information that will help us identify the reported person. If you don’t remember all the details, we still encourage you to make a report.</p>
+<p>We encourage you to include the following information in your report:</p>
+<ul>
+<li>Your contact info (so we can get in touch with you if we need to follow up)</li>
+<li>Date and time of the incident</li>
+<li>Whether the incident is ongoing</li>
+<li>Which online community and which part of the online community space it occurred in</li>
+<li>Description of the incident</li>
+<li>Identifying information of the reported person such as name, online username, handle, email address, or IP address</li>
+<li>A link to the conversation</li>
+<li>Any logs or screenshots of the conversation</li>
+<li>Additional circumstances surrounding the incident</li>
+<li>Other people involved in or witnesses to the incident and their contact information or description</li>
+</ul>
+<h2 id="license"><a class="header" href="#license">License</a></h2>
+<p>The Garuda Linux Code of Conduct is licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution Share-Alike 3.0 Unported License</a>.</p>
+<p><img src="https://licensebuttons.net/l/by-sa/3.0/88x31.png" alt="Creative Commons License" /></p>
+<h2 id="attribution"><a class="header" href="#attribution">Attribution</a></h2>
+<p>The Garuda Linux Code of Conduct was forked from GNOME Foundation's Code of Conduct (last modified 2020-10-01), which is under a Creative Commons license. See the <a href="https://web.archive.org/web/20210813233606/https://wiki.gnome.org/Foundation/CodeOfConduct">original page</a> for the original attributions.
+description</p>
+<h2 id="license-1"><a class="header" href="#license-1">License</a></h2>
+<p>The Garuda Linux Code of Conduct is licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution Share-Alike 3.0 Unported License</a>.</p>
+<p><img src="https://licensebuttons.net/l/by-sa/3.0/88x31.png" alt="Creative Commons License" /></p>
+<h2 id="attribution-1"><a class="header" href="#attribution-1">Attribution</a></h2>
+<p>The Garuda Linux Code of Conduct was forked from GNOME Foundation's Code of Conduct (last modified 2020-10-01), which is under a Creative Commons license. See the <a href="https://web.archive.org/web/20210813233606/https://wiki.gnome.org/Foundation/CodeOfConduct">original page</a> for the original attributions.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="services/tailscale.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="privacy-policy.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="services/tailscale.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="privacy-policy.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
