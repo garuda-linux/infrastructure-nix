@@ -42,6 +42,7 @@
 
 # Misc
 
+- [Code of Conduct](./code-of-conduct.md)
 - [Privacy policy](./privacy-policy.md)
 - [Security](./security.md)
 - [Credits](./credits.md)
