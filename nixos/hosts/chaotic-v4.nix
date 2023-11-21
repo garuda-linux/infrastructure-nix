@@ -21,6 +21,14 @@
     source = ../../docker-compose/chaotic-v4;
   };
 
+  # Lock down chaotic-op group to SCP in landing zone
+  services.openssh.extraConfig = ''
+    Match Group chaotic-op
+      ChrootDirectory /home/package-deployer/landing-zone
+      ForceCommand internal-sftp
+      AllowTcpForwarding no
+  '';
+
   # This container has a dedicated IP on the tailscale network
   # this way we can lock down access for nodes
   services.garuda-tailscale.enable = true;
