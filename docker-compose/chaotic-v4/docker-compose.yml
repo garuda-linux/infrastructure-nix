@@ -2,14 +2,16 @@
 version: "3.9"
 services:
   chaotic-builder:
-    image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/builder
+    image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-builder
     network_mode: host
     command: builder
     environment:
-      - REDIS_HOST=127.0.0.1
-      - REDIS_PORT=6379
-      - SHARED_PATH=/shared
+      REDIS_HOST: 127.0.0.1
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
+      REDIS_PORT: 6379
+      REDIS_USER: redis-chaotic
+      SHARED_PATH: /shared
     volumes:
       - ./shared:/shared
       - ./sshkey:/app/sshkey
@@ -20,14 +22,16 @@ services:
     network_mode: host
     command: database
     environment:
-      - DATABASE_HOST=127.0.0.1
-      - DATABASE_PORT=22
-      - DATABASE_USER=package-deployer
-      - GPG_PATH=/home/package-deployer/.gnupg
-      - LANDING_ZONE_PATH=/home/package-deployer/landing-zone
-      - REDIS_HOST=127.0.0.1
-      - REDIS_PORT=6379
-      - REPO_PATH=/srv/http/repos
+      DATABASE_HOST: 127.0.0.1
+      DATABASE_PORT: 22
+      DATABASE_USER: package-deployer
+      GPG_PATH: /home/package-deployer/.gnupg
+      LANDING_ZONE_PATH: /home/package-deployer/landing-zone
+      REDIS_HOST: 127.0.0.1
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
+      REDIS_PORT: 6379
+      REDIS_USER: redis-chaotic
+      REPO_PATH: /srv/http/repos
     volumes:
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock

@@ -1,4 +1,5 @@
-{ sources
+{ garuda-lib
+, sources
 , ...
 }: {
   imports = sources.defaultModules ++ [ ../modules ];
@@ -11,12 +12,12 @@
       enable = true;
       port = 6379;
       requirePassFile = "/var/garuda/secrets/chaotic/redis";
-      user = "redis";
     };
   };
 
   # This container is just for docker-compose stuff
   services.docker-compose-runner.chaotic-v4 = {
+    envfile = garuda-lib.secrets.docker-compose.chaotic-v4;
     source = ../../docker-compose/chaotic-v4;
   };
 
