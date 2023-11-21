@@ -518,8 +518,8 @@
     "src-buildiso": {
       "flake": false,
       "locked": {
-        "lastModified": 1699372355,
-        "narHash": "sha256-3XXy6+d6U1GLBlLD08/UzbqGFhsb5mgg65JIy0Z5jmc=",
+        "lastModified": 1700401018,
+        "narHash": "sha256-UBnsnmAXFRwiJAQYEwMOu6ldrgGueVLBiqJBn1C3RYQ=",
         "type": "tarball",
         "url": "https://gitlab.com/garuda-linux/tools/buildiso-docker/-/archive/master/buildiso-docker-master.tar.gz"
       },
