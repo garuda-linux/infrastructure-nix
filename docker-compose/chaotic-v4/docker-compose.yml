@@ -4,22 +4,21 @@ services:
   chaotic-builder:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-builder
-    network_mode: host
     command: builder
     environment:
-      REDIS_HOST: 127.0.0.1
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
-      REDIS_PORT: 6379
-      REDIS_USER: redis-chaotic
+      REDIS_SSH_HOST: host.docker.internal
+      REDIS_SSH_USER: package-deployer
       SHARED_PATH: /shared
     volumes:
       - ./shared:/shared
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
+    extra_hosts:
+        - "host.docker.internal:host-gateway"
   chaotic-manager:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-manager
-    network_mode: host
     command: database
     environment:
       DATABASE_HOST: 127.0.0.1
@@ -27,11 +26,13 @@ services:
       DATABASE_USER: package-deployer
       GPG_PATH: /home/package-deployer/.gnupg
       LANDING_ZONE_PATH: /home/package-deployer/landing-zone
-      REDIS_HOST: 127.0.0.1
+      LANDING_ZONE_ADVERTISED_PATH: /
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
-      REDIS_PORT: 6379
-      REDIS_USER: redis-chaotic
+      REDIS_SSH_HOST: host.docker.internal
+      REDIS_SSH_USER: package-deployer
       REPO_PATH: /srv/http/repos
     volumes:
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
+    extra_hosts:
+        - "host.docker.internal:host-gateway"

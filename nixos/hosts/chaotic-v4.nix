@@ -8,7 +8,7 @@
   services.redis = {
     vmOverCommit = true;
     servers."chaotic" = {
-      bind = "0.0.0.0"; # TODO: restrict to tailscale IP?
+      bind = "127.0.0.1";
       enable = true;
       port = 6379;
       requirePassFile = "/var/garuda/secrets/chaotic/redis";
@@ -27,6 +27,7 @@
       ChrootDirectory /home/package-deployer/landing-zone
       ForceCommand internal-sftp
       AllowTcpForwarding no
+      PermitOpen 127.0.0.1:6379
   '';
 
   # This container has a dedicated IP on the tailscale network
@@ -37,7 +38,7 @@
   users.users.package-deployer = {
     isNormalUser = true;
     extraGroups = [ "chaotic-op" ];
-    openssh.authorizedKeys.keys = [ "restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN7W5KtNH5nsjIHBN1zBwEc0BZMhg6HfFurMIJoWf39p" ];
+    openssh.authorizedKeys.keys = [ "restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN47/usTQsbmcAuG8CbEkurMDzQJxs+Tf8njI/4iTpKu" ];
   };
   users.groups.chaotic-op = { };
 
