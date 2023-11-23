@@ -8,7 +8,7 @@
   services.redis = {
     vmOverCommit = true;
     servers."chaotic" = {
-      bind = "0.0.0.0"; # TODO: restrict to tailscale IP?
+      bind = "127.0.0.1";
       enable = true;
       port = 6379;
       requirePassFile = "/var/garuda/secrets/chaotic/redis";
@@ -21,6 +21,17 @@
     source = ../../docker-compose/chaotic-v4;
   };
 
+  # Lock down chaotic-op group to SCP in landing zone
+  services.openssh.extraConfig = ''
+    Match Group chaotic-op
+      AllowTCPForwarding yes
+      AllowAgentForwarding no
+      X11Forwarding no
+      PermitTunnel no
+      ForceCommand internal-sftp
+      PermitOpen 127.0.0.1:6379
+  '';
+
   # This container has a dedicated IP on the tailscale network
   # this way we can lock down access for nodes
   services.garuda-tailscale.enable = true;
@@ -29,7 +40,7 @@
   users.users.package-deployer = {
     isNormalUser = true;
     extraGroups = [ "chaotic-op" ];
-    openssh.authorizedKeys.keys = [ "restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN7W5KtNH5nsjIHBN1zBwEc0BZMhg6HfFurMIJoWf39p" ];
+    openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN47/usTQsbmcAuG8CbEkurMDzQJxs+Tf8njI/4iTpKu" ];
   };
   users.groups.chaotic-op = { };
 
