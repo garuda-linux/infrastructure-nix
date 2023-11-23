@@ -83,6 +83,13 @@ in
               mountPoint = "/var/lib/tailscale";
             };
           };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 2222;
+              protocol = "tcp";
+            }
+          ];
           enableTun = true;
         };
         ipAddress = "10.0.5.140";

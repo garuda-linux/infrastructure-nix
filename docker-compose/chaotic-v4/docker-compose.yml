@@ -10,6 +10,9 @@ services:
       REDIS_SSH_HOST: host.docker.internal
       REDIS_SSH_USER: package-deployer
       SHARED_PATH: /shared
+      # Override address given from master
+      DATABASE_HOST: host.docker.internal
+      DATABASE_PORT: 22
     volumes:
       - ./shared:/shared
       - ./sshkey:/app/sshkey
@@ -21,8 +24,9 @@ services:
     container_name: chaotic-manager
     command: database
     environment:
-      DATABASE_HOST: 127.0.0.1
-      DATABASE_PORT: 22
+      # Address published to outside world
+      DATABASE_HOST: builds.garudalinux.org
+      DATABASE_PORT: 2222
       DATABASE_USER: package-deployer
       GPG_PATH: /home/package-deployer/.gnupg
       LANDING_ZONE_PATH: /home/package-deployer/landing-zone
