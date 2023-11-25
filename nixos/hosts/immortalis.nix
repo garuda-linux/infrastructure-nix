@@ -84,40 +84,53 @@
     # our services from the internal network via NAT reflection
     nat.forwardPorts = [
       {
+        # web-front (HTTP)
         destination = "10.0.5.10:80";
         loopbackIPs = [ "116.202.208.112" ];
         proto = "tcp";
         sourcePort = 80;
       }
       {
+        # web-front (HTTPS)
         destination = "10.0.5.10:443";
         loopbackIPs = [ "116.202.208.112" ];
         proto = "tcp";
         sourcePort = 443;
       }
       {
+        # web-front (HTTPS)
         destination = "10.0.5.10:443";
         loopbackIPs = [ "116.202.208.112" ];
         proto = "udp";
         sourcePort = 443;
       }
       {
+        # web-front (Matrix)
         destination = "10.0.5.10:8448";
         loopbackIPs = [ "116.202.208.112" ];
         proto = "tcp";
         sourcePort = 8448;
       }
       {
+        # repo (SSH)
         destination = "10.0.5.30:22";
         loopbackIPs = [ "116.202.208.112" ];
         proto = "tcp";
         sourcePort = 223;
       }
       {
+        # iso-runner (SSH)
         destination = "10.0.5.40:22";
         loopbackIPs = [ "116.202.208.112" ];
         proto = "tcp";
         sourcePort = 227;
+      }
+      {
+        # chaotic-v4 (SSH)
+        destination = "10.0.5.140:22";
+        loopbackIPs = [ "116.202.208.112" ];
+        proto = "tcp";
+        sourcePort = 400;
       }
     ];
     firewall.trustedInterfaces = [ "br0" ];
