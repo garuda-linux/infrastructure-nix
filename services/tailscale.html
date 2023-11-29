@@ -200,6 +200,12 @@
 			&quot;src&quot;:    [&quot;autogroup:shared&quot;],
 			&quot;dst&quot;:    [&quot;*:22,222-230,666,60000-61000&quot;],
 		},
+		// Let the chaotic nodes connect to chaotic-v4's Redis (build distribution)
+		{
+			&quot;action&quot;: &quot;accept&quot;,
+			&quot;src&quot;:    [&quot;tag:chaotic-node&quot;],
+			&quot;dst&quot;:    [&quot;100.75.227.149:22,6379&quot;],
+		},
 	],
 	// Current infra maintainers
 	&quot;groups&quot;: {
@@ -208,7 +214,8 @@
 	// Define a tag to use as destinations
 	&quot;tagOwners&quot;: {
 		// Admins may apply the &quot;infra&quot; tag
-		&quot;tag:infra&quot;: [&quot;group:admins&quot;],
+		&quot;tag:infra&quot;:        [&quot;group:admins&quot;],
+		&quot;tag:chaotic-node&quot;: [&quot;group:admins&quot;],
 	},
 }
 </code></pre>

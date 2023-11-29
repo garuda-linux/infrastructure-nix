@@ -665,43 +665,43 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
         ipv6.addresses = [
           # Random outgoing
           {
-            address = &quot;2a01:4f8:2200:30ac:76f1:4165:dc8d:eb91&quot;;
+            address = &quot;2a01:4f8:2200:30ac:1af1:21b6:3308:deb2&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:b9af:eb9f:4ff7:ef00&quot;;
+            address = &quot;2a01:4f8:2200:30ac:cade:d648:183b:d124&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:235c:b53a:5a82:621a&quot;;
+            address = &quot;2a01:4f8:2200:30ac:88f5:a17d:b7f9:29ec&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:ed5e:968f:c968:73d2&quot;;
+            address = &quot;2a01:4f8:2200:30ac:15d9:1c11:5638:061b&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:57ec:a803:3b51:e9c1&quot;;
+            address = &quot;2a01:4f8:2200:30ac:f227:809c:68a9:1838&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:7a4d:1a53:3a28:b3e5&quot;;
+            address = &quot;2a01:4f8:2200:30ac:f200:387b:ae08:96fe&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:0ad8:2bdc:3926:36d4&quot;;
+            address = &quot;2a01:4f8:2200:30ac:e10e:b211:8f7b:c138&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:eec9:ed4d:ce56:70b5&quot;;
+            address = &quot;2a01:4f8:2200:30ac:7eef:59b5:50a9:01a0&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:80c9:4e67:6a20:731db&quot;;
+            address = &quot;2a01:4f8:2200:30ac:1f08:6f9c:39ae:52f4&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:d2ff:67a1:da1c:4a8b&quot;;
+            address = &quot;2a01:4f8:2200:30ac:d081:d5c4:58f6:701c&quot;;
             prefixLength = 64;
           }
         ];
@@ -711,40 +711,53 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
     # our services from the internal network via NAT reflection
     nat.forwardPorts = [
       {
+        # web-front (HTTP)
         destination = &quot;10.0.5.10:80&quot;;
         loopbackIPs = [ &quot;116.202.208.112&quot; ];
         proto = &quot;tcp&quot;;
         sourcePort = 80;
       }
       {
+        # web-front (HTTPS)
         destination = &quot;10.0.5.10:443&quot;;
         loopbackIPs = [ &quot;116.202.208.112&quot; ];
         proto = &quot;tcp&quot;;
         sourcePort = 443;
       }
       {
+        # web-front (HTTPS)
         destination = &quot;10.0.5.10:443&quot;;
         loopbackIPs = [ &quot;116.202.208.112&quot; ];
         proto = &quot;udp&quot;;
         sourcePort = 443;
       }
       {
+        # web-front (Matrix)
         destination = &quot;10.0.5.10:8448&quot;;
         loopbackIPs = [ &quot;116.202.208.112&quot; ];
         proto = &quot;tcp&quot;;
         sourcePort = 8448;
       }
       {
+        # repo (SSH)
         destination = &quot;10.0.5.30:22&quot;;
         loopbackIPs = [ &quot;116.202.208.112&quot; ];
         proto = &quot;tcp&quot;;
         sourcePort = 223;
       }
       {
+        # iso-runner (SSH)
         destination = &quot;10.0.5.40:22&quot;;
         loopbackIPs = [ &quot;116.202.208.112&quot; ];
         proto = &quot;tcp&quot;;
         sourcePort = 227;
+      }
+      {
+        # chaotic-v4 (SSH)
+        destination = &quot;10.0.5.140:22&quot;;
+        loopbackIPs = [ &quot;116.202.208.112&quot; ];
+        proto = &quot;tcp&quot;;
+        sourcePort = 400;
       }
     ];
     firewall.trustedInterfaces = [ &quot;br0&quot; ];
@@ -863,29 +876,29 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
 
       # Invalid IP
       tcp_outgoing_address 10.254.254.254
-      tcp_outgoing_address 2a01:4f8:2200:30ac:b9af:eb9f:4ff7:ef00 tenth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:235c:b53a:5a82:621a ninth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:ed5e:968f:c968:73d2 eighth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:57ec:a803:3b51:e9c1 seventh
-      tcp_outgoing_address 2a01:4f8:2200:30ac:7a4d:1a53:3a28:b3e5 sixth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:0ad8:2bdc:3926:36d4 fifth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:eec9:ed4d:ce56:70b5 fourth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:80c9:4e67:6a20:731db third
-      tcp_outgoing_address 2a01:4f8:2200:30ac:d2ff:67a1:da1c:4a8b half
-      tcp_outgoing_address 2a01:4f8:2200:30ac:76f1:4165:dc8d:eb91
+      tcp_outgoing_address 2a01:4f8:2200:30ac:cade:d648:183b:d124 tenth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:88f5:a17d:b7f9:29ec ninth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:15d9:1c11:5638:061b eighth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:f227:809c:68a9:1838 seventh
+      tcp_outgoing_address 2a01:4f8:2200:30ac:f200:387b:ae08:96fe sixth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:e10e:b211:8f7b:c138 fifth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:7eef:59b5:50a9:01a0 fourth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:1f08:6f9c:39ae:52f4 third
+      tcp_outgoing_address 2a01:4f8:2200:30ac:d081:d5c4:58f6:701c half
+      tcp_outgoing_address 2a01:4f8:2200:30ac:1af1:21b6:3308:deb2
 
       # Invalid IP
       udp_outgoing_address 10.254.254.254
-      udp_outgoing_address 2a01:4f8:2200:30ac:b9af:eb9f:4ff7:ef00 tenth
-      udp_outgoing_address 2a01:4f8:2200:30ac:235c:b53a:5a82:621a ninth
-      udp_outgoing_address 2a01:4f8:2200:30ac:ed5e:968f:c968:73d2 eighth
-      udp_outgoing_address 2a01:4f8:2200:30ac:57ec:a803:3b51:e9c1 seventh
-      udp_outgoing_address 2a01:4f8:2200:30ac:7a4d:1a53:3a28:b3e5 sixth
-      udp_outgoing_address 2a01:4f8:2200:30ac:0ad8:2bdc:3926:36d4 fifth
-      udp_outgoing_address 2a01:4f8:2200:30ac:eec9:ed4d:ce56:70b5 fourth
-      udp_outgoing_address 2a01:4f8:2200:30ac:80c9:4e67:6a20:731db third
-      udp_outgoing_address 2a01:4f8:2200:30ac:d2ff:67a1:da1c:4a8b half
-      udp_outgoing_address 2a01:4f8:2200:30ac:76f1:4165:dc8d:eb91
+      udp_outgoing_address 2a01:4f8:2200:30ac:cade:d648:183b:d124 tenth
+      udp_outgoing_address 2a01:4f8:2200:30ac:88f5:a17d:b7f9:29ec ninth
+      udp_outgoing_address 2a01:4f8:2200:30ac:15d9:1c11:5638:061b eighth
+      udp_outgoing_address 2a01:4f8:2200:30ac:f227:809c:68a9:1838 seventh
+      udp_outgoing_address 2a01:4f8:2200:30ac:f200:387b:ae08:96fe sixth
+      udp_outgoing_address 2a01:4f8:2200:30ac:e10e:b211:8f7b:c138 fifth
+      udp_outgoing_address 2a01:4f8:2200:30ac:7eef:59b5:50a9:01a0 fourth
+      udp_outgoing_address 2a01:4f8:2200:30ac:1f08:6f9c:39ae:52f4 third
+      udp_outgoing_address 2a01:4f8:2200:30ac:d081:d5c4:58f6:701c half
+      udp_outgoing_address 2a01:4f8:2200:30ac:1af1:21b6:3308:deb2
     '';
     proxyAddress = &quot;10.0.5.1&quot;;
   };
@@ -3048,6 +3061,12 @@ jobs:
 			&quot;src&quot;:    [&quot;autogroup:shared&quot;],
 			&quot;dst&quot;:    [&quot;*:22,222-230,666,60000-61000&quot;],
 		},
+		// Let the chaotic nodes connect to chaotic-v4's Redis (build distribution)
+		{
+			&quot;action&quot;: &quot;accept&quot;,
+			&quot;src&quot;:    [&quot;tag:chaotic-node&quot;],
+			&quot;dst&quot;:    [&quot;100.75.227.149:22,6379&quot;],
+		},
 	],
 	// Current infra maintainers
 	&quot;groups&quot;: {
@@ -3056,7 +3075,8 @@ jobs:
 	// Define a tag to use as destinations
 	&quot;tagOwners&quot;: {
 		// Admins may apply the &quot;infra&quot; tag
-		&quot;tag:infra&quot;: [&quot;group:admins&quot;],
+		&quot;tag:infra&quot;:        [&quot;group:admins&quot;],
+		&quot;tag:chaotic-node&quot;: [&quot;group:admins&quot;],
 	},
 }
 </code></pre>
