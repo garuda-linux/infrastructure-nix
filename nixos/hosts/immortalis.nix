@@ -275,9 +275,17 @@
     '';
     proxyAddress = "10.0.5.1";
   };
-  # Shut off all logging but level 1 errors as we get spamming a lot due to
-  # not being able to use our invalid address 10.254.254.254
-  systemd.services.squid.serviceConfig.LogLevelMax = 1;
+  systemd.services.squid = {
+    serviceConfig = {
+      Restart = "always";
+      RestartSec = 10;
+      # Shut off all logging but level 1 errors as we get spamming a lot due to
+      # not being able to use our invalid address 10.254.254.254
+      LogLevelMax = 1;
+    };
+    startLimitIntervalSec = 80;
+    startLimitBurst = 6;
+  };
 
   # Can't really instantly remove this, need to find an alternative first
   nixpkgs.config.permittedInsecurePackages = [ "squid-5.9" ];
