@@ -28,8 +28,8 @@ services:
       DATABASE_HOST: builds.garudalinux.org
       DATABASE_PORT: 400
       DATABASE_USER: package-deployer
-      GPG_PATH: /home/package-deployer/.gnupg
-      LANDING_ZONE_PATH: /home/package-deployer/landing-zone
+      GPG_PATH: /var/garuda/docker-compose-runner/chaotic-v4/gnupg
+      LANDING_ZONE_PATH: /var/garuda/docker-compose-runner/chaotic-v4/landing-zone
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
       REDIS_SSH_HOST: host.docker.internal
       REDIS_SSH_USER: package-deployer
@@ -39,3 +39,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     extra_hosts:
       - "host.docker.internal:host-gateway"
+  # Automated container updates
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    command:
+      --cleanup chaotic-builder chaotic-manager watchtower --interval 3600
+    volumes: [/var/run/docker.sock:/var/run/docker.sock]
+    restart: always

@@ -8,6 +8,10 @@ let
   cfg = config.services.garuda-nspawn;
   submoduleOptions.options = {
     config = lib.mkOption { };
+    mountHome = lib.mkOption {
+      type = lib.types.nullOr lib.types.bool;
+      default = null;
+    };
     extraOptions = lib.mkOption {
       type = lib.types.attrs;
       default = { };
@@ -75,11 +79,6 @@ in
                 hostPath = "/dev/loop0";
                 mountPoint = "/dev/loop0";
               };
-              "home" = {
-                hostPath = "/home";
-                isReadOnly = false;
-                mountPoint = "/home";
-              };
               "secrets" = {
                 hostPath = "/var/garuda/secrets";
                 isReadOnly = false;
@@ -91,6 +90,13 @@ in
                 mountPoint = "/etc/ssh.host/";
               };
 
+            })
+            ++ (lib.lists.optional (if builtins.isNull cont.mountHome then cont.defaults else cont.mountHome) {
+              "home" = {
+                hostPath = "/home";
+                isReadOnly = false;
+                mountPoint = "/home";
+              };
             })
             ++ (lib.lists.optional cont.needsDocker {
               "dev-fuse" = {

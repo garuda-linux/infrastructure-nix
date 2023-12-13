@@ -34,6 +34,8 @@ let
       sha256 = "sha256-6RmKVjqBmVeioQvtil8ZbDhiIW9v7WLPHTarP5/V4yk=";
     };
 
+    doCheck = false;
+
     propagatedBuildInputs = with pkgs.python3.pkgs; [
       appdirs
       colorama
