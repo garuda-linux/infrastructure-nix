@@ -1,7 +1,32 @@
 { garuda-lib
 , sources
+, lib
 , ...
-}: {
+}:
+let
+  allowOnlyCloudflared = config: (
+    config // {
+      listen = [
+        {
+          addr = "127.0.0.1";
+          port = 80;
+        }
+      ];
+      extraConfig = (config.extraConfig or "") + ''
+        real_ip_header CF-Connecting-IP;
+        set_real_ip_from 127.0.0.1;
+      '';
+    }
+  );
+  generateCloudflaredIngress = virtualHosts:
+    let
+      destination = "http://127.0.0.1:80";
+      toIngress = array: map (host: { name = host; value = destination; }) array;
+      isCloudflared = values: values ? listen && values.listen == (allowOnlyCloudflared { }).listen;
+    in
+    builtins.listToAttrs (lib.flatten (lib.mapAttrsToList (host: values: lib.optionals (isCloudflared values) (toIngress ([ host ] ++ (values.serverAliases or [ ])))) virtualHosts));
+in
+rec {
   imports = sources.defaultModules ++ [ ../modules ];
 
   # Reverse proxy for our docker-compose stack
@@ -12,7 +37,6 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = {
@@ -63,7 +87,6 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = {
@@ -95,7 +118,6 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = {
@@ -123,23 +145,15 @@
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "search.garudalinux.org" = {
+      "search.garudalinux.org" = allowOnlyCloudflared {
         addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-        '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.110:5000"; }; };
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "searx.garudalinux.org" = {
+      "searx.garudalinux.org" = allowOnlyCloudflared {
         addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-        '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.110:8080"; }; };
         quic = true;
@@ -149,7 +163,6 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.110:8081"; }; };
@@ -160,7 +173,6 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:5001"; }; };
@@ -178,7 +190,6 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:8083"; }; };
@@ -189,7 +200,6 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:9000"; }; };
@@ -200,7 +210,6 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:8082"; }; };
@@ -211,7 +220,6 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = {
@@ -228,7 +236,6 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = {
@@ -245,7 +252,6 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = {
@@ -263,7 +269,6 @@
         extraConfig = ''
           client_max_body_size 100M;
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
           proxy_set_header X-Forwarded-For $remote_addr;
         '';
         http3 = true;
@@ -282,7 +287,6 @@
         extraConfig = ''
           client_max_body_size 100M;
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = {
@@ -313,7 +317,6 @@
         extraConfig = ''
           client_max_body_size 100M;
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
           location ~* .(mp4|webm)$ {
             proxy_pass https://10.0.5.80:443;
             proxy_set_header Host social.garudalinux.org;
@@ -331,7 +334,6 @@
         extraConfig = ''
           proxy_buffering off;
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
           proxy_set_header Host $host;
         '';
         http3 = true;
@@ -344,7 +346,6 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = {
@@ -357,7 +358,6 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:3001"; }; };
@@ -368,7 +368,6 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = {
@@ -389,17 +388,7 @@
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "mesh.garudalinux.net" = {
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-        '';
-        listen = [
-          {
-            addr = "127.0.0.1";
-            port = 80;
-          }
-        ];
+      "mesh.garudalinux.net" = allowOnlyCloudflared {
         locations = {
           "/" = {
             extraConfig = ''
@@ -407,9 +396,6 @@
               proxy_read_timeout 330s;
               proxy_set_header Connection $http_connection;
               proxy_set_header Upgrade $http_upgrade;
-
-              allow 127.0.0.1;
-              deny all;
 
               set $delimeter "";
               if ($is_args) {
@@ -445,12 +431,11 @@
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "piped.garudalinux.org" = {
+      "piped.garudalinux.org" = allowOnlyCloudflared {
         addSSL = true;
         extraConfig = ''
           location / {
             ${garuda-lib.setRealIpFromConfig}
-            real_ip_header CF-Connecting-IP;
             proxy_buffering off;
             proxy_pass http://10.0.5.110:8088;
             proxy_set_header Host $host;
@@ -458,14 +443,28 @@
         '';
         http3 = true;
         quic = true;
-        serverAliases = [ "piped-api.garudalinux.org" "piped-proxy.garudalinux.org" ];
+        serverAliases = [ "piped-api.garudalinux.org" ];
+        useACMEHost = "garudalinux.org";
+      };
+      # piped-proxy without cloudflare, this is where the actual video is hosted
+      "piped-proxy.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            ${garuda-lib.setRealIpFromConfig}
+            proxy_buffering off;
+            proxy_pass http://10.0.5.110:8088;
+            proxy_set_header Host $host;
+          }
+        '';
+        http3 = true;
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "lemmy.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = {
@@ -479,12 +478,8 @@
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "lingva.garudalinux.org" = {
+      "lingva.garudalinux.org" = allowOnlyCloudflared {
         addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-        '';
         http3 = true;
         locations = {
           "/" = {
@@ -498,7 +493,6 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
         '';
         http3 = true;
         locations = {
@@ -517,10 +511,7 @@
     enable = true;
     ingress = {
       "matrixadmin.garudalinux.net" = "http://10.0.5.100:8085";
-      "mesh.garudalinux.net" = "http://127.0.0.1:80";
-      "test.garudalinux.net" = "http://10.0.5.40:8080";
-      "test2.garudalinux.net" = "http://10.0.5.40:8081";
-    };
+    } // (generateCloudflaredIngress services.nginx.virtualHosts);
     tunnel-credentials =
       garuda-lib.secrets.cloudflare.cloudflared.esxi-web.cred;
   };

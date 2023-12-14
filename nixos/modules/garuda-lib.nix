@@ -10,7 +10,8 @@ let
     (ip: ''
       set_real_ip_from ${ip};
     '')
-    (lib.strings.splitString "\n" (builtins.readFile sources.cloudflare-ipv4));
+    (lib.strings.splitString "\n" (builtins.readFile sources.cloudflare-ipv4))
+  + "\nreal_ip_header CF-Connecting-IP;";
 in
 {
   options.garuda-lib = mkOption {
