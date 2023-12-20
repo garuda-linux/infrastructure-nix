@@ -37,6 +37,7 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
@@ -51,8 +52,6 @@ rec {
               add_header Strict-Transport-Security "max-age=31536000; includeSubdomains; preload" always;
 
               # Allow accessing through trusted domain
-              proxy_set_header Host $host;
-              proxy_set_header X-Real-IP $remote_addr;
               set_real_ip_from      172.0.0.0/16;
             '';
             proxyPass = "https://10.0.5.100:443";
@@ -87,19 +86,12 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
           "/" = {
             extraConfig = ''
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Port $server_port;
-              proxy_set_header X-Forwarded-Scheme $scheme;
-              proxy_set_header X-Forwarded-Proto $scheme;
-              proxy_set_header X-Real-IP $remote_addr;
-              proxy_set_header Accept-Encoding "";
-              proxy_set_header Host $host;
-
               client_body_buffer_size 512k;
               proxy_read_timeout 86400s;
               client_max_body_size 0;
@@ -108,7 +100,6 @@ rec {
               set_real_ip_from      172.0.0.0/16;
             '';
             proxyPass = "http://10.0.5.100:11000";
-            proxyWebsockets = true;
           };
         };
         quic = true;
@@ -118,19 +109,12 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
           "/" = {
             extraConfig = ''
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Port $server_port;
-              proxy_set_header X-Forwarded-Scheme $scheme;
-              proxy_set_header X-Forwarded-Proto $scheme;
-              proxy_set_header X-Real-IP $remote_addr;
-              proxy_set_header Accept-Encoding "";
-              proxy_set_header Host $host;
-
               client_body_buffer_size 512k;
               proxy_read_timeout 86400s;
               client_max_body_size 0;
@@ -139,7 +123,6 @@ rec {
                  set_real_ip_from      172.0.0.0/16;
             '';
             proxyPass = "https://10.0.5.100:8080";
-            proxyWebsockets = true;
           };
         };
         quic = true;
@@ -163,6 +146,7 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.110:8081"; }; };
@@ -173,6 +157,7 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:5001"; }; };
@@ -190,6 +175,7 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:8083"; }; };
@@ -200,6 +186,7 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:9000"; }; };
@@ -210,6 +197,7 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:8082"; }; };
@@ -220,12 +208,12 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
           "/" = {
             proxyPass = "http://10.0.5.100:8081";
-            proxyWebsockets = true;
           };
         };
         quic = true;
@@ -236,6 +224,7 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
@@ -252,6 +241,7 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
@@ -269,7 +259,7 @@ rec {
         extraConfig = ''
           client_max_body_size 100M;
           ${garuda-lib.setRealIpFromConfig}
-          proxy_set_header X-Forwarded-For $remote_addr;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
@@ -287,21 +277,16 @@ rec {
         extraConfig = ''
           client_max_body_size 100M;
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
           "/" = {
             proxyPass = "https://10.0.5.80:443";
-            proxyWebsockets = true;
-            extraConfig = ''
-              proxy_set_header Host social.garudalinux.org;
-            '';
           };
           "/.well-known/webfinger" = {
             proxyPass = "https://10.0.5.80:443";
-            proxyWebsockets = true;
             extraConfig = ''
-              proxy_set_header Host social.garudalinux.org;
               if ($args ~* "resource=acct:(.*)@(chaotic.cx|social.garudalinux.org)$") {
                 set $w1 $1;
                 rewrite .* /.well-known/webfinger?resource=acct:$w1@garudalinux.org? break;
@@ -317,9 +302,9 @@ rec {
         extraConfig = ''
           client_max_body_size 100M;
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
           location ~* .(mp4|webm)$ {
             proxy_pass https://10.0.5.80:443;
-            proxy_set_header Host social.garudalinux.org;
           }
         '';
         locations = {
@@ -334,7 +319,7 @@ rec {
         extraConfig = ''
           proxy_buffering off;
           ${garuda-lib.setRealIpFromConfig}
-          proxy_set_header Host $host;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.20:80"; }; };
@@ -346,6 +331,7 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
@@ -358,6 +344,7 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = { "/" = { proxyPass = "http://10.0.5.100:3001"; }; };
@@ -368,6 +355,7 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
@@ -377,11 +365,6 @@ rec {
               proxy_http_version 1.1;
               proxy_read_timeout 330s;
               proxy_send_timeout 330s;
-              proxy_set_header Connection $http_connection;
-              proxy_set_header Upgrade $http_upgrade;
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Host $host:$server_port;
-              proxy_set_header X-Forwarded-Proto $scheme;
             '';
           };
         };
@@ -392,10 +375,9 @@ rec {
         locations = {
           "/" = {
             extraConfig = ''
+              proxy_http_version 1.1;
               proxy_send_timeout 330s;
               proxy_read_timeout 330s;
-              proxy_set_header Connection $http_connection;
-              proxy_set_header Upgrade $http_upgrade;
 
               set $delimeter "";
               if ($is_args) {
@@ -436,9 +418,8 @@ rec {
         extraConfig = ''
           location / {
             ${garuda-lib.setRealIpFromConfig}
-            proxy_buffering off;
+            ${garuda-lib.nginxReverseProxySettings}
             proxy_pass http://10.0.5.110:8088;
-            proxy_set_header Host $host;
           }
         '';
         http3 = true;
@@ -452,9 +433,9 @@ rec {
         extraConfig = ''
           location / {
             ${garuda-lib.setRealIpFromConfig}
+            ${garuda-lib.nginxReverseProxySettings}
             proxy_buffering off;
             proxy_pass http://10.0.5.110:8088;
-            proxy_set_header Host $host;
           }
         '';
         http3 = true;
@@ -465,13 +446,11 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
           "/" = {
-            extraConfig = ''
-              proxy_set_header Host $host;
-            '';
             proxyPass = "http://10.0.5.120:80";
           };
         };
@@ -493,6 +472,7 @@ rec {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {

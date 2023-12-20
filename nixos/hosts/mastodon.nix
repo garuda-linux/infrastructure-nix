@@ -1,6 +1,7 @@
 { lib
 , pkgs
 , sources
+, garuda-lib
 , ...
 }: {
   imports = sources.defaultModules ++ [ ../modules ];
@@ -31,7 +32,6 @@
       port = 587;
       user = "noreply@garudalinux.org";
     };
-    trustedProxy = "10.0.5.10";
     streamingProcesses = 4;
   };
 
@@ -77,13 +77,24 @@
     wantedBy = [ "timers.target" ];
   };
 
-  services.nginx.virtualHosts."social.garudalinux.org" = {
-    enableACME = lib.mkForce false;
-    extraConfig = ''
-      set_real_ip_from 10.0.5.10;
-      real_ip_header X-Forwarded-For;
-    '';
-    useACMEHost = "garudalinux.org";
+  services.nginx = {
+    virtualHosts."social.garudalinux.org" = {
+      enableACME = lib.mkForce false;
+      useACMEHost = "garudalinux.org";
+      extraConfig = ''
+        ${garuda-lib.nginxReverseProxySettings}
+        real_ip_header X-Real-IP;
+        set_real_ip_from 10.0.5.10;
+      '';
+      locations = {
+        "@proxy" = {
+          proxyWebsockets = lib.mkForce false;
+        };
+        "/api/v1/streaming/" = {
+          proxyWebsockets = lib.mkForce false;
+        };
+      };
+    };
   };
 
   system.stateVersion = "23.05";

@@ -1,17 +1,35 @@
 { config
 , lib
 , sources
+, pkgs
 , ...
 }:
 with lib;
 let
   secrets = builtins.fromJSON (builtins.readFile ../secrets/secrets.json);
+  nginxReverseProxySettingsPkg = pkgs.writeText "garuda-proxy-settings.conf" ''
+    proxy_redirect          off;
+    proxy_connect_timeout   60s;
+    proxy_send_timeout      60s;
+    proxy_read_timeout      60s;
+    proxy_http_version      1.1;
+    proxy_set_header        Upgrade $http_upgrade;
+    proxy_set_header        Connection $connection_upgrade;
+    proxy_set_header        Host $host;
+    proxy_set_header        X-Real-IP $remote_addr;
+    proxy_set_header        X-Forwarded-For $remote_addr;
+    proxy_set_header        X-Forwarded-Proto $scheme;
+    proxy_set_header        X-Forwarded-Host $host;
+    proxy_set_header        X-Forwarded-Server $host;
+  '';
+  nginxReverseProxySettings = ''
+    include ${nginxReverseProxySettingsPkg};
+  '';
   setRealIpFromConfig = lib.concatMapStrings
     (ip: ''
       set_real_ip_from ${ip};
     '')
-    (lib.strings.splitString "\n" (builtins.readFile sources.cloudflare-ipv4))
-  + "\nreal_ip_header CF-Connecting-IP;";
+    (lib.strings.splitString "\n" (builtins.readFile sources.cloudflare-ipv4));
 in
 {
   options.garuda-lib = mkOption {
@@ -23,7 +41,7 @@ in
     # Defaults
     garuda-lib = {
       behind_proxy = false;
-      inherit setRealIpFromConfig;
+      inherit setRealIpFromConfig nginxReverseProxySettings;
       minimalContainer = false;
       unifiedUID = false;
       secrets = recursiveUpdate secrets {
