@@ -33,15 +33,18 @@
   services.openssh.enable = true;
 
   # No custom users - only Pedro and root via nixos-container root-login
-  users.allowNoPasswordLogin = true;
-  users.mutableUsers = false;
-  users.users.pedrohlc = {
-    home = "/home/pedrohlc";
-    isNormalUser = true;
-    openssh.authorizedKeys.keyFiles = [ keys.pedrohlc ];
+  users = {
+    allowNoPasswordLogin = true;
+    mutableUsers = false;
+    users.pedrohlc = {
+      home = "/home/pedrohlc";
+      isNormalUser = true;
+      openssh.authorizedKeys.keyFiles = [ keys.pedrohlc ];
+    };
   };
 
   # Make Pedro god here
+  nix.settings.trusted-users = [ "pedrohlc" ];
   security.sudo.extraRules = [
     {
       users = [ "pedrohlc" ];
