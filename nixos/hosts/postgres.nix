@@ -20,36 +20,36 @@
     ensureUsers = [
       {
         name = "lemmy";
-        ensurePermissions = { "DATABASE lemmy" = "ALL PRIVILEGES"; };
+        ensureDBOwnership = true;
       }
       {
         name = "mastodon";
-        ensurePermissions = { "DATABASE mastodon" = "ALL PRIVILEGES"; };
+        ensureDBOwnership = true;
       }
       {
         name = "matrix-bridges";
-        ensurePermissions = {
-          "DATABASE \"matrix-telegram\"" = "ALL PRIVILEGES";
-          "DATABASE \"matrix-discord\"" = "ALL PRIVILEGES";
-          "DATABASE \"matrix-irc\"" = "ALL PRIVILEGES";
-        };
       }
       {
         name = "meshcentral";
-        ensurePermissions = { "DATABASE meshcentral" = "ALL PRIVILEGES"; };
+        ensureDBOwnership = true;
       }
       {
         name = "synapse";
-        ensurePermissions = { "DATABASE synapse" = "ALL PRIVILEGES"; };
+        ensureDBOwnership = true;
       }
       {
         name = "wikijs";
-        ensurePermissions = { "DATABASE wikijs" = "ALL PRIVILEGES"; };
+        ensureDBOwnership = true;
       }
     ];
     initialScript = pkgs.writeText "backend-initScript" ''
       CREATE USER netdata;
       GRANT pg_monitor TO netdata;
+
+      # After 23.11, ensurePermissions got deprecated
+      GRANT ALL PRIVILEGES ON DATABASE matrix-bridges TO matrix-discord;
+      GRANT ALL PRIVILEGES ON DATABASE matrix-bridges TO matrix-irc;
+      GRANT ALL PRIVILEGES ON DATABASE matrix-bridges TO matrix-telegram;
     '';
     authentication = "host all all 10.0.5.0/24 md5";
     # We don't need to worry about different interfaces, because the only interface 
