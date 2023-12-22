@@ -322,7 +322,18 @@ rec {
           ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
-        locations = { "/" = { proxyPass = "http://10.0.5.20:80"; }; };
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.20:80";
+          };
+          "/logs/" = {
+            proxyPass = "http://10.0.5.140:8080/";
+            extraConfig = ''
+              proxy_buffering off;
+              proxy_read_timeout 330s;
+            '';
+          };
+        };
         quic = true;
         serverAliases = [ "cf-builds.garudalinux.org" "iso.builds.garudalinux.org" ];
         useACMEHost = "garudalinux.org";

@@ -14,6 +14,7 @@
       "matrix-irc"
       "matrix-telegram"
       "meshcentral"
+      "mastodon"
       "synapse"
       "wikijs"
     ];

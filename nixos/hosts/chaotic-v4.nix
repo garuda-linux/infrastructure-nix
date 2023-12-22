@@ -32,10 +32,6 @@
       PermitOpen 127.0.0.1:6379
   '';
 
-  # This container has a dedicated IP on the tailscale network
-  # this way we can lock down access for nodes
-  services.garuda-tailscale.enable = true;
-
   # Our package deploying users
   users.users.package-deployer = {
     isNormalUser = true;
@@ -46,6 +42,8 @@
     ];
   };
   users.groups.chaotic-op = { };
+
+  networking.firewall.allowedTCPPorts = [ 8080 ];
 
   system.stateVersion = "23.05";
 }

@@ -77,13 +77,7 @@ in
               isReadOnly = false;
               mountPoint = "/var/garuda/docker-compose-runner/chaotic-v4";
             };
-            "tailscale" = {
-              hostPath = "/data_1/containers/chaotic-v4/tailscale";
-              isReadOnly = false;
-              mountPoint = "/var/lib/tailscale";
-            };
           };
-          enableTun = true;
         };
         ipAddress = "10.0.5.140";
         needsDocker = true;

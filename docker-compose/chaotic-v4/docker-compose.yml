@@ -22,7 +22,7 @@ services:
   chaotic-manager:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-manager
-    command: database
+    command: database --web-port 8080
     environment:
       # Address published to outside world
       DATABASE_HOST: builds.garudalinux.org
@@ -34,11 +34,15 @@ services:
       REDIS_SSH_HOST: host.docker.internal
       REDIS_SSH_USER: package-deployer
       REPO_PATH: /srv/http/repos
+      LOGS_URL: https://builds.garudalinux.org/logs/logs.html
+      PACKAGE_REPOS_NOTIFIERS: >-
+        {"chaotic-aur":{"id":"52092196","token":"${GITLAB_TOKEN:-?err}","check_name":"Chaotic: %pkgbase%"}}
     volumes:
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    ports: [8080:8080]
   # Automated container updates
   watchtower:
     image: containrrr/watchtower:latest
