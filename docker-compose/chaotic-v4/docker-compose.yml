@@ -36,7 +36,8 @@ services:
       REPO_PATH: /srv/http/repos
       LOGS_URL: https://builds.garudalinux.org/logs/logs.html
       PACKAGE_REPOS_NOTIFIERS: >-
-        {"chaotic-aur":{"id":"52092196","token":"${GITLAB_TOKEN:-?err}","check_name":"Chaotic: %pkgbase%"}}
+        {"chaotic-aur":{"id":"52092196","token":"${GITLAB_TOKEN:-?err}","check_name":"chaotic: %pkgbase%"},
+        {"garuda":{"id":"48461689","token":"${GITLAB_TOKEN:-?err}","check_name":"garuda: %pkgbase%"}}
     volumes:
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
