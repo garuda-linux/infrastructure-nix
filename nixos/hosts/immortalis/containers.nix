@@ -77,6 +77,11 @@ in
               isReadOnly = false;
               mountPoint = "/var/garuda/docker-compose-runner/chaotic-v4";
             };
+            "chaotic-v4-pre" = {
+              hostPath = "/data_2/chaotic-v4/";
+              isReadOnly = false;
+              mountPoint = "/srv/http/repos";
+            };
           };
         };
         ipAddress = "10.0.5.140";
@@ -287,6 +292,11 @@ in
         config = import ../temeraire.nix;
         extraOptions = {
           bindMounts = lib.mkMerge [{
+            "chaotic-v4-pre" = {
+              hostPath = "/data_2/chaotic-v4/";
+              isReadOnly = false;
+              mountPoint = "/srv/http/chaotic-v4";
+            };
             "garuda" = {
               hostPath = "/data_2/chaotic-aur";
               isReadOnly = false;
