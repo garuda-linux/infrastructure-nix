@@ -99,9 +99,8 @@
     , pre-commit-hooks
     , self
     , ...
-    } @ inp:
+    } @ inputs:
     let
-      inputs = inp;
       perSystem =
         { pkgs
         , system
@@ -145,7 +144,7 @@
               '';
               immortalis = "116.202.208.112";
               ipv6-generator = builtins.readFile ./scripts/ipv6-generator.sh;
-              makeDevshell = import "${inp.devshell}/modules" pkgs;
+              makeDevshell = import "${inputs.devshell}/modules" pkgs;
               mkShell = config:
                 (makeDevshell {
                   configuration = {

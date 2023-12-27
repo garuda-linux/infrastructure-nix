@@ -45,16 +45,37 @@ let
       xiota = inputs.keys_xiota;
     };
   };
+
+  patchedNixosSystem = args:
+    let
+      inherit (args) system;
+      unpatched = nixpkgs.legacyPackages."${system}";
+      patches = builtins.filter (a: a != null) (nixpkgs.lib.mapAttrsToList (name: patch: if nixpkgs.lib.hasPrefix "nixos-patch-" name then patch else null) inputs);
+      result =
+        if builtins.length patches > 0 then
+          import
+            (unpatched.applyPatches
+              {
+                inherit patches;
+                name = "nixpkgs-patched";
+                src = nixpkgs;
+              } + /nixos/lib/eval-config.nix)
+            args
+        else
+          nixpkgs.lib.nixosSystem args;
+    in
+    result;
+
 in
 {
   flake = {
     nixosConfigurations = {
-      "garuda-build" = nixpkgs.lib.nixosSystem {
+      "garuda-build" = patchedNixosSystem {
         inherit system;
         inherit specialArgs;
         modules = defaultModules ++ [ ./hosts/garuda-build.nix ];
       };
-      "garuda-mail" = nixpkgs.lib.nixosSystem {
+      "garuda-mail" = patchedNixosSystem {
         inherit system;
         inherit specialArgs;
         modules = defaultModules ++ [
@@ -62,12 +83,12 @@ in
           inputs.nixos-mailserver.nixosModule
         ];
       };
-      "immortalis" = nixpkgs.lib.nixosSystem {
+      "immortalis" = patchedNixosSystem {
         inherit system;
         inherit specialArgs;
         modules = defaultModules ++ [ ./hosts/immortalis.nix ];
       };
-      "cachix" = nixpkgs.lib.nixosSystem {
+      "cachix" = patchedNixosSystem {
         inherit system;
         inherit specialArgs;
         modules = defaultModules ++ [ ./hosts/cachix.nix ];
