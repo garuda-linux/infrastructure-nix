@@ -134,6 +134,9 @@ rec {
         locations = { "/" = { proxyPass = "http://10.0.5.110:5000"; }; };
         quic = true;
         useACMEHost = "garudalinux.org";
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
       };
       "searx.garudalinux.org" = allowOnlyCloudflared {
         addSSL = true;
@@ -141,6 +144,9 @@ rec {
         locations = { "/" = { proxyPass = "http://10.0.5.110:8080"; }; };
         quic = true;
         useACMEHost = "garudalinux.org";
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
       };
       "librey.garudalinux.org" = {
         addSSL = true;
@@ -428,7 +434,6 @@ rec {
         addSSL = true;
         extraConfig = ''
           location / {
-            ${garuda-lib.setRealIpFromConfig}
             ${garuda-lib.nginxReverseProxySettings}
             proxy_pass http://10.0.5.110:8088;
           }
@@ -478,6 +483,9 @@ rec {
         };
         quic = true;
         useACMEHost = "garudalinux.org";
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
       };
       "websurfx.garudalinux.org" = {
         addSSL = true;

@@ -57,6 +57,9 @@
           add_header X-Content-Type-Options nosniff;
           add_header X-XSS-Protection "1; mode=block";
 
+          real_ip_header X-Real-IP;
+          set_real_ip_from 10.0.5.10;
+
           # frontend general requests
           location / {
               proxy_pass $proxpass;

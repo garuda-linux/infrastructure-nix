@@ -25,11 +25,15 @@ let
   nginxReverseProxySettings = ''
     include ${nginxReverseProxySettingsPkg};
   '';
-  setRealIpFromConfig = lib.concatMapStrings
+  setRealIpFromConfigPkg = pkgs.writeText "garuda-cf-real-ip.conf" (lib.concatMapStrings
     (ip: ''
       set_real_ip_from ${ip};
     '')
-    (lib.strings.splitString "\n" (builtins.readFile sources.cloudflare-ipv4));
+    (lib.strings.splitString "\n" (builtins.readFile sources.cloudflare-ipv4))
+  + "\nreal_ip_header CF-Connecting-IP;");
+  setRealIpFromConfig = ''
+    include ${setRealIpFromConfigPkg};
+  '';
 in
 {
   options.garuda-lib = mkOption {
