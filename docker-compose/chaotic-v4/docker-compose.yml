@@ -36,46 +36,84 @@ services:
       REPO_PATH: /srv/http/repos
       LOGS_URL: https://builds.garudalinux.org/logs/logs.html
       PACKAGE_REPOS: >-
-        {"garuda":{"url":"https://gitlab.com/garuda-linux/pkgbuilds"},
-        "chaotic-aur":{"url":"https://gitlab.com/garuda-linux/pkgsbuilds-aur"}}
+        {
+            "chaotic-aur": {
+                "url": "https://github.com/chaotic-cx/chaotic-poc"
+            },
+            "garuda": {
+                "url": "https://gitlab.com/garuda-linux/pkgbuilds"
+            },
+            "garuda-aur": {
+                "url": "https://gitlab.com/garuda-linux/pkgbuilds-aur"
+            }
+        }
       PACKAGE_TARGET_REPOS: >-
         {
-          "chaotic-aur": {
-            "extra_repos": [
-                {
-                    "name": "chaotic-aur",
-                    "servers": [
-                        "https://builds.garudalinux.org/chaotic-v4/chaotic-aur/x86_64"
-                    ]
-                }
-            ],
-            "extra_keyrings": [
-                "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
-            ]
-          },
-          "garuda": {
-            "extra_repos": [
-                {
-                    "name": "garuda",
-                    "servers": [
-                        "https://builds.garudalinux.org/chaotic-v4/garuda/x86_64"
-                    ]
-                },
-                {
-                    "name": "chaotic-aur",
-                    "servers": [
-                        "https://builds.garudalinux.org/repos/chaotic-aur/x86_64"
-                    ]
-                }
-            ],
-            "extra_keyrings": [
-                "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
-            ]
-          }
+            "chaotic-aur": {
+                "extra_repos": [
+                    {
+                        "name": "chaotic-aur",
+                        "servers": [
+                            "https://builds.garudalinux.org/chaotic-v4/chaotic-aur/x86_64"
+                        ]
+                    }
+                ],
+                "extra_keyrings": [
+                    "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
+                ]
+            },
+            "garuda": {
+                "extra_repos": [
+                    {
+                        "name": "garuda",
+                        "servers": [
+                            "https://builds.garudalinux.org/chaotic-v4/garuda/x86_64"
+                        ]
+                    },
+                    {
+                        "name": "chaotic-aur",
+                        "servers": [
+                            "https://builds.garudalinux.org/repos/chaotic-aur/x86_64"
+                        ]
+                    }
+                ],
+                "extra_keyrings": [
+                    "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
+                ]
+            },
+            "garuda-aur": {
+                "extra_repos": [
+                    {
+                        "name": "garuda",
+                        "servers": [
+                            "https://builds.garudalinux.org/chaotic-v4/garuda/x86_64"
+                        ]
+                    },
+                    {
+                        "name": "chaotic-aur",
+                        "servers": [
+                            "https://builds.garudalinux.org/repos/chaotic-aur/x86_64"
+                        ]
+                    }
+                ],
+                "extra_keyrings": [
+                    "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
+                ]
+            }
         }
       PACKAGE_REPOS_NOTIFIERS: >-
-        {"chaotic-aur":{"id":"52092196","token":"${GITLAB_TOKEN:-?err}","check_name":"chaotic: %pkgbase%"},
-        "garuda":{"id":"48461689","token":"${GITLAB_TOKEN:-?err}","check_name":"garuda: %pkgbase%"}}
+        {
+            "garuda": {
+                "id": "48461689",
+                "token": "${GITLAB_TOKEN:-?err}",
+                "check_name": "garuda: %pkgbase%"
+            },
+            "garuda-aur": {
+                "id": "52092196",
+                "token": "${GITLAB_TOKEN:-?err}",
+                "check_name": "garuda: %pkgbase%"
+            }
+        }
     volumes:
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
