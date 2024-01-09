@@ -118,7 +118,7 @@ services:
       NO_PROXY: garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com
     restart: always
   piped_postgres:
-    image: postgres:13.12-alpine
+    image: postgres:13.13-alpine
     container_name: piped_postgres
     volumes: [./piped/db:/var/lib/postgresql/data]
     environment:
@@ -139,7 +139,7 @@ services:
 
   # Automated container updates
   watchtower:
-    image: containrrr/watchtower:1.6.0
+    image: containrrr/watchtower:1.7.1
     container_name: watchtower
     command:
       --cleanup piped_backend piped_frontend piped_proxy invidious searx lingva
