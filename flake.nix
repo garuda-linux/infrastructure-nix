@@ -8,7 +8,7 @@
     # Devshell to set up a development environment
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
-    devshell.inputs.systems.follows = "systems";
+    devshell.inputs.flake-utils.follows = "flake-utils";
 
     # Used by multiple flakes, have them use the same version
     flake-compat.url = "github:edolstra/flake-compat";
