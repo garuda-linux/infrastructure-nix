@@ -61,7 +61,7 @@
   systemd.oomd = {
     enable = true; # This is actually the default, anyways...
     enableSystemSlice = true;
-    enableUserServices = true;
+    enableUserSlices = true;
   };
 
   system.stateVersion = "23.05";
