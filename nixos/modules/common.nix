@@ -150,7 +150,7 @@
       jq
       killall
       micro
-      ncdu
+      gdu
       python3
       screen
       ugrep

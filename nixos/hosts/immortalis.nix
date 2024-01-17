@@ -1,5 +1,6 @@
 { garuda-lib
 , pkgs
+, config
 , ...
 }: {
   imports = [
@@ -272,6 +273,9 @@
       udp_outgoing_address 2a01:4f8:2200:30ac:b318:cd86:ac61:3896 third
       udp_outgoing_address 2a01:4f8:2200:30ac:95ec:f288:bf30:e392 half
       udp_outgoing_address 2a01:4f8:2200:30ac:36ad:dde6:7a40:06cb
+
+      # This does not rotate the logs, but asks squid to reopen the log file so that logrotate can rotate it
+      logfile_rotate 0
     '';
     proxyAddress = "10.0.5.1";
   };
@@ -285,6 +289,15 @@
     };
     startLimitIntervalSec = 80;
     startLimitBurst = 6;
+  };
+  services.logrotate.settings.squid = {
+    files = "/var/log/squid/*.log";
+    frequency = "daily";
+    su = "squid squid";
+    rotate = 5;
+    compress = true;
+    delaycompress = true;
+    postrotate = "${config.services.squid.package}/bin/squid -k rotate";
   };
 
   # Can't really instantly remove this, need to find an alternative first
