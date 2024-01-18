@@ -297,7 +297,7 @@
     rotate = 5;
     compress = true;
     delaycompress = true;
-    postrotate = "${config.services.squid.package}/bin/squid -k rotate";
+    postrotate = "${config.systemd.package}/bin/systemctl kill --signal=SIGUSR1 squid";
   };
 
   # Can't really instantly remove this, need to find an alternative first
