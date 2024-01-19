@@ -162,6 +162,7 @@
       $config['smtp_user'] = "%u";
       $config['smtp_pass'] = "%p";
     '';
+    plugins = [ "managesieve" ];
   };
 
   system.stateVersion = "22.05";
