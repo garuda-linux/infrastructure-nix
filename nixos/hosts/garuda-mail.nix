@@ -177,6 +177,7 @@ in
     package = pkgs.roundcube.withPlugins (
       plugins: [
         authres_status
+        plugins.carddav
         plugins.contextmenu
         plugins.custom_from
         plugins.persistent_login
@@ -184,15 +185,16 @@ in
       ]
     );
     plugins = [
-      "attachment_reminder"
+      "attachment_reminder" # Roundcube internal plugin
       "authres_status"
+      "carddav"
       "contextmenu"
       "custom_from"
-      "managesieve"
-      "newmail_notifier"
+      "managesieve" # Roundcube internal plugin
+      "newmail_notifier" # Roundcube internal plugin
       "persistent_login"
       "thunderbird_labels"
-      "zipdownload"
+      "zipdownload" # Roundcube internal plugin
     ];
   };
 
