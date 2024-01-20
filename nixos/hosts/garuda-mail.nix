@@ -1,5 +1,6 @@
 { config
 , lib
+, pkgs
 , ...
 }: {
   imports = [
@@ -162,7 +163,24 @@
       $config['smtp_user'] = "%u";
       $config['smtp_pass'] = "%p";
     '';
-    plugins = [ "managesieve" ];
+    package = pkgs.roundcube.withPlugins (
+      plugins: [
+        plugins.contextmenu
+        plugins.custom_from
+        plugins.persistent_login
+        plugins.thunderbird_labels
+      ]
+    );
+    plugins = [
+      "attachment_reminder"
+      "contextmenu"
+      "custom_from"
+      "managesieve"
+      "newmail_notifier"
+      "persistent_login"
+      "thunderbird_labels"
+      "zipdownload"
+    ];
   };
 
   system.stateVersion = "22.05";
