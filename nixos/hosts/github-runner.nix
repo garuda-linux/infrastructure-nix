@@ -1,5 +1,4 @@
 { keys
-, pkgs
 , ...
 }: {
   # No default modules, untrusted container!
@@ -17,7 +16,6 @@
   virtualisation.docker = {
     autoPrune.enable = true;
     autoPrune.flags = [ "-a" ];
-    package = pkgs.docker_24; # Until the man pages are fixed in pkgs.docker
   };
 
   # This container is just for docker-compose stuff

@@ -131,7 +131,6 @@
       enable = true;
       flags = [ "-a" ];
     };
-    package = pkgs.docker_24; # Until the man pages are fixed in pkgs.docker
   };
 
   # Environment
