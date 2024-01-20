@@ -91,7 +91,9 @@
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="../intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="../common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="../important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Users</li><li class="chapter-item expanded "><a href="../users.html"><strong aria-hidden="true">5.</strong> Users</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../users/current_users.html"><strong aria-hidden="true">5.1.</strong> Current users</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="../hosts/immortalis.html" class="active"><strong aria-hidden="true">6.</strong> immortalis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../nixos-containers/chaotic-kde.html"><strong aria-hidden="true">6.1.</strong> chaotic-kde</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker-proxied.html"><strong aria-hidden="true">6.2.</strong> docker-proxied</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker.html"><strong aria-hidden="true">6.3.</strong> docker</a></li><li class="chapter-item expanded "><a href="../nixos-containers/forum.html"><strong aria-hidden="true">6.4.</strong> forum</a></li><li class="chapter-item expanded "><a href="../nixos-containers/github-runner.html"><strong aria-hidden="true">6.5.</strong> github-runner</a></li><li class="chapter-item expanded "><a href="../nixos-containers/lemmy.html"><strong aria-hidden="true">6.6.</strong> lemmy</a></li><li class="chapter-item expanded "><a href="../nixos-containers/mastodon.html"><strong aria-hidden="true">6.7.</strong> mastodon</a></li><li class="chapter-item expanded "><a href="../nixos-containers/meshcentral.html"><strong aria-hidden="true">6.8.</strong> meshcentral</a></li><li class="chapter-item expanded "><a href="../nixos-containers/postgres.html"><strong aria-hidden="true">6.9.</strong> postgres</a></li><li class="chapter-item expanded "><a href="../nixos-containers/repo.html"><strong aria-hidden="true">6.10.</strong> repo</a></li><li class="chapter-item expanded "><a href="../nixos-containers/temeraire.html"><strong aria-hidden="true">6.11.</strong> temeraire</a></li><li class="chapter-item expanded "><a href="../nixos-containers/web-front.html"><strong aria-hidden="true">6.12.</strong> web-front</a></li></ol></li><li class="chapter-item expanded "><a href="../hosts/garuda-mail.html"><strong aria-hidden="true">7.</strong> garuda-mail</a></li><li class="chapter-item expanded affix "><li class="part-title">Repository infrastructure</li><li class="chapter-item expanded "><a href="../repositories/general.html"><strong aria-hidden="true">8.</strong> General information</a></li><li class="chapter-item expanded "><a href="../repositories/pkgbuilds.html"><strong aria-hidden="true">9.</strong> PKGBUILDs</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><a href="../services/discourse.html"><strong aria-hidden="true">10.</strong> Discourse</a></li><li class="chapter-item expanded "><a href="../websites/documentation.html"><strong aria-hidden="true">11.</strong> Documentation</a></li><li class="chapter-item expanded "><a href="../services/tailscale.html"><strong aria-hidden="true">12.</strong> Tailscale</a></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><a href="../code-of-conduct.html"><strong aria-hidden="true">13.</strong> Code of Conduct</a></li><li class="chapter-item expanded "><a href="../privacy-policy.html"><strong aria-hidden="true">14.</strong> Privacy policy</a></li><li class="chapter-item expanded "><a href="../security.html"><strong aria-hidden="true">15.</strong> Security</a></li><li class="chapter-item expanded "><a href="../credits.html"><strong aria-hidden="true">16.</strong> Credits</a></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -241,6 +243,7 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
 <h3 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h3>
 <pre><code class="language-nix">{ garuda-lib
 , pkgs
+, config
 , ...
 }: {
   imports = [
@@ -279,43 +282,43 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
         ipv6.addresses = [
           # Random outgoing
           {
-            address = &quot;2a01:4f8:2200:30ac:1af1:21b6:3308:deb2&quot;;
+            address = &quot;2a01:4f8:2200:30ac:3f42:e489:0fd1:8f7c&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:cade:d648:183b:d124&quot;;
+            address = &quot;2a01:4f8:2200:30ac:ac70:d528:c670:6706&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:88f5:a17d:b7f9:29ec&quot;;
+            address = &quot;2a01:4f8:2200:30ac:d8a4:d4ea:b263:8ecb&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:15d9:1c11:5638:061b&quot;;
+            address = &quot;2a01:4f8:2200:30ac:a4e4:e8a6:113d:3c08&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:f227:809c:68a9:1838&quot;;
+            address = &quot;2a01:4f8:2200:30ac:6704:a83f:55a9:3b15&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:f200:387b:ae08:96fe&quot;;
+            address = &quot;2a01:4f8:2200:30ac:204c:d50a:a6f9:5af2&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:e10e:b211:8f7b:c138&quot;;
+            address = &quot;2a01:4f8:2200:30ac:353d:9cad:a1c5:5cdc&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:7eef:59b5:50a9:01a0&quot;;
+            address = &quot;2a01:4f8:2200:30ac:b318:cd86:ac61:3896&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:1f08:6f9c:39ae:52f4&quot;;
+            address = &quot;2a01:4f8:2200:30ac:95ec:f288:bf30:e392&quot;;
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:d081:d5c4:58f6:701c&quot;;
+            address = &quot;2a01:4f8:2200:30ac:36ad:dde6:7a40:06cb&quot;;
             prefixLength = 64;
           }
         ];
@@ -490,38 +493,58 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
 
       # Invalid IP
       tcp_outgoing_address 10.254.254.254
-      tcp_outgoing_address 2a01:4f8:2200:30ac:cade:d648:183b:d124 tenth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:88f5:a17d:b7f9:29ec ninth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:15d9:1c11:5638:061b eighth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:f227:809c:68a9:1838 seventh
-      tcp_outgoing_address 2a01:4f8:2200:30ac:f200:387b:ae08:96fe sixth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:e10e:b211:8f7b:c138 fifth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:7eef:59b5:50a9:01a0 fourth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:1f08:6f9c:39ae:52f4 third
-      tcp_outgoing_address 2a01:4f8:2200:30ac:d081:d5c4:58f6:701c half
-      tcp_outgoing_address 2a01:4f8:2200:30ac:1af1:21b6:3308:deb2
+      tcp_outgoing_address 2a01:4f8:2200:30ac:3f42:e489:0fd1:8f7c tenth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:ac70:d528:c670:6706 ninth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:d8a4:d4ea:b263:8ecb eighth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:a4e4:e8a6:113d:3c08 seventh
+      tcp_outgoing_address 2a01:4f8:2200:30ac:6704:a83f:55a9:3b15 sixth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:204c:d50a:a6f9:5af2 fifth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:353d:9cad:a1c5:5cdc fourth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:b318:cd86:ac61:3896 third
+      tcp_outgoing_address 2a01:4f8:2200:30ac:95ec:f288:bf30:e392 half
+      tcp_outgoing_address 2a01:4f8:2200:30ac:36ad:dde6:7a40:06cb
 
       # Invalid IP
       udp_outgoing_address 10.254.254.254
-      udp_outgoing_address 2a01:4f8:2200:30ac:cade:d648:183b:d124 tenth
-      udp_outgoing_address 2a01:4f8:2200:30ac:88f5:a17d:b7f9:29ec ninth
-      udp_outgoing_address 2a01:4f8:2200:30ac:15d9:1c11:5638:061b eighth
-      udp_outgoing_address 2a01:4f8:2200:30ac:f227:809c:68a9:1838 seventh
-      udp_outgoing_address 2a01:4f8:2200:30ac:f200:387b:ae08:96fe sixth
-      udp_outgoing_address 2a01:4f8:2200:30ac:e10e:b211:8f7b:c138 fifth
-      udp_outgoing_address 2a01:4f8:2200:30ac:7eef:59b5:50a9:01a0 fourth
-      udp_outgoing_address 2a01:4f8:2200:30ac:1f08:6f9c:39ae:52f4 third
-      udp_outgoing_address 2a01:4f8:2200:30ac:d081:d5c4:58f6:701c half
-      udp_outgoing_address 2a01:4f8:2200:30ac:1af1:21b6:3308:deb2
+      udp_outgoing_address 2a01:4f8:2200:30ac:3f42:e489:0fd1:8f7c tenth
+      udp_outgoing_address 2a01:4f8:2200:30ac:ac70:d528:c670:6706 ninth
+      udp_outgoing_address 2a01:4f8:2200:30ac:d8a4:d4ea:b263:8ecb eighth
+      udp_outgoing_address 2a01:4f8:2200:30ac:a4e4:e8a6:113d:3c08 seventh
+      udp_outgoing_address 2a01:4f8:2200:30ac:6704:a83f:55a9:3b15 sixth
+      udp_outgoing_address 2a01:4f8:2200:30ac:204c:d50a:a6f9:5af2 fifth
+      udp_outgoing_address 2a01:4f8:2200:30ac:353d:9cad:a1c5:5cdc fourth
+      udp_outgoing_address 2a01:4f8:2200:30ac:b318:cd86:ac61:3896 third
+      udp_outgoing_address 2a01:4f8:2200:30ac:95ec:f288:bf30:e392 half
+      udp_outgoing_address 2a01:4f8:2200:30ac:36ad:dde6:7a40:06cb
+
+      # This does not rotate the logs, but asks squid to reopen the log file so that logrotate can rotate it
+      logfile_rotate 0
     '';
     proxyAddress = &quot;10.0.5.1&quot;;
   };
-  # Shut off all logging but level 1 errors as we get spamming a lot due to
-  # not being able to use our invalid address 10.254.254.254
-  systemd.services.squid.serviceConfig.LogLevelMax = 1;
+  systemd.services.squid = {
+    serviceConfig = {
+      Restart = &quot;always&quot;;
+      RestartSec = 10;
+      # Shut off all logging but level 1 errors as we get spamming a lot due to
+      # not being able to use our invalid address 10.254.254.254
+      LogLevelMax = 1;
+    };
+    startLimitIntervalSec = 80;
+    startLimitBurst = 6;
+  };
+  services.logrotate.settings.squid = {
+    files = &quot;/var/log/squid/*.log&quot;;
+    frequency = &quot;daily&quot;;
+    su = &quot;squid squid&quot;;
+    rotate = 5;
+    compress = true;
+    delaycompress = true;
+    postrotate = &quot;${config.systemd.package}/bin/systemctl kill --signal=SIGUSR1 squid&quot;;
+  };
 
   # Can't really instantly remove this, need to find an alternative first
-  nixpkgs.config.permittedInsecurePackages = [ &quot;squid-5.9&quot; ];
+  nixpkgs.config.permittedInsecurePackages = [ &quot;squid-6.6&quot; ];
 
   # Adapt Nix to our core-count
   nix.settings.max-jobs = 8;

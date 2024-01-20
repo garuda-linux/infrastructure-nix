@@ -91,7 +91,9 @@
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="../intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="../common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="../important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Users</li><li class="chapter-item expanded "><a href="../users.html"><strong aria-hidden="true">5.</strong> Users</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../users/current_users.html"><strong aria-hidden="true">5.1.</strong> Current users</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="../hosts/immortalis.html"><strong aria-hidden="true">6.</strong> immortalis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../nixos-containers/chaotic-kde.html"><strong aria-hidden="true">6.1.</strong> chaotic-kde</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker-proxied.html"><strong aria-hidden="true">6.2.</strong> docker-proxied</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker.html"><strong aria-hidden="true">6.3.</strong> docker</a></li><li class="chapter-item expanded "><a href="../nixos-containers/forum.html"><strong aria-hidden="true">6.4.</strong> forum</a></li><li class="chapter-item expanded "><a href="../nixos-containers/github-runner.html"><strong aria-hidden="true">6.5.</strong> github-runner</a></li><li class="chapter-item expanded "><a href="../nixos-containers/lemmy.html"><strong aria-hidden="true">6.6.</strong> lemmy</a></li><li class="chapter-item expanded "><a href="../nixos-containers/mastodon.html"><strong aria-hidden="true">6.7.</strong> mastodon</a></li><li class="chapter-item expanded "><a href="../nixos-containers/meshcentral.html"><strong aria-hidden="true">6.8.</strong> meshcentral</a></li><li class="chapter-item expanded "><a href="../nixos-containers/postgres.html"><strong aria-hidden="true">6.9.</strong> postgres</a></li><li class="chapter-item expanded "><a href="../nixos-containers/repo.html"><strong aria-hidden="true">6.10.</strong> repo</a></li><li class="chapter-item expanded "><a href="../nixos-containers/temeraire.html"><strong aria-hidden="true">6.11.</strong> temeraire</a></li><li class="chapter-item expanded "><a href="../nixos-containers/web-front.html" class="active"><strong aria-hidden="true">6.12.</strong> web-front</a></li></ol></li><li class="chapter-item expanded "><a href="../hosts/garuda-mail.html"><strong aria-hidden="true">7.</strong> garuda-mail</a></li><li class="chapter-item expanded affix "><li class="part-title">Repository infrastructure</li><li class="chapter-item expanded "><a href="../repositories/general.html"><strong aria-hidden="true">8.</strong> General information</a></li><li class="chapter-item expanded "><a href="../repositories/pkgbuilds.html"><strong aria-hidden="true">9.</strong> PKGBUILDs</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><a href="../services/discourse.html"><strong aria-hidden="true">10.</strong> Discourse</a></li><li class="chapter-item expanded "><a href="../websites/documentation.html"><strong aria-hidden="true">11.</strong> Documentation</a></li><li class="chapter-item expanded "><a href="../services/tailscale.html"><strong aria-hidden="true">12.</strong> Tailscale</a></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><a href="../code-of-conduct.html"><strong aria-hidden="true">13.</strong> Code of Conduct</a></li><li class="chapter-item expanded "><a href="../privacy-policy.html"><strong aria-hidden="true">14.</strong> Privacy policy</a></li><li class="chapter-item expanded "><a href="../security.html"><strong aria-hidden="true">15.</strong> Security</a></li><li class="chapter-item expanded "><a href="../credits.html"><strong aria-hidden="true">16.</strong> Credits</a></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -181,8 +183,33 @@
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <pre><code class="language-nix">{ garuda-lib
 , sources
+, lib
 , ...
-}: {
+}:
+let
+  allowOnlyCloudflared = config: (
+    config // {
+      listen = [
+        {
+          addr = &quot;127.0.0.1&quot;;
+          port = 80;
+        }
+      ];
+      extraConfig = (config.extraConfig or &quot;&quot;) + ''
+        real_ip_header CF-Connecting-IP;
+        set_real_ip_from 127.0.0.1;
+      '';
+    }
+  );
+  generateCloudflaredIngress = virtualHosts:
+    let
+      destination = &quot;http://127.0.0.1:80&quot;;
+      toIngress = array: map (host: { name = host; value = destination; }) array;
+      isCloudflared = values: values ? listen &amp;&amp; values.listen == (allowOnlyCloudflared { }).listen;
+    in
+    builtins.listToAttrs (lib.flatten (lib.mapAttrsToList (host: values: lib.optionals (isCloudflared values) (toIngress ([ host ] ++ (values.serverAliases or [ ])))) virtualHosts));
+in
+rec {
   imports = sources.defaultModules ++ [ ../modules ];
 
   # Reverse proxy for our docker-compose stack
@@ -193,7 +220,7 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
@@ -208,8 +235,6 @@
               add_header Strict-Transport-Security &quot;max-age=31536000; includeSubdomains; preload&quot; always;
 
               # Allow accessing through trusted domain
-              proxy_set_header Host $host;
-              proxy_set_header X-Real-IP $remote_addr;
               set_real_ip_from      172.0.0.0/16;
             '';
             proxyPass = &quot;https://10.0.5.100:443&quot;;
@@ -244,20 +269,12 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
           &quot;/&quot; = {
             extraConfig = ''
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Port $server_port;
-              proxy_set_header X-Forwarded-Scheme $scheme;
-              proxy_set_header X-Forwarded-Proto $scheme;
-              proxy_set_header X-Real-IP $remote_addr;
-              proxy_set_header Accept-Encoding &quot;&quot;;
-              proxy_set_header Host $host;
-
               client_body_buffer_size 512k;
               proxy_read_timeout 86400s;
               client_max_body_size 0;
@@ -266,7 +283,6 @@
               set_real_ip_from      172.0.0.0/16;
             '';
             proxyPass = &quot;http://10.0.5.100:11000&quot;;
-            proxyWebsockets = true;
           };
         };
         quic = true;
@@ -276,20 +292,12 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
           &quot;/&quot; = {
             extraConfig = ''
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Port $server_port;
-              proxy_set_header X-Forwarded-Scheme $scheme;
-              proxy_set_header X-Forwarded-Proto $scheme;
-              proxy_set_header X-Real-IP $remote_addr;
-              proxy_set_header Accept-Encoding &quot;&quot;;
-              proxy_set_header Host $host;
-
               client_body_buffer_size 512k;
               proxy_read_timeout 86400s;
               client_max_body_size 0;
@@ -298,39 +306,36 @@
                  set_real_ip_from      172.0.0.0/16;
             '';
             proxyPass = &quot;https://10.0.5.100:8080&quot;;
-            proxyWebsockets = true;
           };
         };
         quic = true;
         useACMEHost = &quot;garudalinux.org&quot;;
       };
-      &quot;search.garudalinux.org&quot; = {
+      &quot;search.garudalinux.org&quot; = allowOnlyCloudflared {
         addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-        '';
         http3 = true;
         locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.110:5000&quot;; }; };
         quic = true;
         useACMEHost = &quot;garudalinux.org&quot;;
-      };
-      &quot;searx.garudalinux.org&quot; = {
-        addSSL = true;
         extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
+      };
+      &quot;searx.garudalinux.org&quot; = allowOnlyCloudflared {
+        addSSL = true;
         http3 = true;
         locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.110:8080&quot;; }; };
         quic = true;
         useACMEHost = &quot;garudalinux.org&quot;;
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
       };
       &quot;librey.garudalinux.org&quot; = {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.110:8081&quot;; }; };
@@ -341,7 +346,7 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.100:5001&quot;; }; };
@@ -359,7 +364,7 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.100:8083&quot;; }; };
@@ -370,7 +375,7 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.100:9000&quot;; }; };
@@ -381,7 +386,7 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.100:8082&quot;; }; };
@@ -392,13 +397,12 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
           &quot;/&quot; = {
             proxyPass = &quot;http://10.0.5.100:8081&quot;;
-            proxyWebsockets = true;
           };
         };
         quic = true;
@@ -409,7 +413,7 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
@@ -426,7 +430,7 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
@@ -444,8 +448,7 @@
         extraConfig = ''
           client_max_body_size 100M;
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-          proxy_set_header X-Forwarded-For $remote_addr;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
@@ -463,22 +466,16 @@
         extraConfig = ''
           client_max_body_size 100M;
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
           &quot;/&quot; = {
             proxyPass = &quot;https://10.0.5.80:443&quot;;
-            proxyWebsockets = true;
-            extraConfig = ''
-              proxy_set_header Host social.garudalinux.org;
-            '';
           };
           &quot;/.well-known/webfinger&quot; = {
             proxyPass = &quot;https://10.0.5.80:443&quot;;
-            proxyWebsockets = true;
             extraConfig = ''
-              proxy_set_header Host social.garudalinux.org;
               if ($args ~* &quot;resource=acct:(.*)@(chaotic.cx|social.garudalinux.org)$&quot;) {
                 set $w1 $1;
                 rewrite .* /.well-known/webfinger?resource=acct:$w1@garudalinux.org? break;
@@ -494,10 +491,9 @@
         extraConfig = ''
           client_max_body_size 100M;
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
           location ~* .(mp4|webm)$ {
             proxy_pass https://10.0.5.80:443;
-            proxy_set_header Host social.garudalinux.org;
           }
         '';
         locations = {
@@ -512,11 +508,21 @@
         extraConfig = ''
           proxy_buffering off;
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-          proxy_set_header Host $host;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
-        locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.20:80&quot;; }; };
+        locations = {
+          &quot;/&quot; = {
+            proxyPass = &quot;http://10.0.5.20:80&quot;;
+          };
+          &quot;/logs/&quot; = {
+            proxyPass = &quot;http://10.0.5.140:8080/&quot;;
+            extraConfig = ''
+              proxy_buffering off;
+              proxy_read_timeout 330s;
+            '';
+          };
+        };
         quic = true;
         serverAliases = [ &quot;cf-builds.garudalinux.org&quot; &quot;iso.builds.garudalinux.org&quot; ];
         useACMEHost = &quot;garudalinux.org&quot;;
@@ -525,7 +531,7 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
@@ -538,7 +544,7 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = { &quot;/&quot; = { proxyPass = &quot;http://10.0.5.100:3001&quot;; }; };
@@ -549,7 +555,7 @@
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
@@ -559,38 +565,19 @@
               proxy_http_version 1.1;
               proxy_read_timeout 330s;
               proxy_send_timeout 330s;
-              proxy_set_header Connection $http_connection;
-              proxy_set_header Upgrade $http_upgrade;
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Host $host:$server_port;
-              proxy_set_header X-Forwarded-Proto $scheme;
             '';
           };
         };
         quic = true;
         useACMEHost = &quot;garudalinux.org&quot;;
       };
-      &quot;mesh.garudalinux.net&quot; = {
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-        '';
-        listen = [
-          {
-            addr = &quot;127.0.0.1&quot;;
-            port = 80;
-          }
-        ];
+      &quot;mesh.garudalinux.net&quot; = allowOnlyCloudflared {
         locations = {
           &quot;/&quot; = {
             extraConfig = ''
+              proxy_http_version 1.1;
               proxy_send_timeout 330s;
               proxy_read_timeout 330s;
-              proxy_set_header Connection $http_connection;
-              proxy_set_header Upgrade $http_upgrade;
-
-              allow 127.0.0.1;
-              deny all;
 
               set $delimeter &quot;&quot;;
               if ($is_args) {
@@ -626,46 +613,51 @@
         quic = true;
         useACMEHost = &quot;garudalinux.org&quot;;
       };
-      &quot;piped.garudalinux.org&quot; = {
+      &quot;piped.garudalinux.org&quot; = allowOnlyCloudflared {
         addSSL = true;
         extraConfig = ''
           location / {
-            ${garuda-lib.setRealIpFromConfig}
-            real_ip_header CF-Connecting-IP;
-            proxy_buffering off;
+            ${garuda-lib.nginxReverseProxySettings}
             proxy_pass http://10.0.5.110:8088;
-            proxy_set_header Host $host;
           }
         '';
         http3 = true;
         quic = true;
-        serverAliases = [ &quot;piped-api.garudalinux.org&quot; &quot;piped-proxy.garudalinux.org&quot; ];
+        serverAliases = [ &quot;piped-api.garudalinux.org&quot; ];
+        useACMEHost = &quot;garudalinux.org&quot;;
+      };
+      # piped-proxy without cloudflare, this is where the actual video is hosted
+      &quot;piped-proxy.garudalinux.org&quot; = {
+        addSSL = true;
+        extraConfig = ''
+          location / {
+            ${garuda-lib.setRealIpFromConfig}
+            ${garuda-lib.nginxReverseProxySettings}
+            proxy_buffering off;
+            proxy_pass http://10.0.5.110:8088;
+          }
+        '';
+        http3 = true;
+        quic = true;
         useACMEHost = &quot;garudalinux.org&quot;;
       };
       &quot;lemmy.garudalinux.org&quot; = {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
           &quot;/&quot; = {
-            extraConfig = ''
-              proxy_set_header Host $host;
-            '';
             proxyPass = &quot;http://10.0.5.120:80&quot;;
           };
         };
         quic = true;
         useACMEHost = &quot;garudalinux.org&quot;;
       };
-      &quot;lingva.garudalinux.org&quot; = {
+      &quot;lingva.garudalinux.org&quot; = allowOnlyCloudflared {
         addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
-        '';
         http3 = true;
         locations = {
           &quot;/&quot; = {
@@ -674,12 +666,15 @@
         };
         quic = true;
         useACMEHost = &quot;garudalinux.org&quot;;
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
       };
       &quot;websurfx.garudalinux.org&quot; = {
         addSSL = true;
         extraConfig = ''
           ${garuda-lib.setRealIpFromConfig}
-          real_ip_header CF-Connecting-IP;
+          ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
         locations = {
@@ -698,10 +693,7 @@
     enable = true;
     ingress = {
       &quot;matrixadmin.garudalinux.net&quot; = &quot;http://10.0.5.100:8085&quot;;
-      &quot;mesh.garudalinux.net&quot; = &quot;http://127.0.0.1:80&quot;;
-      &quot;test.garudalinux.net&quot; = &quot;http://10.0.5.40:8080&quot;;
-      &quot;test2.garudalinux.net&quot; = &quot;http://10.0.5.40:8081&quot;;
-    };
+    } // (generateCloudflaredIngress services.nginx.virtualHosts);
     tunnel-credentials =
       garuda-lib.secrets.cloudflare.cloudflared.esxi-web.cred;
   };

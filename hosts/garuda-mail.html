@@ -91,7 +91,9 @@
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="../intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="../common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="../important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Users</li><li class="chapter-item expanded "><a href="../users.html"><strong aria-hidden="true">5.</strong> Users</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../users/current_users.html"><strong aria-hidden="true">5.1.</strong> Current users</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="../hosts/immortalis.html"><strong aria-hidden="true">6.</strong> immortalis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../nixos-containers/chaotic-kde.html"><strong aria-hidden="true">6.1.</strong> chaotic-kde</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker-proxied.html"><strong aria-hidden="true">6.2.</strong> docker-proxied</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker.html"><strong aria-hidden="true">6.3.</strong> docker</a></li><li class="chapter-item expanded "><a href="../nixos-containers/forum.html"><strong aria-hidden="true">6.4.</strong> forum</a></li><li class="chapter-item expanded "><a href="../nixos-containers/github-runner.html"><strong aria-hidden="true">6.5.</strong> github-runner</a></li><li class="chapter-item expanded "><a href="../nixos-containers/lemmy.html"><strong aria-hidden="true">6.6.</strong> lemmy</a></li><li class="chapter-item expanded "><a href="../nixos-containers/mastodon.html"><strong aria-hidden="true">6.7.</strong> mastodon</a></li><li class="chapter-item expanded "><a href="../nixos-containers/meshcentral.html"><strong aria-hidden="true">6.8.</strong> meshcentral</a></li><li class="chapter-item expanded "><a href="../nixos-containers/postgres.html"><strong aria-hidden="true">6.9.</strong> postgres</a></li><li class="chapter-item expanded "><a href="../nixos-containers/repo.html"><strong aria-hidden="true">6.10.</strong> repo</a></li><li class="chapter-item expanded "><a href="../nixos-containers/temeraire.html"><strong aria-hidden="true">6.11.</strong> temeraire</a></li><li class="chapter-item expanded "><a href="../nixos-containers/web-front.html"><strong aria-hidden="true">6.12.</strong> web-front</a></li></ol></li><li class="chapter-item expanded "><a href="../hosts/garuda-mail.html" class="active"><strong aria-hidden="true">7.</strong> garuda-mail</a></li><li class="chapter-item expanded affix "><li class="part-title">Repository infrastructure</li><li class="chapter-item expanded "><a href="../repositories/general.html"><strong aria-hidden="true">8.</strong> General information</a></li><li class="chapter-item expanded "><a href="../repositories/pkgbuilds.html"><strong aria-hidden="true">9.</strong> PKGBUILDs</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><a href="../services/discourse.html"><strong aria-hidden="true">10.</strong> Discourse</a></li><li class="chapter-item expanded "><a href="../websites/documentation.html"><strong aria-hidden="true">11.</strong> Documentation</a></li><li class="chapter-item expanded "><a href="../services/tailscale.html"><strong aria-hidden="true">12.</strong> Tailscale</a></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><a href="../code-of-conduct.html"><strong aria-hidden="true">13.</strong> Code of Conduct</a></li><li class="chapter-item expanded "><a href="../privacy-policy.html"><strong aria-hidden="true">14.</strong> Privacy policy</a></li><li class="chapter-item expanded "><a href="../security.html"><strong aria-hidden="true">15.</strong> Security</a></li><li class="chapter-item expanded "><a href="../credits.html"><strong aria-hidden="true">16.</strong> Credits</a></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -177,24 +179,59 @@
                     <main>
                         <h2 id="garuda-mail-netcup-vps"><a class="header" href="#garuda-mail-netcup-vps">garuda-mail (Netcup VPS)</a></h2>
 <h3 id="general"><a class="header" href="#general">General</a></h3>
-<p>This system mainly consists of the <a href="https://gitlab.com/simple-nixos-mailserver/nixos-mailserver">simple-nixos-mailserver</a>. Its only purpose is providing a mail service to team members. The current config looks like <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/garuda-mail.nix?ref_type=heads#L47">this</a>.
+<p>This system mainly consists of the <a href="https://gitlab.com/simple-nixos-mailserver/nixos-mailserver">simple-nixos-mailserver</a>.
+Its only purpose is providing a mail service to team members.
+The current config looks like <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/garuda-mail.nix?ref_type=heads#L47">this</a>.
 In case of issues, the <a href="https://nixos-mailserver.readthedocs.io/en/latest/">documentation</a> can be consulted.</p>
 <h3 id="mail-server-setup"><a class="header" href="#mail-server-setup">Mail server setup</a></h3>
 <p>The mail server details are as follows:</p>
 <ul>
 <li>host: <code>mail.garudalinux.net</code></li>
-<li>incoming: IMAP via <code>993</code></li>
-<li>outgoing: SMTP via <code>587/465</code></li>
+<li>username: full email address</li>
+<li>password: given password</li>
+<li>incoming: IMAP via <code>993</code> (SSL)</li>
+<li>outgoing: SMTP via <code>587/465</code> (STARTTLS/SSL)</li>
+</ul>
+<p>Additionally, it is possible to make use of the <a href="https://mail.garudalinux.net">Roundcube-powered web interface</a>.</p>
+<h3 id="roundcube"><a class="header" href="#roundcube">Roundcube</a></h3>
+<p>Roundcube is used to provide a web interface for our mail accounts.
+It features a few plugins to enhance the general user experience.</p>
+<h4 id="plugins"><a class="header" href="#plugins">Plugins</a></h4>
+<ul>
+<li>attachment_reminder - reminds about forgotten attachments</li>
+<li>authres_status - checks for whether SPF/DKIM/DMARC match the sending domain</li>
+<li>carddav - allows adding a CardDAV contact book as source (eg. Nextcloud)</li>
+<li>contextmenu - adds a right click context menu to the most pages</li>
+<li>custom_from - allows customizing from address</li>
+<li>managesieve - allows managing Sieve rules, which automatically sort incoming mails based on rules</li>
+<li>newmail_notifier - new mail notifier for desktops</li>
+<li>persistent_login - alows storing a persistent login cookie for no more login prompts</li>
+<li>thunderbird_labels - shows Thunderbird labels</li>
+<li>zipdownload - allows downloading all attachments at once</li>
 </ul>
 <h3 id="backups"><a class="header" href="#backups">Backups</a></h3>
 <p>Backups are happening daily via Borg. A Hetzner storage box is used to store multiple generations of backups.</p>
 <h3 id="creating-a-new-user"><a class="header" href="#creating-a-new-user">Creating a new user</a></h3>
-<p>A new user can be created be adding a new <code>loginAccounts</code> value and supplying the password via <code>secrets</code>. We make use of <code>hashedPasswordFile</code>, therefore new hashes can be generated by running <code>nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt'</code>. Add it to the <code>secrets</code>, <code>deploy</code> and <code>apply</code>. Don't forget to commit both changes.</p>
+<p>A new user can be created be adding a new <code>loginAccounts</code> value and supplying the password via <code>secrets</code>.
+We make use of <code>hashedPasswordFile</code>, therefore new hashes can be generated by running <code>nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt'</code>. Add it to the <code>secrets</code>, then execute <code>deploy</code> and <code>apply</code>.
+Don't forget to commit both changes.</p>
 <h3 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h3>
 <pre><code class="language-nix">{ config
 , lib
+, pkgs
 , ...
-}: {
+}:
+let
+  authres_status = pkgs.roundcubePlugins.roundcubePlugin rec {
+    pname = &quot;authres_status&quot;;
+    version = &quot;0.6.3&quot;;
+    src = pkgs.fetchzip {
+      url = &quot;https://github.com/pimlie/authres_status/archive/refs/tags/${version}.zip&quot;;
+      hash = &quot;sha256-WebJiN0vRkvc0AKvMm+inK3FY37R04q3y/0rFoiUW6A=&quot;;
+    };
+  };
+in
+{
   imports = [
     ../modules
     ./garuda-mail/hardware-configuration.nix
@@ -342,6 +379,42 @@ In case of issues, the <a href="https://nixos-mailserver.readthedocs.io/en/lates
 
   # Postmaster alias
   services.postfix.postmasterAlias = &quot;nico@dr460nf1r3.org&quot;;
+
+  services.roundcube = {
+    enable = true;
+    # this is the url of the vhost, not necessarily the same as the fqdn of
+    # the mailserver
+    hostName = &quot;mail.garudalinux.net&quot;;
+    extraConfig = ''
+      # starttls needed for authentication, so the fqdn required to match
+      # the certificate
+      $config['smtp_server'] = &quot;tls://${config.mailserver.fqdn}&quot;;
+      $config['smtp_user'] = &quot;%u&quot;;
+      $config['smtp_pass'] = &quot;%p&quot;;
+    '';
+    package = pkgs.roundcube.withPlugins (
+      plugins: [
+        authres_status
+        plugins.carddav
+        plugins.contextmenu
+        plugins.custom_from
+        plugins.persistent_login
+        plugins.thunderbird_labels
+      ]
+    );
+    plugins = [
+      &quot;attachment_reminder&quot; # Roundcube internal plugin
+      &quot;authres_status&quot;
+      &quot;carddav&quot;
+      &quot;contextmenu&quot;
+      &quot;custom_from&quot;
+      &quot;managesieve&quot; # Roundcube internal plugin
+      &quot;newmail_notifier&quot; # Roundcube internal plugin
+      &quot;persistent_login&quot;
+      &quot;thunderbird_labels&quot;
+      &quot;zipdownload&quot; # Roundcube internal plugin
+    ];
+  };
 
   system.stateVersion = &quot;22.05&quot;;
 }
