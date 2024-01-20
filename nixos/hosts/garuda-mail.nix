@@ -2,7 +2,18 @@
 , lib
 , pkgs
 , ...
-}: {
+}:
+let
+  authres_status = pkgs.roundcubePlugins.roundcubePlugin rec {
+    pname = "authres_status";
+    version = "0.6.3";
+    src = pkgs.fetchzip {
+      url = "https://github.com/pimlie/authres_status/archive/refs/tags/${version}.zip";
+      hash = "sha256-WebJiN0vRkvc0AKvMm+inK3FY37R04q3y/0rFoiUW6A=";
+    };
+  };
+in
+{
   imports = [
     ../modules
     ./garuda-mail/hardware-configuration.nix
@@ -165,6 +176,7 @@
     '';
     package = pkgs.roundcube.withPlugins (
       plugins: [
+        authres_status
         plugins.contextmenu
         plugins.custom_from
         plugins.persistent_login
@@ -173,6 +185,7 @@
     );
     plugins = [
       "attachment_reminder"
+      "authres_status"
       "contextmenu"
       "custom_from"
       "managesieve"
