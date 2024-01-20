@@ -25,7 +25,7 @@ services:
     volumes: [./nextcloud/db:/var/lib/mysql]
     restart: always
   nextcloud_redis:
-    image: redis:7.2.3
+    image: redis:7.2.4
     container_name: nextcloud_redis
     environment:
       ALLOW_EMPTY_PASSWORD: true
@@ -136,7 +136,7 @@ services:
 
   # Matrix homeserver
   matrix:
-    image: matrixdotorg/synapse:v1.98.0
+    image: matrixdotorg/synapse:v1.99.0
     container_name: matrix
     volumes: [./matrix/matrix:/data]
     ports: [8008:8008]
@@ -163,7 +163,7 @@ services:
 
   # Matrix web client
   matrix_web:
-    image: vectorim/element-web:v1.11.53
+    image: vectorim/element-web:v1.11.55
     container_name: element_web
     depends_on: [matrix]
     volumes: [./matrix/element/config.json:/app/config.json]
