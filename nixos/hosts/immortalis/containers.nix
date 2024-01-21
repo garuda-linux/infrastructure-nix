@@ -77,7 +77,7 @@ in
               isReadOnly = false;
               mountPoint = "/var/garuda/docker-compose-runner/chaotic-v4";
             };
-            "chaotic-v4-pre" = {
+            "chaotic-v4" = {
               hostPath = "/data_2/chaotic-v4/";
               isReadOnly = false;
               mountPoint = "/srv/http/repos";
@@ -292,12 +292,12 @@ in
         config = import ../temeraire.nix;
         extraOptions = {
           bindMounts = lib.mkMerge [{
-            "chaotic-v4-pre" = {
-              hostPath = "/data_2/chaotic-v4/";
-              isReadOnly = false;
-              mountPoint = "/srv/http/chaotic-v4";
-            };
             "garuda" = {
+              hostPath = "/data_2/chaotic-v4/garuda";
+              isReadOnly = false;
+              mountPoint = "/srv/http/repos/garuda";
+            };
+            "chaotic" = {
               hostPath = "/data_2/chaotic-aur";
               isReadOnly = false;
               mountPoint = "/srv/http/repos";
