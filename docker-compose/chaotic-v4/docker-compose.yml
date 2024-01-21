@@ -67,7 +67,7 @@ services:
                     {
                         "name": "garuda",
                         "servers": [
-                            "https://builds.garudalinux.org/chaotic-v4/garuda/x86_64"
+                            "https://builds.garudalinux.org/repos/garuda/x86_64"
                         ]
                     },
                     {
