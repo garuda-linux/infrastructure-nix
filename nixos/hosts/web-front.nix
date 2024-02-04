@@ -170,13 +170,6 @@ rec {
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "repo.garudalinux.org" = {
-        addSSL = true;
-        http3 = true;
-        locations = { "/" = { proxyPass = "http://10.0.5.30:80"; }; };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
       "start.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''

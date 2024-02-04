@@ -23,7 +23,7 @@
     export NO_PROXY=mirror.rackspace.com,cloudflaremirrors.com,github.com,downloads.sentry-cdn.com
   '';
   services.chaotic.db-name = "chaotic-aur-kde";
-  services.chaotic.routines = [ "hourly" "nightly" "afternoon" ];
+  services.chaotic.routines = [ "hourly" ];
   services.chaotic.patches = [ ../services/chaotic/add-chaotic-repo.diff ../services/chaotic/prepend-repo.diff ];
   services.chaotic.useACMEHost = "garudalinux.org";
 

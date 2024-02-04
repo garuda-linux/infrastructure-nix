@@ -91,6 +91,8 @@
     # Patches for nixos, automatically applied if they follow this format
     nixos-patch-nat.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/277016.patch";
     nixos-patch-nat.flake = false;
+    nixos-patch-mastodon-cve.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/285558.patch";
+    nixos-patch-mastodon-cve.flake = false;
 
     # Common input
     systems.url = "github:nix-systems/default";
@@ -175,6 +177,7 @@
                   { package = "rsync"; }
                   { package = "commitizen"; }
                   { package = "manix"; }
+                  { package = "nodePackages.prettier"; }
                   { package = "nixos-install-tools"; }
                   { package = "pre-commit"; }
                   {

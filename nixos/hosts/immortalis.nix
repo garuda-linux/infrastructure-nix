@@ -39,43 +39,43 @@
         ipv6.addresses = [
           # Random outgoing
           {
-            address = "2a01:4f8:2200:30ac:3f42:e489:0fd1:8f7c";
+            address = "2a01:4f8:2200:30ac:9141:5338:3bbe:e6e4";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:ac70:d528:c670:6706";
+            address = "2a01:4f8:2200:30ac:b22c:1fcb:0ed0:4093";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:d8a4:d4ea:b263:8ecb";
+            address = "2a01:4f8:2200:30ac:7436:3445:712f:915a";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:a4e4:e8a6:113d:3c08";
+            address = "2a01:4f8:2200:30ac:1030:64db:7964:daeb";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:6704:a83f:55a9:3b15";
+            address = "2a01:4f8:2200:30ac:d98e:f81f:2d83:dd05";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:204c:d50a:a6f9:5af2";
+            address = "2a01:4f8:2200:30ac:a6a9:0a27:8387:9f03";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:353d:9cad:a1c5:5cdc";
+            address = "2a01:4f8:2200:30ac:06eb:ea0c:a8bb:76bc";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:b318:cd86:ac61:3896";
+            address = "2a01:4f8:2200:30ac:0b38:23e4:b6ad:89cd";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:95ec:f288:bf30:e392";
+            address = "2a01:4f8:2200:30ac:393b:4c26:9160:9afa";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:36ad:dde6:7a40:06cb";
+            address = "2a01:4f8:2200:30ac:1710:8521:9602:ab81";
             prefixLength = 64;
           }
         ];
@@ -111,13 +111,6 @@
         loopbackIPs = [ "116.202.208.112" ];
         proto = "tcp";
         sourcePort = 8448;
-      }
-      {
-        # repo (SSH)
-        destination = "10.0.5.30:22";
-        loopbackIPs = [ "116.202.208.112" ];
-        proto = "tcp";
-        sourcePort = 223;
       }
       {
         # iso-runner (SSH)
@@ -250,29 +243,29 @@
 
       # Invalid IP
       tcp_outgoing_address 10.254.254.254
-      tcp_outgoing_address 2a01:4f8:2200:30ac:3f42:e489:0fd1:8f7c tenth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:ac70:d528:c670:6706 ninth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:d8a4:d4ea:b263:8ecb eighth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:a4e4:e8a6:113d:3c08 seventh
-      tcp_outgoing_address 2a01:4f8:2200:30ac:6704:a83f:55a9:3b15 sixth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:204c:d50a:a6f9:5af2 fifth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:353d:9cad:a1c5:5cdc fourth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:b318:cd86:ac61:3896 third
-      tcp_outgoing_address 2a01:4f8:2200:30ac:95ec:f288:bf30:e392 half
-      tcp_outgoing_address 2a01:4f8:2200:30ac:36ad:dde6:7a40:06cb
+      tcp_outgoing_address 2a01:4f8:2200:30ac:9141:5338:3bbe:e6e4 tenth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:b22c:1fcb:0ed0:4093 ninth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:7436:3445:712f:915a eighth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:1030:64db:7964:daeb seventh
+      tcp_outgoing_address 2a01:4f8:2200:30ac:d98e:f81f:2d83:dd05 sixth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:a6a9:0a27:8387:9f03 fifth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:06eb:ea0c:a8bb:76bc fourth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:0b38:23e4:b6ad:89cd third
+      tcp_outgoing_address 2a01:4f8:2200:30ac:393b:4c26:9160:9afa half
+      tcp_outgoing_address 2a01:4f8:2200:30ac:1710:8521:9602:ab81
 
       # Invalid IP
       udp_outgoing_address 10.254.254.254
-      udp_outgoing_address 2a01:4f8:2200:30ac:3f42:e489:0fd1:8f7c tenth
-      udp_outgoing_address 2a01:4f8:2200:30ac:ac70:d528:c670:6706 ninth
-      udp_outgoing_address 2a01:4f8:2200:30ac:d8a4:d4ea:b263:8ecb eighth
-      udp_outgoing_address 2a01:4f8:2200:30ac:a4e4:e8a6:113d:3c08 seventh
-      udp_outgoing_address 2a01:4f8:2200:30ac:6704:a83f:55a9:3b15 sixth
-      udp_outgoing_address 2a01:4f8:2200:30ac:204c:d50a:a6f9:5af2 fifth
-      udp_outgoing_address 2a01:4f8:2200:30ac:353d:9cad:a1c5:5cdc fourth
-      udp_outgoing_address 2a01:4f8:2200:30ac:b318:cd86:ac61:3896 third
-      udp_outgoing_address 2a01:4f8:2200:30ac:95ec:f288:bf30:e392 half
-      udp_outgoing_address 2a01:4f8:2200:30ac:36ad:dde6:7a40:06cb
+      udp_outgoing_address 2a01:4f8:2200:30ac:9141:5338:3bbe:e6e4 tenth
+      udp_outgoing_address 2a01:4f8:2200:30ac:b22c:1fcb:0ed0:4093 ninth
+      udp_outgoing_address 2a01:4f8:2200:30ac:7436:3445:712f:915a eighth
+      udp_outgoing_address 2a01:4f8:2200:30ac:1030:64db:7964:daeb seventh
+      udp_outgoing_address 2a01:4f8:2200:30ac:d98e:f81f:2d83:dd05 sixth
+      udp_outgoing_address 2a01:4f8:2200:30ac:a6a9:0a27:8387:9f03 fifth
+      udp_outgoing_address 2a01:4f8:2200:30ac:06eb:ea0c:a8bb:76bc fourth
+      udp_outgoing_address 2a01:4f8:2200:30ac:0b38:23e4:b6ad:89cd third
+      udp_outgoing_address 2a01:4f8:2200:30ac:393b:4c26:9160:9afa half
+      udp_outgoing_address 2a01:4f8:2200:30ac:1710:8521:9602:ab81
 
       # This does not rotate the logs, but asks squid to reopen the log file so that logrotate can rotate it
       logfile_rotate 0

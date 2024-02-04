@@ -271,23 +271,6 @@ in
         };
         ipAddress = "10.0.5.50";
       };
-      repo = {
-        config = import ../repo.nix;
-        extraOptions = {
-          bindMounts = lib.mkMerge [{
-            "garuda" = {
-              hostPath = "/data_2/chaotic-aur/garuda";
-              isReadOnly = false;
-              mountPoint = "/srv/http/repos/garuda";
-            };
-          }
-            chaotic_mounts];
-          # Portforwarding happens via nat.forwardPorts so we
-          # can access the container from within our own GitLab runner too
-        };
-        ipAddress = "10.0.5.30";
-        needsNesting = true;
-      };
       temeraire = {
         config = import ../temeraire.nix;
         extraOptions = {

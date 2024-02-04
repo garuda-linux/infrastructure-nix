@@ -9,21 +9,21 @@ All directories containing important data were mapped to `/data_1` and `/data_2`
 The current line-up looks as follows:
 
 ```sh
-nico@immortalis ~ (main)> machinectl
+nico@immortalis ~> machinectl
 MACHINE        CLASS     SERVICE        OS    VERSION ADDRESSES
-chaotic-kde    container systemd-nspawn nixos 23.11   10.0.5.90
-docker         container systemd-nspawn nixos 23.11   10.0.5.100
-docker-proxied container systemd-nspawn nixos 23.11   10.0.5.110
-forum          container systemd-nspawn nixos 23.11   10.0.5.70
-github-runner  container systemd-nspawn nixos 23.11   10.0.5.130
-iso-runner     container systemd-nspawn nixos 23.11   10.0.5.40
-lemmy          container systemd-nspawn nixos 23.11   10.0.5.120
-mastodon       container systemd-nspawn nixos 23.11   10.0.5.80
-meshcentral    container systemd-nspawn nixos 23.11   10.0.5.60
-postgres       container systemd-nspawn nixos 23.11   10.0.5.50
-repo           container systemd-nspawn nixos 23.11   10.0.5.30
-temeraire      container systemd-nspawn nixos 23.11   10.0.5.20
-web-front      container systemd-nspawn nixos 23.11   10.0.5.10
+chaotic-kde    container systemd-nspawn nixos 24.05   10.0.5.90
+chaotic-v4     container systemd-nspawn nixos 24.05   10.0.5.140
+docker         container systemd-nspawn nixos 24.05   10.0.5.100
+docker-proxied container systemd-nspawn nixos 24.05   10.0.5.110
+forum          container systemd-nspawn nixos 24.05   10.0.5.70
+github-runner  container systemd-nspawn nixos 24.05   10.0.5.130
+iso-runner     container systemd-nspawn nixos 24.05   10.0.5.40
+lemmy          container systemd-nspawn nixos 24.05   10.0.5.120
+mastodon       container systemd-nspawn nixos 24.05   10.0.5.80
+meshcentral    container systemd-nspawn nixos 24.05   10.0.5.60
+postgres       container systemd-nspawn nixos 24.05   10.0.5.50
+temeraire      container systemd-nspawn nixos 24.05   10.0.5.20
+web-front      container systemd-nspawn nixos 24.05   10.0.5.10
 ```
 
 We are seeing:
@@ -31,7 +31,7 @@ We are seeing:
 - 1 ISO builder (`iso-runner`)
 - 1 reverse proxy serving all the websites and services (`web-front`)
 - 2 Docker dedicated nspawn containers (`docker` & `docker-proxied`)
-- 4 Chaotic-AUR builders (`chaotic-kde`, `github-runner`, `repo` & `temeraire`)
+- 4 Chaotic-AUR builders (`chaotic-kde`, `chaotic-v4`, `github-runner` & `temeraire`)
 - 5 app dedicated containers (`forum`, `lemmy`, `mastodon`, `meshcentral` & `postgres`)
 
 ### Connecting to the server
@@ -39,13 +39,13 @@ We are seeing:
 After connecting to the host via `ssh -p 666 $user@116.202.208.112`, containers can generally be entered by running `nixos-container login $containername`, eg. `nixos-container login web-front`. Some containers may also be connected via SSH using the following ports:
 
 - 22: `temeraire` (needs to be 22 to allow pushing packages to the main Chaotic-AUR node via rsync)
-- 223: `repo`
 - 224: `forum`
 - 225: `docker`
 - 226: `chaotic-kde`
 - 227: `iso-runner`
 - 228: `web-front`
-- 229: `postgres` (access the database in `127.0.0.1` via `ssh -p 229 nico@116.202.208.112 -L 5432:127.0.0.1:5432`)
+- 229: `postgres` (access the database in `127.0.0.1` via `ssh -p 229 $user@116.202.208.112 -L 5432:127.0.0.1:5432`)
+- 400: `chaotic-v4`
 
 ### Docker containers
 
