@@ -183,7 +183,6 @@
 Access needs to happen by running <code>nixos-container root-login</code> on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortalis.html#connecting-to-the-server">click me</a>).</p>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <pre><code class="language-nix">{ keys
-, pkgs
 , ...
 }: {
   # No default modules, untrusted container!
@@ -201,7 +200,6 @@ Access needs to happen by running <code>nixos-container root-login</code> on <co
   virtualisation.docker = {
     autoPrune.enable = true;
     autoPrune.flags = [ &quot;-a&quot; ];
-    package = pkgs.docker_24; # Until the man pages are fixed in pkgs.docker
   };
 
   # This container is just for docker-compose stuff
