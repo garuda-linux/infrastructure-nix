@@ -271,6 +271,7 @@
   systemd.services.chaotic-rclone-inotify = {
     wantedBy = [ "multi-user.target" ];
     after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
     # Get all file changes, upload pkg.tar.zst. Not more than 5 per 5 seconds queued and only one uploaded at the same time. Queue dropped if uploading takes longer than 15 seconds.
     # This prevents the queue from getting overloaded with nonsense requests if that ever were to happen. The hourly sync should take care of this.
     script = ''

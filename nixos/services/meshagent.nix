@@ -29,6 +29,7 @@ in
     systemd.services.meshagent = {
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
       description = "meshagent background service";
       path = [ pkgs.wget pkgs.mount ];
       serviceConfig = {

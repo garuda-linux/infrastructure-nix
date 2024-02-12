@@ -10,6 +10,7 @@
   systemd.services.meshcentral = {
     wantedBy = [ "multi-user.target" ];
     after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
     environment = { "NODE_ENV" = "production"; };
     path = [ pkgs.nodejs ];
     serviceConfig = {
