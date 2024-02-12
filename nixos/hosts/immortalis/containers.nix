@@ -275,6 +275,11 @@ in
         config = import ../temeraire.nix;
         extraOptions = {
           bindMounts = lib.mkMerge [{
+            "chaotic-v4" = {
+              hostPath = "/data_2/chaotic-v4/chaotic-aur";
+              isReadOnly = false;
+              mountPoint = "/srv/http/chaotic-v4";
+            };
             "garuda" = {
               hostPath = "/data_2/chaotic-v4/garuda";
               isReadOnly = false;
