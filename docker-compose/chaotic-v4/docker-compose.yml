@@ -38,7 +38,7 @@ services:
       PACKAGE_REPOS: >-
         {
             "chaotic-aur": {
-                "url": "https://github.com/chaotic-cx/chaotic-poc"
+                "url": "https://github.com/chaotic-cx/pkgbuilds"
             },
             "garuda": {
                 "url": "https://gitlab.com/garuda-linux/pkgbuilds"
