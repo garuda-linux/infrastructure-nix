@@ -38,7 +38,7 @@ services:
       PACKAGE_REPOS: >-
         {
             "chaotic-aur": {
-                "url": "https://github.com/chaotic-cx/pkgbuilds"
+                "url": "https://github.com/chaotic-aur/pkgbuilds"
             },
             "garuda": {
                 "url": "https://gitlab.com/garuda-linux/pkgbuilds"
@@ -54,7 +54,7 @@ services:
                     {
                         "name": "chaotic-aur",
                         "servers": [
-                            "https://builds.garudalinux.org/chaotic-v4/chaotic-aur/x86_64"
+                            "https://builds.garudalinux.org/chaotic-v4/x86_64"
                         ]
                     }
                 ],
@@ -86,7 +86,7 @@ services:
                     {
                         "name": "garuda",
                         "servers": [
-                            "https://builds.garudalinux.org/chaotic-v4/garuda/x86_64"
+                            "https://builds.garudalinux.org/repos/garuda/x86_64"
                         ]
                     },
                     {
