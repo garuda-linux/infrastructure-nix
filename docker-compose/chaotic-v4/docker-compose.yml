@@ -30,11 +30,11 @@ services:
       DATABASE_USER: package-deployer
       GPG_PATH: /var/garuda/docker-compose-runner/chaotic-v4/gnupg
       LANDING_ZONE_PATH: /var/garuda/docker-compose-runner/chaotic-v4/landing-zone
+      LOGS_URL: https://builds.garudalinux.org/logs/logs.html
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
       REDIS_SSH_HOST: host.docker.internal
       REDIS_SSH_USER: package-deployer
       REPO_PATH: /srv/http/repos
-      LOGS_URL: https://builds.garudalinux.org/logs/logs.html
       PACKAGE_REPOS: >-
         {
             "chaotic-aur": {
@@ -103,6 +103,11 @@ services:
         }
       PACKAGE_REPOS_NOTIFIERS: >-
         {
+            "chaotic-aur": {
+                "id": "54867625",
+                "token": "${GITLAB_TOKEN_CX:-?err}",
+                "check_name": "chaotic-aur: %pkgbase%"
+            },
             "garuda": {
                 "id": "48461689",
                 "token": "${GITLAB_TOKEN:-?err}",
