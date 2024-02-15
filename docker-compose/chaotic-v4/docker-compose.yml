@@ -38,7 +38,10 @@ services:
       PACKAGE_REPOS: >-
         {
             "chaotic-aur": {
-                "url": "https://github.com/chaotic-aur/pkgbuilds"
+                "url": "https://gitlab.com/chaotic-aur/pkgbuilds"
+            },
+            "chaotic-aur-kde": {
+                "url": "https://gitlab.com/chaotic-aur/pkgbuilds-kde"
             },
             "garuda": {
                 "url": "https://gitlab.com/garuda-linux/pkgbuilds"
@@ -55,6 +58,19 @@ services:
                         "name": "chaotic-aur",
                         "servers": [
                             "https://builds.garudalinux.org/chaotic-v4/x86_64"
+                        ]
+                    }
+                ],
+                "extra_keyrings": [
+                    "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
+                ]
+            },
+            "chaotic-aur-kde": {
+                "extra_repos": [
+                    {
+                        "name": "chaotic-aur-kde",
+                        "servers": [
+                            "https://builds.garudalinux.org/chaotic-kde-v4/x86_64"
                         ]
                     }
                 ],
@@ -107,6 +123,11 @@ services:
                 "id": "54867625",
                 "token": "${GITLAB_TOKEN_CX:-?err}",
                 "check_name": "chaotic-aur: %pkgbase%"
+            },
+            "chaotic-aur-kde": {
+                "id": "54897682",
+                "token": "${GITLAB_TOKEN_CX:-?err}",
+                "check_name": "chaotic-aur-kde: %pkgbase%"
             },
             "garuda": {
                 "id": "48461689",

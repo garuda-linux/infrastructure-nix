@@ -280,6 +280,11 @@ in
               isReadOnly = false;
               mountPoint = "/srv/http/chaotic-v4";
             };
+            "chaotic-kde-v4" = {
+              hostPath = "/data_2/chaotic-v4/chaotic-aur-kde";
+              isReadOnly = false;
+              mountPoint = "/srv/http/chaotic-kde-v4";
+            };
             "garuda" = {
               hostPath = "/data_2/chaotic-v4/garuda";
               isReadOnly = false;
