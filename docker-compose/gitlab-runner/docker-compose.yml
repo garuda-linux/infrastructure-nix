@@ -12,14 +12,14 @@ services:
     image: gitlab/gitlab-runner:alpine
     container_name: gitlab-runner-chaotic
     volumes:
-      - /etc/gitlab-runner-chaotic:/etc/gitlab-runner
+      - /etc/gitlab-runner/chaotic:/etc/gitlab-runner
       - /var/run/docker.sock:/var/run/docker.sock
     restart: "no"
   gitlab-runner-dind:
     image: gitlab/gitlab-runner:alpine
     container_name: gitlab-runner-dind
     volumes:
-      - /etc/gitlab-runner-dind:/etc/gitlab-runner
+      - /etc/gitlab-runner/dind:/etc/gitlab-runner
       - /var/run/docker.sock:/var/run/docker.sock
     restart: "no"
 
