@@ -22,3 +22,12 @@ services:
       - /etc/gitlab-runner-dind:/etc/gitlab-runner
       - /var/run/docker.sock:/var/run/docker.sock
     restart: "no"
+
+  # Automated container updates
+  watchtower:
+    image: containrrr/watchtower:1.7.1
+    container_name: watchtower
+    command:
+      --cleanup gitlab-runner-chaotic gitlab-runner-garuda gitlab-runner-dind
+    volumes: [/var/run/docker.sock:/var/run/docker.sock]
+    restart: always

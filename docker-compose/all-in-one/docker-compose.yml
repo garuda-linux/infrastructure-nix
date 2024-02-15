@@ -14,7 +14,7 @@ services:
     volumes: [./nextcloud/config:/config, ./nextcloud/data:/data]
     restart: always
   nextcloud_db:
-    image: mariadb:11.2.2
+    image: mariadb:11.2.3
     container_name: nextcloud_db
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     environment:
@@ -92,7 +92,7 @@ services:
 
   # Secure pastebin
   privatebin:
-    image: privatebin/nginx-fpm-alpine:1.6.2
+    image: privatebin/nginx-fpm-alpine:1.7.1
     container_name: privatebin
     volumes:
       - ./privatebin:/srv/data
@@ -136,7 +136,7 @@ services:
 
   # Matrix homeserver
   matrix:
-    image: matrixdotorg/synapse:v1.100.0
+    image: matrixdotorg/synapse:v1.101.0
     container_name: matrix
     volumes: [./matrix/matrix:/data]
     ports: [8008:8008]
@@ -163,7 +163,7 @@ services:
 
   # Matrix web client
   matrix_web:
-    image: vectorim/element-web:v1.11.57
+    image: vectorim/element-web:v1.11.58
     container_name: element_web
     depends_on: [matrix]
     volumes: [./matrix/element/config.json:/app/config.json]

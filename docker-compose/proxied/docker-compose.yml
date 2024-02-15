@@ -101,7 +101,7 @@ services:
     depends_on: [piped_backend]
     restart: always
   piped_nginx:
-    image: nginx:1.25.3-alpine
+    image: nginx:1.25.4-alpine
     container_name: piped_nginx
     depends_on: [piped_backend, piped_frontend, piped_proxy]
     volumes:
@@ -118,7 +118,7 @@ services:
       NO_PROXY: garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com
     restart: always
   piped_postgres:
-    image: postgres:13.13-alpine
+    image: postgres:13.14-alpine
     container_name: piped_postgres
     volumes: [./piped/db:/var/lib/postgresql/data]
     environment:
