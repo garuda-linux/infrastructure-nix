@@ -162,6 +162,10 @@ in
   # Postmaster alias
   services.postfix.postmasterAlias = "nico@dr460nf1r3.org";
 
+  # https://gitlab.com/simple-nixos-mailserver/nixos-mailserver/-/issues/275
+  services.dovecot2.sieve.extensions = [ "fileinto" ];
+
+  # Web UI
   services.roundcube = {
     enable = true;
     # this is the url of the vhost, not necessarily the same as the fqdn of
