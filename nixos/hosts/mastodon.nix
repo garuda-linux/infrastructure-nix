@@ -22,6 +22,7 @@
       "SMTP_DOMAIN" = "social.garudalinux.org";
       "WEB_DOMAIN" = "social.garudalinux.org";
     };
+    extraEnvFiles = [ "/var/lib/mastodon/secrets/env" ];
     localDomain = "social.garudalinux.org";
     mediaAutoRemove.enable = false;
     smtp = {
