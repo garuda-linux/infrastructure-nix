@@ -35,7 +35,7 @@
 
     # The single source of truth
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-23.11";
 
     # Our mailserver
     nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
@@ -91,8 +91,6 @@
     # Patches for nixos, automatically applied if they follow this format
     nixos-patch-nat.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/277016.patch";
     nixos-patch-nat.flake = false;
-    nixos-patch-mastodon-cve.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/285558.patch";
-    nixos-patch-mastodon-cve.flake = false;
 
     # Common input
     systems.url = "github:nix-systems/default";
