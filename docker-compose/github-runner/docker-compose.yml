@@ -2,7 +2,7 @@
 version: "3.9"
 services:
   github-runner:
-    image: myoung34/github-runner:2.313.0
+    image: myoung34/github-runner:2.314.1
     container_name: github-runner
     privileged: true
     environment:

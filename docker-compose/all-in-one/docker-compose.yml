@@ -14,7 +14,7 @@ services:
     volumes: [./nextcloud/config:/config, ./nextcloud/data:/data]
     restart: always
   nextcloud_db:
-    image: mariadb:11.2.3
+    image: mariadb:11.3.2
     container_name: nextcloud_db
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     environment:
@@ -71,7 +71,7 @@ services:
 
   # Password vault
   bitwarden:
-    image: vaultwarden/server:1.30.3
+    image: vaultwarden/server:1.30.5
     container_name: bitwarden
     volumes: [./bitwarden:/data]
     ports: [8081:80]
@@ -110,7 +110,7 @@ services:
 
   # MongoDB instance
   mongodb:
-    image: mongo:7.0.5
+    image: mongo:7.0.6
     container_name: mongodb
     volumes: [./mongo:/data/db]
     ports: [27017:27017]
@@ -136,7 +136,7 @@ services:
 
   # Matrix homeserver
   matrix:
-    image: matrixdotorg/synapse:v1.101.0
+    image: matrixdotorg/synapse:v1.102.0
     container_name: matrix
     volumes: [./matrix/matrix:/data]
     ports: [8008:8008]
@@ -163,7 +163,7 @@ services:
 
   # Matrix web client
   matrix_web:
-    image: vectorim/element-web:v1.11.58
+    image: vectorim/element-web:v1.11.59
     container_name: element_web
     depends_on: [matrix]
     volumes: [./matrix/element/config.json:/app/config.json]
