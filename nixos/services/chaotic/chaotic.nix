@@ -27,11 +27,11 @@ let
   };
   telegram-send = pkgs.python3.pkgs.buildPythonApplication rec {
     pname = "telegram-send";
-    version = "0.36";
+    version = "0.37";
 
     src = pkgs.python3.pkgs.fetchPypi {
       inherit pname version;
-      sha256 = "sha256-6RmKVjqBmVeioQvtil8ZbDhiIW9v7WLPHTarP5/V4yk=";
+      sha256 = "sha256-n2mrszFZjktrqKFzsV33397E7sF+NgCkPVVMU7AVBpU=";
     };
 
     doCheck = false;
