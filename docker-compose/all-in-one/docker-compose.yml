@@ -110,7 +110,7 @@ services:
 
   # MongoDB instance
   mongodb:
-    image: mongo:7.0.6
+    image: mongo:7.0.7
     container_name: mongodb
     volumes: [./mongo:/data/db]
     ports: [27017:27017]
@@ -136,7 +136,7 @@ services:
 
   # Matrix homeserver
   matrix:
-    image: matrixdotorg/synapse:v1.102.0
+    image: matrixdotorg/synapse:v1.103.0
     container_name: matrix
     volumes: [./matrix/matrix:/data]
     ports: [8008:8008]
@@ -163,7 +163,7 @@ services:
 
   # Matrix web client
   matrix_web:
-    image: vectorim/element-web:v1.11.59
+    image: vectorim/element-web:v1.11.61
     container_name: element_web
     depends_on: [matrix]
     volumes: [./matrix/element/config.json:/app/config.json]
