@@ -544,11 +544,11 @@
     "src-chaotic-mirror": {
       "flake": false,
       "locked": {
-        "lastModified": 1701311532,
-        "narHash": "sha256-B9hTNBOrVAdimfhAyE0DV5jMLjKAnuKm4bc02KASxp0=",
+        "lastModified": 1710884742,
+        "narHash": "sha256-nERLCgtB1nOu+M2ZqYTxg1hj65kyfDcwbQJbHbeD7WQ=",
         "owner": "chaotic-aur",
         "repo": "docker-mirror",
-        "rev": "63cc062bcfe8ec265bf94a04ad463d17ec7d8a19",
+        "rev": "dac46d14ce19e5245f7eeada30f6b165f7746812",
         "type": "github"
       },
       "original": {
@@ -601,11 +601,11 @@
     "src-repoctl": {
       "flake": false,
       "locked": {
-        "lastModified": 1665410540,
-        "narHash": "sha256-hxWwyD6UHE8SSIooEQB5+dHGLgmv1bJ3G64PmKgKg58=",
+        "lastModified": 1710925660,
+        "narHash": "sha256-Hlwh8aDxSvJiF2Po82L7UPBEKfgUJ+alr1jXq1I+8yk=",
         "owner": "cassava",
         "repo": "repoctl",
-        "rev": "86faed1474e9d8fed9b10a9b8864316e34066d6a",
+        "rev": "2fd2d63d6417236e7dbc144baa7cbfe954af7637",
         "type": "github"
       },
       "original": {

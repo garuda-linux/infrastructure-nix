@@ -294,7 +294,7 @@
   };
 
   # Can't really instantly remove this, need to find an alternative first
-  nixpkgs.config.permittedInsecurePackages = [ "squid-6.8" ];
+  nixpkgs.config.permittedInsecurePackages = [ "squid-6.7" ];
 
   # Adapt Nix to our core-count
   nix.settings.max-jobs = 8;
