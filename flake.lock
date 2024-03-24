@@ -225,7 +225,7 @@
     "keys_technetium1": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-d6PFL1WTyfee09ykY1oWnX+7nGhEfPZn4aSQouAS42c=",
+        "narHash": "sha256-d6xi4mKdjkX2JFicDIv5niSzpyI0m/Hnm8GGAIU04kY=",
         "type": "file",
         "url": "https://github.com/technetium1.keys"
       },
@@ -601,11 +601,11 @@
     "src-repoctl": {
       "flake": false,
       "locked": {
-        "lastModified": 1710925660,
-        "narHash": "sha256-Hlwh8aDxSvJiF2Po82L7UPBEKfgUJ+alr1jXq1I+8yk=",
+        "lastModified": 1711199108,
+        "narHash": "sha256-D3TniMrIZaJzICGu+oXjsGxAjtXCaHHaZ8oOX5FzeH4=",
         "owner": "cassava",
         "repo": "repoctl",
-        "rev": "2fd2d63d6417236e7dbc144baa7cbfe954af7637",
+        "rev": "6ab74f4d889aed300c5a2dfd055e491d3592eb1a",
         "type": "github"
       },
       "original": {
