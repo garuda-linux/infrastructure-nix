@@ -225,7 +225,7 @@
     "keys_technetium1": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-d6xi4mKdjkX2JFicDIv5niSzpyI0m/Hnm8GGAIU04kY=",
+        "narHash": "sha256-d6PFL1WTyfee09ykY1oWnX+7nGhEfPZn4aSQouAS42c=",
         "type": "file",
         "url": "https://github.com/technetium1.keys"
       },
@@ -560,11 +560,11 @@
     "src-chaotic-toolbox": {
       "flake": false,
       "locked": {
-        "lastModified": 1709297996,
-        "narHash": "sha256-bhNPF9sUtu3aY8RNNzR6j4rlfBSfLf4U3HDnjv2Espc=",
+        "lastModified": 1711613987,
+        "narHash": "sha256-45qglArINB+SywQ9KUL5L7JDM63qaMgej1uVO0CFo1Y=",
         "owner": "chaotic-aur",
         "repo": "toolbox",
-        "rev": "9e138a770654cfb199cc557d4c2ec9f04ae98ab2",
+        "rev": "8ca5774f988cfbf90c4839cb575a818210fe217f",
         "type": "github"
       },
       "original": {
