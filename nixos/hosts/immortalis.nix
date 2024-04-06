@@ -39,43 +39,43 @@
         ipv6.addresses = [
           # Random outgoing
           {
-            address = "2a01:4f8:2200:30ac:5082:e069:cebf:399f";
+            address = "2a01:4f8:2200:30ac:cf2d:7d73:eddf:8871";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:1287:f776:47af:97bb";
+            address = "2a01:4f8:2200:30ac:5b38:dbde:e5a7:91b2";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:e239:0045:f489:3e35";
+            address = "2a01:4f8:2200:30ac:fa33:0d97:0755:6833";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:50ba:1fc5:4384:fe9e";
+            address = "2a01:4f8:2200:30ac:8f15:81f6:355c:d9d6";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:b17d:3bd0:f578:19fd";
+            address = "2a01:4f8:2200:30ac:4436:e5e7:2236:0d77";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:5f2d:d0b6:0d88:215c";
+            address = "2a01:4f8:2200:30ac:1ea4:1794:1963:b8da";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:8513:2891:9bbf:ace4";
+            address = "2a01:4f8:2200:30ac:5628:7e9f:d8ec:544d";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:32e5:8aca:23e2:b7ca";
+            address = "2a01:4f8:2200:30ac:d830:ce99:e2b7:3e43";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:bd1d:409e:5139:311b";
+            address = "2a01:4f8:2200:30ac:edc9:2d08:2b32:e532";
             prefixLength = 64;
           }
           {
-            address = "2a01:4f8:2200:30ac:da5b:710f:15b5:ae9e";
+            address = "2a01:4f8:2200:30ac:a833:0fd7:29d4:5309";
             prefixLength = 64;
           }
         ];
@@ -243,29 +243,29 @@
 
       # Invalid IP
       tcp_outgoing_address 10.254.254.254
-      tcp_outgoing_address 2a01:4f8:2200:30ac:5082:e069:cebf:399f tenth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:1287:f776:47af:97bb ninth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:e239:0045:f489:3e35 eighth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:50ba:1fc5:4384:fe9e seventh
-      tcp_outgoing_address 2a01:4f8:2200:30ac:b17d:3bd0:f578:19fd sixth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:5f2d:d0b6:0d88:215c fifth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:8513:2891:9bbf:ace4 fourth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:32e5:8aca:23e2:b7ca third
-      tcp_outgoing_address 2a01:4f8:2200:30ac:bd1d:409e:5139:311b half
-      tcp_outgoing_address 2a01:4f8:2200:30ac:da5b:710f:15b5:ae9e
+      tcp_outgoing_address 2a01:4f8:2200:30ac:cf2d:7d73:eddf:8871 tenth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:5b38:dbde:e5a7:91b2 ninth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:fa33:0d97:0755:6833 eighth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:8f15:81f6:355c:d9d6 seventh
+      tcp_outgoing_address 2a01:4f8:2200:30ac:4436:e5e7:2236:0d77 sixth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:1ea4:1794:1963:b8da fifth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:5628:7e9f:d8ec:544d fourth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:d830:ce99:e2b7:3e43 third
+      tcp_outgoing_address 2a01:4f8:2200:30ac:edc9:2d08:2b32:e532 half
+      tcp_outgoing_address 2a01:4f8:2200:30ac:a833:0fd7:29d4:5309
 
       # Invalid IP
       udp_outgoing_address 10.254.254.254
-      udp_outgoing_address 2a01:4f8:2200:30ac:5082:e069:cebf:399f tenth
-      udp_outgoing_address 2a01:4f8:2200:30ac:1287:f776:47af:97bb ninth
-      udp_outgoing_address 2a01:4f8:2200:30ac:e239:0045:f489:3e35 eighth
-      udp_outgoing_address 2a01:4f8:2200:30ac:50ba:1fc5:4384:fe9e seventh
-      udp_outgoing_address 2a01:4f8:2200:30ac:b17d:3bd0:f578:19fd sixth
-      udp_outgoing_address 2a01:4f8:2200:30ac:5f2d:d0b6:0d88:215c fifth
-      udp_outgoing_address 2a01:4f8:2200:30ac:8513:2891:9bbf:ace4 fourth
-      udp_outgoing_address 2a01:4f8:2200:30ac:32e5:8aca:23e2:b7ca third
-      udp_outgoing_address 2a01:4f8:2200:30ac:bd1d:409e:5139:311b half
-      udp_outgoing_address 2a01:4f8:2200:30ac:da5b:710f:15b5:ae9e
+      udp_outgoing_address 2a01:4f8:2200:30ac:cf2d:7d73:eddf:8871 tenth
+      udp_outgoing_address 2a01:4f8:2200:30ac:5b38:dbde:e5a7:91b2 ninth
+      udp_outgoing_address 2a01:4f8:2200:30ac:fa33:0d97:0755:6833 eighth
+      udp_outgoing_address 2a01:4f8:2200:30ac:8f15:81f6:355c:d9d6 seventh
+      udp_outgoing_address 2a01:4f8:2200:30ac:4436:e5e7:2236:0d77 sixth
+      udp_outgoing_address 2a01:4f8:2200:30ac:1ea4:1794:1963:b8da fifth
+      udp_outgoing_address 2a01:4f8:2200:30ac:5628:7e9f:d8ec:544d fourth
+      udp_outgoing_address 2a01:4f8:2200:30ac:d830:ce99:e2b7:3e43 third
+      udp_outgoing_address 2a01:4f8:2200:30ac:edc9:2d08:2b32:e532 half
+      udp_outgoing_address 2a01:4f8:2200:30ac:a833:0fd7:29d4:5309
 
       # This does not rotate the logs, but asks squid to reopen the log file so that logrotate can rotate it
       logfile_rotate 0
@@ -294,7 +294,7 @@
   };
 
   # Can't really instantly remove this, need to find an alternative first
-  nixpkgs.config.permittedInsecurePackages = [ "squid-6.7" ];
+  nixpkgs.config.permittedInsecurePackages = [ "squid-6.8" ];
 
   # Adapt Nix to our core-count
   nix.settings.max-jobs = 8;
