@@ -63,7 +63,7 @@ services:
 
   # Web IRC access
   thelounge:
-    image: thelounge/thelounge:4.4.1
+    image: thelounge/thelounge:4.4.3
     container_name: thelounge
     volumes: [./thelounge:/var/opt/thelounge]
     ports: [9000:9000]
@@ -163,7 +163,7 @@ services:
 
   # Matrix web client
   matrix_web:
-    image: vectorim/element-web:v1.11.63
+    image: vectorim/element-web:v1.11.64
     container_name: element_web
     depends_on: [matrix]
     volumes: [./matrix/element/config.json:/app/config.json]
