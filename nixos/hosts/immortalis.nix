@@ -11,7 +11,7 @@
 
   # Increase /tmp & /run size to make better use of RAM
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_6_6;
     loader.systemd-boot.enable = true;
     runSize = "50%";
     tmp = {
