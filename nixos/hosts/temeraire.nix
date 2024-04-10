@@ -131,11 +131,11 @@
       "builds.garudalinux.org" = {
         extraConfig = ''
           # Our beautiful autoindex theme
-          autoindex on;
-          autoindex_exact_size off;
-          autoindex_format xml;
-          xslt_string_param path $uri;
-          xslt_string_param hostname "Chaotic-AUR main node - Temeraire";
+          # autoindex on;
+          # autoindex_exact_size off;
+          # autoindex_format xml;
+          # xslt_string_param path $uri;
+          # xslt_string_param hostname "Chaotic-AUR main node - Temeraire";
 
           # Security
           add_header X-XSS-Protection          "1; mode=block" always;
