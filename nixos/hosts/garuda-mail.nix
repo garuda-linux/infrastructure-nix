@@ -199,5 +199,8 @@ in
     ];
   };
 
+  # At least try to prevent the insane spam of login attempts
+  services.openssh.ports = [ 1022 ];
+
   system.stateVersion = "22.05";
 }
