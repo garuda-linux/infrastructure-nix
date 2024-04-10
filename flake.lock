@@ -342,6 +342,18 @@
         "type": "gitlab"
       }
     },
+    "nixos-patch-dovecot": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-2XW1D4CWZkC9USwvoLcq4d62Hojw3Zav3G5eWXHnO2E=",
+        "type": "file",
+        "url": "https://github.com/NixOS/nixpkgs/pull/301886.patch"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/NixOS/nixpkgs/pull/301886.patch"
+      }
+    },
     "nixos-patch-nat": {
       "flake": false,
       "locked": {
@@ -483,6 +495,7 @@
         "meshagent_aarch64": "meshagent_aarch64",
         "meshagent_x86_64": "meshagent_x86_64",
         "nixos-mailserver": "nixos-mailserver",
+        "nixos-patch-dovecot": "nixos-patch-dovecot",
         "nixos-patch-nat": "nixos-patch-nat",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-stable": "nixpkgs-stable",
