@@ -52,7 +52,8 @@
     recommendedTlsSettings = true;
     recommendedZstdSettings = true;
     resolver = {
-      addresses = [ "1.1.1.1" "1.0.0.1" "[2606:4700:4700::1111]" "[2606:4700:4700::1001]" ];
+      addresses = [ "1.1.1.1" "1.0.0.1" ];
+      ipv6 = false;
       valid = "60s";
     };
     statusPage = true;
