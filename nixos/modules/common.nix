@@ -94,7 +94,7 @@
   };
 
   # This does not work in containers
-  programs.mosh.enable = true;
+  programs.mosh.enable = lib.mkIf (!garuda-lib.minimalContainer) true;
 
   # Services 
   services = {
