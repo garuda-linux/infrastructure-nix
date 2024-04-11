@@ -131,6 +131,7 @@
       "builds.garudalinux.org" = {
         extraConfig = ''
           # Our beautiful autoindex theme
+          # current disabled because of occasional 500 errors
           # autoindex on;
           # autoindex_exact_size off;
           # autoindex_format xml;
@@ -194,14 +195,14 @@
       "iso.builds.garudalinux.org" = {
         extraConfig = ''
           autoindex on;
-          autoindex_format xml;
-          xslt_string_param path $uri;
-          xslt_string_param hostname "Garuda Linux ISO Builds";
+          # autoindex_format xml;
+          # xslt_string_param path $uri;
+          # xslt_string_param hostname "Garuda Linux ISO Builds";
         '';
         locations."/iso" = {
           root = "/var/garuda/buildiso";
           extraConfig = ''
-            xslt_stylesheet "${garuda-lib.xslt_style}";
+            # xslt_stylesheet "${garuda-lib.xslt_style}";
             if ($symlink_target_rel != "") {
               rewrite ^ https://$server_name/iso/$symlink_target_rel redirect;
             }
