@@ -131,9 +131,9 @@
       "builds.garudalinux.org" = {
         extraConfig = ''
           # Our beautiful autoindex theme
+          autoindex on;
+          autoindex_exact_size off;
           # current disabled because of occasional 500 errors
-          # autoindex on;
-          # autoindex_exact_size off;
           # autoindex_format xml;
           # xslt_string_param path $uri;
           # xslt_string_param hostname "Chaotic-AUR main node - Temeraire";
