@@ -130,13 +130,14 @@
     virtualHosts = {
       "builds.garudalinux.org" = {
         extraConfig = ''
+          # Disable index.html
+          index fully_disabled.html;
           # Our beautiful autoindex theme
           autoindex on;
           autoindex_exact_size off;
-          # current disabled because of occasional 500 errors
-          # autoindex_format xml;
-          # xslt_string_param path $uri;
-          # xslt_string_param hostname "Chaotic-AUR main node - Temeraire";
+          autoindex_format xml;
+          xslt_string_param path $uri;
+          xslt_string_param hostname "Chaotic-AUR main node - Temeraire";
 
           # Security
           add_header X-XSS-Protection          "1; mode=block" always;
@@ -195,14 +196,15 @@
       "iso.builds.garudalinux.org" = {
         extraConfig = ''
           autoindex on;
-          # autoindex_format xml;
-          # xslt_string_param path $uri;
-          # xslt_string_param hostname "Garuda Linux ISO Builds";
+          autoindex_format xml;
+          xslt_string_param path $uri;
+          xslt_string_param hostname "Garuda Linux ISO Builds";
         '';
+        locations."/".return = "307 https://builds.garudalinux.org";
         locations."/iso" = {
           root = "/var/garuda/buildiso";
           extraConfig = ''
-            # xslt_stylesheet "${garuda-lib.xslt_style}";
+            xslt_stylesheet "${garuda-lib.xslt_style}";
             if ($symlink_target_rel != "") {
               rewrite ^ https://$server_name/iso/$symlink_target_rel redirect;
             }
