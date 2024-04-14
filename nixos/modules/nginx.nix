@@ -50,7 +50,6 @@
     recommendedGzipSettings = true;
     recommendedOptimisation = true;
     recommendedTlsSettings = true;
-    recommendedZstdSettings = true;
     resolver = {
       addresses = [ "1.1.1.1" "1.0.0.1" ];
       ipv6 = false;
