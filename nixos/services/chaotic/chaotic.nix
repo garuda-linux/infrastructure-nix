@@ -2,7 +2,6 @@
 , garuda-lib
 , lib
 , pkgs
-, inputs
 , sources
 , ...
 }:
@@ -43,8 +42,6 @@ let
     ];
   };
   repodir = "${cfg.repos-dir}/${cfg.db-name}";
-  # arch-install-scripts is broken because resholve seems to fail to build because of a broken python package (python2.7-wheel). Pull in resholve from nixpkgs-stable.
-  arch-install-scripts = pkgs.arch-install-scripts.override { inherit (inputs.nixpkgs-stable.legacyPackages."${pkgs.hostPlatform.system}") resholve; };
 in
 {
   options.services.chaotic = {
@@ -112,7 +109,7 @@ in
     };
     environment.systemPackages = [
       toolbox
-      arch-install-scripts
+      pkgs.arch-install-scripts
       pkgs.git
       pkgs.pacman
       repoctl

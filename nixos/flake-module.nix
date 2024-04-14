@@ -28,6 +28,7 @@ let
       buildiso = inputs.src-buildiso;
       chaotic-mirror = inputs.src-chaotic-mirror;
       chaotic-toolbox = inputs.src-chaotic-toolbox;
+      chaotic-portable-builder = inputs.src-chaotic-portable-builder;
       cloudflare-ipv4 = inputs.src-cloudflare-ipv4;
       garuda-website = inputs.src-garuda-website;
       inherit defaultModules;

@@ -23,10 +23,6 @@ let
       type = lib.types.bool;
       default = false;
     };
-    needsNesting = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-    };
     defaults = lib.mkOption {
       type = lib.types.bool;
       default = true;

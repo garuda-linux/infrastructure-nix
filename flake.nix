@@ -75,6 +75,12 @@
     # Sources for custom applications and files
     src-chaotic-toolbox.url = "github:chaotic-aur/toolbox";
     src-chaotic-toolbox.flake = false;
+    src-chaotic-portable-builder = {
+      type = "gitlab";
+      owner = "garuda-linux";
+      repo = "tools%2Fchaotic-portable-builder";
+      flake = false;
+    };
     src-repoctl.url = "github:cassava/repoctl";
     src-repoctl.flake = false;
     # TODO: https://github.com/NixOS/nix/pull/9163
@@ -89,9 +95,6 @@
     src-cloudflare-ipv4.flake = false;
 
     # Patches for nixos, automatically applied if they follow this format
-    # TODO: drop once https://github.com/NixOS/nixpkgs/pull/301886 reaches nixos-unstable
-    nixos-patch-dovecot.url = "https://github.com/NixOS/nixpkgs/pull/301886.patch";
-    nixos-patch-dovecot.flake = false;
     nixos-patch-nat.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/277016.patch";
     nixos-patch-nat.flake = false;
 

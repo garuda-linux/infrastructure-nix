@@ -1,8 +1,9 @@
 { garuda-lib
 , sources
+, pkgs
 , ...
 }: {
-  imports = sources.defaultModules ++ [ ../modules ];
+  imports = sources.defaultModules ++ [ ../modules "${sources.chaotic-portable-builder}/nix/nixos.nix" ];
 
   # Redis is used to distribute build jobs
   services.redis = {
@@ -42,6 +43,17 @@
     ];
   };
   users.groups.chaotic-op = { };
+
+  # Expose raw /proc for podman
+  systemd.services.expose-raw-proc = {
+    description = "Expose clean /proc for podman";
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      mkdir /tmp/raw_proc
+      ${pkgs.mount}/bin/mount --bind /proc /tmp/raw_proc
+    '';
+  };
 
   networking.firewall.allowedTCPPorts = [ 8080 ];
 

@@ -66,7 +66,6 @@ in
           ];
         };
         ipAddress = "10.0.5.90";
-        needsNesting = true;
       };
       chaotic-v4 = {
         config = import ../chaotic-v4.nix;
@@ -83,6 +82,7 @@ in
               mountPoint = "/srv/http/repos";
             };
           };
+          enableTun = true;
         };
         ipAddress = "10.0.5.140";
         needsDocker = true;
@@ -347,7 +347,6 @@ in
           tmpfs = [ "/tmp:size=25G" ];
         };
         ipAddress = "10.0.5.20";
-        needsNesting = true;
       };
       web-front = {
         config = import ../web-front.nix;
