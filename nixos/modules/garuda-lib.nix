@@ -47,6 +47,7 @@ in
       behind_proxy = false;
       inherit setRealIpFromConfig nginxReverseProxySettings;
       minimalContainer = false;
+      chaoticUsers = false;
       unifiedUID = false;
       secrets = recursiveUpdate secrets {
         cachix = "/var/garuda/secrets/cachix";

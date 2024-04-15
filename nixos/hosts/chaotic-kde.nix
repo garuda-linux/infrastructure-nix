@@ -4,6 +4,8 @@
 }: {
   imports = sources.defaultModules ++ [ ../modules ];
 
+  garuda-lib.chaoticUsers = true;
+
   # Enable Chaotic-AUR building
   services.chaotic.enable = true;
   services.chaotic.cluster-name = "kde-git";

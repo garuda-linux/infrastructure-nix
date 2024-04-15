@@ -143,6 +143,7 @@ services:
     volumes:
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
+      - /srv/http/repos:/repo_root
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports: [8080:8080]

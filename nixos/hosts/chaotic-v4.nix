@@ -57,5 +57,8 @@
 
   networking.firewall.allowedTCPPorts = [ 8080 ];
 
+  # Enable the user accounts of chaotic maintainers
+  garuda-lib.chaoticUsers = true;
+
   system.stateVersion = "23.05";
 }

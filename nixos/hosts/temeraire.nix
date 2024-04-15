@@ -82,6 +82,8 @@
     timerConfig.OnCalendar = [ "hourly" ];
   };
 
+  garuda-lib.chaoticUsers = true;
+
   # Chaotic-AUR builders need to upload their packages
   users.users.ufscar_hpc = {
     extraGroups = [ "chaotic_op" ];
