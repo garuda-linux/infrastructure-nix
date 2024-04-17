@@ -123,7 +123,12 @@ in
         hashedPasswordFile = "/var/garuda/secrets/mail/spam-reportsatgl";
       };
       "team@garudalinux.org" = {
-        aliases = [ "root@garudalinux.org" "webmaster@garudalinux.org" "admin@garudalinux.org" ];
+        aliases = [
+          "admin@garudalinux.org"
+          "ci@garudalinux.org"
+          "root@garudalinux.org"
+          "webmaster@garudalinux.org"
+        ];
         hashedPasswordFile = "/var/garuda/secrets/mail/teamatgl";
       };
       "tne@garudalinux.org" = {
@@ -138,7 +143,11 @@ in
         hashedPasswordFile = "/var/garuda/secrets/mail/actionsatcx";
       };
       "nico@chaotic.cx" = {
-        aliases = [ "dr460nf1r3@chaotic.cx" "root@chaotic.cx" "webmaster@chaotic.cx" ];
+        aliases = [
+          "dr460nf1r3@chaotic.cx"
+          "root@chaotic.cx"
+          "webmaster@chaotic.cx"
+        ];
         hashedPasswordFile = "/var/garuda/secrets/mail/nicoatcx";
       };
       # dr460nf1r3.org
