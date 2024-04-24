@@ -3,7 +3,7 @@ version: "3.9"
 services:
   # Garuda Cloud
   nextcloud_app:
-    image: linuxserver/nextcloud:27.0.1 # locked, newer versions can't be pulled!
+    image: linuxserver/nextcloud:29.0.0 # locked, newer versions can't be pulled!
     container_name: nextcloud
     depends_on: [nextcloud_db, nextcloud_redis]
     environment:
