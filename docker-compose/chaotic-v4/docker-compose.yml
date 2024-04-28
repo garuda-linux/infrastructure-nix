@@ -147,11 +147,3 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports: [8080:8080]
-  # Automated container updates
-  watchtower:
-    image: containrrr/watchtower:latest
-    container_name: watchtower
-    command:
-      --cleanup chaotic-builder chaotic-manager watchtower --interval 3600
-    volumes: [/var/run/docker.sock:/var/run/docker.sock]
-    restart: always
