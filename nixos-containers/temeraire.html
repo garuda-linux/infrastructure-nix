@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="navy" dir="ltr">
+<html lang="en" class="mocha" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -29,7 +29,10 @@
         <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
         <link rel="stylesheet" href="../theme/css/custom.css">
+        <link rel="stylesheet" href=".././theme/catppuccin.css">
+        <link rel="stylesheet" href=".././theme/catppuccin-admonish.css">
 
     </head>
     <body class="sidebar-visible no-js">
@@ -37,7 +40,7 @@
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "mocha" : "mocha";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -62,7 +65,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('navy')
+            html.classList.remove('mocha')
             html.classList.add(theme);
             var body = document.querySelector('body');
             body.classList.remove('no-js')
@@ -91,9 +94,7 @@
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="../intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="../common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="../important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Users</li><li class="chapter-item expanded "><a href="../users.html"><strong aria-hidden="true">5.</strong> Users</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../users/current_users.html"><strong aria-hidden="true">5.1.</strong> Current users</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="../hosts/immortalis.html"><strong aria-hidden="true">6.</strong> immortalis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../nixos-containers/chaotic-kde.html"><strong aria-hidden="true">6.1.</strong> chaotic-kde</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker-proxied.html"><strong aria-hidden="true">6.2.</strong> docker-proxied</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker.html"><strong aria-hidden="true">6.3.</strong> docker</a></li><li class="chapter-item expanded "><a href="../nixos-containers/forum.html"><strong aria-hidden="true">6.4.</strong> forum</a></li><li class="chapter-item expanded "><a href="../nixos-containers/github-runner.html"><strong aria-hidden="true">6.5.</strong> github-runner</a></li><li class="chapter-item expanded "><a href="../nixos-containers/lemmy.html"><strong aria-hidden="true">6.6.</strong> lemmy</a></li><li class="chapter-item expanded "><a href="../nixos-containers/mastodon.html"><strong aria-hidden="true">6.7.</strong> mastodon</a></li><li class="chapter-item expanded "><a href="../nixos-containers/meshcentral.html"><strong aria-hidden="true">6.8.</strong> meshcentral</a></li><li class="chapter-item expanded "><a href="../nixos-containers/postgres.html"><strong aria-hidden="true">6.9.</strong> postgres</a></li><li class="chapter-item expanded "><a href="../nixos-containers/repo.html"><strong aria-hidden="true">6.10.</strong> repo</a></li><li class="chapter-item expanded "><a href="../nixos-containers/temeraire.html" class="active"><strong aria-hidden="true">6.11.</strong> temeraire</a></li><li class="chapter-item expanded "><a href="../nixos-containers/web-front.html"><strong aria-hidden="true">6.12.</strong> web-front</a></li></ol></li><li class="chapter-item expanded "><a href="../hosts/garuda-mail.html"><strong aria-hidden="true">7.</strong> garuda-mail</a></li><li class="chapter-item expanded affix "><li class="part-title">Repository infrastructure</li><li class="chapter-item expanded "><a href="../repositories/general.html"><strong aria-hidden="true">8.</strong> General information</a></li><li class="chapter-item expanded "><a href="../repositories/pkgbuilds.html"><strong aria-hidden="true">9.</strong> PKGBUILDs</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><a href="../services/discourse.html"><strong aria-hidden="true">10.</strong> Discourse</a></li><li class="chapter-item expanded "><a href="../websites/documentation.html"><strong aria-hidden="true">11.</strong> Documentation</a></li><li class="chapter-item expanded "><a href="../services/tailscale.html"><strong aria-hidden="true">12.</strong> Tailscale</a></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><a href="../code-of-conduct.html"><strong aria-hidden="true">13.</strong> Code of Conduct</a></li><li class="chapter-item expanded "><a href="../privacy-policy.html"><strong aria-hidden="true">14.</strong> Privacy policy</a></li><li class="chapter-item expanded "><a href="../security.html"><strong aria-hidden="true">15.</strong> Security</a></li><li class="chapter-item expanded "><a href="../credits.html"><strong aria-hidden="true">16.</strong> Credits</a></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
-                <div class="sidebar-resize-indicator"></div>
-            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -136,6 +137,10 @@
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="latte">Latte</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="frappe">Frappé</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="macchiato">Macchiato</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mocha">Mocha</button></li>
                         </ul>
                         <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
@@ -194,27 +199,27 @@
 
   # Enable Chaotic-AUR building
   services.chaotic.enable = true;
-  services.chaotic.cluster-name = &quot;garuda-cluster&quot;;
+  services.chaotic.cluster-name = "garuda-cluster";
   # Let nginx set itself up for this local domain
-  services.chaotic.host = &quot;local.chaotic.invalid&quot;;
+  services.chaotic.host = "local.chaotic.invalid";
   services.chaotic.extraConfig = ''
-    export CAUR_DEPLOY_LABEL=&quot;Temeraire 🐉&quot;
-    export CAUR_PACKAGER=&quot;Garuda Builder &lt;team@garudalinux.org&gt;&quot;
+    export CAUR_DEPLOY_LABEL="Temeraire 🐉"
+    export CAUR_PACKAGER="Garuda Builder &lt;team@garudalinux.org&gt;"
     export CAUR_ROUTINES=/tmp/chaotic/routines
     export CAUR_SIGN_KEY=D6C9442437365605
     export CAUR_SIGN_USER=root
-    export CAUR_TELEGRAM_TAG=&quot;@dr460nf1r3&quot;
+    export CAUR_TELEGRAM_TAG="@dr460nf1r3"
     export CAUR_TYPE=primary
     export CAUR_URL=https://builds.garudalinux.org/repos/chaotic-aur/x86_64
     export REPOCTL_CONFIG=/usr/local/etc/chaotic-repoctl.toml
 
-    export GIT_SSH_COMMAND=&quot;ssh -i /var/garuda/secrets/chaotic/interfere_ed25519&quot;
+    export GIT_SSH_COMMAND="ssh -i /var/garuda/secrets/chaotic/interfere_ed25519"
     export HTTPS_PROXY=http://10.0.5.1:3128/
     export HTTP_PROXY=http://10.0.5.1:3128/
     export NO_PROXY=mirror.rackspace.com,cloudflaremirrors.com,github.com,downloads.sentry-cdn.com
   '';
-  services.chaotic.db-name = &quot;chaotic-aur&quot;;
-  services.chaotic.routines = [ &quot;afternoon&quot; &quot;hourly.1&quot; &quot;hourly.2&quot; &quot;morning&quot; &quot;nightly&quot; &quot;tkg-wine&quot; ];
+  services.chaotic.db-name = "chaotic-aur";
+  services.chaotic.routines = [ "afternoon" "hourly.1" "hourly.2" "morning" "nightly" "tkg-wine" ];
 
   # Special Syncthing configuration allowing to push to main node
   services.syncthing = {
@@ -225,11 +230,11 @@
     inherit (garuda-lib.secrets.syncthing.esxi-build) key;
     overrideFolders = false;
     overrideDevices = false;
-    user = &quot;root&quot;;
-    group = &quot;chaotic_op&quot;;
+    user = "root";
+    group = "chaotic_op";
     settings = {
       gui = {
-        apikey = &quot;garudalinux&quot;;
+        apikey = "garudalinux";
         insecureSkipHostcheck = true;
       };
     };
@@ -238,16 +243,16 @@
   # Cloudflared access to Syncthing webinterface
   services.garuda-cloudflared = {
     enable = true;
-    ingress = { &quot;syncthing-build.garudalinux.net&quot; = &quot;http://localhost:8384&quot;; };
+    ingress = { "syncthing-build.garudalinux.net" = "http://localhost:8384"; };
     tunnel-credentials =
       garuda-lib.secrets.cloudflare.cloudflared.esxi-build.cred;
   };
 
   # Allow systemd-nspawn to create subcgroups (for Chaotic-AUR builders)
   systemd.services.remount-sysfscgroup = {
-    description = &quot;Remount cgroup2 to allow systemd-nspawn to create subcgroups&quot;;
-    wantedBy = [ &quot;multi-user.target&quot; ];
-    serviceConfig.Type = &quot;oneshot&quot;;
+    description = "Remount cgroup2 to allow systemd-nspawn to create subcgroups";
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.Type = "oneshot";
     script = ''
       ${pkgs.mount}/bin/mount -t cgroup2 -o rw,nosuid,nodev,noexec,relatime none /sys/fs/cgroup
     '';
@@ -255,55 +260,57 @@
 
   # Auto reset syncthing stuff
   systemd.services.syncthing-reset = {
-    serviceConfig.Type = &quot;oneshot&quot;;
+    serviceConfig.Type = "oneshot";
     script = ''
-      &quot;${pkgs.curl}/bin/curl&quot; -X POST -H &quot;X-API-Key: garudalinux&quot; http://localhost:8384/rest/db/override?folder=${garuda-lib.secrets.syncthing.folders.chaotic-aur}
+      "${pkgs.curl}/bin/curl" -X POST -H "X-API-Key: garudalinux" http://localhost:8384/rest/db/override?folder=${garuda-lib.secrets.syncthing.folders.chaotic-aur}
     '';
   };
   systemd.timers.syncthing-reset = {
-    wantedBy = [ &quot;timers.target&quot; ];
-    timerConfig.OnCalendar = [ &quot;hourly&quot; ];
+    wantedBy = [ "timers.target" ];
+    timerConfig.OnCalendar = [ "hourly" ];
   };
+
+  garuda-lib.chaoticUsers = true;
 
   # Chaotic-AUR builders need to upload their packages
   users.users.ufscar_hpc = {
-    extraGroups = [ &quot;chaotic_op&quot; ];
+    extraGroups = [ "chaotic_op" ];
     isNormalUser = true;
     openssh.authorizedKeys.keys = [
-      &quot;ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFslN7a613H3hztK/yzHE4ZBOJ4448+EN867Y/IDpAfc u726578@c6.cluster.infra.ufscar.br&quot;
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFslN7a613H3hztK/yzHE4ZBOJ4448+EN867Y/IDpAfc u726578@c6.cluster.infra.ufscar.br"
     ];
   };
   users.users.catbuilder = {
-    extraGroups = [ &quot;chaotic_op&quot; ];
+    extraGroups = [ "chaotic_op" ];
     isNormalUser = true;
     openssh.authorizedKeys.keys = [
-      &quot;ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDHELhrMFNvxgAYMdzwerszypuvQc3uCFjkR6xCbcQnrcCrueJqTQ4y8WzddwxhRzKbSTQVhPdB5l95IYk7eOtmBmaMp4LAV2osMWDI/x3NyoY5s7YgpW815qNX9Io7VnrFUr0LK7hJ+Uw87nyxGp3zGddPVMUK7PIdJf2GxTxKPryycdLa9QWijfm3YBdN10yBMp6KrfPEnhtmNPMrc3wuBG4+xBoJxNOy0DJdIf2PRwU2CddP0zdDWwlMbGeHGcaJmlAx0u9e1jL8KWB/oyGT1D9q4l+fU8E9nZG+kAFMO1yG25je9bJnYNPMV1gdRT47G3J/B982XYO4G4AiOER0v0M0MN0qWTvIVBG6Vnly81ME91Qao34Lw2QOhZMVFwWz01u8KLLQy/Z2rX7jKyqeUyGXgs5NPmkeJ1vzpSRLXY+5GX5yva8A041Nft7sfKYPFjMsDaxAKVPz7LkKX1dYdiC4c3a/RcCzLKY+Uabjr0QAK4MKwmMW+SNF0QHr9mk= root@Chaotic&quot;
+      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDHELhrMFNvxgAYMdzwerszypuvQc3uCFjkR6xCbcQnrcCrueJqTQ4y8WzddwxhRzKbSTQVhPdB5l95IYk7eOtmBmaMp4LAV2osMWDI/x3NyoY5s7YgpW815qNX9Io7VnrFUr0LK7hJ+Uw87nyxGp3zGddPVMUK7PIdJf2GxTxKPryycdLa9QWijfm3YBdN10yBMp6KrfPEnhtmNPMrc3wuBG4+xBoJxNOy0DJdIf2PRwU2CddP0zdDWwlMbGeHGcaJmlAx0u9e1jL8KWB/oyGT1D9q4l+fU8E9nZG+kAFMO1yG25je9bJnYNPMV1gdRT47G3J/B982XYO4G4AiOER0v0M0MN0qWTvIVBG6Vnly81ME91Qao34Lw2QOhZMVFwWz01u8KLLQy/Z2rX7jKyqeUyGXgs5NPmkeJ1vzpSRLXY+5GX5yva8A041Nft7sfKYPFjMsDaxAKVPz7LkKX1dYdiC4c3a/RcCzLKY+Uabjr0QAK4MKwmMW+SNF0QHr9mk= root@Chaotic"
     ];
   };
   users.users.chaotic-dragon = {
-    extraGroups = [ &quot;chaotic_op&quot; ];
+    extraGroups = [ "chaotic_op" ];
     isNormalUser = true;
     openssh.authorizedKeys.keys = [
-      &quot;ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC0zLuPM4IE4xsxen2XBqWKSQz5CpHONgguOhVuR5rTxRqijiwGro0VR4gPhpmuZjLkms4CJ2YGyjTbjDkh48+wAoiPjdvVqF6kJ9TLkHZabMJfx5chKMCVFcHM+0/F768fF/nRsfusbRO7H2nLGMXJ1eObemiCGg0e8Ccs0XA4PF9bGaDm+4bblNasVyT6PsnaYziyBtwU3fzBVbdQmErw37sjXV9jNsEq3XF9wSaFf/Dfzh9xY1CR1KC7Af84lL1vOj7QL06tEmDO6W4JJCpRS4OonpuahwaaR4gn6wW09eDgrpXUI5DhxGizwGPLdwENRONpcXP0xnWetC9IaUADHb9yZwQKZhN9RCoO5ytqrt/NkGfn7Si+mWSfMQRGvfgJocC89peIhbchXalT+JS1XWD+Isvj2I+sqmAcoKgji09MTF0lMW+m83/+YA7Jdhn5CLVs9RxZ5cwz1TqveuUaq4i9P867iKCltrqZxxgXD4emZXhHGvGrw8cNQZOVAhc= root@chaotic-dragon&quot;
+      "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC0zLuPM4IE4xsxen2XBqWKSQz5CpHONgguOhVuR5rTxRqijiwGro0VR4gPhpmuZjLkms4CJ2YGyjTbjDkh48+wAoiPjdvVqF6kJ9TLkHZabMJfx5chKMCVFcHM+0/F768fF/nRsfusbRO7H2nLGMXJ1eObemiCGg0e8Ccs0XA4PF9bGaDm+4bblNasVyT6PsnaYziyBtwU3fzBVbdQmErw37sjXV9jNsEq3XF9wSaFf/Dfzh9xY1CR1KC7Af84lL1vOj7QL06tEmDO6W4JJCpRS4OonpuahwaaR4gn6wW09eDgrpXUI5DhxGizwGPLdwENRONpcXP0xnWetC9IaUADHb9yZwQKZhN9RCoO5ytqrt/NkGfn7Si+mWSfMQRGvfgJocC89peIhbchXalT+JS1XWD+Isvj2I+sqmAcoKgji09MTF0lMW+m83/+YA7Jdhn5CLVs9RxZ5cwz1TqveuUaq4i9P867iKCltrqZxxgXD4emZXhHGvGrw8cNQZOVAhc= root@chaotic-dragon"
     ];
   };
   users.users.dragons-ryzen = {
-    extraGroups = [ &quot;chaotic_op&quot; ];
+    extraGroups = [ "chaotic_op" ];
     isNormalUser = true;
     openssh.authorizedKeys.keys = [
-      &quot;ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAd8nLLjysVefmk3I6BI/IkooUvnGSy7966T54gWNvgW nico@slim-lair&quot;
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAd8nLLjysVefmk3I6BI/IkooUvnGSy7966T54gWNvgW nico@slim-lair"
     ];
   };
 
   # Ufscar-HPC needs diffie-hellman-group-exchange-sha1
   services.openssh.settings = {
     KexAlgorithms = [
-      &quot;curve25519-sha256&quot;
-      &quot;curve25519-sha256@libssh.org&quot;
-      &quot;diffie-hellman-group-exchange-sha1&quot;
-      &quot;diffie-hellman-group16-sha512&quot;
-      &quot;diffie-hellman-group18-sha512&quot;
-      &quot;sntrup761x25519-sha512@openssh.com&quot;
+      "curve25519-sha256"
+      "curve25519-sha256@libssh.org"
+      "diffie-hellman-group-exchange-sha1"
+      "diffie-hellman-group16-sha512"
+      "diffie-hellman-group18-sha512"
+      "sntrup761x25519-sha512@openssh.com"
     ];
   };
 
@@ -311,21 +318,23 @@
   services.nginx = {
     enable = true;
     virtualHosts = {
-      &quot;builds.garudalinux.org&quot; = {
+      "builds.garudalinux.org" = {
         extraConfig = ''
+          # Disable index.html
+          index fully_disabled.html;
           # Our beautiful autoindex theme
           autoindex on;
           autoindex_exact_size off;
           autoindex_format xml;
           xslt_string_param path $uri;
-          xslt_string_param hostname &quot;Chaotic-AUR main node - Temeraire&quot;;
+          xslt_string_param hostname "Chaotic-AUR main node - Temeraire";
 
           # Security
-          add_header X-XSS-Protection          &quot;1; mode=block&quot; always;
-          add_header X-Content-Type-Options    &quot;nosniff&quot; always;
-          add_header Referrer-Policy           &quot;no-referrer-when-downgrade&quot; always;
-          add_header Content-Security-Policy   &quot;default-src 'self' http: https: data: blob: 'unsafe-inline'; frame-ancestors 'self';&quot; always;
-          add_header Permissions-Policy        &quot;interest-cohort=()&quot; always;
+          add_header X-XSS-Protection          "1; mode=block" always;
+          add_header X-Content-Type-Options    "nosniff" always;
+          add_header Referrer-Policy           "no-referrer-when-downgrade" always;
+          add_header Content-Security-Policy   "default-src 'self' http: https: data: blob: 'unsafe-inline'; frame-ancestors 'self';" always;
+          add_header Permissions-Policy        "interest-cohort=()" always;
 
           # Locations
           location ~* ^.+\.log {
@@ -337,8 +346,8 @@
           }
           location / {
               xslt_string_param path $uri;
-              xslt_string_param hostname &quot;Chaotic-AUR main node - Temeraire 🐉&quot;;
-              xslt_stylesheet &quot;${garuda-lib.xslt_style}&quot;;
+              xslt_string_param hostname "Chaotic-AUR main node - Temeraire 🐉";
+              xslt_stylesheet "${garuda-lib.xslt_style}";
               location /iso {
                   expires 2d;
                   return 301 https://iso.builds.garudalinux.org$request_uri;
@@ -346,12 +355,12 @@
           }
         '';
         http3 = true;
-        root = &quot;/srv/http/&quot;;
+        root = "/srv/http/";
       };
-      &quot;cf-builds.garudalinux.org&quot; = {
+      "cf-builds.garudalinux.org" = {
         extraConfig = ''
           location ~* /repos/(chaotic-aur|garuda)/x86_64/(?!.*(chaotic-aur|garuda)\.(db|files)).+\.tar.* {
-              add_header Cache-Control &quot;max-age=150, stale-while-revalidate=150, stale-if-error=86400&quot;;
+              add_header Cache-Control "max-age=150, stale-while-revalidate=150, stale-if-error=86400";
           }
           location ~* /repos/(chaotic-aur|garuda)/x86_64/(chaotic-aur|garuda)\.db.* {
               add_header Cache-Control 'no-cache';
@@ -372,33 +381,28 @@
           }
         '';
         http3 = true;
-        root = &quot;/srv/http/&quot;;
+        root = "/srv/http/";
       };
-      &quot;iso.builds.garudalinux.org&quot; = {
+      "iso.builds.garudalinux.org" = {
         extraConfig = ''
           autoindex on;
           autoindex_format xml;
           xslt_string_param path $uri;
-          xslt_string_param hostname &quot;Garuda Linux ISO Builds&quot;;
+          xslt_string_param hostname "Garuda Linux ISO Builds";
         '';
-        locations.&quot;/iso&quot; = {
-          root = &quot;/var/garuda/buildiso&quot;;
+        locations."/".return = "307 https://builds.garudalinux.org";
+        locations."/iso" = {
+          root = "/var/garuda/buildiso";
           extraConfig = ''
-            xslt_stylesheet &quot;${garuda-lib.xslt_style}&quot;;
-            if ($symlink_target_rel != &quot;&quot;) {
+            xslt_stylesheet "${garuda-lib.xslt_style}";
+            if ($symlink_target_rel != "") {
               rewrite ^ https://$server_name/iso/$symlink_target_rel redirect;
-            }
-            if ($arg_usa) {
-              rewrite ^/iso/(.*)$ https://us-ny-mirror.garudalinux.org/iso/$1? permanent;
             }
             if ($arg_sourceforge) {
               rewrite ^/iso/(.*)$ https://sourceforge.net/projects/garuda-linux/files/$1? permanent;
             }
-            if ($arg_osdn) {
-              rewrite ^/iso/(.*)$ https://osdn.net/projects/garuda-linux/storage/$1? permanent;
-            }
             if ($arg_r2) {
-              set $args &quot;&quot;;
+              set $args "";
               rewrite ^/iso/(.*)$ https://r2.garudalinux.org/iso/$1?r2request permanent;
             }
             break;
@@ -416,78 +420,79 @@
     enable = true;
     settings = {
       chaotic = {
-        &quot;read only&quot; = &quot;yes&quot;;
-        comment = &quot;Chaotic-AUR repository&quot;;
-        exclude = &quot;/chaotic-aur/archive/*** /chaotic-aur/logs/***&quot;;
-        path = &quot;/srv/http/repos/&quot;;
+        "read only" = "yes";
+        comment = "Chaotic-AUR repository";
+        exclude = "/chaotic-aur/archive/*** /chaotic-aur/logs/***";
+        path = "/srv/http/repos/";
       };
       chaotic-minimal = {
-        &quot;read only&quot; = &quot;yes&quot;;
-        comment = &quot;Chaotic-AUR repository minus largest packages&quot;;
-        exclude = &quot;/chaotic-aur/archive/*** /chaotic-aur/logs/*** /chaotic-aur/x86_64/quartus* /chaotic-aur/x86_64/unrealtournament4* /chaotic-aur/x86_64/urbanterror*&quot;;
-        path = &quot;/srv/http/repos/&quot;;
+        "read only" = "yes";
+        comment = "Chaotic-AUR repository minus largest packages";
+        exclude = "/chaotic-aur/archive/*** /chaotic-aur/logs/*** /chaotic-aur/x86_64/quartus* /chaotic-aur/x86_64/unrealtournament4* /chaotic-aur/x86_64/urbanterror*";
+        path = "/srv/http/repos/";
       };
       iso = {
-        path = &quot;/var/garuda/buildiso/iso/&quot;;
-        comment = &quot;ISO downloads&quot;;
-        &quot;read only&quot; = &quot;yes&quot;;
+        path = "/var/garuda/buildiso/iso/";
+        comment = "ISO downloads";
+        "read only" = "yes";
       };
       global = {
-        &quot;max connections&quot; = 80;
-        &quot;max verbosity&quot; = 3;
-        &quot;transfer logging&quot; = true;
-        &quot;use chroot&quot; = false;
-        gid = &quot;nobody&quot;;
-        uid = &quot;nobody&quot;;
+        "max connections" = 80;
+        "max verbosity" = 3;
+        "transfer logging" = true;
+        "use chroot" = false;
+        gid = "nobody";
+        uid = "nobody";
       };
     };
   };
 
   # Push chaotic to r2 hourly automatically
   services.garuda-rclone.chaotic = {
-    src = &quot;/srv/http/repos/&quot;;
-    dest = &quot;r2:/mirror/repos&quot;;
+    src = "/srv/http/repos/";
+    dest = "r2:/mirror/repos";
     config = garuda-lib.secrets.cloudflare.r2.rclone;
-    args = &quot;--s3-upload-cutoff 5G --s3-chunk-size 4G --fast-list --s3-no-head --s3-no-check-bucket --ignore-checksum --s3-disable-checksum -u --use-server-modtime --delete-during --delete-excluded --include /*/x86_64/*.pkg.tar.zst --include /*/lastupdate --order-by modtime,ascending --stats-log-level NOTICE&quot;;
-    startAt = &quot;hourly&quot;;
+    args = "--s3-upload-cutoff 5G --s3-chunk-size 4G --fast-list --s3-no-head --s3-no-check-bucket --ignore-checksum --s3-disable-checksum -u --use-server-modtime --delete-during --delete-excluded --include /*/x86_64/*.pkg.tar.zst --include /*/lastupdate --order-by modtime,ascending --stats-log-level NOTICE";
+    startAt = "hourly";
   };
   systemd.services.chaotic-rclone-inotify = {
-    wantedBy = [ &quot;multi-user.target&quot; ];
-    after = [ &quot;network-online.target&quot; ];
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
     # Get all file changes, upload pkg.tar.zst. Not more than 5 per 5 seconds queued and only one uploaded at the same time. Queue dropped if uploading takes longer than 15 seconds.
     # This prevents the queue from getting overloaded with nonsense requests if that ever were to happen. The hourly sync should take care of this.
     script = ''
       upload() {
-        operation=&quot;''${1%%|*}&quot;
-        path=&quot;''${1#*|}&quot;
-        relative=&quot;$(realpath --relative-to=&quot;.&quot; &quot;$path&quot;)&quot;
-        relative=&quot;''${relative#./}&quot;
-        destpath=&quot;r2:/mirror/$relative&quot;
-        if [ &quot;$operation&quot; != &quot;MOVED_FROM&quot; ]; then
+        operation="''${1%%|*}"
+        path="''${1#*|}"
+        relative="$(realpath --relative-to="." "$path")"
+        relative="''${relative#./}"
+        destpath="r2:/mirror/$relative"
+        if [ "$operation" != "MOVED_FROM" ]; then
         ${pkgs.flock}/bin/flock -w 30 /tmp/chaotic-rclone-inotify.lock \
-          ${pkgs.rclone}/bin/rclone copyto &quot;$path&quot; &quot;$destpath&quot; --s3-upload-cutoff 5G --s3-chunk-size 4G --s3-no-head --no-check-dest --s3-no-check-bucket --ignore-checksum --s3-disable-checksum --config &quot;${garuda-lib.secrets.cloudflare.r2.rclone}&quot; --stats-one-line -v
+          ${pkgs.rclone}/bin/rclone copyto "$path" "$destpath" --s3-upload-cutoff 5G --s3-chunk-size 4G --s3-no-head --no-check-dest --s3-no-check-bucket --ignore-checksum --s3-disable-checksum --config "${garuda-lib.secrets.cloudflare.r2.rclone}" --stats-one-line -v
         else
-          ${pkgs.flock}/bin/flock -w 30 /tmp/chaotic-rclone-inotify.lock ${pkgs.rclone}/bin/rclone deletefile &quot;$destpath&quot; --s3-no-head --no-check-dest --s3-no-check-bucket --config &quot;${garuda-lib.secrets.cloudflare.r2.rclone}&quot; --stats-one-line -v
+          ${pkgs.flock}/bin/flock -w 30 /tmp/chaotic-rclone-inotify.lock ${pkgs.rclone}/bin/rclone deletefile "$destpath" --s3-no-head --no-check-dest --s3-no-check-bucket --config "${garuda-lib.secrets.cloudflare.r2.rclone}" --stats-one-line -v
           (
             ${pkgs.flock}/bin/flock -w 200 -s 200
-            ${pkgs.curl}/bin/curl -s -X POST &quot;https://api.cloudflare.com/client/v4/zones/$CF_ZONE_GARUDALINUX_ORG/purge_cache&quot; -H &quot;Authorization: Bearer $CF_CACHE_API_TOKEN&quot; -H &quot;Content-Type:application/json&quot; --data &quot;{\&quot;files\&quot;:[\&quot;https://r2.garudalinux.org/''${relative}\&quot;]}&quot;
+            ${pkgs.curl}/bin/curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_GARUDALINUX_ORG/purge_cache" -H "Authorization: Bearer $CF_CACHE_API_TOKEN" -H "Content-Type:application/json" --data "{\"files\":[\"https://r2.garudalinux.org/''${relative}\"]}"
             sleep 0.5
           ) 200&gt;/tmp/chaotic-rclone-inotify-invalidate.lock
         fi
       }
       export -f upload
-      ${pkgs.inotify-tools}/bin/inotifywait -m ./repos/*/x86_64 -e CLOSE_WRITE,MOVED_TO,MOVED_FROM --format &quot;%e|%w%f&quot; | \
+      ${pkgs.inotify-tools}/bin/inotifywait -m ./repos/*/x86_64 -e CLOSE_WRITE,MOVED_TO,MOVED_FROM --format "%e|%w%f" | \
         ${pkgs.gawk}/bin/awk '/\.pkg\.tar\.zst$/ { print $0; fflush(); }' | \
-        xargs -rP 0 -I % ${pkgs.bash}/bin/bash -c 'upload &quot;%&quot;'
+        xargs -rP 0 -I % ${pkgs.bash}/bin/bash -c 'upload "%"'
     '';
     serviceConfig = {
       EnvironmentFile = garuda-lib.secrets.cloudflare.apikeys;
-      Restart = &quot;always&quot;;
-      WorkingDirectory = &quot;/srv/http&quot;;
+      Restart = "always";
+      WorkingDirectory = "/srv/http";
     };
   };
 
-  system.stateVersion = &quot;23.05&quot;;
+  system.stateVersion = "23.05";
 }
 
 </code></pre>

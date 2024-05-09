@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="navy" dir="ltr">
+<html lang="en" class="mocha" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -29,7 +29,10 @@
         <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
         <link rel="stylesheet" href="../theme/css/custom.css">
+        <link rel="stylesheet" href=".././theme/catppuccin.css">
+        <link rel="stylesheet" href=".././theme/catppuccin-admonish.css">
 
     </head>
     <body class="sidebar-visible no-js">
@@ -37,7 +40,7 @@
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "mocha" : "mocha";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -62,7 +65,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('navy')
+            html.classList.remove('mocha')
             html.classList.add(theme);
             var body = document.querySelector('body');
             body.classList.remove('no-js')
@@ -91,9 +94,7 @@
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="../intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="../common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="../important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Users</li><li class="chapter-item expanded "><a href="../users.html"><strong aria-hidden="true">5.</strong> Users</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../users/current_users.html"><strong aria-hidden="true">5.1.</strong> Current users</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="../hosts/immortalis.html"><strong aria-hidden="true">6.</strong> immortalis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../nixos-containers/chaotic-kde.html"><strong aria-hidden="true">6.1.</strong> chaotic-kde</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker-proxied.html"><strong aria-hidden="true">6.2.</strong> docker-proxied</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker.html"><strong aria-hidden="true">6.3.</strong> docker</a></li><li class="chapter-item expanded "><a href="../nixos-containers/forum.html"><strong aria-hidden="true">6.4.</strong> forum</a></li><li class="chapter-item expanded "><a href="../nixos-containers/github-runner.html"><strong aria-hidden="true">6.5.</strong> github-runner</a></li><li class="chapter-item expanded "><a href="../nixos-containers/lemmy.html"><strong aria-hidden="true">6.6.</strong> lemmy</a></li><li class="chapter-item expanded "><a href="../nixos-containers/mastodon.html"><strong aria-hidden="true">6.7.</strong> mastodon</a></li><li class="chapter-item expanded "><a href="../nixos-containers/meshcentral.html"><strong aria-hidden="true">6.8.</strong> meshcentral</a></li><li class="chapter-item expanded "><a href="../nixos-containers/postgres.html"><strong aria-hidden="true">6.9.</strong> postgres</a></li><li class="chapter-item expanded "><a href="../nixos-containers/repo.html"><strong aria-hidden="true">6.10.</strong> repo</a></li><li class="chapter-item expanded "><a href="../nixos-containers/temeraire.html"><strong aria-hidden="true">6.11.</strong> temeraire</a></li><li class="chapter-item expanded "><a href="../nixos-containers/web-front.html"><strong aria-hidden="true">6.12.</strong> web-front</a></li></ol></li><li class="chapter-item expanded "><a href="../hosts/garuda-mail.html" class="active"><strong aria-hidden="true">7.</strong> garuda-mail</a></li><li class="chapter-item expanded affix "><li class="part-title">Repository infrastructure</li><li class="chapter-item expanded "><a href="../repositories/general.html"><strong aria-hidden="true">8.</strong> General information</a></li><li class="chapter-item expanded "><a href="../repositories/pkgbuilds.html"><strong aria-hidden="true">9.</strong> PKGBUILDs</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><a href="../services/discourse.html"><strong aria-hidden="true">10.</strong> Discourse</a></li><li class="chapter-item expanded "><a href="../websites/documentation.html"><strong aria-hidden="true">11.</strong> Documentation</a></li><li class="chapter-item expanded "><a href="../services/tailscale.html"><strong aria-hidden="true">12.</strong> Tailscale</a></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><a href="../code-of-conduct.html"><strong aria-hidden="true">13.</strong> Code of Conduct</a></li><li class="chapter-item expanded "><a href="../privacy-policy.html"><strong aria-hidden="true">14.</strong> Privacy policy</a></li><li class="chapter-item expanded "><a href="../security.html"><strong aria-hidden="true">15.</strong> Security</a></li><li class="chapter-item expanded "><a href="../credits.html"><strong aria-hidden="true">16.</strong> Credits</a></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
-                <div class="sidebar-resize-indicator"></div>
-            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -136,6 +137,10 @@
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="latte">Latte</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="frappe">Frappé</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="macchiato">Macchiato</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mocha">Mocha</button></li>
                         </ul>
                         <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
@@ -223,11 +228,11 @@ Don't forget to commit both changes.</p>
 }:
 let
   authres_status = pkgs.roundcubePlugins.roundcubePlugin rec {
-    pname = &quot;authres_status&quot;;
-    version = &quot;0.6.3&quot;;
+    pname = "authres_status";
+    version = "0.6.3";
     src = pkgs.fetchzip {
-      url = &quot;https://github.com/pimlie/authres_status/archive/refs/tags/${version}.zip&quot;;
-      hash = &quot;sha256-WebJiN0vRkvc0AKvMm+inK3FY37R04q3y/0rFoiUW6A=&quot;;
+      url = "https://github.com/pimlie/authres_status/archive/refs/tags/${version}.zip";
+      hash = "sha256-WebJiN0vRkvc0AKvMm+inK3FY37R04q3y/0rFoiUW6A=";
     };
   };
 in
@@ -239,158 +244,168 @@ in
 
   # Base configuration
   networking.interfaces.ens3.ipv4.addresses = [{
-    address = &quot;94.16.112.218&quot;;
+    address = "94.16.112.218";
     prefixLength = 22;
   }];
-  networking.hostName = &quot;garuda-mail&quot;;
-  networking.defaultGateway = &quot;94.16.112.3&quot;;
+  networking.hostName = "garuda-mail";
+  networking.defaultGateway = "94.16.112.3";
 
   # GRUB
-  boot.loader.grub.devices = [ &quot;/dev/vda&quot; ];
+  boot.loader.grub.devices = [ "/dev/vda" ];
 
   # Backup configurations to Hetzner storage box
-  programs.ssh.macs = [ &quot;hmac-sha2-512&quot; ];
+  programs.ssh.macs = [ "hmac-sha2-512" ];
   services.borgbackup.jobs = {
     backupToHetzner = {
-      compression = &quot;auto,zstd&quot;;
+      compression = "auto,zstd";
       doInit = true;
       encryption = {
-        mode = &quot;repokey-blake2&quot;;
-        passCommand = &quot;cat /var/garuda/secrets/backup/repo_key&quot;;
+        mode = "repokey-blake2";
+        passCommand = "cat /var/garuda/secrets/backup/repo_key";
       };
       environment = {
-        BORG_RSH = &quot;ssh -i /var/garuda/secrets/backup/ssh_garuda-mail -p 23&quot;;
+        BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_garuda-mail -p 23";
       };
-      paths = [ config.mailserver.mailDirectory &quot;/var/dkim&quot; ];
+      paths = [ config.mailserver.mailDirectory "/var/dkim" ];
       prune.keep = {
-        within = &quot;1d&quot;;
+        within = "1d";
         daily = 5;
         weekly = 2;
         monthly = 1;
       };
-      repo = &quot;u358867@u358867.your-storagebox.de:./garuda-mail&quot;;
-      startAt = &quot;daily&quot;;
+      repo = "u358867@u358867.your-storagebox.de:./garuda-mail";
+      startAt = "daily";
     };
   };
 
   # NixOS Mailserver
   mailserver = {
-    certificateScheme = &quot;acme-nginx&quot;;
+    certificateScheme = "acme-nginx";
     dmarcReporting = {
-      domain = &quot;garudalinux.org&quot;;
+      domain = "garudalinux.org";
       enable = true;
-      organizationName = &quot;Garuda Linux&quot;;
+      organizationName = "Garuda Linux";
     };
-    domains = [ &quot;garudalinux.org&quot; &quot;chaotic.cx&quot; &quot;dr460nf1r3.org&quot; ];
+    domains = [ "garudalinux.org" "chaotic.cx" "dr460nf1r3.org" ];
     enable = true;
     enableManageSieve = true;
     # Forwards (mostly chaotic.cx only)
     forwards =
       {
-        &quot;coffee-machine@chaotic.cx&quot; = &quot;root@pedrohlc.com&quot;;
-        &quot;islandc0der@chaotic.cx&quot; = &quot;jf.mundox@gmail.com&quot;;
-        &quot;pedrohlc@chaotic.cx&quot; = &quot;root@pedrohlc.com&quot;;
-        &quot;xstefen@chaotic.cx&quot; = &quot;me@xstefen.dev&quot;;
+        "coffee-machine@chaotic.cx" = "root@pedrohlc.com";
+        "islandc0der@chaotic.cx" = "jf.mundox@gmail.com";
+        "pedrohlc@chaotic.cx" = "root@pedrohlc.com";
+        "xstefen@chaotic.cx" = "me@xstefen.dev";
       };
-    fqdn = &quot;mail.garudalinux.net&quot;;
+    fqdn = "mail.garudalinux.net";
     fullTextSearch = {
       enable = true;
-      enforced = &quot;body&quot;;
+      enforced = "body";
       indexAttachments = true;
       memoryLimit = 512;
     };
     # To create the password hashes, use nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt'
     loginAccounts = {
       # garudalinux.org
-      &quot;cloud@garudalinux.org&quot; = {
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/cloudatgl&quot;;
+      "cloud@garudalinux.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/cloudatgl";
         sendOnly = true;
       };
-      &quot;complaints@garudalinux.org&quot; = {
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/complaintsatgl&quot;;
+      "complaints@garudalinux.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/complaintsatgl";
       };
-      &quot;dr460nf1r3@garudalinux.org&quot; = {
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/dr460nf1r3atgl&quot;;
+      "dr460nf1r3@garudalinux.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/dr460nf1r3atgl";
       };
-      &quot;filo@garudalinux.org&quot; = {
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/filoatgl&quot;;
+      "filo@garudalinux.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/filoatgl";
       };
-      &quot;gitlab@garudalinux.org&quot; = {
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/gitlabatgl&quot;;
+      "gitlab@garudalinux.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/gitlabatgl";
       };
-      &quot;mastodon@garudalinux.org&quot; = {
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/mastodonatgl&quot;;
+      "mastodon@garudalinux.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/mastodonatgl";
         sendOnly = true;
       };
-      &quot;naman@garudalinux.org&quot; = {
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/namanatgl&quot;;
+      "naman@garudalinux.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/namanatgl";
       };
-      &quot;noreply@garudalinux.org&quot; = {
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/noreplyatgl&quot;;
+      "noreply@garudalinux.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/noreplyatgl";
       };
-      &quot;rohit@garudalinux.org&quot; = {
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/rohitatgl&quot;;
+      "rohit@garudalinux.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/rohitatgl";
       };
-      &quot;security@garudalinux.org&quot; = {
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/securityatgl&quot;;
+      "security@garudalinux.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/securityatgl";
       };
-      &quot;sgs@garudalinux.org&quot; = {
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/sgsatgl&quot;;
+      "sgs@garudalinux.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/sgsatgl";
       };
-      &quot;spam-reports@garudalinux.org&quot; = {
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/spam-reportsatgl&quot;;
+      "spam-reports@garudalinux.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/spam-reportsatgl";
       };
-      &quot;team@garudalinux.org&quot; = {
-        aliases = [ &quot;root@garudalinux.org&quot; &quot;webmaster@garudalinux.org&quot; &quot;admin@garudalinux.org&quot; ];
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/teamatgl&quot;;
+      "team@garudalinux.org" = {
+        aliases = [
+          "admin@garudalinux.org"
+          "ci@garudalinux.org"
+          "root@garudalinux.org"
+          "webmaster@garudalinux.org"
+        ];
+        hashedPasswordFile = "/var/garuda/secrets/mail/teamatgl";
       };
-      &quot;tne@garudalinux.org&quot; = {
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/tneatgl&quot;;
+      "tne@garudalinux.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/tneatgl";
       };
-      &quot;yorper@garudalinux.org&quot; = {
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/yorperatgl&quot;;
+      "yorper@garudalinux.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/yorperatgl";
       };
       # chaotic.cx
-      &quot;actions@chaotic.cx&quot; = {
-        aliases = [ &quot;temeraire@chaotic.cx&quot; ];
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/actionsatcx&quot;;
+      "actions@chaotic.cx" = {
+        aliases = [ "temeraire@chaotic.cx" ];
+        hashedPasswordFile = "/var/garuda/secrets/mail/actionsatcx";
       };
-      &quot;nico@chaotic.cx&quot; = {
-        aliases = [ &quot;dr460nf1r3@chaotic.cx&quot; &quot;root@chaotic.cx&quot; &quot;webmaster@chaotic.cx&quot; ];
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/nicoatcx&quot;;
+      "nico@chaotic.cx" = {
+        aliases = [
+          "dr460nf1r3@chaotic.cx"
+          "root@chaotic.cx"
+          "webmaster@chaotic.cx"
+        ];
+        hashedPasswordFile = "/var/garuda/secrets/mail/nicoatcx";
       };
       # dr460nf1r3.org
-      &quot;nico@dr460nf1r3.org&quot; = {
-        aliases = [ &quot;@dr460nf1r3.org&quot; ];
-        catchAll = [ &quot;dr460nf1r3.org&quot; ];
-        hashedPasswordFile = &quot;/var/garuda/secrets/mail/nicoatdf&quot;;
+      "nico@dr460nf1r3.org" = {
+        aliases = [ "@dr460nf1r3.org" ];
+        catchAll = [ "dr460nf1r3.org" ];
+        hashedPasswordFile = "/var/garuda/secrets/mail/nicoatdf";
       };
     };
-    indexDir = &quot;/var/lib/dovecot/indices&quot;;
+    indexDir = "/var/lib/dovecot/indices";
     monitoring = {
-      alertAddress = &quot;team@garudalinux.org&quot;;
+      alertAddress = "team@garudalinux.org";
       enable = true;
     };
     rebootAfterKernelUpgrade.enable = true;
   };
 
   # Fix dovecot errors caused by failed scudo allocations
-  environment.memoryAllocator.provider = lib.mkForce &quot;libc&quot;;
+  environment.memoryAllocator.provider = lib.mkForce "libc";
 
   # Postmaster alias
-  services.postfix.postmasterAlias = &quot;nico@dr460nf1r3.org&quot;;
+  services.postfix.postmasterAlias = "nico@dr460nf1r3.org";
 
+  # Web UI
   services.roundcube = {
     enable = true;
     # this is the url of the vhost, not necessarily the same as the fqdn of
     # the mailserver
-    hostName = &quot;mail.garudalinux.net&quot;;
+    hostName = "mail.garudalinux.net";
     extraConfig = ''
       # starttls needed for authentication, so the fqdn required to match
       # the certificate
-      $config['smtp_server'] = &quot;tls://${config.mailserver.fqdn}&quot;;
-      $config['smtp_user'] = &quot;%u&quot;;
-      $config['smtp_pass'] = &quot;%p&quot;;
+      $config['smtp_server'] = "tls://${config.mailserver.fqdn}";
+      $config['smtp_user'] = "%u";
+      $config['smtp_pass'] = "%p";
     '';
     package = pkgs.roundcube.withPlugins (
       plugins: [
@@ -403,20 +418,23 @@ in
       ]
     );
     plugins = [
-      &quot;attachment_reminder&quot; # Roundcube internal plugin
-      &quot;authres_status&quot;
-      &quot;carddav&quot;
-      &quot;contextmenu&quot;
-      &quot;custom_from&quot;
-      &quot;managesieve&quot; # Roundcube internal plugin
-      &quot;newmail_notifier&quot; # Roundcube internal plugin
-      &quot;persistent_login&quot;
-      &quot;thunderbird_labels&quot;
-      &quot;zipdownload&quot; # Roundcube internal plugin
+      "attachment_reminder" # Roundcube internal plugin
+      "authres_status"
+      "carddav"
+      "contextmenu"
+      "custom_from"
+      "managesieve" # Roundcube internal plugin
+      "newmail_notifier" # Roundcube internal plugin
+      "persistent_login"
+      "thunderbird_labels"
+      "zipdownload" # Roundcube internal plugin
     ];
   };
 
-  system.stateVersion = &quot;22.05&quot;;
+  # At least try to prevent the insane spam of login attempts
+  services.openssh.ports = [ 1022 ];
+
+  system.stateVersion = "22.05";
 }
 </code></pre>
 

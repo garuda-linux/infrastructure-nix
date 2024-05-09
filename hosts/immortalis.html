@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="navy" dir="ltr">
+<html lang="en" class="mocha" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -29,7 +29,10 @@
         <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href=".././mdbook-admonish.css">
         <link rel="stylesheet" href="../theme/css/custom.css">
+        <link rel="stylesheet" href=".././theme/catppuccin.css">
+        <link rel="stylesheet" href=".././theme/catppuccin-admonish.css">
 
     </head>
     <body class="sidebar-visible no-js">
@@ -37,7 +40,7 @@
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "mocha" : "mocha";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -62,7 +65,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('navy')
+            html.classList.remove('mocha')
             html.classList.add(theme);
             var body = document.querySelector('body');
             body.classList.remove('no-js')
@@ -91,9 +94,7 @@
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="../intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="../common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="../important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Users</li><li class="chapter-item expanded "><a href="../users.html"><strong aria-hidden="true">5.</strong> Users</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../users/current_users.html"><strong aria-hidden="true">5.1.</strong> Current users</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="../hosts/immortalis.html" class="active"><strong aria-hidden="true">6.</strong> immortalis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../nixos-containers/chaotic-kde.html"><strong aria-hidden="true">6.1.</strong> chaotic-kde</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker-proxied.html"><strong aria-hidden="true">6.2.</strong> docker-proxied</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker.html"><strong aria-hidden="true">6.3.</strong> docker</a></li><li class="chapter-item expanded "><a href="../nixos-containers/forum.html"><strong aria-hidden="true">6.4.</strong> forum</a></li><li class="chapter-item expanded "><a href="../nixos-containers/github-runner.html"><strong aria-hidden="true">6.5.</strong> github-runner</a></li><li class="chapter-item expanded "><a href="../nixos-containers/lemmy.html"><strong aria-hidden="true">6.6.</strong> lemmy</a></li><li class="chapter-item expanded "><a href="../nixos-containers/mastodon.html"><strong aria-hidden="true">6.7.</strong> mastodon</a></li><li class="chapter-item expanded "><a href="../nixos-containers/meshcentral.html"><strong aria-hidden="true">6.8.</strong> meshcentral</a></li><li class="chapter-item expanded "><a href="../nixos-containers/postgres.html"><strong aria-hidden="true">6.9.</strong> postgres</a></li><li class="chapter-item expanded "><a href="../nixos-containers/repo.html"><strong aria-hidden="true">6.10.</strong> repo</a></li><li class="chapter-item expanded "><a href="../nixos-containers/temeraire.html"><strong aria-hidden="true">6.11.</strong> temeraire</a></li><li class="chapter-item expanded "><a href="../nixos-containers/web-front.html"><strong aria-hidden="true">6.12.</strong> web-front</a></li></ol></li><li class="chapter-item expanded "><a href="../hosts/garuda-mail.html"><strong aria-hidden="true">7.</strong> garuda-mail</a></li><li class="chapter-item expanded affix "><li class="part-title">Repository infrastructure</li><li class="chapter-item expanded "><a href="../repositories/general.html"><strong aria-hidden="true">8.</strong> General information</a></li><li class="chapter-item expanded "><a href="../repositories/pkgbuilds.html"><strong aria-hidden="true">9.</strong> PKGBUILDs</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><a href="../services/discourse.html"><strong aria-hidden="true">10.</strong> Discourse</a></li><li class="chapter-item expanded "><a href="../websites/documentation.html"><strong aria-hidden="true">11.</strong> Documentation</a></li><li class="chapter-item expanded "><a href="../services/tailscale.html"><strong aria-hidden="true">12.</strong> Tailscale</a></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><a href="../code-of-conduct.html"><strong aria-hidden="true">13.</strong> Code of Conduct</a></li><li class="chapter-item expanded "><a href="../privacy-policy.html"><strong aria-hidden="true">14.</strong> Privacy policy</a></li><li class="chapter-item expanded "><a href="../security.html"><strong aria-hidden="true">15.</strong> Security</a></li><li class="chapter-item expanded "><a href="../credits.html"><strong aria-hidden="true">16.</strong> Credits</a></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
-                <div class="sidebar-resize-indicator"></div>
-            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -136,6 +137,10 @@
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="latte">Latte</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="frappe">Frappé</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="macchiato">Macchiato</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mocha">Mocha</button></li>
                         </ul>
                         <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
@@ -254,71 +259,71 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
 
   # Increase /tmp &amp; /run size to make better use of RAM
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_6_6;
     loader.systemd-boot.enable = true;
-    runSize = &quot;50%&quot;;
+    runSize = "50%";
     tmp = {
-      tmpfsSize = &quot;95%&quot;;
+      tmpfsSize = "95%";
       useTmpfs = true;
     };
   };
 
   # Network configuration with a bridge interface
   networking = {
-    defaultGateway = &quot;116.202.208.65&quot;;
+    defaultGateway = "116.202.208.65";
     defaultGateway6 = {
-      address = &quot;fe80::1&quot;;
-      interface = &quot;eth0&quot;;
+      address = "fe80::1";
+      interface = "eth0";
     };
-    hostName = &quot;immortalis&quot;;
+    hostName = "immortalis";
     interfaces = {
-      &quot;eth0&quot; = {
+      "eth0" = {
         ipv4.addresses = [
           {
-            address = &quot;116.202.208.112&quot;;
+            address = "116.202.208.112";
             prefixLength = 26;
           }
         ];
         ipv6.addresses = [
           # Random outgoing
           {
-            address = &quot;2a01:4f8:2200:30ac:9141:5338:3bbe:e6e4&quot;;
+            address = "2a01:4f8:2200:30ac:cf2d:7d73:eddf:8871";
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:b22c:1fcb:0ed0:4093&quot;;
+            address = "2a01:4f8:2200:30ac:5b38:dbde:e5a7:91b2";
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:7436:3445:712f:915a&quot;;
+            address = "2a01:4f8:2200:30ac:fa33:0d97:0755:6833";
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:1030:64db:7964:daeb&quot;;
+            address = "2a01:4f8:2200:30ac:8f15:81f6:355c:d9d6";
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:d98e:f81f:2d83:dd05&quot;;
+            address = "2a01:4f8:2200:30ac:4436:e5e7:2236:0d77";
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:a6a9:0a27:8387:9f03&quot;;
+            address = "2a01:4f8:2200:30ac:1ea4:1794:1963:b8da";
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:06eb:ea0c:a8bb:76bc&quot;;
+            address = "2a01:4f8:2200:30ac:5628:7e9f:d8ec:544d";
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:0b38:23e4:b6ad:89cd&quot;;
+            address = "2a01:4f8:2200:30ac:d830:ce99:e2b7:3e43";
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:393b:4c26:9160:9afa&quot;;
+            address = "2a01:4f8:2200:30ac:edc9:2d08:2b32:e532";
             prefixLength = 64;
           }
           {
-            address = &quot;2a01:4f8:2200:30ac:1710:8521:9602:ab81&quot;;
+            address = "2a01:4f8:2200:30ac:a833:0fd7:29d4:5309";
             prefixLength = 64;
           }
         ];
@@ -329,48 +334,48 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
     nat.forwardPorts = [
       {
         # web-front (HTTP)
-        destination = &quot;10.0.5.10:80&quot;;
-        loopbackIPs = [ &quot;116.202.208.112&quot; ];
-        proto = &quot;tcp&quot;;
+        destination = "10.0.5.10:80";
+        loopbackIPs = [ "116.202.208.112" ];
+        proto = "tcp";
         sourcePort = 80;
       }
       {
         # web-front (HTTPS)
-        destination = &quot;10.0.5.10:443&quot;;
-        loopbackIPs = [ &quot;116.202.208.112&quot; ];
-        proto = &quot;tcp&quot;;
+        destination = "10.0.5.10:443";
+        loopbackIPs = [ "116.202.208.112" ];
+        proto = "tcp";
         sourcePort = 443;
       }
       {
         # web-front (HTTPS)
-        destination = &quot;10.0.5.10:443&quot;;
-        loopbackIPs = [ &quot;116.202.208.112&quot; ];
-        proto = &quot;udp&quot;;
+        destination = "10.0.5.10:443";
+        loopbackIPs = [ "116.202.208.112" ];
+        proto = "udp";
         sourcePort = 443;
       }
       {
         # web-front (Matrix)
-        destination = &quot;10.0.5.10:8448&quot;;
-        loopbackIPs = [ &quot;116.202.208.112&quot; ];
-        proto = &quot;tcp&quot;;
+        destination = "10.0.5.10:8448";
+        loopbackIPs = [ "116.202.208.112" ];
+        proto = "tcp";
         sourcePort = 8448;
       }
       {
         # iso-runner (SSH)
-        destination = &quot;10.0.5.40:22&quot;;
-        loopbackIPs = [ &quot;116.202.208.112&quot; ];
-        proto = &quot;tcp&quot;;
+        destination = "10.0.5.40:22";
+        loopbackIPs = [ "116.202.208.112" ];
+        proto = "tcp";
         sourcePort = 227;
       }
       {
         # chaotic-v4 (SSH)
-        destination = &quot;10.0.5.140:22&quot;;
-        loopbackIPs = [ &quot;116.202.208.112&quot; ];
-        proto = &quot;tcp&quot;;
+        destination = "10.0.5.140:22";
+        loopbackIPs = [ "116.202.208.112" ];
+        proto = "tcp";
         sourcePort = 400;
       }
     ];
-    firewall.trustedInterfaces = [ &quot;br0&quot; ];
+    firewall.trustedInterfaces = [ "br0" ];
   };
 
   # OpenSSH on another port to keep Chaotic's main node working
@@ -382,24 +387,24 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
   # Raise limits to support many containers
   # (from LXC's recommendedSysctlSettings)
   boot.kernel.sysctl = {
-    &quot;fs.inotify.max_user_instances&quot; = 1048576;
-    &quot;fs.inotify.max_user_watches&quot; = 1048576;
-    &quot;kernel.dmesg_restrict&quot; = 1;
-    &quot;kernel.keys.maxkeys&quot; = 2000;
-    &quot;kernel.pid_max&quot; = 4194303;
-    &quot;net.ipv4.neigh.default.gc_thresh3&quot; = 8192;
-    &quot;net.ipv6.neigh.default.gc_thresh3&quot; = 8192;
+    "fs.inotify.max_user_instances" = 1048576;
+    "fs.inotify.max_user_watches" = 1048576;
+    "kernel.dmesg_restrict" = 1;
+    "kernel.keys.maxkeys" = 2000;
+    "kernel.pid_max" = 4194303;
+    "net.ipv4.neigh.default.gc_thresh3" = 8192;
+    "net.ipv6.neigh.default.gc_thresh3" = 8192;
   };
 
   # Improve nspawn container performance since we grant all capabilities anyway
   # https://github.com/systemd/systemd/issues/18370#issuecomment-768645418
-  environment.variables.SYSTEMD_SECCOMP = &quot;0&quot;;
+  environment.variables.SYSTEMD_SECCOMP = "0";
 
   # Custom tailscale configuration to advertise our bridge's subnet route
   systemd.services.tailscale-autoconnect.script = with pkgs; ''
     sleep 2
-    status=&quot;$(${tailscale}/bin/tailscale status -json | ${jq}/bin/jq -r .BackendState)&quot;
-    if [ $status = &quot;Running&quot; ]; then
+    status="$(${tailscale}/bin/tailscale status -json | ${jq}/bin/jq -r .BackendState)"
+    if [ $status = "Running" ]; then
       exit 0
     fi
     ${tailscale}/bin/tailscale up --authkey ${garuda-lib.secrets.tailscale.authkey} \
@@ -412,12 +417,12 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
   # Monitor a few services of the containers
   services = {
     netdata.configDir = {
-      &quot;go.d/postgres.conf&quot; = pkgs.writeText &quot;postgres.conf&quot; ''
+      "go.d/postgres.conf" = pkgs.writeText "postgres.conf" ''
         jobs:
           - name: postgres
             dsn: 'postgres://netdata:netdata@10.0.5.50:5432/'
       '';
-      &quot;go.d/squidlog.conf&quot; = pkgs.writeText &quot;squidlog.conf&quot; ''
+      "go.d/squidlog.conf" = pkgs.writeText "squidlog.conf" ''
         jobs:
           - name: squid
             path: /var/log/squid/access.log
@@ -425,7 +430,7 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
             csv_config:
               format: '- resp_time client_address result_code resp_size req_method - - hierarchy mime_type'
       '';
-      &quot;go.d/web_log.conf&quot; = pkgs.writeText &quot;web_log.conf&quot; ''
+      "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
         jobs:
           - name: nginx
             path: /var/log/nginx/access.log
@@ -433,7 +438,7 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
     };
     smartd = {
       enable = true;
-      extraOptions = [ &quot;-A /var/log/smartd/&quot; &quot;--interval=600&quot; ];
+      extraOptions = [ "-A /var/log/smartd/" "--interval=600" ];
     };
   };
 
@@ -441,28 +446,28 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
   system.activationScripts.netdata = ''chown 60:netdata -R /var/log/nginx'';
 
   # Backup configurations to Hetzner storage box
-  programs.ssh.macs = [ &quot;hmac-sha2-512&quot; ];
+  programs.ssh.macs = [ "hmac-sha2-512" ];
   services.borgbackup.jobs = {
     backupToHetzner = {
-      compression = &quot;auto,zstd&quot;;
+      compression = "auto,zstd";
       doInit = true;
       encryption = {
-        mode = &quot;repokey-blake2&quot;;
-        passCommand = &quot;cat /var/garuda/secrets/backup/repo_key&quot;;
+        mode = "repokey-blake2";
+        passCommand = "cat /var/garuda/secrets/backup/repo_key";
       };
       environment = {
-        BORG_RSH = &quot;ssh -i /var/garuda/secrets/backup/ssh_immortalis -p 23&quot;;
+        BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_immortalis -p 23";
       };
-      exclude = [ &quot;/data_1/dockercache&quot; &quot;/data_1/dockerdata&quot; ];
-      paths = [ &quot;/data_1&quot; ];
+      exclude = [ "/data_1/dockercache" "/data_1/dockerdata" ];
+      paths = [ "/data_1" ];
       prune.keep = {
-        within = &quot;1d&quot;;
+        within = "1d";
         daily = 3;
         weekly = 2;
         monthly = 2;
       };
-      repo = &quot;u342919@u342919.your-storagebox.de:./immortalis&quot;;
-      startAt = &quot;daily&quot;;
+      repo = "u342919@u342919.your-storagebox.de:./immortalis";
+      startAt = "daily";
     };
   };
 
@@ -486,38 +491,38 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
 
       # Invalid IP
       tcp_outgoing_address 10.254.254.254
-      tcp_outgoing_address 2a01:4f8:2200:30ac:9141:5338:3bbe:e6e4 tenth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:b22c:1fcb:0ed0:4093 ninth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:7436:3445:712f:915a eighth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:1030:64db:7964:daeb seventh
-      tcp_outgoing_address 2a01:4f8:2200:30ac:d98e:f81f:2d83:dd05 sixth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:a6a9:0a27:8387:9f03 fifth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:06eb:ea0c:a8bb:76bc fourth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:0b38:23e4:b6ad:89cd third
-      tcp_outgoing_address 2a01:4f8:2200:30ac:393b:4c26:9160:9afa half
-      tcp_outgoing_address 2a01:4f8:2200:30ac:1710:8521:9602:ab81
+      tcp_outgoing_address 2a01:4f8:2200:30ac:cf2d:7d73:eddf:8871 tenth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:5b38:dbde:e5a7:91b2 ninth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:fa33:0d97:0755:6833 eighth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:8f15:81f6:355c:d9d6 seventh
+      tcp_outgoing_address 2a01:4f8:2200:30ac:4436:e5e7:2236:0d77 sixth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:1ea4:1794:1963:b8da fifth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:5628:7e9f:d8ec:544d fourth
+      tcp_outgoing_address 2a01:4f8:2200:30ac:d830:ce99:e2b7:3e43 third
+      tcp_outgoing_address 2a01:4f8:2200:30ac:edc9:2d08:2b32:e532 half
+      tcp_outgoing_address 2a01:4f8:2200:30ac:a833:0fd7:29d4:5309
 
       # Invalid IP
       udp_outgoing_address 10.254.254.254
-      udp_outgoing_address 2a01:4f8:2200:30ac:9141:5338:3bbe:e6e4 tenth
-      udp_outgoing_address 2a01:4f8:2200:30ac:b22c:1fcb:0ed0:4093 ninth
-      udp_outgoing_address 2a01:4f8:2200:30ac:7436:3445:712f:915a eighth
-      udp_outgoing_address 2a01:4f8:2200:30ac:1030:64db:7964:daeb seventh
-      udp_outgoing_address 2a01:4f8:2200:30ac:d98e:f81f:2d83:dd05 sixth
-      udp_outgoing_address 2a01:4f8:2200:30ac:a6a9:0a27:8387:9f03 fifth
-      udp_outgoing_address 2a01:4f8:2200:30ac:06eb:ea0c:a8bb:76bc fourth
-      udp_outgoing_address 2a01:4f8:2200:30ac:0b38:23e4:b6ad:89cd third
-      udp_outgoing_address 2a01:4f8:2200:30ac:393b:4c26:9160:9afa half
-      udp_outgoing_address 2a01:4f8:2200:30ac:1710:8521:9602:ab81
+      udp_outgoing_address 2a01:4f8:2200:30ac:cf2d:7d73:eddf:8871 tenth
+      udp_outgoing_address 2a01:4f8:2200:30ac:5b38:dbde:e5a7:91b2 ninth
+      udp_outgoing_address 2a01:4f8:2200:30ac:fa33:0d97:0755:6833 eighth
+      udp_outgoing_address 2a01:4f8:2200:30ac:8f15:81f6:355c:d9d6 seventh
+      udp_outgoing_address 2a01:4f8:2200:30ac:4436:e5e7:2236:0d77 sixth
+      udp_outgoing_address 2a01:4f8:2200:30ac:1ea4:1794:1963:b8da fifth
+      udp_outgoing_address 2a01:4f8:2200:30ac:5628:7e9f:d8ec:544d fourth
+      udp_outgoing_address 2a01:4f8:2200:30ac:d830:ce99:e2b7:3e43 third
+      udp_outgoing_address 2a01:4f8:2200:30ac:edc9:2d08:2b32:e532 half
+      udp_outgoing_address 2a01:4f8:2200:30ac:a833:0fd7:29d4:5309
 
       # This does not rotate the logs, but asks squid to reopen the log file so that logrotate can rotate it
       logfile_rotate 0
     '';
-    proxyAddress = &quot;10.0.5.1&quot;;
+    proxyAddress = "10.0.5.1";
   };
   systemd.services.squid = {
     serviceConfig = {
-      Restart = &quot;always&quot;;
+      Restart = "always";
       RestartSec = 10;
       # Shut off all logging but level 1 errors as we get spamming a lot due to
       # not being able to use our invalid address 10.254.254.254
@@ -527,22 +532,22 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
     startLimitBurst = 6;
   };
   services.logrotate.settings.squid = {
-    files = &quot;/var/log/squid/*.log&quot;;
-    frequency = &quot;daily&quot;;
-    su = &quot;squid squid&quot;;
+    files = "/var/log/squid/*.log";
+    frequency = "daily";
+    su = "squid squid";
     rotate = 5;
     compress = true;
     delaycompress = true;
-    postrotate = &quot;${config.systemd.package}/bin/systemctl kill --signal=SIGUSR1 squid&quot;;
+    postrotate = "${config.systemd.package}/bin/systemctl kill --signal=SIGUSR1 squid";
   };
 
   # Can't really instantly remove this, need to find an alternative first
-  nixpkgs.config.permittedInsecurePackages = [ &quot;squid-6.6&quot; ];
+  nixpkgs.config.permittedInsecurePackages = [ "squid-6.8" ];
 
   # Adapt Nix to our core-count
   nix.settings.max-jobs = 8;
 
-  system.stateVersion = &quot;23.05&quot;;
+  system.stateVersion = "23.05";
 }
 </code></pre>
 

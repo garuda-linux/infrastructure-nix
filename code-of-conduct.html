@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="navy" dir="ltr">
+<html lang="en" class="mocha" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -29,7 +29,10 @@
         <link rel="stylesheet" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="./mdbook-admonish.css">
         <link rel="stylesheet" href="theme/css/custom.css">
+        <link rel="stylesheet" href="./theme/catppuccin.css">
+        <link rel="stylesheet" href="./theme/catppuccin-admonish.css">
 
     </head>
     <body class="sidebar-visible no-js">
@@ -37,7 +40,7 @@
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "navy";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "mocha" : "mocha";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -62,7 +65,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('navy')
+            html.classList.remove('mocha')
             html.classList.add(theme);
             var body = document.querySelector('body');
             body.classList.remove('no-js')
@@ -91,9 +94,7 @@
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Users</li><li class="chapter-item expanded "><a href="users.html"><strong aria-hidden="true">5.</strong> Users</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="users/current_users.html"><strong aria-hidden="true">5.1.</strong> Current users</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="hosts/immortalis.html"><strong aria-hidden="true">6.</strong> immortalis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="nixos-containers/chaotic-kde.html"><strong aria-hidden="true">6.1.</strong> chaotic-kde</a></li><li class="chapter-item expanded "><a href="nixos-containers/docker-proxied.html"><strong aria-hidden="true">6.2.</strong> docker-proxied</a></li><li class="chapter-item expanded "><a href="nixos-containers/docker.html"><strong aria-hidden="true">6.3.</strong> docker</a></li><li class="chapter-item expanded "><a href="nixos-containers/forum.html"><strong aria-hidden="true">6.4.</strong> forum</a></li><li class="chapter-item expanded "><a href="nixos-containers/github-runner.html"><strong aria-hidden="true">6.5.</strong> github-runner</a></li><li class="chapter-item expanded "><a href="nixos-containers/lemmy.html"><strong aria-hidden="true">6.6.</strong> lemmy</a></li><li class="chapter-item expanded "><a href="nixos-containers/mastodon.html"><strong aria-hidden="true">6.7.</strong> mastodon</a></li><li class="chapter-item expanded "><a href="nixos-containers/meshcentral.html"><strong aria-hidden="true">6.8.</strong> meshcentral</a></li><li class="chapter-item expanded "><a href="nixos-containers/postgres.html"><strong aria-hidden="true">6.9.</strong> postgres</a></li><li class="chapter-item expanded "><a href="nixos-containers/repo.html"><strong aria-hidden="true">6.10.</strong> repo</a></li><li class="chapter-item expanded "><a href="nixos-containers/temeraire.html"><strong aria-hidden="true">6.11.</strong> temeraire</a></li><li class="chapter-item expanded "><a href="nixos-containers/web-front.html"><strong aria-hidden="true">6.12.</strong> web-front</a></li></ol></li><li class="chapter-item expanded "><a href="hosts/garuda-mail.html"><strong aria-hidden="true">7.</strong> garuda-mail</a></li><li class="chapter-item expanded affix "><li class="part-title">Repository infrastructure</li><li class="chapter-item expanded "><a href="repositories/general.html"><strong aria-hidden="true">8.</strong> General information</a></li><li class="chapter-item expanded "><a href="repositories/pkgbuilds.html"><strong aria-hidden="true">9.</strong> PKGBUILDs</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><a href="services/discourse.html"><strong aria-hidden="true">10.</strong> Discourse</a></li><li class="chapter-item expanded "><a href="websites/documentation.html"><strong aria-hidden="true">11.</strong> Documentation</a></li><li class="chapter-item expanded "><a href="services/tailscale.html"><strong aria-hidden="true">12.</strong> Tailscale</a></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><a href="code-of-conduct.html" class="active"><strong aria-hidden="true">13.</strong> Code of Conduct</a></li><li class="chapter-item expanded "><a href="privacy-policy.html"><strong aria-hidden="true">14.</strong> Privacy policy</a></li><li class="chapter-item expanded "><a href="security.html"><strong aria-hidden="true">15.</strong> Security</a></li><li class="chapter-item expanded "><a href="credits.html"><strong aria-hidden="true">16.</strong> Credits</a></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
-                <div class="sidebar-resize-indicator"></div>
-            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -136,6 +137,10 @@
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="latte">Latte</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="frappe">Frappé</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="macchiato">Macchiato</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mocha">Mocha</button></li>
                         </ul>
                         <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
@@ -239,20 +244,20 @@
 <li><strong>Sexist, racist, homophobic, transphobic, ableist language or otherwise exclusionary language.</strong> This includes deliberately referring to someone by a gender that they do not identify with, and/or questioning the legitimacy of an individual's gender identity. If you're unsure if a word is derogatory, don't use it. This also includes repeated subtle and/or indirect discrimination.</li>
 <li><strong>Unwelcome sexual attention or behavior that contributes to a sexualized environment.</strong> This includes sexualized comments, jokes or imagery in interactions, communications or presentation materials, as well as inappropriate touching, groping, or sexual advances. Sponsors should not use sexualized images, activities, or other material. Meetup organizing staff and other volunteer organizers should not use sexualized clothing/uniforms/costumes, or otherwise create a sexualized environment.</li>
 <li><strong>Unwelcome physical contact.</strong> This includes touching a person without permission, including sensitive areas such as their hair, pregnant stomach, mobility device (wheelchair, scooter, etc) or tattoos. This also includes physically blocking or intimidating another person. Physical contact without affirmative consent is not acceptable. This includes sharing or distribution of sexualized images or text.</li>
-<li><strong>Violence or threats of violence.</strong> Violence and threats of violence are not acceptable - online or offline. This includes incitement of violence toward any individual, including encouraging a person to commit self-harm. This also includes posting or threatening to post other people's personally identifying information (&quot;doxxing&quot;) online.</li>
+<li><strong>Violence or threats of violence.</strong> Violence and threats of violence are not acceptable - online or offline. This includes incitement of violence toward any individual, including encouraging a person to commit self-harm. This also includes posting or threatening to post other people's personally identifying information ("doxxing") online.</li>
 <li><strong>Influencing or encouraging inappropriate behavior.</strong> If you influence or encourage another person to violate the Code of Conduct, you may face the same consequences as if you had violated the Code of Conduct.</li>
 </ul>
 <h3 id="safety-versus-comfort"><a class="header" href="#safety-versus-comfort">Safety versus Comfort</a></h3>
 <p>The Garuda Linux community prioritizes marginalized people's safety over privileged people's comfort. The following are not against the Code of Conduct.</p>
 <ul>
-<li>&quot;Reverse&quot;-isms, including &quot;reverse racism,&quot; &quot;reverse sexism,&quot; and &quot;cisphobia&quot;</li>
-<li>Reasonable communication of boundaries, such as &quot;leave me alone,&quot; &quot;go away,&quot; or &quot;I'm not discussing this with you.&quot;</li>
+<li>"Reverse"-isms, including "reverse racism," "reverse sexism," and "cisphobia"</li>
+<li>Reasonable communication of boundaries, such as "leave me alone," "go away," or "I'm not discussing this with you."</li>
 <li>Criticizing racist, sexist, cissexist, or otherwise oppressive behavior or assumptions</li>
-<li>Communicating boundaries or criticizing oppressive behavior in a &quot;tone&quot; you don't find congenial</li>
+<li>Communicating boundaries or criticizing oppressive behavior in a "tone" you don't find congenial</li>
 </ul>
 <p>If you have questions about the above statements, please read <a href="https://wiki.gnome.org/Foundation/CodeOfConduct/SupportingDiversity">GNOME Foundation's document on Supporting Diversity</a>.</p>
 <p>Outreach and diversity efforts directed at under-represented groups are permitted under the code of conduct. For example, a social event for women would not be classified as being outside the Code of Conduct under this provision.</p>
-<p>Basic expectations for conduct are not covered by the &quot;reverse-ism clause&quot; and would be enforced irrespective of the demographics of those involved. For example, racial discrimination will not be tolerated, irrespective of the race of those involved. Nor would unwanted sexual attention be tolerated, whatever someone's gender or sexual orientation. Members of our community have the right to expect that participants in the project will uphold these standards.</p>
+<p>Basic expectations for conduct are not covered by the "reverse-ism clause" and would be enforced irrespective of the demographics of those involved. For example, racial discrimination will not be tolerated, irrespective of the race of those involved. Nor would unwanted sexual attention be tolerated, whatever someone's gender or sexual orientation. Members of our community have the right to expect that participants in the project will uphold these standards.</p>
 <p>If a participant engages in behavior that violates this code of conduct, the Garuda Linux's staff may take any action they deem appropriate. In cases involving the staff or founding members the immediate action is expelishment.</p>
 <h2 id="procedure-for-handling-incidents"><a class="header" href="#procedure-for-handling-incidents">Procedure for Handling Incidents</a></h2>
 <p>You can make a report by emailing <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
@@ -343,20 +348,20 @@ questioning the legitimacy of an individual's gender identity.
 If you're unsure if a word is derogatory, don't use it. This also includes repeated subtle and/or indirect discrimination.</li>
 <li><strong>Unwelcome sexual attention or behavior that contributes to a sexualized environment.</strong> This includes sexualized comments, jokes or imagery in interactions, communications or presentation materials, as well as inappropriate touching, groping, or sexual advances. Sponsors should not use sexualized images, activities, or other material. Meetup organizing staff and other volunteer organizers should not use sexualized clothing/uniforms/costumes, or otherwise create a sexualized environment.</li>
 <li><strong>Unwelcome physical contact.</strong> This includes touching a person without permission, including sensitive areas such as their hair, pregnant stomach, mobility device (wheelchair, scooter, etc) or tattoos. This also includes physically blocking or intimidating another person. Physical contact without affirmative consent is not acceptable. This includes sharing or distribution of sexualized images or text.</li>
-<li><strong>Violence or threats of violence.</strong> Violence and threats of violence are not acceptable - online or offline. This includes incitement of violence toward any individual, including encouraging a person to commit self-harm. This also includes posting or threatening to post other people's personally identifying information (&quot;doxxing&quot;) online.</li>
+<li><strong>Violence or threats of violence.</strong> Violence and threats of violence are not acceptable - online or offline. This includes incitement of violence toward any individual, including encouraging a person to commit self-harm. This also includes posting or threatening to post other people's personally identifying information ("doxxing") online.</li>
 <li><strong>Influencing or encouraging inappropriate behavior.</strong> If you influence or encourage another person to violate the Code of Conduct, you may face the same consequences as if you had violated the Code of Conduct.</li>
 </ul>
 <h3 id="safety-versus-comfort-1"><a class="header" href="#safety-versus-comfort-1">Safety versus Comfort</a></h3>
 <p>The Garuda Linux community prioritizes marginalized people's safety over privileged people's comfort. The following are not against the Code of Conduct.</p>
 <ul>
-<li>&quot;Reverse&quot;-isms, including &quot;reverse racism,&quot; &quot;reverse sexism,&quot; and &quot;cisphobia&quot;</li>
-<li>Reasonable communication of boundaries, such as &quot;leave me alone,&quot; &quot;go away,&quot; or &quot;I'm not discussing this with you.&quot;</li>
+<li>"Reverse"-isms, including "reverse racism," "reverse sexism," and "cisphobia"</li>
+<li>Reasonable communication of boundaries, such as "leave me alone," "go away," or "I'm not discussing this with you."</li>
 <li>Criticizing racist, sexist, cissexist, or otherwise oppressive behavior or assumptions</li>
-<li>Communicating boundaries or criticizing oppressive behavior in a &quot;tone&quot; you don't find congenial</li>
+<li>Communicating boundaries or criticizing oppressive behavior in a "tone" you don't find congenial</li>
 </ul>
 <p>If you have questions about the above statements, please read <a href="https://wiki.gnome.org/Foundation/CodeOfConduct/SupportingDiversity">GNOME Foundation's document on Supporting Diversity</a>.</p>
 <p>Outreach and diversity efforts directed at under-represented groups are permitted under the code of conduct. For example, a social event for women would not be classified as being outside the Code of Conduct under this provision.</p>
-<p>Basic expectations for conduct are not covered by the &quot;reverse-ism clause&quot; and would be enforced irrespective of the demographics of those involved. For example, racial discrimination will not be tolerated, irrespective of the race of those involved. Nor would unwanted sexual attention be tolerated, whatever someone's gender or sexual orientation. Members of our community have the right to expect that participants in the project will uphold these standards.</p>
+<p>Basic expectations for conduct are not covered by the "reverse-ism clause" and would be enforced irrespective of the demographics of those involved. For example, racial discrimination will not be tolerated, irrespective of the race of those involved. Nor would unwanted sexual attention be tolerated, whatever someone's gender or sexual orientation. Members of our community have the right to expect that participants in the project will uphold these standards.</p>
 <p>If a participant engages in behavior that violates this code of conduct, the Garuda Linux's staff may take any action they deem appropriate. In cases involving the staff or founding members the immediate action is expelishment.</p>
 <h2 id="procedure-for-handling-incidents-1"><a class="header" href="#procedure-for-handling-incidents-1">Procedure for Handling Incidents</a></h2>
 <p>You can make a report by emailing <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
