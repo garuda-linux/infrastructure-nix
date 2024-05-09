@@ -181,6 +181,9 @@
                   { package = "rsync"; }
                   { package = "commitizen"; }
                   { package = "manix"; }
+                  { package = "mdbook"; }
+                  { package = "mdbook-admonish"; }
+                  { package = "mdbook-emojicodes"; }
                   { package = "nodePackages.prettier"; }
                   { package = "nixos-install-tools"; }
                   { package = "pre-commit"; }

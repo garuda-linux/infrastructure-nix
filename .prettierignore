@@ -1,4 +1,5 @@
 .github/**
-flake.lock
 docker-compose/**
+docs/theme/index.hbs
+flake.lock
 secrets/**
