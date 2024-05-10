@@ -1,5 +1,4 @@
 ---
-version: "3.9"
 services:
   chaotic-builder:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest

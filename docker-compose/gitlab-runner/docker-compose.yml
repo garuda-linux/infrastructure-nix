@@ -1,5 +1,4 @@
 ---
-version: "3.9"
 services:
   gitlab-runner-garuda:
     image: gitlab/gitlab-runner:alpine
