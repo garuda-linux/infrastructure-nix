@@ -452,6 +452,20 @@ rec {
           ${garuda-lib.nginxReverseProxySettings}
         '';
       };
+      "reddit.garudalinux.org" = allowOnlyCloudflared {
+        addSSL = true;
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.110:8082";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+      };
     };
   };
 
