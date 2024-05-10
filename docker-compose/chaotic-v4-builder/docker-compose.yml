@@ -1,0 +1,18 @@
+---
+services:
+  chaotic-builder:
+    image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
+    container_name: chaotic-builder
+    command: builder
+    environment:
+      DATABASE_HOST: builds.garudalinux.org
+      DATABASE_PORT: 400
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
+      REDIS_SSH_HOST: builds.garudalinux.org
+      REDIS_SSH_PORT: 400
+      REDIS_SSH_USER: package-deployer
+      SHARED_PATH: /var/garuda/docker-compose-runner/chaotic-v4/shared
+    volumes:
+      - ./shared:/shared
+      - ./sshkey:/app/sshkey
+      - /var/run/docker.sock:/var/run/docker.sock
