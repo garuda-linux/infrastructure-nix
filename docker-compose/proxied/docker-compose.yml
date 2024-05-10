@@ -76,74 +76,12 @@ services:
     ports: [3002:3000]
     restart: always
 
-  # Piped
-  piped_backend:
-    image: 1337kavin/piped:latest # It tends do be important to stay current
-    container_name: piped_backend
-    depends_on: [piped_postgres]
-    volumes: [./piped/config.properties:/app/config.properties:ro]
-    environment:
-      HTTP_PROXY: http://10.0.5.1:3128
-      HTTPS_PROXY: http://10.0.5.1:3128
-      NO_PROXY: garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com
-    restart: always
-  piped_frontend:
-    image: 1337kavin/piped-frontend:latest
-    container_name: piped_frontend
-    entrypoint:
-      ash -c 'sed -i s/pipedapi.kavin.rocks/piped-api.garudalinux.org/g
-      /usr/share/nginx/html/assets/* && /docker-entrypoint.sh && nginx -g "daemon
-      off;"'
-    environment:
-      HTTP_PROXY: http://10.0.5.1:3128
-      HTTPS_PROXY: http://10.0.5.1:3128
-      NO_PROXY: garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com
-    depends_on: [piped_backend]
-    restart: always
-  piped_nginx:
-    image: nginx:1.25.4-alpine
-    container_name: piped_nginx
-    depends_on: [piped_backend, piped_frontend, piped_proxy]
-    volumes:
-      - ./piped/config/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./piped/config/pipedapi.conf:/etc/nginx/conf.d/pipedapi.conf:ro
-      - ./piped/config/pipedfrontend.conf:/etc/nginx/conf.d/pipedfrontend.conf:ro
-      - ./piped/config/pipedproxy.conf:/etc/nginx/conf.d/pipedproxy.conf:ro
-      - ./piped/config/ytproxy.conf:/etc/nginx/snippets/ytproxy.conf:ro
-      - piped_proxy:/var/run/ytproxy
-    ports: [8088:80]
-    environment:
-      HTTP_PROXY: http://10.0.5.1:3128
-      HTTPS_PROXY: http://10.0.5.1:3128
-      NO_PROXY: garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com
-    restart: always
-  piped_postgres:
-    image: postgres:13.14-alpine
-    container_name: piped_postgres
-    volumes: [./piped/db:/var/lib/postgresql/data]
-    environment:
-      POSTGRES_DB: piped
-      POSTGRES_PASSWORD: ${INVIDIOUS_DB_PASSWORD:?err}
-      POSTGRES_USER: piped
-    restart: always
-  piped_proxy:
-    image: 1337kavin/piped-proxy:latest # It tends do be important to stay current
-    container_name: piped_proxy
-    environment:
-      HTTP_PROXY: http://10.0.5.1:3128
-      HTTPS_PROXY: http://10.0.5.1:3128
-      NO_PROXY: garudalinux.org,piped-api.garudalinux.org,piped.garudalinux.org,piped-proxy.garudalinux.org,lbry.com,api.lbry.com
-      UDS: 1
-    volumes: [piped_proxy:/app/socket]
-    restart: always
-
   # Automated container updates
   watchtower:
     image: containrrr/watchtower:1.7.1
     container_name: watchtower
     command:
-      --cleanup piped_backend piped_frontend piped_proxy invidious searx lingva
-      whoogle librey
+      --cleanup searx lingva whoogle librey
     volumes: [/var/run/docker.sock:/var/run/docker.sock]
     restart: always
 volumes:

@@ -423,34 +423,6 @@ rec {
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "piped.garudalinux.org" = allowOnlyCloudflared {
-        addSSL = true;
-        extraConfig = ''
-          location / {
-            ${garuda-lib.nginxReverseProxySettings}
-            proxy_pass http://10.0.5.110:8088;
-          }
-        '';
-        http3 = true;
-        quic = true;
-        serverAliases = [ "piped-api.garudalinux.org" ];
-        useACMEHost = "garudalinux.org";
-      };
-      # piped-proxy without cloudflare, this is where the actual video is hosted
-      "piped-proxy.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          location / {
-            ${garuda-lib.setRealIpFromConfig}
-            ${garuda-lib.nginxReverseProxySettings}
-            proxy_buffering off;
-            proxy_pass http://10.0.5.110:8088;
-          }
-        '';
-        http3 = true;
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
       "lemmy.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
