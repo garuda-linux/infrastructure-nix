@@ -452,21 +452,6 @@ rec {
           ${garuda-lib.nginxReverseProxySettings}
         '';
       };
-      "websurfx.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.100:8086";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
     };
   };
 

@@ -203,18 +203,6 @@ services:
       SECONDS_AFTER_COMMUNITY_ADD: 17
     restart: unless-stopped
 
-  # Websurfx search engine
-  websurfx:
-    image: neonmmd/websurfx:latest
-    container_name: websurfx
-    ports: [8086:8080]
-    depends_on: [websurfx_redis]
-    links: [websurfx_redis]
-    volumes: [./websurfx/:/etc/xdg/websurfx/]
-  websurfx_redis:
-    container_name: websurfx_redis
-    image: redis:latest
-
   # Automated container updates
   watchtower:
     image: containrrr/watchtower:1.7.1
