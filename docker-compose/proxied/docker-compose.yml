@@ -18,7 +18,13 @@ services:
       WHOOGLE_CONFIG_LANGUAGE: lang_en
       WHOOGLE_CONFIG_NEW_TAB: 1
       WHOOGLE_CONFIG_SEARCH_LANGUAGE: lang_en
-      WHOOGLE_CONFIG_STYLE: :root{--whoogle-logo:#c4a7e7;--whoogle-page-bg:#faf4ed;--whoogle-element-bg:#f2e9e1;--whoogle-text:#575279;--whoogle-contrast-text:#1f1d2e;--whoogle-secondary-text:#797593;--whoogle-result-bg:#faf4ed;--whoogle-result-title:#d7827e;--whoogle-result-url:#286983;--whoogle-result-visited:#907aa9;--whoogle-dark-logo:#c4a7e7;--whoogle-dark-page-bg:#191724;--whoogle-dark-element-bg:#1f1d2e;--whoogle-dark-text:#e0def4;--whoogle-dark-contrast-text:#e0def4;--whoogle-dark-secondary-text:#908caa;--whoogle-dark-result-bg:#393552;--whoogle-dark-result-title:#9ccfd8;--whoogle-dark-result-url:#3e8fb0;--whoogle-dark-result-visited:#c4a7e7}#whoogle-w{fill:#eb6f92}#whoogle-h{fill:#f6c177}#whoogle-o-1{fill:#ebbcba}#whoogle-o-2{fill:#31748f}#whoogle-g{fill:#9ccfd8}#whoogle-l{fill:#c4a7e7}#whoogle-e{fill:#908caa}
+      WHOOGLE_CONFIG_STYLE: |
+        :root {--whoogle-logo: #4c4f69;--whoogle-page-bg: #eff1f5;--whoogle-element-bg: #bcc0cc;--whoogle-text: #4c4f69;--whoogle-contrast-text: #5c5f77;--whoogle-secondary-text: #6c6f85;
+        --whoogle-result-bg: #ccd0da;--whoogle-result-title: #7287fd;--whoogle-result-url: #dc8a78;--whoogle-result-visited: #e64553;--whoogle-dark-logo: #cdd6f4;
+        --whoogle-dark-page-bg: #1e1e2e;--whoogle-dark-element-bg: #45475a;--whoogle-dark-text: #cdd6f4;--whoogle-dark-contrast-text: #bac2de;--whoogle-dark-secondary-text: #a6adc8;
+        --whoogle-dark-result-bg: #313244;--whoogle-dark-result-title: #b4befe;--whoogle-dark-result-url: #f5e0dc;--whoogle-dark-result-visited: #eba0ac;}
+        #whoogle-w {fill: #89b4fa;} #whoogle-h {fill: #f38ba8;}#whoogle-o-1 {fill: #f9e2af;}#whoogle-o-2 {fill: #89b4fa;}#whoogle-g {fill: #a6e3a1;}#whoogle-l {fill: #f38ba8;}
+        #whoogle-e {fill: #f9e2af;}
       WHOOGLE_CONFIG_THEME: dark
       WHOOGLE_CONFIG_URL: https://search.garudalinux.org
       WHOOGLE_CONFIG_VIEW_IMAGE: 1
