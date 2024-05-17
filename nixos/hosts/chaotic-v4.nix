@@ -61,5 +61,23 @@
   # Enable the user accounts of chaotic maintainers
   garuda-lib.chaoticUsers = true;
 
+  # Workaround massive storage leaks due to docker-export folders
+  # TODO: find out whats going on here
+  systemd.services.docker-cleanup = {
+    description = "Cleanup docker-export folders periodically";
+    serviceConfig = {
+      ExecStart = pkgs.writeShellScript "execstart" ''
+        set -e
+        find /var/lib/docker/tmp  -maxdepth 1 -mmin +30 -exec rm -rf {} \;
+      '';
+    };
+    wantedBy = [ "multi-user.target" ];
+  };
+  systemd.timers.docker-cleanup = {
+    description = "Cleanup docker-export folders periodically";
+    timerConfig.OnCalendar = [ "*:0/30" ];
+    wantedBy = [ "timers.target" ];
+  };
+
   system.stateVersion = "23.05";
 }
