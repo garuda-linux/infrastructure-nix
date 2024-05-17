@@ -1,35 +1,5 @@
 ---
 services:
-  # Garuda Cloud
-  nextcloud_app:
-    image: linuxserver/nextcloud:27.0.1 # locked, newer versions can't be pulled!
-    container_name: nextcloud
-    depends_on: [nextcloud_db, nextcloud_redis]
-    environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: Europe/Berlin
-    ports: [443:443]
-    volumes: [./nextcloud/config:/config, ./nextcloud/data:/data]
-    restart: always
-  nextcloud_db:
-    image: mariadb:11.3.2
-    container_name: nextcloud_db
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-    environment:
-      MYSQL_ROOT_PASSWORD: ${NC_ROOT_PASSWORD:-?err}
-      MYSQL_PASSWORD: ${NC_PASSWORD:-?err}
-      MYSQL_DATABASE: ${NC_DATABASE:-?err}
-      MYSQL_USER: ${NC_USER:-?err}
-    volumes: [./nextcloud/db:/var/lib/mysql]
-    restart: always
-  nextcloud_redis:
-    image: redis:7.2.4
-    container_name: nextcloud_redis
-    environment:
-      ALLOW_EMPTY_PASSWORD: true
-    restart: always
-
   # Nextcloud AIO (self-managed containers)
   nextcloud-aio-mastercontainer:
     image: nextcloud/all-in-one:latest
