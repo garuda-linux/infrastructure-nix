@@ -1661,6 +1661,7 @@ Access needs to happen by running <code>nixos-container root-login</code> on <co
 <pre><code class="language-nix">{ garuda-lib
 , pkgs
 , sources
+, config
 , ...
 }: {
   imports = sources.defaultModules ++ [ ../modules ];
@@ -1744,12 +1745,12 @@ Access needs to happen by running <code>nixos-container root-login</code> on <co
     enable = true;
     initialEmail = "team@garudalinux.org";
     initialPasswordFile = garuda-lib.secrets.pgadmin_password;
-    emailServer.enable = true;
-    emailServer.passwordFile = garuda-lib.secrets.pgadmin_password;
-    emailServer.sender = "noreply@garudalinux.org";
-    emailServer.username = "aaap";
     openFirewall = true;
   };
+
+  environment.systemPackages = [
+    config.services.postgresql.package
+  ];
 
   # Open up ports for Postgres
   networking.firewall.allowedTCPPorts = [ 5432 ];
@@ -2527,6 +2528,21 @@ rec {
           ${garuda-lib.nginxReverseProxySettings}
         '';
       };
+      "pgadmin.garudalinux.net" = allowOnlyCloudflared {
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        locations = {
+          "/" = {
+            extraConfig = ''
+              proxy_pass http://10.0.5.50:5050;
+              proxy_hide_header Cache-Control;
+              proxy_hide_header Expires;
+              add_header Cache-Control 'no-store';
+            '';
+          };
+        };
+      };
     };
   };
 
@@ -2534,7 +2550,6 @@ rec {
     enable = true;
     ingress = {
       "matrixadmin.garudalinux.net" = "http://10.0.5.100:8085";
-      "pgadmin.garudalinux.net" = "http://10.0.5.50:5050";
     } // (generateCloudflaredIngress services.nginx.virtualHosts);
     tunnel-credentials =
       garuda-lib.secrets.cloudflare.cloudflared.esxi-web.cred;

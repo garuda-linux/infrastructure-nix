@@ -196,6 +196,7 @@
 <pre><code class="language-nix">{ garuda-lib
 , pkgs
 , sources
+, config
 , ...
 }: {
   imports = sources.defaultModules ++ [ ../modules ];
@@ -279,12 +280,12 @@
     enable = true;
     initialEmail = "team@garudalinux.org";
     initialPasswordFile = garuda-lib.secrets.pgadmin_password;
-    emailServer.enable = true;
-    emailServer.passwordFile = garuda-lib.secrets.pgadmin_password;
-    emailServer.sender = "noreply@garudalinux.org";
-    emailServer.username = "aaap";
     openFirewall = true;
   };
+
+  environment.systemPackages = [
+    config.services.postgresql.package
+  ];
 
   # Open up ports for Postgres
   networking.firewall.allowedTCPPorts = [ 5432 ];

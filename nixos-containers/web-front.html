@@ -636,6 +636,21 @@ rec {
           ${garuda-lib.nginxReverseProxySettings}
         '';
       };
+      "pgadmin.garudalinux.net" = allowOnlyCloudflared {
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        locations = {
+          "/" = {
+            extraConfig = ''
+              proxy_pass http://10.0.5.50:5050;
+              proxy_hide_header Cache-Control;
+              proxy_hide_header Expires;
+              add_header Cache-Control 'no-store';
+            '';
+          };
+        };
+      };
     };
   };
 
@@ -643,7 +658,6 @@ rec {
     enable = true;
     ingress = {
       "matrixadmin.garudalinux.net" = "http://10.0.5.100:8085";
-      "pgadmin.garudalinux.net" = "http://10.0.5.50:5050";
     } // (generateCloudflaredIngress services.nginx.virtualHosts);
     tunnel-credentials =
       garuda-lib.secrets.cloudflare.cloudflared.esxi-web.cred;
