@@ -1,6 +1,7 @@
 { garuda-lib
 , pkgs
 , sources
+, config
 , ...
 }: {
   imports = sources.defaultModules ++ [ ../modules ];
@@ -13,7 +14,6 @@
       "matrix-discord"
       "matrix-irc"
       "matrix-telegram"
-      "meshcentral"
       "mastodon"
       "synapse"
       "wikijs"
@@ -29,10 +29,6 @@
       }
       {
         name = "matrix-bridges";
-      }
-      {
-        name = "meshcentral";
-        ensureDBOwnership = true;
       }
       {
         name = "synapse";
@@ -84,6 +80,17 @@
     timerConfig.OnCalendar = [ "daily" ];
     wantedBy = [ "timers.target" ];
   };
+
+  services.pgadmin = {
+    enable = true;
+    initialEmail = "team@garudalinux.org";
+    initialPasswordFile = garuda-lib.secrets.pgadmin_password;
+    openFirewall = true;
+  };
+
+  environment.systemPackages = [
+    config.services.postgresql.package
+  ];
 
   # Open up ports for Postgres
   networking.firewall.allowedTCPPorts = [ 5432 ];

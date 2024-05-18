@@ -20,10 +20,6 @@ let
 
   specialArgs = {
     inherit inputs;
-    meshagent = {
-      aarch64 = inputs.meshagent_aarch64;
-      x86_64 = inputs.meshagent_x86_64;
-    };
     sources = {
       buildiso = inputs.src-buildiso;
       chaotic-mirror = inputs.src-chaotic-mirror;

@@ -381,24 +381,6 @@ rec {
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "mesh.garudalinux.net" = allowOnlyCloudflared {
-        locations = {
-          "/" = {
-            extraConfig = ''
-              proxy_http_version 1.1;
-              proxy_send_timeout 330s;
-              proxy_read_timeout 330s;
-
-              set $delimeter "";
-              if ($is_args) {
-                set $delimeter "&";
-              }
-              set $args "$args''${delimeter}user=cfaccess&pass=${garuda-lib.secrets.meshcentral.cfaccess-user}";
-              proxy_pass http://10.0.5.60:22260;
-            '';
-          };
-        };
-      };
       "matrix.garudalinux.org" = {
         addSSL = true;
         http3 = true;
@@ -466,10 +448,24 @@ rec {
           ${garuda-lib.nginxReverseProxySettings}
         '';
       };
+      "pgadmin.garudalinux.net" = allowOnlyCloudflared {
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        locations = {
+          "/" = {
+            extraConfig = ''
+              proxy_pass http://10.0.5.50:5050;
+              proxy_hide_header Cache-Control;
+              proxy_hide_header Expires;
+              add_header Cache-Control 'no-store';
+            '';
+          };
+        };
+      };
     };
   };
 
-  # Cloudflared access to Meshcentral webinterface
   services.garuda-cloudflared = {
     enable = true;
     ingress = {

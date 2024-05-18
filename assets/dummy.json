@@ -25,9 +25,6 @@
       "chaotic-aur": "abcd-efgh"
     }
   },
-  "meshcentral": {
-    "cfaccess-user": "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-  },
   "ssh": {
     "team": {
       "public": "ssh-ed25519 ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 team@garudalinux.org"

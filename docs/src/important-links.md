@@ -29,7 +29,6 @@ This is a collection of important links when working with the infrastructure:
 - [Freshstatus](https://garudalinux.freshstatus.io/admin/incidents/public)
 - [Hetzner Robot](https://accounts.hetzner.com/)
 - [Matrix Admin](https://matrixadmin.garudalinux.net)
-- [Meshcentral](https://mesh.garudalinux.net)
 - [Netdata](https://app.netdata.cloud)
 - [Renovate Dashboard](https://developer.mend.io/github/garuda-linux)
 - [Tailscale](https://login.tailscale.com/)

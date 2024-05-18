@@ -51,7 +51,7 @@ in
       unifiedUID = false;
       secrets = recursiveUpdate secrets {
         cachix = "/var/garuda/secrets/cachix";
-        meshagent_msh = "/var/garuda/secrets/meshagent.msh";
+        pgadmin_password = "/var/garuda/secrets/pgadmin_password";
         syncthing = {
           esxi-build = {
             cert = "/var/garuda/secrets/syncthing/esxi-build-cert.pem";

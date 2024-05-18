@@ -233,19 +233,6 @@ in
         };
         ipAddress = "10.0.5.80";
       };
-      meshcentral = {
-        config = import ../meshcentral.nix;
-        extraOptions = {
-          bindMounts = {
-            "meshcentral" = {
-              hostPath = "/data_1/containers/meshcentral/";
-              isReadOnly = false;
-              mountPoint = "/opt/meshcentral";
-            };
-          };
-        };
-        ipAddress = "10.0.5.60";
-      };
       postgres = {
         config = import ../postgres.nix;
         extraOptions = {
@@ -375,14 +362,12 @@ in
     "container@docker-proxied".requires = [ "container@postgres.service" ];
     "container@lemmy".requires = [ "container@postgres.service" ];
     "container@mastodon".requires = [ "container@postgres.service" ];
-    "container@meshcentral".requires = [ "container@postgres.service" ];
     "container@postgres" = {
       before = [
         "container@docker-proxied.service"
         "container@docker.service"
         "container@lemmy.service"
         "container@mastodon.service"
-        "container@meshcentral.service"
       ];
     };
   };

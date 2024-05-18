@@ -22,7 +22,6 @@
   - [github-runner](./nixos-containers/github-runner.md)
   - [lemmy](./nixos-containers/lemmy.md)
   - [mastodon](./nixos-containers/mastodon.md)
-  - [meshcentral](./nixos-containers/meshcentral.md)
   - [postgres](./nixos-containers/postgres.md)
   - [repo](./nixos-containers/repo.md)
   - [temeraire](./nixos-containers/temeraire.md)

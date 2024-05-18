@@ -20,7 +20,6 @@ github-runner  container systemd-nspawn nixos 24.05   10.0.5.130
 iso-runner     container systemd-nspawn nixos 24.05   10.0.5.40
 lemmy          container systemd-nspawn nixos 24.05   10.0.5.120
 mastodon       container systemd-nspawn nixos 24.05   10.0.5.80
-meshcentral    container systemd-nspawn nixos 24.05   10.0.5.60
 postgres       container systemd-nspawn nixos 24.05   10.0.5.50
 temeraire      container systemd-nspawn nixos 24.05   10.0.5.20
 web-front      container systemd-nspawn nixos 24.05   10.0.5.10
@@ -32,7 +31,7 @@ We are seeing:
 - 1 reverse proxy serving all the websites and services (`web-front`)
 - 2 Docker dedicated nspawn containers (`docker` & `docker-proxied`)
 - 4 Chaotic-AUR builders (`chaotic-kde`, `chaotic-v4`, `github-runner` & `temeraire`)
-- 5 app dedicated containers (`forum`, `lemmy`, `mastodon`, `meshcentral` & `postgres`)
+- 5 app dedicated containers (`forum`, `lemmy`, `mastodon` & `postgres`)
 
 ### Connecting to the server
 

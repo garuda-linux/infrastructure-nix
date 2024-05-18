@@ -2,7 +2,6 @@
 , garuda-lib
 , inputs
 , lib
-, meshagent
 , pkgs
 , ...
 }:
@@ -98,15 +97,6 @@
 
   # Services 
   services = {
-    garuda-meshagent = {
-      agentBinary =
-        if pkgs.hostPlatform.system == "aarch64-linux" then
-          meshagent.aarch64
-        else
-          meshagent.x86_64;
-      enable = lib.mkDefault true;
-      mshFile = garuda-lib.secrets.meshagent_msh;
-    };
     garuda-monitoring.enable = lib.mkIf (!garuda-lib.minimalContainer) true;
     garuda-tailscale.enable = lib.mkIf (!garuda-lib.minimalContainer) true;
     locate = {

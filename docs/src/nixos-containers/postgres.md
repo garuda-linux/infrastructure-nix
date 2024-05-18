@@ -8,7 +8,6 @@ This container houses our Postgres database. Multiple servces access it:
 - Mastodon
 - Matrix
 - Matrix bridges
-- MeshCentral
 - WikiJs
 
 ## Nix expression
