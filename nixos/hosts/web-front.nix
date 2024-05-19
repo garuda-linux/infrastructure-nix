@@ -449,13 +449,14 @@ rec {
         '';
       };
       "pgadmin.garudalinux.net" = allowOnlyCloudflared {
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
         locations = {
           "/" = {
             extraConfig = ''
+              ${garuda-lib.nginxReverseProxySettings}
+
               proxy_pass http://10.0.5.50:5050;
+              proxy_set_header X-Forwarded-User "team@garudalinux.org";
+
               proxy_hide_header Cache-Control;
               proxy_hide_header Expires;
               add_header Cache-Control 'no-store';

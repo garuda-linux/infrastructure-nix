@@ -255,6 +255,7 @@ in
               protocol = "tcp";
             }
           ];
+          ephemeral = lib.mkForce true;
         };
         ipAddress = "10.0.5.50";
       };
