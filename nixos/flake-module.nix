@@ -26,6 +26,7 @@ let
       chaotic-toolbox = inputs.src-chaotic-toolbox;
       chaotic-portable-builder = inputs.src-chaotic-portable-builder;
       cloudflare-ipv4 = inputs.src-cloudflare-ipv4;
+      cloudflare-authenticated_origin_pull_ca = inputs.src-cloudflare-authenticated_origin_pull_ca;
       garuda-website = inputs.src-garuda-website;
       inherit defaultModules;
       inherit nixpkgs;

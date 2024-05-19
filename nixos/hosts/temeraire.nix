@@ -38,8 +38,7 @@
     enable = true;
     openDefaultPorts = true;
     configDir = config.services.syncthing.dataDir;
-    inherit (garuda-lib.secrets.syncthing.esxi-build) cert;
-    inherit (garuda-lib.secrets.syncthing.esxi-build) key;
+    inherit (garuda-lib.secrets.syncthing.esxi-build) cert key;
     overrideFolders = false;
     overrideDevices = false;
     user = "root";
@@ -48,16 +47,10 @@
       gui = {
         apikey = "garudalinux";
         insecureSkipHostcheck = true;
+        inherit (garuda-lib.secrets.syncthing.esxi-build.credentials) user password;
       };
     };
-  };
-
-  # Cloudflared access to Syncthing webinterface
-  services.garuda-cloudflared = {
-    enable = true;
-    ingress = { "syncthing-build.garudalinux.net" = "http://localhost:8384"; };
-    tunnel-credentials =
-      garuda-lib.secrets.cloudflare.cloudflared.esxi-build.cred;
+    guiAddress = "10.0.5.20:8384";
   };
 
   # Allow systemd-nspawn to create subcgroups (for Chaotic-AUR builders)
@@ -225,7 +218,7 @@
   };
 
   # Explicitly open our firewall ports - HTTPS & rsyncd
-  networking.firewall.allowedTCPPorts = [ config.services.rsyncd.port ];
+  networking.firewall.allowedTCPPorts = [ config.services.rsyncd.port 8384 ];
 
   # Our rsyncd server
   services.rsyncd = {

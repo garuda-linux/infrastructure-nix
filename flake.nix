@@ -80,8 +80,15 @@
       repo = "website%2Fgaruda";
       flake = false;
     };
-    src-cloudflare-ipv4.url = "https://www.cloudflare.com/ips-v4";
-    src-cloudflare-ipv4.flake = false;
+
+    src-cloudflare-ipv4 = {
+      url = "https://www.cloudflare.com/ips-v4";
+      flake = false;
+    };
+    src-cloudflare-authenticated_origin_pull_ca = {
+      url = "https://developers.cloudflare.com/ssl/static/authenticated_origin_pull_ca.pem";
+      flake = false;
+    };
 
     # Patches for nixos, automatically applied if they follow this format
     nixos-patch-nat.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/277016.patch";

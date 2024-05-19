@@ -11,13 +11,15 @@ let
       "Servers": {
         "1": {
           "Name": "Main",
-          "Group": "Servers",
+          "Group": "Garuda",
           "Username": "pgadmin",
           "Host": "/var/run/postgresql",
           "Port": 5432,
           "SSLMode": "prefer",
           "MaintenanceDB": "postgres",
-          "PassFile": "/dev/null"
+          "PassFile": "/dev/null",
+          "Shared": true,
+          "SharedUsername": "pgadmin"
         }
       }
     }

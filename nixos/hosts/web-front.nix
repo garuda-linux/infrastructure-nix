@@ -18,6 +18,28 @@ let
       '';
     }
   );
+  # This is technically unecessary, but safety!
+  # This refers to the Cloudflare service "Cloudflare Access" to allow only specified users to access the service
+  allowOnlyCloudflareZerotrust = base_config:
+    let
+      config = allowOnlyCloudflared base_config;
+    in
+    config // {
+      extraConfig = config.extraConfig + ''
+        ssl_verify_client on;
+        underscores_in_headers off;
+        ssl_client_certificate ${sources.cloudflare-authenticated_origin_pull_ca};
+      '';
+      locations = lib.mapAttrs
+        (_: location: location // {
+          extraConfig = ''
+            if ($http_cf_access_authenticated_user_email = "") {
+                return 403;
+            }
+          '' + (location.extraConfig or "");
+        })
+        config.locations;
+    };
   generateCloudflaredIngress = virtualHosts:
     let
       destination = "http://127.0.0.1:80";
@@ -361,26 +383,6 @@ rec {
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "mesh.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.60:22260";
-            extraConfig = ''
-              proxy_http_version 1.1;
-              proxy_read_timeout 330s;
-              proxy_send_timeout 330s;
-            '';
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
       "matrix.garudalinux.org" = {
         addSSL = true;
         http3 = true;
@@ -448,19 +450,42 @@ rec {
           ${garuda-lib.nginxReverseProxySettings}
         '';
       };
-      "pgadmin.garudalinux.net" = allowOnlyCloudflared {
+      "pgadmin.garudalinux.net" = allowOnlyCloudflareZerotrust {
         locations = {
           "/" = {
             extraConfig = ''
               ${garuda-lib.nginxReverseProxySettings}
 
               proxy_pass http://10.0.5.50:5050;
-              proxy_set_header X-Forwarded-User "team@garudalinux.org";
+              proxy_set_header X-Forwarded-User $http_cf_access_authenticated_user_email;
 
               proxy_hide_header Cache-Control;
               proxy_hide_header Expires;
               add_header Cache-Control 'no-store';
             '';
+          };
+        };
+      };
+      "syncthing-build.garudalinux.net" = allowOnlyCloudflareZerotrust {
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        locations = {
+          "/" = {
+            extraConfig = ''
+              proxy_pass http://10.0.5.20:8384;
+              proxy_set_header Authorization "Basic ${garuda-lib.secrets.syncthing.esxi-build.credentials.base64}";
+            '';
+          };
+        };
+      };
+      "matrixadmin.garudalinux.net" = allowOnlyCloudflareZerotrust {
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.100:8085";
           };
         };
       };
@@ -470,7 +495,7 @@ rec {
   services.garuda-cloudflared = {
     enable = true;
     ingress = {
-      "matrixadmin.garudalinux.net" = "http://10.0.5.100:8085";
+      # "example.garudalinux.net" = "http://10.0.5.100:8085";
     } // (generateCloudflaredIngress services.nginx.virtualHosts);
     tunnel-credentials =
       garuda-lib.secrets.cloudflare.cloudflared.esxi-web.cred;
