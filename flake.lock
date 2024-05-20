@@ -254,25 +254,13 @@
         "url": "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/277016.patch"
       }
     },
-    "nixos-patch-pgadmin": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-OIspElDfzzgQnPrz3sXO9PxZoX7D+eHUloEyGVZ7Wfc=",
-        "type": "file",
-        "url": "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/312569.patch"
-      },
-      "original": {
-        "type": "file",
-        "url": "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/312569.patch"
-      }
-    },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1715961556,
-        "narHash": "sha256-+NpbZRCRisUHKQJZF3CT+xn14ZZQO+KjxIIanH3Pvn4=",
+        "lastModified": 1716137900,
+        "narHash": "sha256-sowPU+tLQv8GlqtVtsXioTKeaQvlMz/pefcdwg8MvfM=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "4a6b83b05df1a8bd7d99095ec4b4d271f2956b64",
+        "rev": "6c0b7a92c30122196a761b440ac0d46d3d9954f1",
         "type": "github"
       },
       "original": {
@@ -312,11 +300,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1715870890,
-        "narHash": "sha256-nacSOeXtUEM77Gn0G4bTdEOeFIrkCBXiyyFZtdGwuH0=",
+        "lastModified": 1716213921,
+        "narHash": "sha256-xrsYFST8ij4QWaV6HEokCUNIZLjjLP1bYC60K8XiBVA=",
         "owner": "cachix",
         "repo": "pre-commit-hooks.nix",
-        "rev": "fa606cccd7b0ccebe2880051208e4a0f61bfc8c1",
+        "rev": "0e8fcc54b842ad8428c9e705cb5994eaf05c26a0",
         "type": "github"
       },
       "original": {
@@ -340,7 +328,6 @@
         "keys_xiota": "keys_xiota",
         "nixos-mailserver": "nixos-mailserver",
         "nixos-patch-nat": "nixos-patch-nat",
-        "nixos-patch-pgadmin": "nixos-patch-pgadmin",
         "nixpkgs": "nixpkgs",
         "nixpkgs-stable": "nixpkgs-stable",
         "pre-commit-hooks": "pre-commit-hooks",

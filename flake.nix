@@ -93,8 +93,6 @@
     # Patches for nixos, automatically applied if they follow this format
     nixos-patch-nat.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/277016.patch";
     nixos-patch-nat.flake = false;
-    nixos-patch-pgadmin.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/312569.patch";
-    nixos-patch-pgadmin.flake = false;
   };
 
   outputs =
