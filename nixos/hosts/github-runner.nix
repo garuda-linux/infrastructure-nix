@@ -62,5 +62,16 @@
     enableUserSlices = true;
   };
 
+  networking.firewall = {
+    extraCommands = ''
+      iptables -t nat -A PREROUTING -p tcp -d 172.17.0.1 --dport 3128 -j DNAT --to-destination 10.0.5.1:3128
+      iptables -t nat -A POSTROUTING -p tcp -d 172.17.0.1 --dport 3128 -j SNAT --to-source 10.0.5.130
+    '';
+    extraStopCommands = ''
+      iptables -t nat -D PREROUTING -p tcp -d 10.130.0.1 --dport 3128 -j DNAT --to-destination 10.0.5.1:3128
+      iptables -t nat -D POSTROUTING -p tcp -d 10.0.5.1 --dport 3128 -j SNAT --to-source 10.0.5.130
+    '';
+  };
+
   system.stateVersion = "23.05";
 }

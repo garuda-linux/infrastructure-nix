@@ -163,11 +163,6 @@ in
               isReadOnly = false;
               mountPoint = "/etc/gitlab-runner";
             };
-            "gitlab-config-dind" = {
-              hostPath = "/data_1/containers/github-runner/gitlab-runner-dind";
-              isReadOnly = false;
-              mountPoint = "/etc/gitlab-runner-dind";
-            };
           };
           forwardPorts = [
             {
