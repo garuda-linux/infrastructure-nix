@@ -61,7 +61,7 @@ services:
 
   # Secure pastebin
   privatebin:
-    image: privatebin/nginx-fpm-alpine:1.7.2
+    image: privatebin/nginx-fpm-alpine:1.7.3
     container_name: privatebin
     volumes:
       - ./privatebin:/srv/data
@@ -105,7 +105,7 @@ services:
 
   # Matrix homeserver
   matrix:
-    image: matrixdotorg/synapse:v1.106.0
+    image: matrixdotorg/synapse:v1.107.0
     container_name: matrix
     volumes: [./matrix/matrix:/data]
     ports: [8008:8008]
@@ -128,7 +128,7 @@ services:
     volumes: [./matrix/matrix-appservice-discord:/data]
     restart: always
   matrix_web:
-    image: vectorim/element-web:v1.11.65
+    image: vectorim/element-web:v1.11.67
     container_name: element_web
     depends_on: [matrix]
     volumes: [./matrix/element/config.json:/app/config.json]
