@@ -212,7 +212,7 @@ in
   services.openssh.ports = [ 1022 ];
 
   # This mostly sends annoying notifications because SSH port is non-default
-  services.monit.enable = false;
+  services.monit.enable = lib.mkForce false;
 
   system.stateVersion = "22.05";
 }
