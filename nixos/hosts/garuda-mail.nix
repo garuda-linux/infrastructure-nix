@@ -211,5 +211,8 @@ in
   # At least try to prevent the insane spam of login attempts
   services.openssh.ports = [ 1022 ];
 
+  # This mostly sends annoying notifications because SSH port is non-default
+  services.monit.enable = false;
+
   system.stateVersion = "22.05";
 }
