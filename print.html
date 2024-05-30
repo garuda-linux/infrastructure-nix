@@ -1009,43 +1009,48 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
     };
   };
 
+  # This one is set manually as service because it needs restart: always
+  # (which the docker-compose-runner overwrites)
+  virtualisation.oci-containers = {
+    backend = "docker";
+    containers.whoogle = {
+      environment = {
+        WHOOGLE_AUTOCOMPLETE = "1";
+        WHOOGLE_CONFIG_LANGUAGE = "lang_en";
+        WHOOGLE_CONFIG_NEW_TAB = "1";
+        WHOOGLE_CONFIG_SEARCH_LANGUAGE = "lang_en";
+        WHOOGLE_CONFIG_STYLE = ":root {--whoogle-logo: #4c4f69;--whoogle-page-bg: #eff1f5;--whoogle-element-bg: #bcc0cc;--whoogle-text: #4c4f69;--whoogle-contrast-text: #5c5f77;--whoogle-secondary-text: #6c6f85;
+            --whoogle-result-bg: #ccd0da;--whoogle-result-title: #7287fd;--whoogle-result-url: #dc8a78;--whoogle-result-visited: #e64553;--whoogle-dark-logo: #cdd6f4;
+            --whoogle-dark-page-bg: #1e1e2e;--whoogle-dark-element-bg: #45475a;--whoogle-dark-text: #cdd6f4;--whoogle-dark-contrast-text: #bac2de;--whoogle-dark-secondary-text: #a6adc8;
+            --whoogle-dark-result-bg: #313244;--whoogle-dark-result-title: #b4befe;--whoogle-dark-result-url: #f5e0dc;--whoogle-dark-result-visited: #eba0ac;}
+            #whoogle-w {fill: #89b4fa;} #whoogle-h {fill: #f38ba8;}#whoogle-o-1 {fill: #f9e2af;}#whoogle-o-2 {fill: #89b4fa;}#whoogle-g {fill: #a6e3a1;}#whoogle-l {fill: #f38ba8;}
+            #whoogle-e {fill: #f9e2af;}";
+        WHOOGLE_CONFIG_THEME = "dark";
+        WHOOGLE_CONFIG_URL = "https://search.garudalinux.org";
+        WHOOGLE_CONFIG_VIEW_IMAGE = "1";
+        WHOOGLE_RESULTS_PER_PAGE = "15";
+      };
+      extraOptions = [
+        "--cap-drop=all"
+        "--pids-limit=50"
+        "--security-opt=no-new-privileges:true"
+        "--tmpfs=/run/tor/:size=1M,uid=927,gid=927,mode=1700"
+        "--tmpfs=/var/lib/tor/:size=10M,uid=927,gid=927,mode=1700"
+      ];
+      hostname = "whoogle";
+      image = "benbusby/whoogle-search:latest";
+      ports = [ "5000:5000" ];
+      user = "whoogle";
+      volumes = [ "/var/garuda/docker-compose-runner/proxied/whoogle:/config" ];
+    };
+  };
+
   system.stateVersion = "23.05";
 }
 </code></pre>
 <h2 id="docker-compose"><a class="header" href="#docker-compose">Docker compose</a></h2>
 <pre><code class="language-yaml">---
 services:
-  # Whoogle search engine
-  whoogle:
-    image: benbusby/whoogle-search:latest # It tends do be important to stay current
-    container_name: whoogle
-    user: whoogle
-    security_opt: [no-new-privileges]
-    cap_drop: [ALL]
-    tmpfs:
-      - /var/lib/tor/:size=10M,uid=927,gid=927,mode=1700
-      - /run/tor/:size=1M,uid=927,gid=927,mode=1700
-    volumes: [./whoogle:/config]
-    ports: [5000:5000]
-    environment:
-      WHOOGLE_AUTOCOMPLETE: 1
-      WHOOGLE_CONFIG_LANGUAGE: lang_en
-      WHOOGLE_CONFIG_NEW_TAB: 1
-      WHOOGLE_CONFIG_SEARCH_LANGUAGE: lang_en
-      WHOOGLE_CONFIG_STYLE: |
-        :root {--whoogle-logo: #4c4f69;--whoogle-page-bg: #eff1f5;--whoogle-element-bg: #bcc0cc;--whoogle-text: #4c4f69;--whoogle-contrast-text: #5c5f77;--whoogle-secondary-text: #6c6f85;
-        --whoogle-result-bg: #ccd0da;--whoogle-result-title: #7287fd;--whoogle-result-url: #dc8a78;--whoogle-result-visited: #e64553;--whoogle-dark-logo: #cdd6f4;
-        --whoogle-dark-page-bg: #1e1e2e;--whoogle-dark-element-bg: #45475a;--whoogle-dark-text: #cdd6f4;--whoogle-dark-contrast-text: #bac2de;--whoogle-dark-secondary-text: #a6adc8;
-        --whoogle-dark-result-bg: #313244;--whoogle-dark-result-title: #b4befe;--whoogle-dark-result-url: #f5e0dc;--whoogle-dark-result-visited: #eba0ac;}
-        #whoogle-w {fill: #89b4fa;} #whoogle-h {fill: #f38ba8;}#whoogle-o-1 {fill: #f9e2af;}#whoogle-o-2 {fill: #89b4fa;}#whoogle-g {fill: #a6e3a1;}#whoogle-l {fill: #f38ba8;}
-        #whoogle-e {fill: #f9e2af;}
-      WHOOGLE_CONFIG_THEME: dark
-      WHOOGLE_CONFIG_URL: https://search.garudalinux.org
-      WHOOGLE_CONFIG_VIEW_IMAGE: 1
-      WHOOGLE_RESULTS_PER_PAGE: 15
-    pids_limit: 50
-    restart: always
-
   # Searxng search engine
   searx:
     image: searxng/searxng:latest # It tends do be important to stay current
@@ -1230,7 +1235,7 @@ services:
 
   # Secure pastebin
   privatebin:
-    image: privatebin/nginx-fpm-alpine:1.7.2
+    image: privatebin/nginx-fpm-alpine:1.7.3
     container_name: privatebin
     volumes:
       - ./privatebin:/srv/data
@@ -1274,7 +1279,7 @@ services:
 
   # Matrix homeserver
   matrix:
-    image: matrixdotorg/synapse:v1.106.0
+    image: matrixdotorg/synapse:v1.107.0
     container_name: matrix
     volumes: [./matrix/matrix:/data]
     ports: [8008:8008]
@@ -1297,7 +1302,7 @@ services:
     volumes: [./matrix/matrix-appservice-discord:/data]
     restart: always
   matrix_web:
-    image: vectorim/element-web:v1.11.65
+    image: vectorim/element-web:v1.11.67
     container_name: element_web
     depends_on: [matrix]
     volumes: [./matrix/element/config.json:/app/config.json]
@@ -1443,6 +1448,17 @@ Access needs to happen by running <code>nixos-container root-login</code> on <co
     enable = true; # This is actually the default, anyways...
     enableSystemSlice = true;
     enableUserSlices = true;
+  };
+
+  networking.firewall = {
+    extraCommands = ''
+      iptables -t nat -A PREROUTING -p tcp -d 172.17.0.1 --dport 3128 -j DNAT --to-destination 10.0.5.1:3128
+      iptables -t nat -A POSTROUTING -p tcp -d 172.17.0.1 --dport 3128 -j SNAT --to-source 10.0.5.130
+    '';
+    extraStopCommands = ''
+      iptables -t nat -D PREROUTING -p tcp -d 10.130.0.1 --dport 3128 -j DNAT --to-destination 10.0.5.1:3128
+      iptables -t nat -D POSTROUTING -p tcp -d 10.0.5.1 --dport 3128 -j SNAT --to-source 10.0.5.130
+    '';
   };
 
   system.stateVersion = "23.05";
@@ -1662,8 +1678,30 @@ Access needs to happen by running <code>nixos-container root-login</code> on <co
 , pkgs
 , sources
 , config
+, lib
 , ...
-}: {
+}:
+let
+  server_config = pkgs.writeText "server-config" ''
+    {
+      "Servers": {
+        "1": {
+          "Name": "Main",
+          "Group": "Garuda",
+          "Username": "pgadmin",
+          "Host": "/var/run/postgresql",
+          "Port": 5432,
+          "SSLMode": "prefer",
+          "MaintenanceDB": "postgres",
+          "PassFile": "/dev/null",
+          "Shared": true,
+          "SharedUsername": "pgadmin"
+        }
+      }
+    }
+  '';
+in
+{
   imports = sources.defaultModules ++ [ ../modules ];
 
   # Our Postgres database
@@ -1697,6 +1735,10 @@ Access needs to happen by running <code>nixos-container root-login</code> on <co
       {
         name = "wikijs";
         ensureDBOwnership = true;
+      }
+      {
+        name = "pgadmin";
+        ensureClauses.superuser = true;
       }
     ];
     initialScript = pkgs.writeText "backend-initScript" ''
@@ -1746,11 +1788,24 @@ Access needs to happen by running <code>nixos-container root-login</code> on <co
     initialEmail = "team@garudalinux.org";
     initialPasswordFile = garuda-lib.secrets.pgadmin_password;
     openFirewall = true;
+    settings = {
+      FIXED_BINARY_PATHS = {
+        "pg" = "${config.services.postgresql.package}/bin";
+      };
+      SUPPORT_SSH_TUNNEL = false;
+      AUTHENTICATION_SOURCES = [ "webserver" ];
+      WEBSERVER_REMOTE_USER = "X-Forwarded-User";
+      MASTER_PASSWORD_REQUIRED = false;
+    };
   };
 
-  environment.systemPackages = [
-    config.services.postgresql.package
-  ];
+  systemd.services.pgadmin = {
+    preStart = lib.mkAfter ''
+      EMAIL=${lib.escapeShellArg config.services.pgadmin.initialEmail}
+      FILE=${lib.escapeShellArg server_config}
+      ${config.services.pgadmin.package}/bin/pgadmin4-cli load-servers "$FILE" --user "$EMAIL"
+    '';
+  };
 
   # Open up ports for Postgres
   networking.firewall.allowedTCPPorts = [ 5432 ];
@@ -1804,8 +1859,7 @@ Access needs to happen by running <code>nixos-container root-login</code> on <co
     enable = true;
     openDefaultPorts = true;
     configDir = config.services.syncthing.dataDir;
-    inherit (garuda-lib.secrets.syncthing.esxi-build) cert;
-    inherit (garuda-lib.secrets.syncthing.esxi-build) key;
+    inherit (garuda-lib.secrets.syncthing.esxi-build) cert key;
     overrideFolders = false;
     overrideDevices = false;
     user = "root";
@@ -1814,16 +1868,10 @@ Access needs to happen by running <code>nixos-container root-login</code> on <co
       gui = {
         apikey = "garudalinux";
         insecureSkipHostcheck = true;
+        inherit (garuda-lib.secrets.syncthing.esxi-build.credentials) user password;
       };
     };
-  };
-
-  # Cloudflared access to Syncthing webinterface
-  services.garuda-cloudflared = {
-    enable = true;
-    ingress = { "syncthing-build.garudalinux.net" = "http://localhost:8384"; };
-    tunnel-credentials =
-      garuda-lib.secrets.cloudflare.cloudflared.esxi-build.cred;
+    guiAddress = "10.0.5.20:8384";
   };
 
   # Allow systemd-nspawn to create subcgroups (for Chaotic-AUR builders)
@@ -1991,7 +2039,7 @@ Access needs to happen by running <code>nixos-container root-login</code> on <co
   };
 
   # Explicitly open our firewall ports - HTTPS &amp; rsyncd
-  networking.firewall.allowedTCPPorts = [ config.services.rsyncd.port ];
+  networking.firewall.allowedTCPPorts = [ config.services.rsyncd.port 8384 ];
 
   # Our rsyncd server
   services.rsyncd = {
@@ -2098,6 +2146,28 @@ let
       '';
     }
   );
+  # This is technically unecessary, but safety!
+  # This refers to the Cloudflare service "Cloudflare Access" to allow only specified users to access the service
+  allowOnlyCloudflareZerotrust = base_config:
+    let
+      config = allowOnlyCloudflared base_config;
+    in
+    config // {
+      extraConfig = config.extraConfig + ''
+        ssl_verify_client on;
+        underscores_in_headers off;
+        ssl_client_certificate ${sources.cloudflare-authenticated_origin_pull_ca};
+      '';
+      locations = lib.mapAttrs
+        (_: location: location // {
+          extraConfig = ''
+            if ($http_cf_access_authenticated_user_email = "") {
+                return 403;
+            }
+          '' + (location.extraConfig or "");
+        })
+        config.locations;
+    };
   generateCloudflaredIngress = virtualHosts:
     let
       destination = "http://127.0.0.1:80";
@@ -2441,26 +2511,6 @@ rec {
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "mesh.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.60:22260";
-            extraConfig = ''
-              proxy_http_version 1.1;
-              proxy_read_timeout 330s;
-              proxy_send_timeout 330s;
-            '';
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
       "matrix.garudalinux.org" = {
         addSSL = true;
         http3 = true;
@@ -2528,18 +2578,42 @@ rec {
           ${garuda-lib.nginxReverseProxySettings}
         '';
       };
-      "pgadmin.garudalinux.net" = allowOnlyCloudflared {
+      "pgadmin.garudalinux.net" = allowOnlyCloudflareZerotrust {
+        locations = {
+          "/" = {
+            extraConfig = ''
+              ${garuda-lib.nginxReverseProxySettings}
+
+              proxy_pass http://10.0.5.50:5050;
+              proxy_set_header X-Forwarded-User $http_cf_access_authenticated_user_email;
+
+              proxy_hide_header Cache-Control;
+              proxy_hide_header Expires;
+              add_header Cache-Control 'no-store';
+            '';
+          };
+        };
+      };
+      "syncthing-build.garudalinux.net" = allowOnlyCloudflareZerotrust {
         extraConfig = ''
           ${garuda-lib.nginxReverseProxySettings}
         '';
         locations = {
           "/" = {
             extraConfig = ''
-              proxy_pass http://10.0.5.50:5050;
-              proxy_hide_header Cache-Control;
-              proxy_hide_header Expires;
-              add_header Cache-Control 'no-store';
+              proxy_pass http://10.0.5.20:8384;
+              proxy_set_header Authorization "Basic ${garuda-lib.secrets.syncthing.esxi-build.credentials.base64}";
             '';
+          };
+        };
+      };
+      "matrixadmin.garudalinux.net" = allowOnlyCloudflareZerotrust {
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.100:8085";
           };
         };
       };
@@ -2549,7 +2623,7 @@ rec {
   services.garuda-cloudflared = {
     enable = true;
     ingress = {
-      "matrixadmin.garudalinux.net" = "http://10.0.5.100:8085";
+      # "example.garudalinux.net" = "http://10.0.5.100:8085";
     } // (generateCloudflaredIngress services.nginx.virtualHosts);
     tunnel-credentials =
       garuda-lib.secrets.cloudflare.cloudflared.esxi-web.cred;
@@ -2596,6 +2670,11 @@ It features a few plugins to enhance the general user experience.</p>
 <p>A new user can be created be adding a new <code>loginAccounts</code> value and supplying the password via <code>secrets</code>.
 We make use of <code>hashedPasswordFile</code>, therefore new hashes can be generated by running <code>nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt'</code>. Add it to the <code>secrets</code>, then execute <code>deploy</code> and <code>apply</code>.
 Don't forget to commit both changes.</p>
+<h3 id="issues-and-their-solution"><a class="header" href="#issues-and-their-solution">Issues and their solution</a></h3>
+<h4 id="local-dns-resolver-failing-to-start"><a class="header" href="#local-dns-resolver-failing-to-start">Local DNS resolver failing to start</a></h4>
+<p>Simple NixOS mailserver runs a local DNS server to prevent the log filling up with junk (<a href="https://mailserver.readthedocs.io/en/latest/options.html#cmdoption-arg-mailserver.localDnsResolver">source</a>).
+There can be cases of the persisted files need to be deleted in order for the service to recover from dumping core.
+See <a href="https://gitlab.nic.cz/knot/knot-resolver/-/issues/627">this issue</a> for reference.</p>
 <h3 id="nix-expression-11"><a class="header" href="#nix-expression-11">Nix expression</a></h3>
 <pre><code class="language-nix">{ config
 , lib
@@ -2810,6 +2889,9 @@ in
   # At least try to prevent the insane spam of login attempts
   services.openssh.ports = [ 1022 ];
 
+  # This mostly sends annoying notifications because SSH port is non-default
+  services.monit.enable = false;
+
   system.stateVersion = "22.05";
 }
 </code></pre>
@@ -2917,7 +2999,7 @@ jobs:
           publish_branch: cf-pages
           publish_dir: docs/book
 </code></pre>
-<h2 id="issues-and-their-solution"><a class="header" href="#issues-and-their-solution">Issues and their solution</a></h2>
+<h2 id="issues-and-their-solution-1"><a class="header" href="#issues-and-their-solution-1">Issues and their solution</a></h2>
 <h3 id="sidebar-or-something-else-on-the-documentation-doesnt-work-as-expected"><a class="header" href="#sidebar-or-something-else-on-the-documentation-doesnt-work-as-expected">Sidebar or something else on the documentation doesn't work as expected</a></h3>
 <p>Chances are that the custom CSS parts need to be rebased to a newer version.
 They can be found in <code>./docs/theme/css</code> and the only addition we made here is to use the Fira Sans font instead of the default one.
