@@ -5,6 +5,7 @@ services:
     container_name: chaotic-builder
     command: builder
     environment:
+      BUILDER_HOSTNAME: garuda-build
       DATABASE_HOST: builds.garudalinux.org
       DATABASE_PORT: 400
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}

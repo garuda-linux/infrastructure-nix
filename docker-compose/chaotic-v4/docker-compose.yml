@@ -5,6 +5,7 @@ services:
     container_name: chaotic-builder
     command: builder
     environment:
+      BUILDER_HOSTNAME: immortalis
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
       REDIS_SSH_HOST: host.docker.internal
       REDIS_SSH_USER: package-deployer
