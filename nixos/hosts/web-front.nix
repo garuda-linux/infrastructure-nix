@@ -347,6 +347,9 @@ rec {
           "/" = {
             proxyPass = "http://10.0.5.20:80";
           };
+          "/api/" = {
+            proxyPass = "http://10.0.5.140:8080/api/";
+          };
           "/logs/" = {
             proxyPass = "http://10.0.5.140:8080/";
             extraConfig = ''
