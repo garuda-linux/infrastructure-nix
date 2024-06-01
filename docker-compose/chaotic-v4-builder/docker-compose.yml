@@ -17,3 +17,12 @@ services:
       - ./shared:/shared
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
+
+  # Automated container updates
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    command:
+      --cleanup chaotic-builder watchtower --interval 3600
+    volumes: [/var/run/docker.sock:/var/run/docker.sock]
+    restart: always

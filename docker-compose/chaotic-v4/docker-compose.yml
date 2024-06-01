@@ -19,6 +19,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
   chaotic-manager:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-manager
@@ -147,6 +148,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports: [8080:8080]
+
   # Automated container updates
   watchtower:
     image: containrrr/watchtower:latest
