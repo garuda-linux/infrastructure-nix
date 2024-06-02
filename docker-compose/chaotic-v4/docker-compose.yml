@@ -36,6 +36,8 @@ services:
       REDIS_SSH_HOST: host.docker.internal
       REDIS_SSH_USER: package-deployer
       REPO_PATH: /srv/http/repos
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-?err}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-?err}
       PACKAGE_REPOS: >-
         {
             "chaotic-aur": {
