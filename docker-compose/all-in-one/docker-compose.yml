@@ -128,7 +128,7 @@ services:
     volumes: [./matrix/matrix-appservice-discord:/data]
     restart: always
   matrix_web:
-    image: vectorim/element-web:v1.11.67
+    image: vectorim/element-web:v1.11.68
     container_name: element_web
     depends_on: [matrix]
     volumes: [./matrix/element/config.json:/app/config.json]

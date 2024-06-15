@@ -151,11 +151,25 @@ services:
       - "host.docker.internal:host-gateway"
     ports: [8080:8080]
 
+  # Metadata for the Chaotic website
+  caur-backend:
+    image: ghcr.io/chaotic-cx/caur-backend:main
+    container_name: caur-backend
+    environment:
+      CAUR_DEPLOY_LOG_ID: "-1002151616973"
+      CAUR_NEWS_ID: "-1001293714071"
+      TELEGRAM_API_HASH: ${TELEGRAM_API_HASH:-?err}
+      TELEGRAM_API_ID: ${TELEGRAM_API_ID:-?err}
+      TELEGRAM_DB_ENCRYPTION_KEY: ${TELEGRAM_DB_ENCRYPTION_KEY:-?err}
+    ports: [3000:3000]
+    volumes: [./tdlib:/app/tdlib]
+    restart: always
+
   # Automated container updates
   watchtower:
     image: containrrr/watchtower:latest
     container_name: watchtower
     command:
-      --cleanup chaotic-builder chaotic-manager watchtower --interval 3600
+      --cleanup chaotic-builder chaotic-manager watchtower caur-backend --interval 3600
     volumes: [/var/run/docker.sock:/var/run/docker.sock]
     restart: always

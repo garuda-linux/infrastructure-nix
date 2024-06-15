@@ -347,8 +347,13 @@ rec {
           "/" = {
             proxyPass = "http://10.0.5.20:80";
           };
+          # Api of the Chaotic Manager
           "/api/" = {
             proxyPass = "http://10.0.5.140:8080/api/";
+          };
+          # Api for the website, for displaying news and deploy logs
+          "/backend/" = {
+            proxyPass = "http://10.0.5.140:3000/";
           };
           "/logs/" = {
             proxyPass = "http://10.0.5.140:8080/";
