@@ -1,4 +1,5 @@
-{ garuda-lib
+{ config
+, garuda-lib
 , sources
 , pkgs
 , ...
@@ -56,10 +57,69 @@
     '';
   };
 
-  networking.firewall.allowedTCPPorts = [ 8080 ];
+  networking.firewall.allowedTCPPorts = [
+    8080
+    config.services.prometheus.port
+    config.services.grafana.settings.server.http_port
+  ];
 
   # Enable the user accounts of chaotic maintainers
   garuda-lib.chaoticUsers = true;
+
+  # Prometheus for monitoring the metrics exported by chaotic-manager
+  services.prometheus = {
+    enable = true;
+    port = 9090;
+    scrapeConfigs = [
+      {
+        job_name = "chaotic-manager";
+        static_configs = [
+          {
+            targets = [
+              "127.0.0.1:8080"
+            ];
+          }
+        ];
+      }
+    ];
+  };
+
+  # Grana for displaying Prometheus data
+  services.grafana = {
+    enable = true;
+    provision = {
+      enable = false;
+      datasources.settings = {
+        apiVersion = 1;
+        datasources = [
+          {
+            access = "proxy";
+            name = "Prometheus";
+            type = "prometheus";
+            url = "http://127.0.0.1:${toString config.services.prometheus.port}";
+          }
+        ];
+      };
+    };
+    settings = {
+      auth.anonymous = "enabled";
+      analytics = {
+        feedback_links_enabled = false;
+        reporting_enabled = false;
+      };
+      live.allowed_origins = [ "https://grafana.garudalinux.net" "http://10.0.5.10" ]; # Needed to get WS to work
+      security = {
+        admin_email = "team@garudalinux.org";
+        cookie_secure = true;
+      };
+      server = {
+        enable_gzip = true;
+        http_addr = "10.0.5.140";
+        http_port = 3001;
+        protocol = "http";
+      };
+    };
+  };
 
   system.stateVersion = "23.05";
 }

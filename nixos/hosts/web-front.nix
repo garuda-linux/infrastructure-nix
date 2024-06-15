@@ -54,6 +54,18 @@ rec {
   # Reverse proxy for our docker-compose stack
   services.nginx = {
     enable = true;
+    upstreams = {
+      "grafana" = {
+        servers = {
+          "10.0.5.140:3001" = { };
+        };
+      };
+      "prometheus" = {
+        servers = {
+          "10.0.5.140:9090" = { };
+        };
+      };
+    };
     virtualHosts = {
       "cloud.garudalinux.org" = {
         addSSL = true;
@@ -379,6 +391,34 @@ rec {
         };
         quic = true;
         useACMEHost = "garudalinux.org";
+      };
+      "grafana.garudalinux.net" = allowOnlyCloudflareZerotrust {
+        locations = {
+          "/" = {
+            proxyPass = "http://grafana";
+            # Workaround the tedious origin not allowed error. This can likely be fixed
+            # better, but this works for now. It is behind CF Zero Trust anyways.
+            extraConfig = ''
+              proxy_set_header Host grafana.garudalinux.net;
+              proxy_set_header Origin https://grafana.garudalinux.net;
+            '';
+          };
+          "/api/live/" = {
+            proxyPass = "http://grafana";
+            proxyWebsockets = true;
+            extraConfig = ''
+              proxy_set_header Host grafana.garudalinux.net;
+              proxy_set_header Origin https://grafana.garudalinux.net;
+            '';
+          };
+        };
+      };
+      "prometheus.garudalinux.net" = allowOnlyCloudflareZerotrust {
+        locations = {
+          "/" = {
+            proxyPass = "http://prometheus";
+          };
+        };
       };
       "wiki.garudalinux.org" = {
         addSSL = true;

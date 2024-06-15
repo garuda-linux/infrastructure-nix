@@ -81,6 +81,16 @@ in
               isReadOnly = false;
               mountPoint = "/srv/http/repos";
             };
+            "grafana" = {
+              hostPath = "/data_1/containers/chaotic-v4/grafana";
+              isReadOnly = false;
+              mountPoint = "/var/lib/grafana";
+            };
+            "prometheus" = {
+              hostPath = "/data_1/containers/chaotic-v4/prometheus";
+              isReadOnly = false;
+              mountPoint = "/var/lib/prometheus2";
+            };
           };
           enableTun = true;
         };
