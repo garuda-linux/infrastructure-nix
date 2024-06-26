@@ -3,10 +3,6 @@
   "assigneesFromCodeOwners": true,
   "commitMessageAction": "update",
   "extends": ["config:base", ":gitSignOff"],
-  "lockFileMaintenance": {
-    "enabled": true,
-    "extends": ["schedule:weekly"]
-  },
   "nix": {
     "enabled": true
   },
