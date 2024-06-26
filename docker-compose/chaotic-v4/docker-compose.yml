@@ -153,7 +153,7 @@ services:
 
   # Metadata for the Chaotic website
   caur-backend:
-    image: ghcr.io/chaotic-cx/caur-backend:main
+    image: ghcr.io/chaotic-cx/chaotic-next:main
     container_name: caur-backend
     environment:
       CAUR_DEPLOY_LOG_ID: "-1002151616973"
