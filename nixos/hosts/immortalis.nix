@@ -112,13 +112,8 @@
         proto = "tcp";
         sourcePort = 8448;
       }
-      {
-        # iso-runner (SSH)
-        destination = "10.0.5.40:22";
-        loopbackIPs = [ "116.202.208.112" ];
-        proto = "tcp";
-        sourcePort = 227;
-      }
+      # Here because we need to take advantage of NAT reflection.
+      # In general, SSH ports should not be here.
       {
         # chaotic-v4 (SSH)
         destination = "10.0.5.140:22";

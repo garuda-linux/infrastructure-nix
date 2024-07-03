@@ -201,6 +201,13 @@ in
               mountPoint = "/var/cache/pacman/pkg";
             };
           };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 227;
+              protocol = "tcp";
+            }
+          ];
         };
         ipAddress = "10.0.5.40";
         needsDocker = true;
