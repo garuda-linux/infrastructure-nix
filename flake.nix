@@ -145,7 +145,7 @@
                        -v "./buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
                        buildiso /bin/bash
               '';
-              immortalis = "116.202.208.112";
+              immortalis = "builds.garudalinux.org";
               ipv6-generator = builtins.readFile ./scripts/ipv6-generator.sh;
               makeDevshell = import "${inputs.devshell}/modules" pkgs;
               mkShell = config:
@@ -213,7 +213,7 @@
                     help = "Updates the Discourse container of our forum";
                     category = "infra-nix";
                     command = ''
-                      # We are assuming the MixOS user is named the same as the one using it
+                      # We are assuming the NixOS user is named the same as the one using it
                       ssh -p224 ${immortalis} "cd /var/disourse; sudo ./launcher rebuild app"
                     '';
                   }
