@@ -79,7 +79,7 @@ services:
 
   # MongoDB instance (Chaotic-AUR / repo metrics)
   mongodb:
-    image: mongo:7.0.11
+    image: mongo:7.0.12
     container_name: mongodb
     volumes: [./mongo:/data/db]
     ports: [27017:27017]
@@ -105,7 +105,7 @@ services:
 
   # Matrix homeserver
   matrix:
-    image: matrixdotorg/synapse:v1.109.0
+    image: matrixdotorg/synapse:v1.110.0
     container_name: matrix
     volumes: [./matrix/matrix:/data]
     ports: [8008:8008]
@@ -154,7 +154,7 @@ services:
 
   # Makes world content available for our Lemmy instance
   lemmy_seeder:
-    image: nowsci/lcs:20231201035206
+    image: nowsci/lcs:20240701065204
     container_name: lemmy_lcs
     environment:
       COMMUNITY_COUNT: 50
