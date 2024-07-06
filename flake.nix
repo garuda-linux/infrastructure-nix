@@ -93,6 +93,9 @@
     # Patches for nixos, automatically applied if they follow this format
     nixos-patch-nat.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/277016.patch";
     nixos-patch-nat.flake = false;
+    # TODO: Remove once this one arrived in unstable, for https://github.com/mastodon/mastodon/security/advisories/GHSA-xjvf-fm67-4qc3
+    nixos-patch-mastodon.url = "https://github.com/NixOS/nixpkgs/commit/e8f680e000d5c5b4a0ff998e6423951bcf06ba35.patch";
+    nixos-patch-mastodon.flake = false;
   };
 
   outputs =
