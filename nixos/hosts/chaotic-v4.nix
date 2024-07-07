@@ -42,6 +42,7 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN47/usTQsbmcAuG8CbEkurMDzQJxs+Tf8njI/4iTpKu"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN7W5KtNH5nsjIHBN1zBwEc0BZMhg6HfFurMIJoWf39p"
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDD2ulefvEwwft9gXj2oUgRl0zWKjG2wkg4xHP1F2p8I" # garuda-build
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICwGMzxuAXAHc+DHbOlgRo/FShbF/QXrlJzhl2k/WBHB" # u726578@sms.cluster.infra.ufscar.br
     ];
   };
   users.groups.chaotic-op = { };
