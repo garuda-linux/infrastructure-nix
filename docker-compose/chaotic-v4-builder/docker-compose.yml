@@ -6,6 +6,7 @@ services:
     command: builder
     environment:
       BUILDER_HOSTNAME: garuda-build
+      BUILDER_TIMEOUT: 8600
       DATABASE_HOST: builds.garudalinux.org
       DATABASE_PORT: 400
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
