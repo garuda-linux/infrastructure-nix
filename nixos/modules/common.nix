@@ -213,7 +213,4 @@
   # Workaround https://discourse.nixos.org/t/logrotate-config-fails-due-to-missing-group-30000/28501
   # for now
   services.logrotate.checkConfig = false;
-
-  # No need for sound on a server
-  sound.enable = false;
 }
