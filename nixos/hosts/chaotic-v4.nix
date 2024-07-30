@@ -3,7 +3,15 @@
 , sources
 , pkgs
 , ...
-}: {
+}:
+let
+  wrapperScript = pkgs.writeScriptBin "chaotic-restart" ''
+    cd /var/garuda/docker-compose-runner/chaotic-v4/
+    docker compose down
+    docker compose up -d
+  '';
+in
+{
   imports = sources.defaultModules ++ [ ../modules "${sources.chaotic-portable-builder}/nix/nixos.nix" ];
 
   # Redis is used to distribute build jobs
@@ -66,6 +74,12 @@
 
   # Enable the user accounts of chaotic maintainers
   garuda-lib.chaoticUsers = true;
+
+  # Allow controlling infra 4.0's containers without root
+  environment.systemPackages = [ wrapperScript ];
+  security.sudo.extraRules = [
+    { users = [ "xiota" ]; commands = [{ command = "${wrapperScript}/bin/chaotic-restart"; options = [ "NOPASSWD" ]; }]; }
+  ];
 
   # Prometheus for monitoring the metrics exported by chaotic-manager
   services.prometheus = {

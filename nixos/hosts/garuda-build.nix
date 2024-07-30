@@ -1,7 +1,16 @@
 { garuda-lib
+, pkgs
 , sources
 , ...
-}: {
+}:
+let
+  wrapperScript = pkgs.writeScriptBin "chaotic-restart" ''
+    cd /var/garuda/docker-compose-runner/chaotic-v4-builder/
+    docker compose down
+    docker compose up -d
+  '';
+in
+{
   imports = [
     ../modules
     ./garuda-build/hardware-configuration.nix
@@ -38,6 +47,12 @@
 
   # Enable the user accounts of chaotic maintainers
   garuda-lib.chaoticUsers = true;
+
+  # Allow controlling infra 4.0's containers without root
+  environment.systemPackages = [ wrapperScript ];
+  security.sudo.extraRules = [
+    { users = [ "xiota" ]; commands = [{ command = "${wrapperScript}/bin/chaotic-restart"; options = [ "NOPASSWD" ]; }]; }
+  ];
 
   system.stateVersion = "22.05";
 }
