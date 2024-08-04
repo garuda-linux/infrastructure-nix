@@ -105,7 +105,7 @@ services:
 
   # Matrix homeserver
   matrix:
-    image: matrixdotorg/synapse:v1.110.0
+    image: matrixdotorg/synapse:v1.112.0
     container_name: matrix
     volumes: [./matrix/matrix:/data]
     ports: [8008:8008]
@@ -128,7 +128,7 @@ services:
   #   volumes: [./matrix/matrix-appservice-discord:/data]
   #   restart: always
   matrix_web:
-    image: vectorim/element-web:v1.11.70
+    image: vectorim/element-web:v1.11.72
     container_name: element_web
     depends_on: [matrix]
     volumes: [./matrix/element/config.json:/app/config.json]
