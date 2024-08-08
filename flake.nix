@@ -29,6 +29,7 @@
     nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
     nixos-mailserver.inputs.flake-compat.follows = "flake-compat";
     nixos-mailserver.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-mailserver.inputs.nixpkgs-24_05.follows = "nixpkgs-stable";
 
     # Pre-commit hooks via nix-shell or nix develop
     pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
