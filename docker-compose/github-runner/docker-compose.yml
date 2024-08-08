@@ -1,7 +1,7 @@
 ---
 services:
   github-runner:
-    image: myoung34/github-runner:2.318.0
+    image: myoung34/github-runner:2.319.0
     container_name: github-runner
     privileged: true
     environment:
