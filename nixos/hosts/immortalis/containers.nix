@@ -46,27 +46,6 @@ in
     hostIp = "10.0.5.1";
     dockerCache = "/data_1/dockercache/";
     containers = {
-      chaotic-kde = {
-        config = import ../chaotic-kde.nix;
-        extraOptions = {
-          bindMounts = lib.mkMerge [{
-            "chaotic-aur-kde" = {
-              hostPath = "/data_2/chaotic-aur/chaotic-aur-kde";
-              isReadOnly = false;
-              mountPoint = "/srv/http/repos/chaotic-aur-kde";
-            };
-          }
-            chaotic_mounts];
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 226;
-              protocol = "tcp";
-            }
-          ];
-        };
-        ipAddress = "10.0.5.90";
-      };
       chaotic-v4 = {
         config = import ../chaotic-v4.nix;
         extraOptions = {
@@ -279,11 +258,6 @@ in
               hostPath = "/data_2/chaotic-v4/chaotic-aur";
               isReadOnly = false;
               mountPoint = "/srv/http/chaotic-v4";
-            };
-            "chaotic-kde-v4" = {
-              hostPath = "/data_2/chaotic-v4/chaotic-aur-kde";
-              isReadOnly = false;
-              mountPoint = "/srv/http/chaotic-kde-v4";
             };
             "garuda" = {
               hostPath = "/data_2/chaotic-v4/garuda";
