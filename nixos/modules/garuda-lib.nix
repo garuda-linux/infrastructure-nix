@@ -74,13 +74,6 @@ in
           };
           apikeys = "/var/garuda/secrets/cloudflare/cloudflare_key";
         };
-        docker-compose = {
-          all-in-one = "/var/garuda/secrets/docker-compose/all-in-one.env";
-          chaotic-v4 = "/var/garuda/secrets/docker-compose/chaotic-v4.env";
-          chaotic-v4-builder = "/var/garuda/secrets/docker-compose/chaotic-v4-builder.env";
-          github-runner = "/var/garuda/secrets/docker-compose/github-runner.env";
-          proxied = "/var/garuda/secrets/docker-compose/proxied.env";
-        };
         mail = {
           actionsatcx = "/var/garuda/secrets/mail/actionsatcx";
           cloudatgl = "/var/garuda/secrets/mail/cloudatgl";

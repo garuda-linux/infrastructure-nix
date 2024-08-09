@@ -9,22 +9,14 @@
   imports = [
     ../modules/hardening.nix
     ../modules/motd.nix
-    ../services/docker-compose-runner/docker-compose-runner.nix
+    ./github-runner/github-compose.nix
+    ./github-runner/gitlab-compose.nix
   ];
 
   # Common Docker configurations
   virtualisation.docker = {
     autoPrune.enable = true;
     autoPrune.flags = [ "-a" ];
-  };
-
-  # This container is just for docker-compose stuff
-  services.docker-compose-runner.github-runner = {
-    envfile = "/var/garuda/secrets/github-runner.env";
-    source = ../../docker-compose/github-runner;
-  };
-  services.docker-compose-runner.gitlab-runner = {
-    source = ../../docker-compose/gitlab-runner;
   };
 
   # Enable SSH
