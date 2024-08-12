@@ -11,7 +11,7 @@
 
   # Containers
   virtualisation.oci-containers.containers."bitwarden" = {
-    image = "vaultwarden/server:1.31.0";
+    image = "vaultwarden/server:1.32.0";
     environment = {
       "DOMAIN" = "https://bitwarden.garudalinux.org";
       "SIGNUPS_ALLOWED" = "true";
