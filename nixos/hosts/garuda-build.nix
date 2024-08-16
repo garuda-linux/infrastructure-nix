@@ -1,5 +1,4 @@
-{ garuda-lib
-, pkgs
+{ pkgs
 , sources
 , ...
 }:

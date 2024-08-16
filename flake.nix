@@ -97,8 +97,7 @@
   };
 
   outputs =
-    { devshell
-    , flake-parts
+    { flake-parts
     , nixpkgs
     , pre-commit-hooks
     , self
@@ -117,8 +116,12 @@
               hooks = {
                 actionlint.enable = true;
                 ansible-lint.enable = true;
+                check-json.enable = true;
+                check-yaml.enable = true;
                 commitizen.enable = true;
                 deadnix.enable = true;
+                detect-private-keys.enable = true;
+                flake-checker.enable = true;
                 nil.enable = true;
                 nixpkgs-fmt.enable = true;
                 prettier.enable = true;
