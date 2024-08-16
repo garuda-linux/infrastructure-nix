@@ -92,11 +92,6 @@ in
               hostPort = 225;
               protocol = "tcp";
             }
-            {
-              containerPort = 27017;
-              hostPort = 27017;
-              protocol = "tcp";
-            }
           ];
         };
         ipAddress = "10.0.5.100";
@@ -223,6 +218,32 @@ in
           };
         };
         ipAddress = "10.0.5.80";
+      };
+      mongodb = {
+        config = import ../mongodb.nix;
+        extraOptions = {
+          bindMounts = {
+            "cert" = {
+              hostPath = "/var/garuda/secrets/mongodb";
+              isReadOnly = true;
+              mountPoint = "/etc/ssl/mongodb";
+            };
+            "data" = {
+              hostPath = "/data_1/containers/mongodb/data";
+              isReadOnly = false;
+              mountPoint = "/var/db/mongodb";
+            };
+          };
+          forwardPorts = [
+            {
+              containerPort = 27017;
+              hostPort = 27017;
+              protocol = "tcp";
+            }
+          ];
+          ephemeral = lib.mkForce true;
+        };
+        ipAddress = "10.0.5.60";
       };
       postgres = {
         config = import ../postgres.nix;

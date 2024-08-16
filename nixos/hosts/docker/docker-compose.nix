@@ -324,46 +324,6 @@
       "/var/garuda/docker-compose-runner/all-in-one/matrix/mautrix-telegram"
     ];
   };
-  virtualisation.oci-containers.containers."mongodb" = {
-    image = "mongo:7.0.12";
-    volumes = [
-      "/var/garuda/docker-compose-runner/all-in-one/mongo:/data/db:rw"
-    ];
-    ports = [
-      "27017:27017/tcp"
-    ];
-    log-driver = "journald";
-    extraOptions = [
-      "--network-alias=mongodb"
-      "--network=all-in-one_default"
-    ];
-    environmentFiles = [
-      "/var/garuda/secrets/docker-compose/all-in-one.env"
-    ];
-  };
-  systemd.services."docker-mongodb" = {
-    serviceConfig = {
-      Restart = lib.mkOverride 500 "always";
-      RestartMaxDelaySec = lib.mkOverride 500 "1m";
-      RestartSec = lib.mkOverride 500 "100ms";
-      RestartSteps = lib.mkOverride 500 9;
-    };
-    after = [
-      "docker-network-all-in-one_default.service"
-    ];
-    requires = [
-      "docker-network-all-in-one_default.service"
-    ];
-    partOf = [
-      "docker-compose-all-in-one-root.target"
-    ];
-    wantedBy = [
-      "docker-compose-all-in-one-root.target"
-    ];
-    unitConfig.RequiresMountsFor = [
-      "/var/garuda/docker-compose-runner/all-in-one/mongo"
-    ];
-  };
   virtualisation.oci-containers.containers."nextcloud-aio-mastercontainer" = {
     image = "nextcloud/all-in-one:latest";
     environment = {
