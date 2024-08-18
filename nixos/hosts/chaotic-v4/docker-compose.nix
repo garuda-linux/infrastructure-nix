@@ -62,6 +62,7 @@
     image = "registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest";
     environment = {
       "BUILDER_HOSTNAME" = "immortalis";
+      "CI_CODE_SKIP" = "123";
       "DATABASE_HOST" = "host.docker.internal";
       "DATABASE_PORT" = "22";
       "REDIS_SSH_HOST" = "host.docker.internal";
@@ -109,6 +110,7 @@
   virtualisation.oci-containers.containers."chaotic-manager" = {
     image = "registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest";
     environment = {
+      "CI_CODE_SKIP" = "123";
       "DATABASE_HOST" = "builds.garudalinux.org";
       "DATABASE_PORT" = "400";
       "DATABASE_USER" = "package-deployer";
@@ -118,9 +120,6 @@
       "PACKAGE_REPOS" = ''{
       "chaotic-aur": {
           "url": "https://gitlab.com/chaotic-aur/pkgbuilds"
-      },
-      "chaotic-aur-kde": {
-          "url": "https://gitlab.com/chaotic-aur/pkgbuilds-kde"
       },
       "garuda": {
           "url": "https://gitlab.com/garuda-linux/pkgbuilds"
@@ -153,19 +152,6 @@
                   "name": "chaotic-aur",
                   "servers": [
                       "https://builds.garudalinux.org/chaotic-v4/x86_64"
-                  ]
-              }
-          ],
-          "extra_keyrings": [
-              "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
-          ]
-      },
-      "chaotic-aur-kde": {
-          "extra_repos": [
-              {
-                  "name": "chaotic-aur-kde",
-                  "servers": [
-                      "https://builds.garudalinux.org/chaotic-kde-v4/x86_64"
                   ]
               }
           ],

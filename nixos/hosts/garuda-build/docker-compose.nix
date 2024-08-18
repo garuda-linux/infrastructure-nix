@@ -15,6 +15,7 @@
     environment = {
       "BUILDER_HOSTNAME" = "garuda-build";
       "BUILDER_TIMEOUT" = "8600";
+      "CI_CODE_SKIP" = "123";
       "DATABASE_HOST" = "builds.garudalinux.org";
       "DATABASE_PORT" = "400";
       "REDIS_SSH_HOST" = "builds.garudalinux.org";
