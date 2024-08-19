@@ -94,7 +94,9 @@
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="../intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="../general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="../common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="../important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Users</li><li class="chapter-item expanded "><a href="../users.html"><strong aria-hidden="true">5.</strong> Users</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../users/current_users.html"><strong aria-hidden="true">5.1.</strong> Current users</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="../hosts/immortalis.html"><strong aria-hidden="true">6.</strong> immortalis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../nixos-containers/chaotic-kde.html"><strong aria-hidden="true">6.1.</strong> chaotic-kde</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker-proxied.html"><strong aria-hidden="true">6.2.</strong> docker-proxied</a></li><li class="chapter-item expanded "><a href="../nixos-containers/docker.html" class="active"><strong aria-hidden="true">6.3.</strong> docker</a></li><li class="chapter-item expanded "><a href="../nixos-containers/forum.html"><strong aria-hidden="true">6.4.</strong> forum</a></li><li class="chapter-item expanded "><a href="../nixos-containers/github-runner.html"><strong aria-hidden="true">6.5.</strong> github-runner</a></li><li class="chapter-item expanded "><a href="../nixos-containers/lemmy.html"><strong aria-hidden="true">6.6.</strong> lemmy</a></li><li class="chapter-item expanded "><a href="../nixos-containers/mastodon.html"><strong aria-hidden="true">6.7.</strong> mastodon</a></li><li class="chapter-item expanded "><a href="../nixos-containers/postgres.html"><strong aria-hidden="true">6.8.</strong> postgres</a></li><li class="chapter-item expanded "><a href="../nixos-containers/repo.html"><strong aria-hidden="true">6.9.</strong> repo</a></li><li class="chapter-item expanded "><a href="../nixos-containers/temeraire.html"><strong aria-hidden="true">6.10.</strong> temeraire</a></li><li class="chapter-item expanded "><a href="../nixos-containers/web-front.html"><strong aria-hidden="true">6.11.</strong> web-front</a></li></ol></li><li class="chapter-item expanded "><a href="../hosts/garuda-mail.html"><strong aria-hidden="true">7.</strong> garuda-mail</a></li><li class="chapter-item expanded affix "><li class="part-title">Repository infrastructure</li><li class="chapter-item expanded "><a href="../repositories/general.html"><strong aria-hidden="true">8.</strong> General information</a></li><li class="chapter-item expanded "><a href="../repositories/pkgbuilds.html"><strong aria-hidden="true">9.</strong> PKGBUILDs</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><a href="../services/discourse.html"><strong aria-hidden="true">10.</strong> Discourse</a></li><li class="chapter-item expanded "><a href="../websites/documentation.html"><strong aria-hidden="true">11.</strong> Documentation</a></li><li class="chapter-item expanded "><a href="../services/tailscale.html"><strong aria-hidden="true">12.</strong> Tailscale</a></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><a href="../code-of-conduct.html"><strong aria-hidden="true">13.</strong> Code of Conduct</a></li><li class="chapter-item expanded "><a href="../privacy-policy.html"><strong aria-hidden="true">14.</strong> Privacy policy</a></li><li class="chapter-item expanded "><a href="../security.html"><strong aria-hidden="true">15.</strong> Security</a></li><li class="chapter-item expanded "><a href="../credits.html"><strong aria-hidden="true">16.</strong> Credits</a></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -186,212 +188,17 @@
 <h2 id="general"><a class="header" href="#general">General</a></h2>
 <p>This container consists of our <code>docker-compose-runner</code> module, which deploys all Docker-based services that don't need to proxied outgoing requests. For the other ones, have a look <a href="./docker-proxied.html">here</a>.</p>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
-<pre><code class="language-nix">{ garuda-lib
-, sources
-, ...
-}: {
-  imports = sources.defaultModules ++ [ ../modules ];
-
-  # This container is just for docker-compose stuff
-  services.docker-compose-runner.all-in-one = {
-    envfile = garuda-lib.secrets.docker-compose.all-in-one;
-    source = ../../docker-compose/all-in-one;
-  };
-
-  # MongoDB port is being forwarded to this container
-  networking.firewall = { allowedTCPPorts = [ 27017 ]; };
+<pre><code class="language-nix">{ sources, ... }: {
+  imports = sources.defaultModules ++ [
+    ../modules
+    ./docker/docker-compose.nix
+  ];
 
   system.stateVersion = "23.05";
 }
 </code></pre>
 <h2 id="docker-compose"><a class="header" href="#docker-compose">Docker compose</a></h2>
-<pre><code class="language-yaml">---
-services:
-  # Nextcloud AIO (self-managed containers)
-  nextcloud-aio-mastercontainer:
-    image: nextcloud/all-in-one:latest
-    restart: always
-    container_name: nextcloud-aio-mastercontainer # Don't change this!
-    volumes:
-      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # Don't change this!
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    ports:
-      - 8080:8080
-    environment:
-      - APACHE_PORT=11000
-      - APACHE_IP_BINDING=10.0.5.100
-
-  # Firefox syncserver
-  syncserver:
-    container_name: syncserver
-    image: crazymax/firefox-syncserver:edge # newest, versioned one 3 years old
-    volumes: [./syncserver:/data]
-    ports: [5001:5000]
-    environment:
-      FF_SYNCSERVER_ACCESSLOG: true
-      FF_SYNCSERVER_FORCE_WSGI_ENVIRON: true
-      FF_SYNCSERVER_FORWARDED_ALLOW_IPS: "*"
-      FF_SYNCSERVER_PUBLIC_URL: https://ffsync.garudalinux.org
-      FF_SYNCSERVER_SECRET: ${FF_SYNCSERVER_SECRET:-?err}
-      FF_SYNCSERVER_SQLURI: sqlite:////data/syncserver.db
-      TZ: Europe/Berlin
-    restart: always
-
-  # Web IRC access
-  thelounge:
-    image: thelounge/thelounge:4.4.3
-    container_name: thelounge
-    volumes: [./thelounge:/var/opt/thelounge]
-    ports: [9000:9000]
-    restart: always
-
-  # Password vault
-  bitwarden:
-    image: vaultwarden/server:1.30.5
-    container_name: bitwarden
-    volumes: [./bitwarden:/data]
-    ports: [8081:80]
-    environment:
-      ADMIN_TOKEN: ${BW_ADMIN_TOKEN:-?err}
-      DOMAIN: https://bitwarden.garudalinux.org
-      SIGNUPS_ALLOWED: true
-      SMTP_FROM: noreply@garudalinux.org
-      SMTP_HOST: mail.garudalinux.org
-      SMTP_PASSWORD: ${BW_SMTP_PASSWORD:-?err}
-      SMTP_PORT: 587
-      SMTP_SSL: false
-      SMTP_USERNAME: noreply@garudalinux.org
-      WEBSOCKET_ENABLED: true
-      YUBICO_CLIENT_ID: ${BW_YUBICO_CLIENT_ID:-?err}
-      YUBICO_SECRET_KEY: ${BW_YUBICO_ADMIN_SECRET:-?err}
-    restart: always
-
-  # Secure pastebin
-  privatebin:
-    image: privatebin/nginx-fpm-alpine:1.7.3
-    container_name: privatebin
-    volumes:
-      - ./privatebin:/srv/data
-      - ./configs/privatebin.cfg.php:/srv/cfg/conf.php
-    ports: [8082:8080]
-    restart: always
-
-  # Garuda startpage
-  homer:
-    image: b4bz/homer:v24.04.1
-    container_name: homer
-    volumes: [./startpage:/www/assets]
-    ports: [8083:8080]
-    restart: always
-
-  # MongoDB instance (Chaotic-AUR / repo metrics)
-  mongodb:
-    image: mongo:7.0.9
-    container_name: mongodb
-    volumes: [./mongo:/data/db]
-    ports: [27017:27017]
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-?err}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-?err}
-    restart: always
-
-  # WikiJs
-  wikijs:
-    image: requarks/wiki:2.5
-    container_name: wikijs
-    volumes: [./wikijs/assets:/wiki/assets/favicons]
-    ports: [3001:3000]
-    environment:
-      DB_TYPE: postgres
-      DB_HOST: 10.0.5.50
-      DB_PORT: 5432
-      DB_USER: wikijs
-      DB_PASS: ${WIKIJS_DB_PASS:-?err}
-      DB_NAME: wikijs
-    restart: always
-
-  # Matrix homeserver
-  matrix:
-    image: matrixdotorg/synapse:v1.107.0
-    container_name: matrix
-    volumes: [./matrix/matrix:/data]
-    ports: [8008:8008]
-    restart: always
-  mautrix-telegram:
-    image: dock.mau.dev/mautrix/telegram
-    container_name: mautrix-telegram
-    volumes: [./matrix/mautrix-telegram:/data]
-    restart: always
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - "! (grep -q 'System clock is wrong, set time offset to' /tmp/debug.log &amp;&amp;\
-          \ rm /tmp/debug.log &amp;&amp; kill -SIGINT 1)"
-      interval: 1m
-      timeout: 10s
-  matrix-appservice-discord:
-    image: ghcr.io/matrix-org/matrix-appservice-discord:develop
-    container_name: matrix-appservice-discord
-    volumes: [./matrix/matrix-appservice-discord:/data]
-    restart: always
-  matrix_web:
-    image: vectorim/element-web:v1.11.67
-    container_name: element_web
-    depends_on: [matrix]
-    volumes: [./matrix/element/config.json:/app/config.json]
-    ports: [8084:80]
-    restart: always
-
-  # Admin interface for Matrix
-  matrix_admin:
-    image: awesometechnologies/synapse-admin:latest # Versioned lags behind 7 months
-    container_name: matrix_admin
-    depends_on: [matrix]
-    ports: [8085:80]
-    restart: always
-
-  # Matrix to IRC/Discord/Telegram relay
-  matterbridge:
-    image: 42wim/matterbridge:1.26
-    container_name: matterbridge
-    depends_on: [matrix]
-    volumes:
-      - ./matterbridge/matterbridge.toml:/etc/matterbridge/matterbridge.toml:ro
-    restart: always
-
-  # Makes world content available for our Lemmy instance
-  lemmy_seeder:
-    image: nowsci/lcs:20231201035206
-    container_name: lemmy_lcs
-    environment:
-      COMMUNITY_COUNT: 50
-      COMMUNITY_SORT_METHODS: '[ "TopAll", "TopDay" ]'
-      COMMUNITY_TYPE: All
-      LOCAL_URL: https://lemmy.garudalinux.org
-      LOCAL_USERNAME: ${LOCAL_USERNAME:-?err}
-      LOCAL_PASSWORD: ${LOCAL_PASSWORD:-?err}
-      MINUTES_BETWEEN_RUNS: 240
-      NSFW: false
-      POST_COUNT: 50
-      REMOTE_INSTANCES:
-        '[ "beehaw.org", "lemmy.world", "lemmy.ml", "sh.itjust.works",
-        "lemmy.one" ]'
-      SECONDS_AFTER_COMMUNITY_ADD: 17
-    restart: unless-stopped
-
-  # Automated container updates
-  watchtower:
-    image: containrrr/watchtower:1.7.1
-    container_name: watchtower
-    command:
-      --cleanup matrix_web matrix_admin wikijs mongodb homer privatebin bitwarden
-      thelounge syncserver nextcloud_app lemmy_seeder
-    volumes: [/var/run/docker.sock:/var/run/docker.sock]
-    restart: always
-
-volumes:
-  nextcloud_aio_mastercontainer:
-    name: nextcloud_aio_mastercontainer # Don't change this!
+<pre><code class="language-yaml">{{#include ../../../docker-compose/all-in-one/docker-compose.yml}}
 </code></pre>
 
                     </main>
