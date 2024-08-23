@@ -189,7 +189,16 @@
 <p>This server is a legacy, still up Fosshost VPS. Fosshost itself ceased to be quite a while ago,
 but this server is still up for some reason.
 Since we can't be sure how long it will stay up, we don't want to put anything important on it.
-Therefore, its sole purpose is running a disposable build environment for the Chaotic-AUR infra 4.0</p>
+Therefore, its sole purpose is running a disposable build environment for the Chaotic-AUR infra 4.0.</p>
+<h3 id="host-specific-tasks"><a class="header" href="#host-specific-tasks">Host-specific tasks</a></h3>
+<ul>
+<li>Restarting the Docker stack:
+<ul>
+<li><code>sudo systemctl restart docker-compose-chaotic-v4-builder-root</code></li>
+<li>alternatively: <code>sudo chaotic-restart</code></li>
+</ul>
+</li>
+</ul>
 <h3 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h3>
 <pre><code class="language-nix">{ pkgs
 , sources

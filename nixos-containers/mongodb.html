@@ -189,6 +189,7 @@
 <p>This container contains our MongoDB instance, which is primarily used for storing Chaotic-AUR router metrics.</p>
 <p>The instance requires the use of TLS, but can be accessed without presenting a valid client certificate,
 so that the Heroku instance the router runs on can access it easier.</p>
+<p>Access happens via the regular MongoDB port, <code>27017</code> and the domain <code>builds.garudalinux.org</code>.</p>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <pre><code class="language-nix">{ pkgs
 , sources

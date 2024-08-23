@@ -186,17 +186,22 @@
                     <main>
                         <h1 id="repositories"><a class="header" href="#repositories">Repositories</a></h1>
 <h2 id="notifications-for-new-events-at-gitlab"><a class="header" href="#notifications-for-new-events-at-gitlab">Notifications for new events at GitLab</a></h2>
-<p>Since GitLab has an inbuilt Telegram integration, we can leverage this feature to send notifications to our a dedicated <a href="https://t.me/garuda_updates">Telegram development updates channel</a>.
-Posts are sent for all kinds of relevant, but non-confidential events like commits, comments or new merge requests. Failed pipelines would also be reported here.</p>
+<p>Since GitLab has an inbuilt Telegram integration, we can leverage this feature to send notifications to our
+dedicated <a href="https://t.me/garuda_updates">Telegram development updates channel</a>.
+Posts are sent for all kinds of relevant, but non-confidential events like commits, comments or new merge requests.
+Failed pipelines would also be reported here.</p>
 <h2 id="backing-up-current-repositories"><a class="header" href="#backing-up-current-repositories">Backing up current repositories</a></h2>
 <p>Current repositories may be backed up using <a href="https://github.com/gabrie30/ghorg">ghorg</a>.
-In order to use ghorg, one needs a GitLab access token and the application itself. To generate a fitting token, follow <a href="https://github.com/gabrie30/ghorg?tab=readme-ov-file#gitlab-setup">these instructions</a>.</p>
+To use ghorg, one needs a GitLab access token and the application itself. To generate a fitting token,
+follow <a href="https://github.com/gabrie30/ghorg?tab=readme-ov-file#gitlab-setup">these instructions</a>.</p>
 <pre><code class="language-sh">ghorg clone --scm gitlab --token "glpat-1234567890" garuda-linux # regular system
 nix run nixpkgs#ghorg -- clone --scm gitlab --token "glpat-1234567890" garuda-linux # oneliner on Nix
 </code></pre>
 <h2 id="archive"><a class="header" href="#archive">Archive</a></h2>
-<p>We have an <a href="https://gitlab.com/garuda-linux/archive">archive repository</a> for all files, which are no longer needed for our current operations.
-It contains old PKGBUILDs and settings packages, eg. the state of the ones before we moved to a unified PKGBUILD repository.</p>
+<p>We have an <a href="https://gitlab.com/garuda-linux/archive">archive repository</a> for all files, which are no longer needed for
+our current operations.
+It contains old PKGBUILDs and settings packages, eg. The state of the ones before we moved to a unified PKGBUILD
+repository.</p>
 
                     </main>
 

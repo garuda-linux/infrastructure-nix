@@ -186,73 +186,52 @@
                     <main>
                         <h1 id="documentation"><a class="header" href="#documentation">Documentation</a></h1>
 <h2 id="building-it"><a class="header" href="#building-it">Building it</a></h2>
-<p>The documentation is created by using <a href="https://rust-lang.github.io/mdBook/index.html">mdBook</a>, which generates Markdown files and generates HTML pages for them. The documentation can be build by running:</p>
+<p>The documentation is created by using <a href="https://rust-lang.github.io/mdBook/index.html">mdBook</a>, which generates Markdown
+files and generates HTML pages for them. The documentation can be build by running:</p>
 <pre><code class="language-sh">nix build .#docs # plain simple
 </code></pre>
 <p>The files can then be found at <code>./result/</code>, which is a symlink to the corresponding path in <code>/nix/store</code>.
-mdBook is also able to automatically serve the current content and update it automatically whenever a change is detected.
+mdBook is also able to automatically serve the current content and update it automatically whenever a change is
+detected.
 This makes testing and previewing content easy.</p>
 <pre><code class="language-sh">mdbook serve --open # the latter additionally opens the website in a browser
 </code></pre>
 <h2 id="useful-information"><a class="header" href="#useful-information">Useful information</a></h2>
 <h3 id="mdbook-syntax"><a class="header" href="#mdbook-syntax">mdBook syntax</a></h3>
-<p>While the general syntax for writing Markdown applies to mdBook, it has several extensions beyond the standard CommonMark specification.</p>
+<p>While the general syntax for writing Markdown applies to mdBook, it has several extensions beyond the standard
+CommonMark specification.</p>
 <ul>
 <li><a href="https://rust-lang.github.io/mdBook/format/markdown.html">Markdown syntax</a></li>
 <li><a href="https://rust-lang.github.io/mdBook/format/mdbook.html">mdBook specific features</a></li>
 </ul>
-<p>Especially importing code blocks as Markdown is really handy to keep content always up-to-date and helps providing a full text searchable code documentation.</p>
+<p>Especially importing code blocks as Markdown is really handy to keep content always up-to-date and helps providing a
+full text searchable code documentation.</p>
 <h3 id="updating-mdbook-plugins-contents"><a class="header" href="#updating-mdbook-plugins-contents">Updating mdBook plugins contents</a></h3>
 <p>Some of the mdBook parts are plugins that need their content to be updated from time to time. Namely, thats:</p>
 <ul>
 <li>mdbook-admonish: run <code>mdbook-admonish</code> inside the <code>docs</code> folder</li>
 <li>mdbook-emojicodes: works without CSS, so no updates needed</li>
-<li>mdbook-catppuccin: run <code>mdbook-catppuccin</code> inside the <code>docs</code> folder (might need to grab binary from <a href="https://github.com/catppuccin/mdBook/releases">its website</a>, no Nix package available yet)</li>
+<li>mdbook-catppuccin: run <code>mdbook-catppuccin</code> inside the <code>docs</code> folder (might need to grab binary
+from <a href="https://github.com/catppuccin/mdBook/releases">its website</a>, no Nix package available yet)</li>
 </ul>
 <h2 id="deployment"><a class="header" href="#deployment">Deployment</a></h2>
 <p>Deployment to Cloudflare pages automated and happens whenever a commit to main occurs.
-A <a href="https://github.com/garuda-linux/infrastructure-nix/blob/main/.github/workflows/pages.yml">GitHub actions workflow</a> builds and pushes it to the <code>cf-pages</code> branch, which will then be used by the Cloudflare pages app to deploy the new version from.</p>
-<pre><code class="language-yaml">---
-name: Cloudflare pages
-on:
-  push:
-    branches: [main]
-    paths: [docs/**, README.md]
-permissions:
-  contents: write
-jobs:
-  build-and-deploy:
-    concurrency: ci-${{ github.ref }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v4
-      - name: Setup mdBook 📜
-        uses: peaceiris/actions-mdbook@v2
-        with:
-          mdbook-version: latest
-      - name: Install further deps 📦
-        run: |
-          sudo apt-get install -y --no-install-recommends cargo
-          cargo install mdbook-admonish
-          cargo install mdbook-emojicodes
-          PATH=$HOME/.cargo/bin:$PATH
-      - name: Install and Build 🔧
-        run: cd docs &amp;&amp; mdbook build
-      - name: Deploy 🚀
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: cf-pages
-          publish_dir: docs/book
+A <a href="https://github.com/garuda-linux/infrastructure-nix/blob/main/.github/workflows/pages.yml">GitHub actions workflow</a>
+builds and pushes it to the <code>cf-pages</code> branch, which will then be used by the Cloudflare pages app to deploy the new
+version from.</p>
+<pre><code class="language-yaml">{ {#include ../../../.github/workflows/pages.yml}}
 </code></pre>
 <h2 id="issues-and-their-solution"><a class="header" href="#issues-and-their-solution">Issues and their solution</a></h2>
 <h3 id="sidebar-or-something-else-on-the-documentation-doesnt-work-as-expected"><a class="header" href="#sidebar-or-something-else-on-the-documentation-doesnt-work-as-expected">Sidebar or something else on the documentation doesn't work as expected</a></h3>
 <p>Chances are that the custom CSS parts need to be rebased to a newer version.
-They can be found in <code>./docs/theme/css</code> and the only addition we made here is to use the Fira Sans font instead of the default one.
-To rebase against a newer version comment out <code>dditional-css</code> in <code>./docs/book.toml</code> and move the <code>css</code> folder somewhere else temporarily.
-After that, run <code>mdbook build</code> inside the <code>docs</code> folder. The new CSS files can now be found inside the <code>./docs/book/css</code> folder.
-Copy those to the <code>./docs/theme/css</code> folder and alter the occurrences of font settings to include Fira Sans (or run a diff to find out where).
+They can be found in <code>./docs/theme/css</code> and the only addition we made here is to use the Fira Sans font instead of the
+default one.
+To rebase against a newer version comment out <code>dditional-css</code> in <code>./docs/book.toml</code> and move the <code>css</code> folder somewhere
+else temporarily.
+After that, run <code>mdbook build</code> inside the <code>docs</code> folder. The new CSS files can now be found inside the <code>./docs/book/css</code>
+folder.
+Copy those to the <code>./docs/theme/css</code> folder and alter the occurrences of font settings to include Fira Sans (or run a
+diff to find out where).
 After uncommenting <code>additional-css</code> in <code>book.toml</code>, run <code>mdbook build</code> again to verify nothing got broken along the way.</p>
 
                     </main>

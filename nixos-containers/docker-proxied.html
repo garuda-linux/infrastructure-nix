@@ -186,7 +186,11 @@
                     <main>
                         <h1 id="docker-proxied"><a class="header" href="#docker-proxied">docker-proxied</a></h1>
 <h2 id="general"><a class="header" href="#general">General</a></h2>
-<p>Here, all of the Docker containers that need to have proxied outgoing requests are being deployed.</p>
+<p>Here, all the Docker containers that need to have proxied outgoing requests are being deployed.</p>
+<h2 id="restarting-containers"><a class="header" href="#restarting-containers">Restarting containers</a></h2>
+<p>This can happen via the following command:</p>
+<pre><code class="language-bash">sudo systemctl restart docker-compose-proxied-root
+</code></pre>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <pre><code class="language-nix">{ pkgs
 , sources

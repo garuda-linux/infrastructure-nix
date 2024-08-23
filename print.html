@@ -190,21 +190,27 @@
 <h2 id="general-information"><a class="header" href="#general-information">General information</a></h2>
 <ul>
 <li>Our current infrastructure is hosted in one of <a href="https://www.hetzner.com/dedicated-rootserver/ax102">these</a>.</li>
-<li>The only other server not being contained in this dedicated server is our mail server.</li>
-<li>Both servers are being backed up to Hetzner storage boxes via <a href="https://www.borgbackup.org/">Borg</a>.</li>
-<li>After multiple different setups, we settled on <a href="https://nixos.org/">NixOS</a> as our main OS as it provides reproducible and atomically updated system states</li>
-<li>Most (sub)domains are protected by Cloudflare while also making use of its caching feature.
+<li>The only other server not being contained in this dedicated server is our mail server, as well as a legacy build server.</li>
+<li>The first two mentioned servers are being backed up to Hetzner storage boxes via <a href="https://www.borgbackup.org/">Borg</a>.</li>
+<li>After multiple different setups, we settled on <a href="https://nixos.org/">NixOS</a> as our main OS as it provides reproducible
+and atomically updated system states</li>
+<li>Cloudflare protects Most (sub)domains while also making use of its caching feature.
 Exemptions are services such as our mail server and parts violating Cloudflares rules such as proxying Piped content.</li>
+<li>Cloudflare Access in combination with Cloudflared is used to secure access to high-risk services such as admin panels.</li>
 </ul>
 <h2 id="quick-links"><a class="header" href="#quick-links">Quick links</a></h2>
 <ul>
 <li><a href="https://docs.garudalinux.net/common">Common maintenance tasks</a></li>
+<li><a href="./hosts/garuda-build.html">Host: garuda-build</a></li>
 <li><a href="https://docs.garudalinux.net/hosts/garuda-mail">Host: garuda-mail</a></li>
 <li><a href="https://docs.garudalinux.net/hosts/immortalis">Host: immortalis</a></li>
 </ul>
 <h2 id="devshell-and-how-to-enter-it"><a class="header" href="#devshell-and-how-to-enter-it">Devshell and how to enter it</a></h2>
-<p>This NixOS flake provides a <a href="https://github.com/numtide/devshell">devshell</a> which contains all deployment tools as well as handy aliases for common tasks.
-The only requirement for using it is having the Nix package manager available. It can be installed on various distributions via the package manager or the following script (<a href="https://zero-to-nix.com/start/install">click me for more information</a>):</p>
+<p>This NixOS flake provides a <a href="https://github.com/numtide/devshell">devshell</a>
+which contains all deployment tools as well as handy aliases for common tasks.
+The only requirement for using it is having the Nix package manager available.
+It can be installed on various distributions via the package manager or the following
+script (<a href="https://zero-to-nix.com/start/install">click me for more information</a>):</p>
 <pre><code class="language-shell">curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix -o nix-install.sh # Check its content afterwards
 sh ./nix-install.sh install --diagnostic-endpoint=""
 </code></pre>
@@ -212,19 +218,36 @@ sh ./nix-install.sh install --diagnostic-endpoint=""
 <pre><code class="language-shell">nix develop # The intended way to use the devshell
 nix-shell # Legacy, non-flakes way if flakes are not available for some reason
 </code></pre>
-<p>This also sets up pre-commit-hooks and shows the currently implemented tasks, which can be executed by running the command.</p>
-<pre><code class="language-shell">[infra-nix]
+<p>This also sets up pre-commit-hooks and shows the currently implemented tasks, which can be executed by running the
+command.</p>
+<pre><code class="language-shell">🔨 Welcome to Garuda's infra-nix shell ❄️
 
-ansible-core    - Radically simple IT automation
-apply           - Applies the infra-nix configuration previously deployed to the servers
-buildiso-local  - Spawns a local buildiso shell to build to ./buildiso (needs Docker)
-buildiso-remote - Spawns a buildiso shell on the iso-runner builder
-clean           - Runs the garbage collection on the servers
-deploy          - Deploys the local NixOS configuration to the servers
-update          - Performs a full system update on the servers by bumping flake lock
-update-forum    - Updates the Discourse container of our forum
-update-toolbox  - Updates the locked Chaotic toolbox commit and deploys the changes
-update-website  - Updates the locked website commit and deploys the changes
+[[general commands]]
+
+  ansible-core        - Radically simple IT automation
+  apply               - Applies the infra-nix configuration pushed to the servers
+  clean               - Runs the garbage collection on the servers
+  commitizen          - Tool to create committing rules for projects, auto bump versions, and generate changelogs
+  deploy              - Deploys the local NixOS configuration to the servers
+  manix               - Fast CLI documentation searcher for Nix
+  mdbook              - Create books from MarkDown
+  mdbook-admonish     - Preprocessor for mdbook to add Material Design admonishments
+  mdbook-emojicodes   - MDBook preprocessor for converting emojicodes (e.g. `: cat :`) into emojis 🐱
+  menu                - prints this menu
+  nixos-install-tools - The essential commands from the NixOS installer as a package
+  pre-commit          - Framework for managing and maintaining multi-language pre-commit hooks
+  prettier            - Prettier is an opinionated code formatter
+  rsync               - Fast incremental file transfer utility
+  update              - Performs a full system update on the servers bumping flake lock
+
+[infra-nix]
+
+  buildiso-local      - Spawns a local buildiso shell to build to ./buildiso (needs Docker)
+  buildiso-remote     - Spawns a buildiso shell on the iso-runner builder
+  ipv6-generator      - Generates random IPv6 addresses in our /64 subnet to help rorating them
+  update-forum        - Updates the Discourse container of our forum
+  update-toolbox      - Updates the locked Chaotic toolbox commit and deploys the changes
+
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="general-structure"><a class="header" href="#general-structure">General structure</a></h1>
 <p>A general overview of the folder structure can be found below:</p>
@@ -440,7 +463,9 @@ to transform an existing <code>docker-compose.yml</code> to valid Nix expression
 Using native Nix expressions has the advantage of being more flexible and easier to maintain,
 as well as taking advantage of Systemd service management, e.g., by restarting crashed containers.
 This was not working reliably with our <code>docker-compose-runner</code> module, which simply started
-existing <code>docker-compose.yml</code> files.</p>
+existing <code>docker-compose.yml</code> files.
+In case secrets are required, one needs to provide them via <code>.env</code> files and
+the <code>virtualisation.oci-containers.containers.environmentFiles</code> key.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="important-links"><a class="header" href="#important-links">Important links</a></h1>
 <p>This is a collection of important links when working with the infrastructure:</p>
 <h2 id="most-important"><a class="header" href="#most-important">Most important</a></h2>
@@ -475,6 +500,7 @@ existing <code>docker-compose.yml</code> files.</p>
 <li><a href="https://accounts.hetzner.com/">Hetzner Robot</a></li>
 <li><a href="https://matrixadmin.garudalinux.net">Matrix Admin</a></li>
 <li><a href="https://app.netdata.cloud">Netdata</a></li>
+<li><a href="https://pgadmin.garudalinux.net">PGAdmin</a></li>
 <li><a href="https://developer.mend.io/github/garuda-linux">Renovate Dashboard</a></li>
 <li><a href="https://login.tailscale.com/">Tailscale</a></li>
 </ul>
@@ -517,21 +543,26 @@ See commit pipelines for more information.</li>
 </li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="users"><a class="header" href="#users">Users</a></h1>
-<p>Multiple kinds of users can make use of our infrastructure. A current list of users is available <a href="./users/current_users.html">here</a>.</p>
+<p>Multiple kinds of users can make use of our infrastructure. A current list of users is
+available <a href="./users/current_users.html">here</a>.</p>
 <h2 id="adding-new-users"><a class="header" href="#adding-new-users">Adding new users</a></h2>
 <p>New users can be added by supplying a fitting configuration in the <code>users.nix</code> module.
 In case of a password being required, its hash needs to be generated as follows:</p>
 <pre><code class="language-sh">nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt' &gt; /path/to/hashedPasswordFile
 </code></pre>
-<p>The file then needs to be <code>ansible-vault</code> encrypted and added to our <a href="https://gitlab.com/garuda-linux/infra-nix-secrets">secrets</a> repository.
+<p>The file then needs to be <code>ansible-vault</code> encrypted and added to
+our <a href="https://gitlab.com/garuda-linux/infra-nix-secrets">secrets</a> repository.
 This one is only available to members of our GitLab org and usually is cloned as git submodule to <code>./secrets</code>.</p>
 <h2 id="onboarding-a-new-admin"><a class="header" href="#onboarding-a-new-admin">Onboarding a new admin</a></h2>
 <p>After confirming the trustworthiness of a new admin, the following actions need to be executed:</p>
 <ul>
 <li>Add them to the <a href="./users/current_users.html#admins">admin users</a></li>
-<li>Add their ssh public key to the <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/flake.nix?ref_type=heads#L59">flake inputs</a> and <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/flake-module.nix?ref_type=heads#L38">specialArgs</a></li>
+<li>Add their ssh public key to
+the <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/flake.nix?ref_type=heads#L59">flake inputs</a>
+and <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/flake-module.nix?ref_type=heads#L38">specialArgs</a></li>
 <li>Make them an owner of the <a href="https://gitlab.com/garuda-linux">GitLab organization</a></li>
-<li>Add them to our <a href="https://vault.garudalinux.org">Bitwarden organization</a> to allow access to passwords and email accounts</li>
+<li>Add them to our <a href="https://vault.garudalinux.org">Vaultwarden organization</a> to allow access to passwords and email
+accounts</li>
 <li>Add them to the Cloudflare Account</li>
 <li>Make them an admin of <a href="https://forum.garudalinux.org">Discourse</a></li>
 <li>Make them an admin of <a href="https://matrix.garudalinux.org">Matrix</a></li>
@@ -571,7 +602,8 @@ They are responsible for the well-being of the infrastructure and its developmen
     /*
 </code></pre>
 <h2 id="maintainers"><a class="header" href="#maintainers">Maintainers</a></h2>
-<p>Maintainers have restricted access, which allows them to use <code>buildiso</code> to build new ISO files via the <code>iso-runner</code> container.</p>
+<p>Maintainers have restricted access, which allows them to use <code>buildiso</code> to build new ISO files via the <code>iso-runner</code>
+container.</p>
 <pre><code class="language-nix">    */
     users.frank = {
       home = "/home/frank";
@@ -614,8 +646,15 @@ They may operate the repository by doing all kinds of packaging-related tasks su
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="immortalis-hetzner-dedicated"><a class="header" href="#immortalis-hetzner-dedicated">immortalis (Hetzner dedicated)</a></h2>
 <h3 id="general"><a class="header" href="#general">General</a></h3>
-<p>This system utilizes a NixOS host which uses <a href="https://nixos.wiki/wiki/NixOS_Containers">nixos-containers</a> to build declarative <code>systemd-nspawn</code> machines for different purposes. To make the best use of the available resources, common directories are shared between containers. This includes <code>/home</code> (home-manager / NixOS configurations writing to home are generated by the host and disabled for the containers), Pacman and Chaotic cache, the <code>/nix</code> directory, and a few others. Further details can be found in the <a href="hhttps://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis/containers.nix">Nix expression</a> of the host.</p>
-<p>All directories containing important data were mapped to <code>/data_1</code> and <code>/data_2</code> to have them all in one place. The first mostly contains web services' files, the latter only builds related directories such as the Pacman cache.</p>
+<p>This system utilizes a NixOS host which uses <a href="https://nixos.wiki/wiki/NixOS_Containers">nixos-containers</a> to build
+declarative <code>systemd-nspawn</code> machines for different purposes. To make the best use of the available resources, common
+directories are shared between containers. This includes <code>/home</code> (home-manager / NixOS configurations writing to home
+are generated by the host and disabled for the containers), Pacman and Chaotic cache, the <code>/nix</code> directory, and a few
+others. Further details can be found in
+the <a href="hhttps://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis/containers.nix">Nix expression</a> of
+the host.</p>
+<p>All directories containing important data were mapped to <code>/data_1</code> and <code>/data_2</code> to have them all in one place. The
+first mostly contains web services' files, the latter only builds related directories such as the Pacman cache.</p>
 <p>The current line-up looks as follows:</p>
 <pre><code class="language-sh">nico@immortalis ~&gt; machinectl
 MACHINE        CLASS     SERVICE        OS    VERSION ADDRESSES
@@ -641,7 +680,9 @@ web-front      container systemd-nspawn nixos 24.11   10.0.5.10…
 <li>6 app dedicated containers (<code>forum</code>, <code>lemmy</code>, <code>mastodon</code>, <code>mongodb</code> &amp; <code>postgres</code>)</li>
 </ul>
 <h3 id="connecting-to-the-server"><a class="header" href="#connecting-to-the-server">Connecting to the server</a></h3>
-<p>After connecting to the host via <code>ssh -p 666 $user@116.202.208.112</code>, containers can generally be entered by running <code>nixos-container login $containername</code>, eg. <code>nixos-container login web-front</code>. Some containers may also be connected via SSH using the following ports:</p>
+<p>After connecting to the host via <code>ssh -p 666 $user@116.202.208.112</code>, containers can generally be entered by
+running <code>nixos-container login $containername</code>, eg. <code>nixos-container login web-front</code>. Some containers may also be
+connected via SSH using the following ports:</p>
 <ul>
 <li>22: <code>temeraire</code> (needs to be 22 to allow pushing packages to the main Chaotic-AUR node via rsync)</li>
 <li>224: <code>forum</code></li>
@@ -652,9 +693,17 @@ web-front      container systemd-nspawn nixos 24.11   10.0.5.10…
 <li>400: <code>chaotic-v4</code></li>
 </ul>
 <h3 id="docker-containers"><a class="header" href="#docker-containers">Docker containers</a></h3>
-<p>Some services not packaged in NixOS or are easier to deploy this way are serviced via the Docker engine. This contains services like Piped, Whoogle, and Matrix. We use a custom <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/garuda/services/docker-compose-runner/docker-compose-runner.nix?ref_type=heads">NixOS module</a> to deploy those with the rest of the system. Secrets are handled via our secret management which consists of a git submodule <code>secret</code> (private repo with <code>ansible-vault</code> encrypted files) and <code>garuda-lib</code> (see secrets section). Those contain a <code>docker-compose</code> directory in which the <code>.env</code> files for the <code>docker-compose.yml</code> are stored.</p>
+<p>Some services not packaged in NixOS or are easier to deploy this way are serviced via the Docker engine. This contains
+services like Piped, Whoogle, and Matrix. We use a
+custom <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/garuda/services/docker-compose-runner/docker-compose-runner.nix?ref_type=heads">NixOS module</a>
+to deploy those with the rest of the system. Secrets are handled via our secret management which consists of a git
+submodule <code>secret</code> (private repo with <code>ansible-vault</code> encrypted files) and <code>garuda-lib</code> (see secrets section). Those
+contain a <code>docker-compose</code> directory in which the <code>.env</code> files for the <code>docker-compose.yml</code> are stored.</p>
 <h3 id="chaotic-aur--repository"><a class="header" href="#chaotic-aur--repository">Chaotic-AUR / repository</a></h3>
-<p>Our repository leverages <a href="https://aur.chaotic.cx">Chaotic-AUR's</a> <a href="https://github.com/chaotic-aur/toolbox">toolbox</a> to provide the main node for the <code>[chaotic-aur]</code> repository as well as two more instances building the <code>[garuda]</code> and <code>[chaotic-kde]</code> repositories. Users of the <code>chaotic_op</code> group may build packages on the corresponding nixos-container via the <a href="https://github.com/chaotic-aur/toolbox/blob/main/README.md">chaotic</a> command:</p>
+<p>Our repository leverages <a href="https://aur.chaotic.cx">Chaotic-AUR's</a> <a href="https://github.com/chaotic-aur/toolbox">toolbox</a> to
+provide the main node for the <code>[chaotic-aur]</code> repository as well as two more instances building the <code>[garuda]</code>
+and <code>[chaotic-kde]</code> repositories. Users of the <code>chaotic_op</code> group may build packages on the corresponding
+nixos-container via the <a href="https://github.com/chaotic-aur/toolbox/blob/main/README.md">chaotic</a> command:</p>
 <pre><code class="language-sh">chaotic get $package # pull PKGBUILD
 chaotic mkd $package # build package in the previously cloned directory
 chaotic bump $package # increment pkgver of $package by 0.1 to allow a rebuild
@@ -665,12 +714,27 @@ chaotic rm $package # remove the package from the repository
 <li><code>[chaotic-aur]</code>: <code>temeraire</code></li>
 </ul>
 <h3 id="squid-proxy"><a class="header" href="#squid-proxy">Squid proxy</a></h3>
-<p>Squid is being installed on the host machine to proxy outgoing requests via random IPv6 addresses of the /64 subnet Hetzner provides for services that need it, eg. Piped, the Chaotic-AUR builders, and other services that are getting rate limited quickly. The process is not entirely automated, which means that we currently have a pool of IPv6 addresses active and need to switch them whenever those are getting rate-limited again.
-Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were somewhat cluttered by (expected) errors. Systemd-unit logging has been set to <code>LogLevelMax=1</code> to un-clutter the journal and needs to be increased again if debugging needs to be done.</p>
+<p>Squid is being installed on the host machine to proxy outgoing requests via random IPv6 addresses of the /64 subnet
+Hetzner provides for services that need it, eg. Piped, the Chaotic-AUR builders, and other services that are getting
+rate limited quickly. The process is not entirely automated, which means that we currently have a pool of IPv6 addresses
+active and need to switch them whenever those are getting rate-limited again.
+Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were somewhat cluttered by (expected) errors.
+Systemd-unit logging has been set to <code>LogLevelMax=1</code> to un-clutter the journal and needs to be increased again if
+debugging needs to be done.</p>
 <h3 id="backups"><a class="header" href="#backups">Backups</a></h3>
-<p>Backups are provided by daily Borg runs. Only the <code>/data_1</code> directory is backed up (minus <code>/data_1/{dockercache,dockerdata}</code>) as the rest are either Nix-generated or build-related files that can easily recovered from another repository mirror. The corresponding systemd-unit is named <code>borgbackup-job-backupToHetzner</code>.</p>
+<p>Backups are provided by daily Borg runs. Only the <code>/data_1</code> directory is backed up (
+minus <code>/data_1/{dockercache,dockerdata}</code>) as the rest are either Nix-generated or build-related files that can easily
+recovered from another repository mirror. The corresponding systemd-unit is named <code>borgbackup-job-backupToHetzner</code>.</p>
 <h3 id="tailscale--mesh-network"><a class="header" href="#tailscale--mesh-network">Tailscale / mesh network</a></h3>
-<p>While Tailscale was commonly used to connect multiple VMs before, this server only has it active on the host. However, we are leveraging Tailscale's <a href="https://tailscale.com/kb/1019/subnets/">subnet router</a> feature to serve the <code>10.0.5.0/24</code> subnet via Tailscale, which means that other Tailscale clients may access the <code>nixos-containers</code> via their IP if <code>tailscale up --accept-routes</code> was used to set up the service.</p>
+<p>While Tailscale was commonly used to connect multiple VMs before, this server only has it active on the host. However,
+we are leveraging Tailscale's <a href="https://tailscale.com/kb/1019/subnets/">subnet router</a> feature to serve the <code>10.0.5.0/24</code>
+subnet via Tailscale, which means that other Tailscale clients may access the <code>nixos-containers</code> via their IP
+if <code>tailscale up --accept-routes</code> was used to set up the service.</p>
+<h3 id="known-issues-and-their-solution"><a class="header" href="#known-issues-and-their-solution">Known issues and their solution</a></h3>
+<h4 id="system-update-gets-stuck"><a class="header" href="#system-update-gets-stuck">System update gets stuck</a></h4>
+<p>For some reason, while running <code>nixos-rebuild switch</code>, the system update gets stuck and doesn't continue.
+In this case, re-running the command will fix the issue.
+It is unclear, what the exact reason is, yet.</p>
 <h3 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h3>
 <pre><code class="language-nix">{ garuda-lib
 , pkgs
@@ -973,7 +1037,16 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="docker"><a class="header" href="#docker">docker</a></h1>
 <h2 id="general-1"><a class="header" href="#general-1">General</a></h2>
-<p>This container consists of our <code>docker-compose-runner</code> module, which deploys all Docker-based services that don't need to proxied outgoing requests. For the other ones, have a look <a href="nixos-containers/./docker-proxied.html">here</a>.</p>
+<p>This container is used to run regular Docker containers.
+Recently, the <code>docker-compose-runner</code> module has been replaced by native Nix expressions.</p>
+<h2 id="nextcloud-aio"><a class="header" href="#nextcloud-aio">Nextcloud AIO</a></h2>
+<p>This container also runs a Nextcloud AIO master container, which administrates its containers by itself.
+Consult its <a href="https://github.com/nextcloud/all-in-one">extensive documentation for more information</a>.
+Since this container requires a Nextcloud volume at a fixed place, without being able to change it, it is not
+included in the regular data directory.</p>
+<p>Instead, backups are regularly performed via the inbuilt backup function in the admin interface.
+They can be found at <code>/var/garuda/docker-compose-runner/all-in-one/nextcloud-aio</code>
+and are included in the offsite system backups.</p>
 <h2 id="nix-expression-1"><a class="header" href="#nix-expression-1">Nix expression</a></h2>
 <pre><code class="language-nix">{ sources, ... }: {
   imports = sources.defaultModules ++ [
@@ -1604,7 +1677,11 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="docker-proxied"><a class="header" href="#docker-proxied">docker-proxied</a></h1>
 <h2 id="general-2"><a class="header" href="#general-2">General</a></h2>
-<p>Here, all of the Docker containers that need to have proxied outgoing requests are being deployed.</p>
+<p>Here, all the Docker containers that need to have proxied outgoing requests are being deployed.</p>
+<h2 id="restarting-containers"><a class="header" href="#restarting-containers">Restarting containers</a></h2>
+<p>This can happen via the following command:</p>
+<pre><code class="language-bash">sudo systemctl restart docker-compose-proxied-root
+</code></pre>
 <h2 id="nix-expression-2"><a class="header" href="#nix-expression-2">Nix expression</a></h2>
 <pre><code class="language-nix">{ pkgs
 , sources
@@ -1975,7 +2052,8 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="forum"><a class="header" href="#forum">forum</a></h1>
 <h2 id="general-3"><a class="header" href="#general-3">General</a></h2>
-<p>In here, we only have Docker set up and use the traditional way of installing Discourse to <code>/var/discourse</code>. Since own scripts are provided to handle the container, not much is to be seen here.</p>
+<p>In here, we only have Docker set up and use the traditional way of installing Discourse to <code>/var/discourse</code>. Since own
+scripts are provided to handle the container, not much is to be seen here.</p>
 <h2 id="links"><a class="header" href="#links">Links</a></h2>
 <ul>
 <li><a href="https://github.com/discourse/discourse_docker">Discourse Docker</a></li>
@@ -1996,8 +2074,15 @@ Since we supplied an invalid IPv4 to force outgoing IPv6, the log files were som
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="github-runner"><a class="header" href="#github-runner">github-runner</a></h1>
 <h2 id="general-4"><a class="header" href="#general-4">General</a></h2>
-<p>With this container, we provide a GitHub runner as well as (more recently), a GitLab runner. This container does <strong>not</strong> have the regular Garuda configurations because it is considered untrusted.
-Access needs to happen by running <code>nixos-container root-login</code> on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortalis.html#connecting-to-the-server">click me</a>).</p>
+<p>With this container, we provide a GitHub runner as well as (more recently), a GitLab runner. This container does <strong>not</strong>
+have the regular Garuda configurations because it is considered untrusted.
+Access needs to happen by running <code>nixos-container root-login</code>
+on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortalis.html#connecting-to-the-server">click me</a>).</p>
+<h2 id="restarting-containers-1"><a class="header" href="#restarting-containers-1">Restarting containers</a></h2>
+<p>This can happen via the following command:</p>
+<pre><code class="language-bash">sudo systemctl restart docker-compose-gitlab-runner-root
+</code></pre>
+<p>Watchtower additionally keeps the containers up to date.</p>
 <h2 id="nix-expression-4"><a class="header" href="#nix-expression-4">Nix expression</a></h2>
 <pre><code class="language-nix">{ keys
 , ...
@@ -2151,11 +2236,9 @@ Access needs to happen by running <code>nixos-container root-login</code> on <co
     wantedBy = [ "multi-user.target" ];
   };
 }
-
-### Docker containers (GitLab)
-
-```nix
-# Auto-generated using compose2nix v0.2.2-pre.
+</code></pre>
+<h3 id="docker-containers-gitlab"><a class="header" href="#docker-containers-gitlab">Docker containers (GitLab)</a></h3>
+<pre><code class="language-nix"># Auto-generated using compose2nix v0.2.2-pre.
 { pkgs, lib, ... }:
 
 {
@@ -2330,7 +2413,7 @@ Access needs to happen by running <code>nixos-container root-login</code> on <co
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="lemmy"><a class="header" href="#lemmy">lemmy</a></h1>
 <h2 id="general-5"><a class="header" href="#general-5">General</a></h2>
-<p>This container provides our Lemmy instance</p>
+<p>This container provides our Lemmy instance.</p>
 <h2 id="nix-expression-5"><a class="header" href="#nix-expression-5">Nix expression</a></h2>
 <pre><code class="language-nix">{ garuda-lib
 , sources
@@ -2532,6 +2615,7 @@ Access needs to happen by running <code>nixos-container root-login</code> on <co
 <p>This container contains our MongoDB instance, which is primarily used for storing Chaotic-AUR router metrics.</p>
 <p>The instance requires the use of TLS, but can be accessed without presenting a valid client certificate,
 so that the Heroku instance the router runs on can access it easier.</p>
+<p>Access happens via the regular MongoDB port, <code>27017</code> and the domain <code>builds.garudalinux.org</code>.</p>
 <h2 id="nix-expression-7"><a class="header" href="#nix-expression-7">Nix expression</a></h2>
 <pre><code class="language-nix">{ pkgs
 , sources
@@ -2575,6 +2659,9 @@ so that the Heroku instance the router runs on can access it easier.</p>
 <li>Matrix bridges</li>
 <li>WikiJs</li>
 </ul>
+<h2 id="admin-interface"><a class="header" href="#admin-interface">Admin interface</a></h2>
+<p>The admin interface powered by Pgadmin can be accessed <a href="https://pgadmin.garudalinux.net">here</a>.
+Authentication happens via Cloudflare Access.</p>
 <h2 id="nix-expression-8"><a class="header" href="#nix-expression-8">Nix expression</a></h2>
 <pre><code class="language-nix">{ garuda-lib
 , pkgs
@@ -2719,6 +2806,8 @@ in
 <div style="break-before: page; page-break-before: always;"></div><h1 id="temeraire"><a class="header" href="#temeraire">temeraire</a></h1>
 <h2 id="general-9"><a class="header" href="#general-9">General</a></h2>
 <p>This is our package builder, which also serves as the main node for Chaotic-AUR.</p>
+<p>For information on how to use the build system,
+please refer to the <a href="https://github.com/chaotic-aur/toolbox">Chaotic toolbox</a> documentation.</p>
 <h2 id="nix-expression-9"><a class="header" href="#nix-expression-9">Nix expression</a></h2>
 <pre><code class="language-nix">{ config
 , garuda-lib
@@ -3025,7 +3114,9 @@ in
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="web-front"><a class="header" href="#web-front">web-front</a></h1>
 <h2 id="general-10"><a class="header" href="#general-10">General</a></h2>
-<p>This container is used as a reverse proxy for all of our public facing services.</p>
+<p>This container is used as a reverse proxy for all of our public facing services.
+It also contains a Cloudflared instance,
+which a few services are only being exposed to, instead of being reverse proxied by Nginx itself.</p>
 <h2 id="nix-expression-10"><a class="header" href="#nix-expression-10">Nix expression</a></h2>
 <pre><code class="language-nix">{ garuda-lib
 , sources
@@ -3586,7 +3677,16 @@ rec {
 <p>This server is a legacy, still up Fosshost VPS. Fosshost itself ceased to be quite a while ago,
 but this server is still up for some reason.
 Since we can't be sure how long it will stay up, we don't want to put anything important on it.
-Therefore, its sole purpose is running a disposable build environment for the Chaotic-AUR infra 4.0</p>
+Therefore, its sole purpose is running a disposable build environment for the Chaotic-AUR infra 4.0.</p>
+<h3 id="host-specific-tasks"><a class="header" href="#host-specific-tasks">Host-specific tasks</a></h3>
+<ul>
+<li>Restarting the Docker stack:
+<ul>
+<li><code>sudo systemctl restart docker-compose-chaotic-v4-builder-root</code></li>
+<li>alternatively: <code>sudo chaotic-restart</code></li>
+</ul>
+</li>
+</ul>
 <h3 id="nix-expression-11"><a class="header" href="#nix-expression-11">Nix expression</a></h3>
 <pre><code class="language-nix">{ pkgs
 , sources
@@ -3766,9 +3866,11 @@ in
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="garuda-mail-netcup-vps"><a class="header" href="#garuda-mail-netcup-vps">garuda-mail (Netcup VPS)</a></h2>
 <h3 id="general-12"><a class="header" href="#general-12">General</a></h3>
-<p>This system mainly consists of the <a href="https://gitlab.com/simple-nixos-mailserver/nixos-mailserver">simple-nixos-mailserver</a>.
+<p>This system mainly consists of
+the <a href="https://gitlab.com/simple-nixos-mailserver/nixos-mailserver">simple-nixos-mailserver</a>.
 Its only purpose is providing a mail service to team members.
-The current config looks like <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/garuda-mail.nix?ref_type=heads#L47">this</a>.
+The current config looks
+like <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/garuda-mail.nix?ref_type=heads#L47">this</a>.
 In case of issues, the <a href="https://nixos-mailserver.readthedocs.io/en/latest/">documentation</a> can be consulted.</p>
 <h3 id="mail-server-setup"><a class="header" href="#mail-server-setup">Mail server setup</a></h3>
 <p>The mail server details are as follows:</p>
@@ -3800,11 +3902,13 @@ It features a few plugins to enhance the general user experience.</p>
 <p>Backups are happening daily via Borg. A Hetzner storage box is used to store multiple generations of backups.</p>
 <h3 id="creating-a-new-user"><a class="header" href="#creating-a-new-user">Creating a new user</a></h3>
 <p>A new user can be created be adding a new <code>loginAccounts</code> value and supplying the password via <code>secrets</code>.
-We make use of <code>hashedPasswordFile</code>, therefore, new hashes can be generated by running <code>nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt'</code>. Add it to the <code>secrets</code>, then execute <code>deploy</code> and <code>apply</code>.
-Don't forget to commit both changes.</p>
+We make use of <code>hashedPasswordFile</code>, therefore, new hashes can be generated by
+running <code>nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt'</code>. Add it to the <code>secrets</code>, then execute <code>deploy</code> and <code>apply</code>.
+Remember to commit both changes.</p>
 <h3 id="issues-and-their-solution"><a class="header" href="#issues-and-their-solution">Issues and their solution</a></h3>
 <h4 id="local-dns-resolver-failing-to-start"><a class="header" href="#local-dns-resolver-failing-to-start">Local DNS resolver failing to start</a></h4>
-<p>Simple NixOS mail server runs a local DNS server to prevent the log filling up with junk (<a href="https://mailserver.readthedocs.io/en/latest/options.html#cmdoption-arg-mailserver.localDnsResolver">source</a>).
+<p>Simple NixOS mail server runs a local DNS server to prevent the log filling up with
+junk (<a href="https://mailserver.readthedocs.io/en/latest/options.html#cmdoption-arg-mailserver.localDnsResolver">source</a>).
 There can be cases of the persisted files need to be deleted in order for the service to recover from dumping core.
 See <a href="https://gitlab.nic.cz/knot/knot-resolver/-/issues/627">this issue</a> for reference.</p>
 <h3 id="nix-expression-12"><a class="header" href="#nix-expression-12">Nix expression</a></h3>
@@ -4032,20 +4136,25 @@ in
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="repositories"><a class="header" href="#repositories">Repositories</a></h1>
 <h2 id="notifications-for-new-events-at-gitlab"><a class="header" href="#notifications-for-new-events-at-gitlab">Notifications for new events at GitLab</a></h2>
-<p>Since GitLab has an inbuilt Telegram integration, we can leverage this feature to send notifications to our a dedicated <a href="https://t.me/garuda_updates">Telegram development updates channel</a>.
-Posts are sent for all kinds of relevant, but non-confidential events like commits, comments or new merge requests. Failed pipelines would also be reported here.</p>
+<p>Since GitLab has an inbuilt Telegram integration, we can leverage this feature to send notifications to our
+dedicated <a href="https://t.me/garuda_updates">Telegram development updates channel</a>.
+Posts are sent for all kinds of relevant, but non-confidential events like commits, comments or new merge requests.
+Failed pipelines would also be reported here.</p>
 <h2 id="backing-up-current-repositories"><a class="header" href="#backing-up-current-repositories">Backing up current repositories</a></h2>
 <p>Current repositories may be backed up using <a href="https://github.com/gabrie30/ghorg">ghorg</a>.
-In order to use ghorg, one needs a GitLab access token and the application itself. To generate a fitting token, follow <a href="https://github.com/gabrie30/ghorg?tab=readme-ov-file#gitlab-setup">these instructions</a>.</p>
+To use ghorg, one needs a GitLab access token and the application itself. To generate a fitting token,
+follow <a href="https://github.com/gabrie30/ghorg?tab=readme-ov-file#gitlab-setup">these instructions</a>.</p>
 <pre><code class="language-sh">ghorg clone --scm gitlab --token "glpat-1234567890" garuda-linux # regular system
 nix run nixpkgs#ghorg -- clone --scm gitlab --token "glpat-1234567890" garuda-linux # oneliner on Nix
 </code></pre>
 <h2 id="archive"><a class="header" href="#archive">Archive</a></h2>
-<p>We have an <a href="https://gitlab.com/garuda-linux/archive">archive repository</a> for all files, which are no longer needed for our current operations.
-It contains old PKGBUILDs and settings packages, eg. the state of the ones before we moved to a unified PKGBUILD repository.</p>
+<p>We have an <a href="https://gitlab.com/garuda-linux/archive">archive repository</a> for all files, which are no longer needed for
+our current operations.
+It contains old PKGBUILDs and settings packages, eg. The state of the ones before we moved to a unified PKGBUILD
+repository.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="pkgbuilds"><a class="header" href="#pkgbuilds">PKGBUILDs</a></h1>
 <h2 id="types-of-pkgbuilds"><a class="header" href="#types-of-pkgbuilds">Types of PKGBUILDs</a></h2>
-<p>There are 2 types of repo packaging-wise:</p>
+<p>There are two types of repo packaging-wise:</p>
 <ol>
 <li>The ones that have all required files in the new pkgbuilds repo and don't reference any external repo in PKGBUILDs <code>source()</code></li>
 <li>The ones requiring external repositories as a source. These are listed in the SOURCES files below, packages <em>not</em> listed here are automatically packages of the first category:</li>
@@ -4673,73 +4782,52 @@ These can be collected via a Prometheus instance and then be visualized using Gr
 <p>Discourse is the application we use to host our forum.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="documentation"><a class="header" href="#documentation">Documentation</a></h1>
 <h2 id="building-it"><a class="header" href="#building-it">Building it</a></h2>
-<p>The documentation is created by using <a href="https://rust-lang.github.io/mdBook/index.html">mdBook</a>, which generates Markdown files and generates HTML pages for them. The documentation can be build by running:</p>
+<p>The documentation is created by using <a href="https://rust-lang.github.io/mdBook/index.html">mdBook</a>, which generates Markdown
+files and generates HTML pages for them. The documentation can be build by running:</p>
 <pre><code class="language-sh">nix build .#docs # plain simple
 </code></pre>
 <p>The files can then be found at <code>./result/</code>, which is a symlink to the corresponding path in <code>/nix/store</code>.
-mdBook is also able to automatically serve the current content and update it automatically whenever a change is detected.
+mdBook is also able to automatically serve the current content and update it automatically whenever a change is
+detected.
 This makes testing and previewing content easy.</p>
 <pre><code class="language-sh">mdbook serve --open # the latter additionally opens the website in a browser
 </code></pre>
 <h2 id="useful-information"><a class="header" href="#useful-information">Useful information</a></h2>
 <h3 id="mdbook-syntax"><a class="header" href="#mdbook-syntax">mdBook syntax</a></h3>
-<p>While the general syntax for writing Markdown applies to mdBook, it has several extensions beyond the standard CommonMark specification.</p>
+<p>While the general syntax for writing Markdown applies to mdBook, it has several extensions beyond the standard
+CommonMark specification.</p>
 <ul>
 <li><a href="https://rust-lang.github.io/mdBook/format/markdown.html">Markdown syntax</a></li>
 <li><a href="https://rust-lang.github.io/mdBook/format/mdbook.html">mdBook specific features</a></li>
 </ul>
-<p>Especially importing code blocks as Markdown is really handy to keep content always up-to-date and helps providing a full text searchable code documentation.</p>
+<p>Especially importing code blocks as Markdown is really handy to keep content always up-to-date and helps providing a
+full text searchable code documentation.</p>
 <h3 id="updating-mdbook-plugins-contents"><a class="header" href="#updating-mdbook-plugins-contents">Updating mdBook plugins contents</a></h3>
 <p>Some of the mdBook parts are plugins that need their content to be updated from time to time. Namely, thats:</p>
 <ul>
 <li>mdbook-admonish: run <code>mdbook-admonish</code> inside the <code>docs</code> folder</li>
 <li>mdbook-emojicodes: works without CSS, so no updates needed</li>
-<li>mdbook-catppuccin: run <code>mdbook-catppuccin</code> inside the <code>docs</code> folder (might need to grab binary from <a href="https://github.com/catppuccin/mdBook/releases">its website</a>, no Nix package available yet)</li>
+<li>mdbook-catppuccin: run <code>mdbook-catppuccin</code> inside the <code>docs</code> folder (might need to grab binary
+from <a href="https://github.com/catppuccin/mdBook/releases">its website</a>, no Nix package available yet)</li>
 </ul>
 <h2 id="deployment"><a class="header" href="#deployment">Deployment</a></h2>
 <p>Deployment to Cloudflare pages automated and happens whenever a commit to main occurs.
-A <a href="https://github.com/garuda-linux/infrastructure-nix/blob/main/.github/workflows/pages.yml">GitHub actions workflow</a> builds and pushes it to the <code>cf-pages</code> branch, which will then be used by the Cloudflare pages app to deploy the new version from.</p>
-<pre><code class="language-yaml">---
-name: Cloudflare pages
-on:
-  push:
-    branches: [main]
-    paths: [docs/**, README.md]
-permissions:
-  contents: write
-jobs:
-  build-and-deploy:
-    concurrency: ci-${{ github.ref }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v4
-      - name: Setup mdBook 📜
-        uses: peaceiris/actions-mdbook@v2
-        with:
-          mdbook-version: latest
-      - name: Install further deps 📦
-        run: |
-          sudo apt-get install -y --no-install-recommends cargo
-          cargo install mdbook-admonish
-          cargo install mdbook-emojicodes
-          PATH=$HOME/.cargo/bin:$PATH
-      - name: Install and Build 🔧
-        run: cd docs &amp;&amp; mdbook build
-      - name: Deploy 🚀
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: cf-pages
-          publish_dir: docs/book
+A <a href="https://github.com/garuda-linux/infrastructure-nix/blob/main/.github/workflows/pages.yml">GitHub actions workflow</a>
+builds and pushes it to the <code>cf-pages</code> branch, which will then be used by the Cloudflare pages app to deploy the new
+version from.</p>
+<pre><code class="language-yaml">{ {#include ../../../.github/workflows/pages.yml}}
 </code></pre>
 <h2 id="issues-and-their-solution-1"><a class="header" href="#issues-and-their-solution-1">Issues and their solution</a></h2>
 <h3 id="sidebar-or-something-else-on-the-documentation-doesnt-work-as-expected"><a class="header" href="#sidebar-or-something-else-on-the-documentation-doesnt-work-as-expected">Sidebar or something else on the documentation doesn't work as expected</a></h3>
 <p>Chances are that the custom CSS parts need to be rebased to a newer version.
-They can be found in <code>./docs/theme/css</code> and the only addition we made here is to use the Fira Sans font instead of the default one.
-To rebase against a newer version comment out <code>dditional-css</code> in <code>./docs/book.toml</code> and move the <code>css</code> folder somewhere else temporarily.
-After that, run <code>mdbook build</code> inside the <code>docs</code> folder. The new CSS files can now be found inside the <code>./docs/book/css</code> folder.
-Copy those to the <code>./docs/theme/css</code> folder and alter the occurrences of font settings to include Fira Sans (or run a diff to find out where).
+They can be found in <code>./docs/theme/css</code> and the only addition we made here is to use the Fira Sans font instead of the
+default one.
+To rebase against a newer version comment out <code>dditional-css</code> in <code>./docs/book.toml</code> and move the <code>css</code> folder somewhere
+else temporarily.
+After that, run <code>mdbook build</code> inside the <code>docs</code> folder. The new CSS files can now be found inside the <code>./docs/book/css</code>
+folder.
+Copy those to the <code>./docs/theme/css</code> folder and alter the occurrences of font settings to include Fira Sans (or run a
+diff to find out where).
 After uncommenting <code>additional-css</code> in <code>book.toml</code>, run <code>mdbook build</code> again to verify nothing got broken along the way.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="tailscale"><a class="header" href="#tailscale">Tailscale</a></h1>
 <p>Our current access policies look as follows:</p>
@@ -4786,7 +4874,10 @@ After uncommenting <code>additional-css</code> in <code>book.toml</code>, run <c
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="garuda-linux-code-of-conduct"><a class="header" href="#garuda-linux-code-of-conduct">Garuda Linux Code of Conduct</a></h1>
-<p>Thank you for being a part of the Garuda Linux community. We value your participation and want everyone to have an enjoyable and fulfilling experience. Accordingly, all participants are expected to follow this Code of Conduct, and to show respect, understanding, and consideration to one another. Thank you for helping make this a welcoming, friendly community for everyone.</p>
+<p>Thank you for being a part of the Garuda Linux community. We value your participation and want everyone to have an
+enjoyable and fulfilling experience. Accordingly, all participants are expected to follow this Code of Conduct, and to
+show respect, understanding, and consideration to one another. Thank you for helping make this a welcoming, friendly
+community for everyone.</p>
 <h2 id="scope"><a class="header" href="#scope">Scope</a></h2>
 <p>This Code of Conduct applies to all Garuda Linux community spaces, including, but not limited to:</p>
 <ul>
@@ -4795,10 +4886,19 @@ After uncommenting <code>additional-css</code> in <code>book.toml</code>, run <c
 <li>Mailing <code>*@garudalinux.org</code></li>
 <li>Community spaces hosted on <code>garudalinux.org</code> infrastructure</li>
 </ul>
-<p>Communication channels and private conversations that are normally out of scope may be considered in scope if a Garuda Linux participant is being stalked or harassed. Social media conversations may be considered in-scope if the incident occurred under a Garuda Linux related hashtag, or when an official Garuda Linux account on social media is tagged, or within any other discussion about Garuda Linux. The Garuda Linux's staff reserves the right to take actions against behaviors that happen in any context, if they are deemed to be relevant to the Garuda Linux project and its participants.</p>
-<p>All participants in Garuda Linux community spaces are subject to the Code of Conduct. This includes founding members, staff members, corporate sponsors, and paid employees. This also includes volunteers, maintainers, leaders, contributors, contribution reviewers, issue reporters, Garuda Linux users, and anyone participating in discussion in Garuda Linux community spaces.</p>
+<p>Communication channels and private conversations that are normally out of scope may be considered in scope if a Garuda
+Linux participant is being stalked or harassed. Social media conversations may be considered in-scope if the incident
+occurred under a Garuda Linux related hashtag, or when an official Garuda Linux account on social media is tagged, or
+within any other discussion about Garuda Linux. The Garuda Linux's staff reserves the right to take actions against
+behaviors that happen in any context, if they are deemed to be relevant to the Garuda Linux project and its
+participants.</p>
+<p>All participants in Garuda Linux community spaces are subject to the Code of Conduct. This includes founding members,
+staff members, corporate sponsors, and paid employees. This also includes volunteers, maintainers, leaders,
+contributors, contribution reviewers, issue reporters, Garuda Linux users, and anyone participating in discussion in
+Garuda Linux community spaces.</p>
 <h2 id="reporting-an-incident"><a class="header" href="#reporting-an-incident">Reporting an Incident</a></h2>
-<p>If you believe that someone is violating the Code of Conduct, or have any other concerns, please contact <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
+<p>If you believe that someone is violating the Code of Conduct, or have any other concerns, please
+contact <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
 <h2 id="our-standards"><a class="header" href="#our-standards">Our Standards</a></h2>
 <p>The Garuda Linux community is dedicated to providing a positive experience for everyone, regardless of:</p>
 <ul>
@@ -4833,38 +4933,68 @@ After uncommenting <code>additional-css</code> in <code>book.toml</code>, run <c
 <li><strong>Be friendly.</strong> Use welcoming and inclusive language.</li>
 <li><strong>Be empathetic.</strong> Be respectful of others' viewpoints and experiences.</li>
 <li><strong>Be respectful.</strong> Express disagreements in a polite and constructive manner.</li>
-<li><strong>Be considerate.</strong> Focus on what is best for the community. Keep discussions around technology choices constructive and respectful. Remember that decisions are often a difficult choice between competing priorities.</li>
-<li><strong>Be patient and generous.</strong> If someone asks for help, it is because they need it. When documentation is available that answers the question, politely point them to it. If the question is off-topic, suggest a more appropriate online space to seek help.</li>
+<li><strong>Be considerate.</strong> Focus on what is best for the community. Keep discussions around technology choices constructive
+and respectful. Remember that decisions are often a difficult choice between competing priorities.</li>
+<li><strong>Be patient and generous.</strong> If someone asks for help, it is because they need it. When documentation is available
+that answers the question, politely point them to it. If the question is off-topic, suggest a more appropriate online
+space to seek help.</li>
 <li><strong>Try to be concise.</strong> Read the discussion before commenting in order to not repeat a point that has been made.</li>
 </ul>
 <h2 id="inappropriate-behavior"><a class="header" href="#inappropriate-behavior">Inappropriate Behavior</a></h2>
-<p>We want all participants in the Garuda Linux community have the best possible experience they can. Community members asked to stop any inappropriate behavior are expected to comply immediately.</p>
+<p>We want all participants in the Garuda Linux community have the best possible experience they can. Community members
+asked to stop any inappropriate behavior are expected to comply immediately.</p>
 <p>Inappropriate behaviors include, but are not limited to:</p>
 <ul>
 <li><strong>Deliberate intimidation, stalking, or following.</strong></li>
-<li><strong>Sustained disruption of online discussion, talks, or other events.</strong> Sustained disruption of events, online discussions, or meetings, including talks and presentations, will not be tolerated. This includes 'Talking over' or 'heckling' event speakers or influencing crowd actions that cause hostility in event sessions. Sustained disruption also includes drinking alcohol to excess or using recreational drugs to excess, or pushing others to do so.</li>
-<li><strong>Harassment of people who don't drink alcohol or other legal substances.</strong> We do not tolerate derogatory comments about those who abstain from alcohol or other legal substances. We do not tolerate pushing people to drink, talking about their abstinence or preferences to others, or pressuring them to drink - physically or through jeering.</li>
-<li><strong>Sexist, racist, homophobic, transphobic, ableist language or otherwise exclusionary language.</strong> This includes deliberately referring to someone by a gender that they do not identify with, and/or questioning the legitimacy of an individual's gender identity. If you're unsure if a word is derogatory, don't use it. This also includes repeated subtle and/or indirect discrimination.</li>
-<li><strong>Unwelcome sexual attention or behavior that contributes to a sexualized environment.</strong> This includes sexualized comments, jokes or imagery in interactions, communications or presentation materials, as well as inappropriate touching, groping, or sexual advances. Sponsors should not use sexualized images, activities, or other material. Meetup organizing staff and other volunteer organizers should not use sexualized clothing/uniforms/costumes, or otherwise create a sexualized environment.</li>
-<li><strong>Unwelcome physical contact.</strong> This includes touching a person without permission, including sensitive areas such as their hair, pregnant stomach, mobility device (wheelchair, scooter, etc) or tattoos. This also includes physically blocking or intimidating another person. Physical contact without affirmative consent is not acceptable. This includes sharing or distribution of sexualized images or text.</li>
-<li><strong>Violence or threats of violence.</strong> Violence and threats of violence are not acceptable - online or offline. This includes incitement of violence toward any individual, including encouraging a person to commit self-harm. This also includes posting or threatening to post other people's personally identifying information ("doxxing") online.</li>
-<li><strong>Influencing or encouraging inappropriate behavior.</strong> If you influence or encourage another person to violate the Code of Conduct, you may face the same consequences as if you had violated the Code of Conduct.</li>
+<li><strong>Sustained disruption of online discussion, talks, or other events.</strong> Sustained disruption of events, online
+discussions, or meetings, including talks and presentations, will not be tolerated. This includes 'Talking over' or '
+heckling' event speakers or influencing crowd actions that cause hostility in event sessions. Sustained disruption
+also includes drinking alcohol to excess or using recreational drugs to excess, or pushing others to do so.</li>
+<li><strong>Harassment of people who don't drink alcohol or other legal substances.</strong> We do not tolerate derogatory comments
+about those who abstain from alcohol or other legal substances. We do not tolerate pushing people to drink, talking
+about their abstinence or preferences to others, or pressuring them to drink - physically or through jeering.</li>
+<li><strong>Sexist, racist, homophobic, transphobic, ableist language or otherwise exclusionary language.</strong> This includes
+deliberately referring to someone by a gender that they do not identify with, and/or questioning the legitimacy of an
+individual's gender identity. If you're unsure if a word is derogatory, don't use it. This also includes repeated
+subtle and/or indirect discrimination.</li>
+<li><strong>Unwelcome sexual attention or behavior that contributes to a sexualized environment.</strong> This includes sexualized
+comments, jokes or imagery in interactions, communications or presentation materials, as well as inappropriate
+touching, groping, or sexual advances. Sponsors should not use sexualized images, activities, or other material.
+Meetup organizing staff and other volunteer organizers should not use sexualized clothing/uniforms/costumes, or
+otherwise create a sexualized environment.</li>
+<li><strong>Unwelcome physical contact.</strong> This includes touching a person without permission, including sensitive areas such as
+their hair, pregnant stomach, mobility device (wheelchair, scooter, etc) or tattoos. This also includes physically
+blocking or intimidating another person. Physical contact without affirmative consent is not acceptable. This includes
+sharing or distribution of sexualized images or text.</li>
+<li><strong>Violence or threats of violence.</strong> Violence and threats of violence are not acceptable - online or offline. This
+includes incitement of violence toward any individual, including encouraging a person to commit self-harm. This also
+includes posting or threatening to post other people's personally identifying information ("doxxing") online.</li>
+<li><strong>Influencing or encouraging inappropriate behavior.</strong> If you influence or encourage another person to violate the
+Code of Conduct, you may face the same consequences as if you had violated the Code of Conduct.</li>
 </ul>
 <h3 id="safety-versus-comfort"><a class="header" href="#safety-versus-comfort">Safety versus Comfort</a></h3>
-<p>The Garuda Linux community prioritizes marginalized people's safety over privileged people's comfort. The following are not against the Code of Conduct.</p>
+<p>The Garuda Linux community prioritizes marginalized people's safety over privileged people's comfort. The following are
+not against the Code of Conduct.</p>
 <ul>
 <li>"Reverse"-isms, including "reverse racism," "reverse sexism," and "cisphobia"</li>
 <li>Reasonable communication of boundaries, such as "leave me alone," "go away," or "I'm not discussing this with you."</li>
 <li>Criticizing racist, sexist, cissexist, or otherwise oppressive behavior or assumptions</li>
 <li>Communicating boundaries or criticizing oppressive behavior in a "tone" you don't find congenial</li>
 </ul>
-<p>If you have questions about the above statements, please read <a href="https://wiki.gnome.org/Foundation/CodeOfConduct/SupportingDiversity">GNOME Foundation's document on Supporting Diversity</a>.</p>
-<p>Outreach and diversity efforts directed at under-represented groups are permitted under the code of conduct. For example, a social event for women would not be classified as being outside the Code of Conduct under this provision.</p>
-<p>Basic expectations for conduct are not covered by the "reverse-ism clause" and would be enforced irrespective of the demographics of those involved. For example, racial discrimination will not be tolerated, irrespective of the race of those involved. Nor would unwanted sexual attention be tolerated, whatever someone's gender or sexual orientation. Members of our community have the right to expect that participants in the project will uphold these standards.</p>
-<p>If a participant engages in behavior that violates this code of conduct, the Garuda Linux's staff may take any action they deem appropriate. In cases involving the staff or founding members the immediate action is expelishment.</p>
+<p>If you have questions about the above statements, please
+read <a href="https://wiki.gnome.org/Foundation/CodeOfConduct/SupportingDiversity">GNOME Foundation's document on Supporting Diversity</a>.</p>
+<p>Outreach and diversity efforts directed at under-represented groups are permitted under the code of conduct. For
+example, a social event for women would not be classified as being outside the Code of Conduct under this provision.</p>
+<p>Basic expectations for conduct are not covered by the "reverse-ism clause" and would be enforced irrespective of the
+demographics of those involved. For example, racial discrimination will not be tolerated, irrespective of the race of
+those involved. Nor would unwanted sexual attention be tolerated, whatever someone's gender or sexual orientation.
+Members of our community have the right to expect that participants in the project will uphold these standards.</p>
+<p>If a participant engages in behavior that violates this code of conduct, the Garuda Linux's staff may take any action
+they deem appropriate. In cases involving the staff or founding members the immediate action is expelishment.</p>
 <h2 id="procedure-for-handling-incidents"><a class="header" href="#procedure-for-handling-incidents">Procedure for Handling Incidents</a></h2>
 <p>You can make a report by emailing <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
-<p>If you make a report via email, we hope you can provide us with some information that will help us identify the reported person. If you don’t remember all the details, we still encourage you to make a report.</p>
+<p>If you make a report via email, we hope you can provide us with some information that will help us identify the reported
+person. If you don’t remember all the details, we still encourage you to make a report.</p>
 <p>We encourage you to include the following information in your report:</p>
 <ul>
 <li>Your contact info (so we can get in touch with you if we need to follow up)</li>
@@ -4878,8 +5008,10 @@ After uncommenting <code>additional-css</code> in <code>book.toml</code>, run <c
 <li>Additional circumstances surrounding the incident</li>
 <li>Other people involved in or witnesses to the incident and their contact information or # Garuda Linux Code of Conduct</li>
 </ul>
-<p>Thank you for being a part of the Garuda Linux community. We value your participation and want everyone to have an enjoyable and fulfilling experience.
-Accordingly, all participants are expected to follow this Code of Conduct, and to show respect, understanding, and consideration to one another.
+<p>Thank you for being a part of the Garuda Linux community. We value your participation and want everyone to have an
+enjoyable and fulfilling experience.
+Accordingly, all participants are expected to follow this Code of Conduct, and to show respect, understanding, and
+consideration to one another.
 Thank you for helping make this a welcoming, friendly community for everyone.</p>
 <h2 id="scope-1"><a class="header" href="#scope-1">Scope</a></h2>
 <p>This Code of Conduct applies to all Garuda Linux community spaces, including, but not limited to:</p>
@@ -4889,13 +5021,19 @@ Thank you for helping make this a welcoming, friendly community for everyone.</p
 <li>Mailing <code>*@garudalinux.org</code></li>
 <li>Community spaces hosted on <code>garudalinux.org</code> infrastructure</li>
 </ul>
-<p>Communication channels and private conversations that are normally out of scope may be considered in scope if a Garuda Linux participant is being stalked or harassed.
-Social media conversations may be considered in-scope if the incident occurred under a Garuda Linux related hashtag, or when an official Garuda Linux account on social media is tagged, or within any other discussion about Garuda Linux.
-The Garuda Linux's staff reserves the right to take actions against behaviors that happen in any context, if they are deemed to be relevant to the Garuda Linux project and its participants.</p>
-<p>All participants in Garuda Linux community spaces are subject to the Code of Conduct. This includes founding members, staff members, corporate sponsors, and paid employees.
-This also includes volunteers, maintainers, leaders, contributors, contribution reviewers, issue reporters, Garuda Linux users, and anyone participating in discussion in Garuda Linux community spaces.</p>
+<p>Communication channels and private conversations that are normally out of scope may be considered in scope if a Garuda
+Linux participant is being stalked or harassed.
+Social media conversations may be considered in-scope if the incident occurred under a Garuda Linux related hashtag, or
+when an official Garuda Linux account on social media is tagged, or within any other discussion about Garuda Linux.
+The Garuda Linux's staff reserves the right to take actions against behaviors that happen in any context, if they are
+deemed to be relevant to the Garuda Linux project and its participants.</p>
+<p>All participants in Garuda Linux community spaces are subject to the Code of Conduct. This includes founding members,
+staff members, corporate sponsors, and paid employees.
+This also includes volunteers, maintainers, leaders, contributors, contribution reviewers, issue reporters, Garuda Linux
+users, and anyone participating in discussion in Garuda Linux community spaces.</p>
 <h2 id="reporting-an-incident-1"><a class="header" href="#reporting-an-incident-1">Reporting an Incident</a></h2>
-<p>If you believe that someone is violating the Code of Conduct, or have any other concerns, please contact <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
+<p>If you believe that someone is violating the Code of Conduct, or have any other concerns, please
+contact <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
 <h2 id="our-standards-1"><a class="header" href="#our-standards-1">Our Standards</a></h2>
 <p>The Garuda Linux community is dedicated to providing a positive experience for everyone, regardless of:</p>
 <ul>
@@ -4930,45 +5068,73 @@ This also includes volunteers, maintainers, leaders, contributors, contribution 
 <li><strong>Be friendly.</strong> Use welcoming and inclusive language.</li>
 <li><strong>Be empathetic.</strong> Be respectful of others' viewpoints and experiences.</li>
 <li><strong>Be respectful.</strong> Express disagreements in a polite and constructive manner.</li>
-<li><strong>Be considerate.</strong> Focus on what is best for the community. Keep discussions around technology choices constructive and respectful.<br />
+<li><strong>Be considerate.</strong> Focus on what is best for the community. Keep discussions around technology choices constructive
+and respectful.<br />
 Remember that decisions are often a difficult choice between competing priorities.</li>
 <li><strong>Be patient and generous.</strong> If someone asks for help, it is because they need it.
-When documentation is available that answers the question, politely point them to it. If the question is off-topic, suggest a more appropriate online space to seek help.</li>
+When documentation is available that answers the question, politely point them to it. If the question is off-topic,
+suggest a more appropriate online space to seek help.</li>
 <li><strong>Try to be concise.</strong> Read the discussion before commenting in order to not repeat a point that has been made.</li>
 </ul>
 <h2 id="inappropriate-behavior-1"><a class="header" href="#inappropriate-behavior-1">Inappropriate Behavior</a></h2>
-<p>We want all participants in the Garuda Linux community have the best possible experience they can. Community members asked to stop any inappropriate behavior are expected to comply immediately.</p>
+<p>We want all participants in the Garuda Linux community have the best possible experience they can. Community members
+asked to stop any inappropriate behavior are expected to comply immediately.</p>
 <p>Inappropriate behaviors include, but are not limited to:</p>
 <ul>
 <li><strong>Deliberate intimidation, stalking, or following.</strong></li>
-<li><strong>Sustained disruption of online discussion, talks, or other events.</strong> Sustained disruption of events, online discussions, or meetings, including talks and presentations, will not be tolerated.
-This includes 'Talking over' or 'heckling' event speakers or influencing crowd actions that cause hostility in event sessions.
-Sustained disruption also includes drinking alcohol to excess or using recreational drugs to excess, or pushing others to do so.</li>
-<li><strong>Harassment of people who don't drink alcohol or other legal substances.</strong> We do not tolerate derogatory comments about those who abstain from alcohol or other legal substances.
-We do not tolerate pushing people to drink, talking about their abstinence or preferences to others, or pressuring them to drink - physically or through jeering.</li>
-<li><strong>Sexist, racist, homophobic, transphobic, ableist language or otherwise exclusionary language.</strong> This includes deliberately referring to someone by a gender that they do not identify with, and/or
+<li><strong>Sustained disruption of online discussion, talks, or other events.</strong> Sustained disruption of events, online
+discussions, or meetings, including talks and presentations, will not be tolerated.
+This includes 'Talking over' or 'heckling' event speakers or influencing crowd actions that cause hostility in event
+sessions.
+Sustained disruption also includes drinking alcohol to excess or using recreational drugs to excess, or pushing others
+to do so.</li>
+<li><strong>Harassment of people who don't drink alcohol or other legal substances.</strong> We do not tolerate derogatory comments
+about those who abstain from alcohol or other legal substances.
+We do not tolerate pushing people to drink, talking about their abstinence or preferences to others, or pressuring
+them to drink - physically or through jeering.</li>
+<li><strong>Sexist, racist, homophobic, transphobic, ableist language or otherwise exclusionary language.</strong> This includes
+deliberately referring to someone by a gender that they do not identify with, and/or
 questioning the legitimacy of an individual's gender identity.
-If you're unsure if a word is derogatory, don't use it. This also includes repeated subtle and/or indirect discrimination.</li>
-<li><strong>Unwelcome sexual attention or behavior that contributes to a sexualized environment.</strong> This includes sexualized comments, jokes or imagery in interactions, communications or presentation materials, as well as inappropriate touching, groping, or sexual advances. Sponsors should not use sexualized images, activities, or other material. Meetup organizing staff and other volunteer organizers should not use sexualized clothing/uniforms/costumes, or otherwise create a sexualized environment.</li>
-<li><strong>Unwelcome physical contact.</strong> This includes touching a person without permission, including sensitive areas such as their hair, pregnant stomach, mobility device (wheelchair, scooter, etc) or tattoos. This also includes physically blocking or intimidating another person. Physical contact without affirmative consent is not acceptable. This includes sharing or distribution of sexualized images or text.</li>
-<li><strong>Violence or threats of violence.</strong> Violence and threats of violence are not acceptable - online or offline. This includes incitement of violence toward any individual, including encouraging a person to commit self-harm. This also includes posting or threatening to post other people's personally identifying information ("doxxing") online.</li>
-<li><strong>Influencing or encouraging inappropriate behavior.</strong> If you influence or encourage another person to violate the Code of Conduct, you may face the same consequences as if you had violated the Code of Conduct.</li>
+If you're unsure if a word is derogatory, don't use it. This also includes repeated subtle and/or indirect
+discrimination.</li>
+<li><strong>Unwelcome sexual attention or behavior that contributes to a sexualized environment.</strong> This includes sexualized
+comments, jokes or imagery in interactions, communications or presentation materials, as well as inappropriate
+touching, groping, or sexual advances. Sponsors should not use sexualized images, activities, or other material.
+Meetup organizing staff and other volunteer organizers should not use sexualized clothing/uniforms/costumes, or
+otherwise create a sexualized environment.</li>
+<li><strong>Unwelcome physical contact.</strong> This includes touching a person without permission, including sensitive areas such as
+their hair, pregnant stomach, mobility device (wheelchair, scooter, etc) or tattoos. This also includes physically
+blocking or intimidating another person. Physical contact without affirmative consent is not acceptable. This includes
+sharing or distribution of sexualized images or text.</li>
+<li><strong>Violence or threats of violence.</strong> Violence and threats of violence are not acceptable - online or offline. This
+includes incitement of violence toward any individual, including encouraging a person to commit self-harm. This also
+includes posting or threatening to post other people's personally identifying information ("doxxing") online.</li>
+<li><strong>Influencing or encouraging inappropriate behavior.</strong> If you influence or encourage another person to violate the
+Code of Conduct, you may face the same consequences as if you had violated the Code of Conduct.</li>
 </ul>
 <h3 id="safety-versus-comfort-1"><a class="header" href="#safety-versus-comfort-1">Safety versus Comfort</a></h3>
-<p>The Garuda Linux community prioritizes marginalized people's safety over privileged people's comfort. The following are not against the Code of Conduct.</p>
+<p>The Garuda Linux community prioritizes marginalized people's safety over privileged people's comfort. The following are
+not against the Code of Conduct.</p>
 <ul>
 <li>"Reverse"-isms, including "reverse racism," "reverse sexism," and "cisphobia"</li>
 <li>Reasonable communication of boundaries, such as "leave me alone," "go away," or "I'm not discussing this with you."</li>
 <li>Criticizing racist, sexist, cissexist, or otherwise oppressive behavior or assumptions</li>
 <li>Communicating boundaries or criticizing oppressive behavior in a "tone" you don't find congenial</li>
 </ul>
-<p>If you have questions about the above statements, please read <a href="https://wiki.gnome.org/Foundation/CodeOfConduct/SupportingDiversity">GNOME Foundation's document on Supporting Diversity</a>.</p>
-<p>Outreach and diversity efforts directed at under-represented groups are permitted under the code of conduct. For example, a social event for women would not be classified as being outside the Code of Conduct under this provision.</p>
-<p>Basic expectations for conduct are not covered by the "reverse-ism clause" and would be enforced irrespective of the demographics of those involved. For example, racial discrimination will not be tolerated, irrespective of the race of those involved. Nor would unwanted sexual attention be tolerated, whatever someone's gender or sexual orientation. Members of our community have the right to expect that participants in the project will uphold these standards.</p>
-<p>If a participant engages in behavior that violates this code of conduct, the Garuda Linux's staff may take any action they deem appropriate. In cases involving the staff or founding members the immediate action is expelishment.</p>
+<p>If you have questions about the above statements, please
+read <a href="https://wiki.gnome.org/Foundation/CodeOfConduct/SupportingDiversity">GNOME Foundation's document on Supporting Diversity</a>.</p>
+<p>Outreach and diversity efforts directed at under-represented groups are permitted under the code of conduct. For
+example, a social event for women would not be classified as being outside the Code of Conduct under this provision.</p>
+<p>Basic expectations for conduct are not covered by the "reverse-ism clause" and would be enforced irrespective of the
+demographics of those involved. For example, racial discrimination will not be tolerated, irrespective of the race of
+those involved. Nor would unwanted sexual attention be tolerated, whatever someone's gender or sexual orientation.
+Members of our community have the right to expect that participants in the project will uphold these standards.</p>
+<p>If a participant engages in behavior that violates this code of conduct, the Garuda Linux's staff may take any action
+they deem appropriate. In cases involving the staff or founding members the immediate action is expelishment.</p>
 <h2 id="procedure-for-handling-incidents-1"><a class="header" href="#procedure-for-handling-incidents-1">Procedure for Handling Incidents</a></h2>
 <p>You can make a report by emailing <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
-<p>If you make a report via email, we hope you can provide us with some information that will help us identify the reported person. If you don’t remember all the details, we still encourage you to make a report.</p>
+<p>If you make a report via email, we hope you can provide us with some information that will help us identify the reported
+person. If you don’t remember all the details, we still encourage you to make a report.</p>
 <p>We encourage you to include the following information in your report:</p>
 <ul>
 <li>Your contact info (so we can get in touch with you if we need to follow up)</li>
@@ -4983,29 +5149,43 @@ If you're unsure if a word is derogatory, don't use it. This also includes repea
 <li>Other people involved in or witnesses to the incident and their contact information or description</li>
 </ul>
 <h2 id="license"><a class="header" href="#license">License</a></h2>
-<p>The Garuda Linux Code of Conduct is licensed under a <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution Share-Alike 3.0 Unported License</a>.</p>
+<p>The Garuda Linux Code of Conduct is licensed under
+a <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution Share-Alike 3.0 Unported License</a>.</p>
 <p><img src="https://licensebuttons.net/l/by-sa/3.0/88x31.png" alt="Creative Commons License" /></p>
 <h2 id="attribution"><a class="header" href="#attribution">Attribution</a></h2>
-<p>The Garuda Linux Code of Conduct was forked from GNOME Foundation's Code of Conduct (last modified 2020-10-01), which is under a Creative Commons license. See the <a href="https://web.archive.org/web/20210813233606/https://wiki.gnome.org/Foundation/CodeOfConduct">original page</a> for the original attributions.
+<p>The Garuda Linux Code of Conduct was forked from GNOME Foundation's Code of Conduct (last modified 2020-10-01), which is
+under a Creative Commons license. See
+the <a href="https://web.archive.org/web/20210813233606/https://wiki.gnome.org/Foundation/CodeOfConduct">original page</a> for the
+original attributions.
 description</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="privacy-policy-for-garuda-linux"><a class="header" href="#privacy-policy-for-garuda-linux">Privacy policy for Garuda Linux</a></h1>
 <h2 id="about-this-document"><a class="header" href="#about-this-document">About this document</a></h2>
-<p>This Privacy Policy governs the manner in which Garuda Linux collects, uses, maintains and discloses information collected from users (each, a “User”) of our website and web services..</p>
+<p>This Privacy Policy governs the manner in which Garuda Linux collects, uses, maintains and discloses information
+collected from users (each, a “User”) of our website and web services..</p>
 <h2 id="what-information-do-we-collect"><a class="header" href="#what-information-do-we-collect">What information do we collect?</a></h2>
-<p>We collect information from you when you register on our site and gather data when you participate in the forum by reading, writing, and evaluating the content shared here.</p>
-<p>When registering on our site, you may be asked to enter your name and e-mail address. You may, however, visit our site without registering. Your e-mail address will be verified by an email containing a unique link. If that link is visited, we know that you control the e-mail address. Your IP address will be checked against a database of known spammers to prevent such actions.</p>
-<p>If you contact us directly, we may receive additional information about you such as your name, email address, the contents of the message and/or attachments you may send us, and any other information you may choose to provide.</p>
-<p>When registered and posting, we record the IP address that the post originated from. We also may retain server logs which include the IP address of every request to our server, which will be purged after 30 days.</p>
+<p>We collect information from you when you register on our site and gather data when you participate in the forum by
+reading, writing, and evaluating the content shared here.</p>
+<p>When registering on our site, you may be asked to enter your name and e-mail address. You may, however, visit our site
+without registering. Your e-mail address will be verified by an email containing a unique link. If that link is visited,
+we know that you control the e-mail address. Your IP address will be checked against a database of known spammers to
+prevent such actions.</p>
+<p>If you contact us directly, we may receive additional information about you such as your name, email address, the
+contents of the message and/or attachments you may send us, and any other information you may choose to provide.</p>
+<p>When registered and posting, we record the IP address that the post originated from. We also may retain server logs
+which include the IP address of every request to our server, which will be purged after 30 days.</p>
 <h2 id="what-do-we-use-your-information-for"><a class="header" href="#what-do-we-use-your-information-for">What do we use your information for?</a></h2>
 <p>Any of the information we collect from you may be used in one of the following ways:</p>
 <ul>
 <li>To provide, operate, and maintain our infrastructure</li>
-<li>To allow using our services that require a login, as well as to provide convenience features such as staying logged in or keeping personally chosen settings.</li>
-<li>To send periodic emails that are generated by our services such as the forum, which may however be turned off if desired.</li>
+<li>To allow using our services that require a login, as well as to provide convenience features such as staying logged in
+or keeping personally chosen settings.</li>
+<li>To send periodic emails that are generated by our services such as the forum, which may however be turned off if
+desired.</li>
 </ul>
 <p>We have no interest in your data and only store the minimum needed to operate the services we provide to our users.</p>
 <h2 id="how-do-we-protect-your-information"><a class="header" href="#how-do-we-protect-your-information">How do we protect your information?</a></h2>
-<p>We implement a variety of security measures to maintain the safety of your personal information when you enter, submit, or access your personal information.</p>
+<p>We implement a variety of security measures to maintain the safety of your personal information when you enter, submit,
+or access your personal information.</p>
 <h2 id="what-is-your-data-retention-policy"><a class="header" href="#what-is-your-data-retention-policy">What is your data retention policy?</a></h2>
 <p>We will make a good faith effort to:</p>
 <ul>
@@ -5013,43 +5193,68 @@ description</p>
 <li>Retain the IP addresses associated with registered users and their posts no more than 5 years.</li>
 </ul>
 <h2 id="third-party-privacy-policies"><a class="header" href="#third-party-privacy-policies">Third Party Privacy Policies</a></h2>
-<p>Garuda Linux's Privacy Policy does not apply to some of the services we utilize in our infrastructure. Thus, we are advising you to consult the respective Privacy Policies of these third-party services for more detailed information.</p>
+<p>Garuda Linux's Privacy Policy does not apply to some of the services we utilize in our infrastructure. Thus, we are
+advising you to consult the respective Privacy Policies of these third-party services for more detailed information.</p>
 <p>This includes, but may not be limited to:</p>
 <ul>
 <li><a href="https://www.cloudflare.com/">Cloudflare</a> to protect against common threats and enhance our infrastructure</li>
 <li><a href="www.hetzner.com/">Hetzner</a> as server and backup storage provider (located in Germany)</li>
 <li><a href="https://translate.google.com/">Google Translate</a> to offer translations on our website</li>
-<li><a href="https://opencollective.org/">OpenCollective</a>, <a href="https://liberapay.com/">Liberapay</a> and <a href="https://www.paypal.com/">Paypal</a> to allow the collection of donations that sustain our infrastructure</li>
+<li><a href="https://opencollective.org/">OpenCollective</a>, <a href="https://liberapay.com/">Liberapay</a>
+and <a href="https://www.paypal.com/">Paypal</a> to allow the collection of donations that sustain our infrastructure</li>
 </ul>
 <h2 id="cookies"><a class="header" href="#cookies">Cookies</a></h2>
-<p>Our Site may use “cookies” to enhance User experience. User’s web browser places cookies on their hard drive for record-keeping purposes and sometimes to track information about them. The user may choose to set their web browser to refuse cookies or to alert you when cookies are being sent. If they do so, note that some parts of the Site may not function properly.</p>
+<p>Our Site may use “cookies” to enhance User experience. User’s web browser places cookies on their hard drive for
+record-keeping purposes and sometimes to track information about them. The user may choose to set their web browser to
+refuse cookies or to alert you when cookies are being sent. If they do so, note that some parts of the Site may not
+function properly.</p>
 <h2 id="sharing-your-personal-information"><a class="header" href="#sharing-your-personal-information">Sharing your personal information</a></h2>
 <p>We do not sell, trade, or rent User’s personal identification information to others.</p>
 <h2 id="how-long-do-we-retain-your-data"><a class="header" href="#how-long-do-we-retain-your-data">How long do we retain your data</a></h2>
-<p>If you leave a comment, the comment and its metadata are retained indefinitely. This is so we can recognize and approve any follow-up comments automatically instead of holding them in a moderation queue.</p>
-<p>For users that register on our website (if any), we also store the personal information they provide in their user profile. All users can see, edit, or delete their personal information at any time (except they cannot change their username). Website administrators can also see and edit that information.</p>
+<p>If you leave a comment, the comment and its metadata are retained indefinitely. This is so we can recognize and approve
+any follow-up comments automatically instead of holding them in a moderation queue.</p>
+<p>For users that register on our website (if any), we also store the personal information they provide in their user
+profile. All users can see, edit, or delete their personal information at any time (except they cannot change their
+username). Website administrators can also see and edit that information.</p>
 <h2 id="embedded-content-from-other-websites"><a class="header" href="#embedded-content-from-other-websites">Embedded content from other websites</a></h2>
-<p>Articles on this site may include embedded content (e.g. videos, images, articles, etc.). Embedded content from other websites behaves in the exact same way as if the visitor has visited the other website.</p>
-<p>These websites may collect data about you, use cookies, embed additional third-party tracking, and monitor your interaction with that embedded content, including tracing your interaction with the embedded content if you have an account and are logged in to that website.</p>
+<p>Articles on this site may include embedded content (e.g. videos, images, articles, etc.). Embedded content from other
+websites behaves in the exact same way as if the visitor has visited the other website.</p>
+<p>These websites may collect data about you, use cookies, embed additional third-party tracking, and monitor your
+interaction with that embedded content, including tracing your interaction with the embedded content if you have an
+account and are logged in to that website.</p>
 <h2 id="free-software"><a class="header" href="#free-software">Free software</a></h2>
-<p>Garuda Linux develops free software. All our tools are and will always be free software. Garuda Linux is part of OIN since November 2020. The current license can be viewed here. Additional information about packages covered by this license can be viewed here.</p>
+<p>Garuda Linux develops free software. All our tools are and will always be free software. Garuda Linux is part of OIN
+since November 2020. The current license can be viewed here. Additional information about packages covered by this
+license can be viewed here.</p>
 <p>If you want to check the license of a package, you can do so with Pacman.</p>
 <h2 id="what-rights-you-have-over-your-data"><a class="header" href="#what-rights-you-have-over-your-data">What rights you have over your data</a></h2>
-<p>If you have an account on this site or have left comments, you can request to receive an exported file of the personal data we hold about you, including any data you have provided to us. You can also request that we erase any personal data we hold about you. This does not include any data we are obliged to keep for administrative, legal, or security purposes.</p>
+<p>If you have an account on this site or have left comments, you can request to receive an exported file of the personal
+data we hold about you, including any data you have provided to us. You can also request that we erase any personal data
+we hold about you. This does not include any data we are obliged to keep for administrative, legal, or security
+purposes.</p>
 <h2 id="childrens-information"><a class="header" href="#childrens-information">Children's Information</a></h2>
-<p>Another part of our priority is adding protection for children while using the internet. We encourage parents and guardians to observe, participate in, and/or monitor and guide their online activity.</p>
-<p>Garuda Linux does not knowingly collect any personal identifiable information from children under the age of 13. If you think that your child provided this kind of information on our website, we strongly encourage you to contact us immediately and we will do our best efforts to promptly remove such information from our records.</p>
+<p>Another part of our priority is adding protection for children while using the internet. We encourage parents and
+guardians to observe, participate in, and/or monitor and guide their online activity.</p>
+<p>Garuda Linux does not knowingly collect any personal identifiable information from children under the age of 13. If you
+think that your child provided this kind of information on our website, we strongly encourage you to contact us
+immediately and we will do our best efforts to promptly remove such information from our records.</p>
 <h2 id="changes-to-this-privacy-policy"><a class="header" href="#changes-to-this-privacy-policy">Changes to This Privacy Policy</a></h2>
-<p>We may update our Privacy Policy from time to time. Thus, we advise you to review this page periodically for any changes. We will notify you of any
-changes by posting the new Privacy Policy on this page. These changes are effective immediately, after they are posted on this page.</p>
+<p>We may update our Privacy Policy from time to time. Thus, we advise you to review this page periodically for any
+changes. We will notify you of any
+changes by posting the new Privacy Policy on this page. These changes are effective immediately, after they are posted
+on this page.</p>
 <h2 id="your-acceptance-of-these-terms"><a class="header" href="#your-acceptance-of-these-terms">Your acceptance of these terms</a></h2>
-<p>By using this Site, you signify your acceptance of this policy. If you do not agree to this policy, please do not use our services. Your continued use of them following the posting of changes to this policy will be deemed your acceptance of those changes.</p>
+<p>By using this Site, you signify your acceptance of this policy. If you do not agree to this policy, please do not use
+our services. Your continued use of them following the posting of changes to this policy will be deemed your acceptance
+of those changes.</p>
 <h2 id="contact-us"><a class="header" href="#contact-us">Contact Us</a></h2>
-<p>If you have any questions about this Privacy Policy, the practices of this site, or your dealings with this site, please contact us via <a href="mailto:team@garudalinux.org">email</a>.</p>
+<p>If you have any questions about this Privacy Policy, the practices of this site, or your dealings with this site, please
+contact us via <a href="mailto:team@garudalinux.org">email</a>.</p>
 <p><strong>This privacy policy has been updated in September 2023.</strong></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="security-policy"><a class="header" href="#security-policy">Security Policy</a></h1>
-<p>If any vulnerability or security flaw is discovered please contact us directly via <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
-<p>We will try to respond within 24-48 hours on a best-effort basis.</p>
+<p>If any vulnerability or security flaw is discovered, please contact us directly
+via <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
+<p>We will try to respond within 24–48 hours on a best-effort basis.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="credits"><a class="header" href="#credits">Credits</a></h1>
 <ul>
 <li><a href="https://github.com/mozilla">https://github.com/mozilla</a></li>
