@@ -2,7 +2,7 @@
 
 ## Types of PKGBUILDs
 
-There are 2 types of repo packaging-wise:
+There are two types of repo packaging-wise:
 
 1. The ones that have all required files in the new pkgbuilds repo and don't reference any external repo in PKGBUILDs `source()`
 2. The ones requiring external repositories as a source. These are listed in the SOURCES files below, packages _not_ listed here are automatically packages of the first category:

@@ -10,6 +10,11 @@ This container houses our Postgres database. Multiple services access it:
 - Matrix bridges
 - WikiJs
 
+## Admin interface
+
+The admin interface powered by Pgadmin can be accessed [here](https://pgadmin.garudalinux.net).
+Authentication happens via Cloudflare Access.
+
 ## Nix expression
 
 ```nix

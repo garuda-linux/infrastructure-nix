@@ -2,7 +2,8 @@
 
 ## General
 
-In here, we only have Docker set up and use the traditional way of installing Discourse to `/var/discourse`. Since own scripts are provided to handle the container, not much is to be seen here.
+In here, we only have Docker set up and use the traditional way of installing Discourse to `/var/discourse`. Since own
+scripts are provided to handle the container, not much is to be seen here.
 
 ## Links
 

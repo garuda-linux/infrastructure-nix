@@ -31,6 +31,7 @@ This is a collection of important links when working with the infrastructure:
 - [Hetzner Robot](https://accounts.hetzner.com/)
 - [Matrix Admin](https://matrixadmin.garudalinux.net)
 - [Netdata](https://app.netdata.cloud)
+- [PGAdmin](https://pgadmin.garudalinux.net)
 - [Renovate Dashboard](https://developer.mend.io/github/garuda-linux)
 - [Tailscale](https://login.tailscale.com/)
 

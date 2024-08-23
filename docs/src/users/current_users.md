@@ -13,7 +13,8 @@ They are responsible for the well-being of the infrastructure and its developmen
 
 ## Maintainers
 
-Maintainers have restricted access, which allows them to use `buildiso` to build new ISO files via the `iso-runner` container.
+Maintainers have restricted access, which allows them to use `buildiso` to build new ISO files via the `iso-runner`
+container.
 
 ```nix
 {{#include ../../../nixos/modules/users.nix:maintainers}}

@@ -2,7 +2,15 @@
 
 ## General
 
-Here, all of the Docker containers that need to have proxied outgoing requests are being deployed.
+Here, all the Docker containers that need to have proxied outgoing requests are being deployed.
+
+## Restarting containers
+
+This can happen via the following command:
+
+```bash
+sudo systemctl restart docker-compose-proxied-root
+```
 
 ## Nix expression
 

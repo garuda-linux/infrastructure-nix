@@ -2,7 +2,7 @@
 
 ## General
 
-This container provides our Lemmy instance
+This container provides our Lemmy instance.
 
 ## Nix expression
 

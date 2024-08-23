@@ -172,3 +172,5 @@ Using native Nix expressions has the advantage of being more flexible and easier
 as well as taking advantage of Systemd service management, e.g., by restarting crashed containers.
 This was not working reliably with our `docker-compose-runner` module, which simply started
 existing `docker-compose.yml` files.
+In case secrets are required, one needs to provide them via `.env` files and
+the `virtualisation.oci-containers.containers.environmentFiles` key.
