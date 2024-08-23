@@ -11,18 +11,18 @@ The current line-up looks as follows:
 ```sh
 nico@immortalis ~> machinectl
 MACHINE        CLASS     SERVICE        OS    VERSION ADDRESSES
-chaotic-kde    container systemd-nspawn nixos 24.05   10.0.5.90
-chaotic-v4     container systemd-nspawn nixos 24.05   10.0.5.140
-docker         container systemd-nspawn nixos 24.05   10.0.5.100
-docker-proxied container systemd-nspawn nixos 24.05   10.0.5.110
-forum          container systemd-nspawn nixos 24.05   10.0.5.70
-github-runner  container systemd-nspawn nixos 24.05   10.0.5.130
-iso-runner     container systemd-nspawn nixos 24.05   10.0.5.40
-lemmy          container systemd-nspawn nixos 24.05   10.0.5.120
-mastodon       container systemd-nspawn nixos 24.05   10.0.5.80
-postgres       container systemd-nspawn nixos 24.05   10.0.5.50
-temeraire      container systemd-nspawn nixos 24.05   10.0.5.20
-web-front      container systemd-nspawn nixos 24.05   10.0.5.10
+chaotic-v4     container systemd-nspawn nixos 24.11   10.0.5.140…
+docker         container systemd-nspawn nixos 24.11   10.0.5.100…
+docker-proxied container systemd-nspawn nixos 24.11   10.0.5.110…
+forum          container systemd-nspawn nixos 24.11   10.0.5.70…
+github-runner  container systemd-nspawn nixos 24.11   10.0.5.130…
+iso-runner     container systemd-nspawn nixos 24.11   10.0.5.40…
+lemmy          container systemd-nspawn nixos 24.11   10.0.5.120…
+mastodon       container systemd-nspawn nixos 24.11   10.0.5.80…
+mongodb        container systemd-nspawn nixos 24.11   10.0.5.60…
+postgres       container systemd-nspawn nixos 24.11   10.0.5.50…
+temeraire      container systemd-nspawn nixos 24.11   10.0.5.20…
+web-front      container systemd-nspawn nixos 24.11   10.0.5.10…
 ```
 
 We are seeing:
@@ -30,8 +30,8 @@ We are seeing:
 - 1 ISO builder (`iso-runner`)
 - 1 reverse proxy serving all the websites and services (`web-front`)
 - 2 Docker dedicated nspawn containers (`docker` & `docker-proxied`)
-- 4 Chaotic-AUR builders (`chaotic-kde`, `chaotic-v4`, `github-runner` & `temeraire`)
-- 5 app dedicated containers (`forum`, `lemmy`, `mastodon` & `postgres`)
+- 3 Chaotic-AUR builders ( `chaotic-v4`, `github-runner` & `temeraire`)
+- 6 app dedicated containers (`forum`, `lemmy`, `mastodon`, `mongodb` & `postgres`)
 
 ### Connecting to the server
 
@@ -40,7 +40,6 @@ After connecting to the host via `ssh -p 666 $user@116.202.208.112`, containers 
 - 22: `temeraire` (needs to be 22 to allow pushing packages to the main Chaotic-AUR node via rsync)
 - 224: `forum`
 - 225: `docker`
-- 226: `chaotic-kde`
 - 227: `iso-runner`
 - 228: `web-front`
 - 229: `postgres` (access the database in `127.0.0.1` via `ssh -p 229 $user@116.202.208.112 -L 5432:127.0.0.1:5432`)
@@ -64,8 +63,6 @@ chaotic rm $package # remove the package from the repository
 Further information may be obtained by clicking `chaotic` seen above. The corresponding builders are:
 
 - `[chaotic-aur]`: `temeraire`
-- `[garuda]`: `repo`
-- `[chaotic-kde]`: `chaotic-kde`
 
 ### Squid proxy
 

@@ -9,7 +9,7 @@ nix build .#docs # plain simple
 ```
 
 The files can then be found at `./result/`, which is a symlink to the corresponding path in `/nix/store`.
-mdBook is also able automatically serve the current content and update it automatically whenever a change is detected.
+mdBook is also able to automatically serve the current content and update it automatically whenever a change is detected.
 This makes testing and previewing content easy.
 
 ```sh

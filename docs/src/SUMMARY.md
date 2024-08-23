@@ -15,17 +15,17 @@
 # Hosts
 
 - [immortalis](./hosts/immortalis.md)
-  - [chaotic-kde](./nixos-containers/chaotic-kde.md)
-  - [docker-proxied](./nixos-containers/docker-proxied.md)
   - [docker](./nixos-containers/docker.md)
+  - [docker-proxied](./nixos-containers/docker-proxied.md)
   - [forum](./nixos-containers/forum.md)
   - [github-runner](./nixos-containers/github-runner.md)
   - [lemmy](./nixos-containers/lemmy.md)
   - [mastodon](./nixos-containers/mastodon.md)
+  - [mongodb](./nixos-containers/mongodb.md)
   - [postgres](./nixos-containers/postgres.md)
-  - [repo](./nixos-containers/repo.md)
   - [temeraire](./nixos-containers/temeraire.md)
   - [web-front](./nixos-containers/web-front.md)
+- [garuda-build](./hosts/garuda-build.md)
 - [garuda-mail](./hosts/garuda-mail.md)
 
 # Repository infrastructure
@@ -35,6 +35,7 @@
 
 # Services
 
+- [Chaotic 4.0](./services/chaotic-4.0.md)
 - [Discourse](./services/discourse.md)
 - [Documentation](./websites/documentation.md)
 - [Tailscale](./services/tailscale.md)

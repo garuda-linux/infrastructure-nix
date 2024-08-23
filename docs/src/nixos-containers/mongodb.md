@@ -1,0 +1,14 @@
+# mongodb
+
+## General
+
+This container contains our MongoDB instance, which is primarily used for storing Chaotic-AUR router metrics.
+
+The instance requires the use of TLS, but can be accessed without presenting a valid client certificate,
+so that the Heroku instance the router runs on can access it easier.
+
+## Nix expression
+
+```nix
+{{#include ../../../nixos/hosts/mongodb.nix}}
+```

@@ -4,29 +4,38 @@ A general overview of the folder structure can be found below:
 
 ```shell
 ├── assets
-├── docker-compose
-│   ├── all-in-one
-│   ├── github-runner
-│   └── proxied
 ├── docs
-│   ├── hosts
-│   └── theme
+│  ├── src
+│  │  ├── hosts
+│  │  ├── nixos-containers
+│  │  ├── repositories
+│  │  ├── services
+│  │  ├── users
+│  │  └── websites
+│  └── theme
+│     ├── css
+│     └── fonts
 ├── home-manager
 ├── host_vars
-│   ├── garuda-build
-│   ├── garuda-mail
-│   └── immortalis
+│  ├── garuda-build
+│  ├── garuda-mail
+│  └── immortalis
 ├── nixos
-│   ├── hosts
-│   │   ├── garuda-build
-│   │   ├── garuda-mail
-│   │   └── immortalis
-│   ├── modules
-│   │   └── static
-│   └── services
-│       ├── chaotic
-│       ├── docker-compose-runner
-│       └── monitoring
+│  ├── hosts
+│  │  ├── chaotic-v4
+│  │  ├── docker
+│  │  │  └── configs
+│  │  ├── docker-proxied
+│  │  ├── garuda-build
+│  │  ├── garuda-mail
+│  │  ├── github-runner
+│  │  └── immortalis
+│  ├── modules
+│  │  └── static
+│  └── services
+│     ├── chaotic
+│     ├── docker-compose-runner
+│     └── monitoring
 ├── playbooks
 ├── scripts
 └── secrets

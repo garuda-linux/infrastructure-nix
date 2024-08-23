@@ -10,8 +10,8 @@ Here, all of the Docker containers that need to have proxied outgoing requests a
 {{#include ../../../nixos/hosts/docker-proxied.nix}}
 ```
 
-## Docker compose
+### Docker containers
 
-```yaml
-{{#include ../../../docker-compose/proxied/docker-compose.yml}}
+```nix
+{{#include ../../../nixos/hosts/docker-proxied/docker-compose.nix}}
 ```

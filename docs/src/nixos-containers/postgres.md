@@ -2,7 +2,7 @@
 
 ## General
 
-This container houses our Postgres database. Multiple servces access it:
+This container houses our Postgres database. Multiple services access it:
 
 - Lemmy
 - Mastodon

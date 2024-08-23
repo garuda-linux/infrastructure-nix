@@ -2,10 +2,10 @@
 
 ## Types of PKGBUILDs
 
-There are 2 types of repos packaging-wise:
+There are 2 types of repo packaging-wise:
 
 1. The ones that have all required files in the new pkgbuilds repo and don't reference any external repo in PKGBUILDs `source()`
-2. The ones requiring external repositories as source. These are listed in the SOURCES files below, packages _not_ listed here are automatically packages of the first category:
+2. The ones requiring external repositories as a source. These are listed in the SOURCES files below, packages _not_ listed here are automatically packages of the first category:
 
 [This file](https://gitlab.com/garuda-linux/pkgbuilds/-/blob/main/SOURCES) provides the needed information to check for the new version with the scheme `$repourl $pkgbuildPathInPkgbuildsRepo $GitlabProjectId`
 

@@ -10,8 +10,8 @@ This container consists of our `docker-compose-runner` module, which deploys all
 {{#include ../../../nixos/hosts/docker.nix}}
 ```
 
-## Docker compose
+### Docker containers
 
-```yaml
-{{#include ../../../docker-compose/all-in-one/docker-compose.yml}}
+```nix
+{{#include ../../../nixos/hosts/docker/docker-compose.nix}}
 ```

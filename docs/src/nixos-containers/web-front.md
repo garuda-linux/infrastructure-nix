@@ -2,7 +2,7 @@
 
 ## General
 
-This container is used as reverse proxy for all of our public facing services.
+This container is used as a reverse proxy for all of our public facing services.
 
 ## Nix expression
 

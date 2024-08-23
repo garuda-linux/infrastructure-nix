@@ -10,3 +10,14 @@ Access needs to happen by running `nixos-container root-login` on `immortalis` (
 ```nix
 {{#include ../../../nixos/hosts/github-runner.nix}}
 ```
+
+### Docker containers (GitHub)
+
+````nix
+{{#include ../../../nixos/hosts/github-runner/github-compose.nix}}
+
+### Docker containers (GitLab)
+
+```nix
+{{#include ../../../nixos/hosts/github-runner/gitlab-compose.nix}}
+````
