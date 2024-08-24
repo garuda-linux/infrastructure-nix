@@ -23,6 +23,10 @@ let
       type = lib.types.bool;
       default = false;
     };
+    restrictQuotas = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+    };
     defaults = lib.mkOption {
       type = lib.types.bool;
       default = true;
@@ -135,14 +139,30 @@ in
           cont.extraOptions])
       cfg.containers;
 
-    environment.etc = lib.mapAttrs'
-      (name: _value: lib.nameValuePair "systemd/nspawn/${name}.nspawn" {
-        text = ''
-          [Exec]
-          SystemCallFilter=add_key keyctl bpf
-        '';
-      })
-      (lib.filterAttrs (_name: value: value.needsDocker) cfg.containers);
+    environment.etc = lib.mkMerge [
+      (lib.mapAttrs'
+        (name: _value: lib.nameValuePair "systemd/nspawn/${name}.nspawn" {
+          text = ''
+            [Exec]
+            SystemCallFilter=add_key keyctl bpf
+          '';
+        })
+        (lib.filterAttrs (_name: value: value.needsDocker) cfg.containers))
+      (lib.mapAttrs'
+        # This restricts container resources to 30 CPU cores and 90GB/100GB of memory.
+        # Specifically, it should prevent one container to hog all resources.
+        (name: _value: lib.nameValuePair "systemd/system.control/container@${name}.service.d/quotas.conf" {
+          text = ''
+            [Service]
+            CPUAccounting=true
+            CPUQuota=3000.00%
+            MemoryAccounting=true
+            MemoryHigh=96636764160
+            MemoryMax=107374182400
+          '';
+        })
+        (lib.filterAttrs (_name: value: value.restrictQuotas) cfg.containers))
+    ];
 
     systemd.tmpfiles.rules = lib.mapAttrsToList (name: _value: "d ${cfg.dockerCache}/${name} 1555 root root") (lib.filterAttrs (_name: value: value.needsDocker) cfg.containers);
 
