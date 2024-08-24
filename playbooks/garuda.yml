@@ -50,3 +50,12 @@
           - --chown=root:root
           - --exclude=garuda/buildtime.json
         src: ../secrets/decrypted/
+    - name: Set appropriate permissions for MongoDB secrets
+      ansible.builtin.file:
+        path: /var/garuda/secrets/{{ item }}
+        owner: 999
+        group: 999
+        mode: "0600"
+      loop:
+        - mongodb/ca.crt
+        - mongodb/mongodb.pem
