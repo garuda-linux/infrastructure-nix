@@ -11,7 +11,7 @@ in
   imports = [
     "${sources.chaotic-portable-builder}/nix/nixos.nix"
     ../modules
-    ./garuda-build/docker-compose.nix
+    # ./garuda-build/docker-compose.nix
     ./garuda-build/hardware-configuration.nix
   ];
 

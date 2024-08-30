@@ -107,6 +107,55 @@
       "/var/run/docker.sock"
     ];
   };
+  virtualisation.oci-containers.containers."chaotic-builder-2" = {
+    image = "registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest";
+    environment = {
+      "BUILDER_HOSTNAME" = "immortalis";
+      "CI_CODE_SKIP" = "123";
+      "DATABASE_HOST" = "host.docker.internal";
+      "DATABASE_PORT" = "22";
+      "REDIS_SSH_HOST" = "host.docker.internal";
+      "REDIS_SSH_USER" = "package-deployer";
+      "SHARED_PATH" = "/var/garuda/docker-compose-runner/chaotic-v4/shared";
+    };
+    volumes = [
+      "/var/garuda/docker-compose-runner/chaotic-v4/shared:/shared:rw"
+      "/var/garuda/docker-compose-runner/chaotic-v4/sshkey:/app/sshkey:rw"
+      "/var/run/docker.sock:/var/run/docker.sock:rw"
+    ];
+    cmd = [ "builder" ];
+    log-driver = "journald";
+    extraOptions = [
+      "--add-host=host.docker.internal:host-gateway"
+      "--network-alias=chaotic-builder-2"
+      "--network=chaotic-v4_default"
+    ];
+    environmentFiles = [
+      "/var/garuda/secrets/docker-compose/chaotic-v4.env"
+    ];
+  };
+  systemd.services."docker-chaotic-builder-2" = {
+    serviceConfig = {
+      Restart = lib.mkOverride 500 "no";
+    };
+    after = [
+      "docker-network-chaotic-v4_default.service"
+    ];
+    requires = [
+      "docker-network-chaotic-v4_default.service"
+    ];
+    partOf = [
+      "docker-compose-chaotic-v4-root.target"
+    ];
+    wantedBy = [
+      "docker-compose-chaotic-v4-root.target"
+    ];
+    unitConfig.RequiresMountsFor = [
+      "/var/garuda/docker-compose-runner/chaotic-v4/shared"
+      "/var/garuda/docker-compose-runner/chaotic-v4/sshkey"
+      "/var/run/docker.sock"
+    ];
+  };
   virtualisation.oci-containers.containers."chaotic-manager" = {
     image = "registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest";
     environment = {
