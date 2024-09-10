@@ -11,7 +11,7 @@
 
   # Containers
   virtualisation.oci-containers.containers."bitwarden" = {
-    image = "vaultwarden/server:1.32.0";
+    image = "vaultwarden/server:1.32.0-alpine";
     environment = {
       "DOMAIN" = "https://bitwarden.garudalinux.org";
       "SIGNUPS_ALLOWED" = "true";
@@ -61,7 +61,7 @@
     ];
   };
   virtualisation.oci-containers.containers."element_web" = {
-    image = "vectorim/element-web:v1.11.73";
+    image = "vectorim/element-web:v1.11.76";
     volumes = [
       "/var/garuda/docker-compose-runner/all-in-one/matrix/element/config.json:/app/config.json:rw"
     ];
@@ -141,7 +141,7 @@
     ];
   };
   virtualisation.oci-containers.containers."lemmy_lcs" = {
-    image = "nowsci/lcs:20240801065204";
+    image = "nowsci/lcs:20240901065204";
     environment = {
       "COMMUNITY_COUNT" = "50";
       "COMMUNITY_SORT_METHODS" = ''[ "TopAll", "TopDay" ]'';
@@ -180,7 +180,7 @@
     ];
   };
   virtualisation.oci-containers.containers."matrix" = {
-    image = "matrixdotorg/synapse:v1.112.0";
+    image = "matrixdotorg/synapse:v1.114.0";
     volumes = [
       "/var/garuda/docker-compose-runner/all-in-one/matrix/matrix:/data:rw"
     ];

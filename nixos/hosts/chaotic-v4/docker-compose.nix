@@ -62,6 +62,7 @@
     image = "registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest";
     environment = {
       "BUILDER_HOSTNAME" = "immortalis";
+      "BUILDER_TIMEOUT" = "7200";
       "CI_CODE_SKIP" = "123";
       "DATABASE_HOST" = "host.docker.internal";
       "DATABASE_PORT" = "22";
@@ -111,6 +112,7 @@
     image = "registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest";
     environment = {
       "BUILDER_HOSTNAME" = "immortalis-2";
+      "BUILDER_TIMEOUT" = "7200";
       "CI_CODE_SKIP" = "123";
       "DATABASE_HOST" = "host.docker.internal";
       "DATABASE_PORT" = "22";
