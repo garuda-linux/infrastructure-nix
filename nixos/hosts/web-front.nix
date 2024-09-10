@@ -537,6 +537,17 @@ rec {
           };
         };
       };
+      # Default catch-all for unknown domains
+      "_" = {
+        addSSL = true;
+        extraConfig = ''
+          log_not_found off;
+          return 404;
+        '';
+        http3 = true;
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
     };
   };
 
