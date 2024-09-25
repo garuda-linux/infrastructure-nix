@@ -11,7 +11,7 @@
 
   # Containers
   virtualisation.oci-containers.containers."github-runner" = {
-    image = "myoung34/github-runner:latest";
+    image = "myoung34/github-runner:2.318.0";
     environment = {
       "EPHEMERAL" = "true";
       "LABELS" = "nyxbuilder";
