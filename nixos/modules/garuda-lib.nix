@@ -74,9 +74,6 @@ in
           };
           apikeys = "/var/garuda/secrets/cloudflare/cloudflare_key";
         };
-        docker-compose = {
-          github-runner = "/var/garuda/secrets/docker-compose/github-runner.env";
-        };
         mail = {
           actionsatcx = "/var/garuda/secrets/mail/actionsatcx";
           cloudatgl = "/var/garuda/secrets/mail/cloudatgl";

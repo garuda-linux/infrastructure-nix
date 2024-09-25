@@ -1,9 +1,5 @@
 # Auto-generated using compose2nix v0.2.2-pre.
-{ garuda-lib
-, lib
-, pkgs
-, ...
-}:
+{ pkgs, lib, ... }:
 
 {
   # Runtime
@@ -132,17 +128,22 @@
       "PACKAGE_REPOS_NOTIFIERS" = ''{
       "chaotic-aur": {
           "id": "54867625",
-          "token": "${garuda-lib.secrets.chaotic.gl-pat-chaotic}",
+          "token": "?err",
           "check_name": "chaotic-aur: %pkgbase%"
+      },
+      "chaotic-aur-kde": {
+          "id": "54897682",
+          "token": "?err",
+          "check_name": "chaotic-aur-kde: %pkgbase%"
       },
       "garuda": {
           "id": "48461689",
-          "token": "${garuda-lib.secrets.chaotic.gl-pat-garuda}",
+          "token": "?err",
           "check_name": "garuda: %pkgbase%"
       },
       "garuda-aur": {
           "id": "52092196",
-          "token": "${garuda-lib.secrets.chaotic.gl-pat-garuda}",
+          "token": "?err",
           "check_name": "garuda: %pkgbase%"
       }
   }'';
