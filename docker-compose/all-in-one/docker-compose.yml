@@ -1,0 +1,187 @@
+---
+services:
+  # Nextcloud AIO (self-managed containers)
+  nextcloud-aio-mastercontainer:
+    image: nextcloud/all-in-one:latest
+    restart: always
+    container_name: nextcloud-aio-mastercontainer # Don't change this!
+    volumes:
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # Don't change this!
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 8080:8080
+    environment:
+      - APACHE_PORT=11000
+      - APACHE_IP_BINDING=10.0.5.100
+
+  # Firefox syncserver
+  syncserver:
+    container_name: syncserver
+    image: crazymax/firefox-syncserver:edge # newest, versioned one 3 years old
+    volumes: [./syncserver:/data]
+    ports: [5001:5000]
+    environment:
+      FF_SYNCSERVER_ACCESSLOG: true
+      FF_SYNCSERVER_FORCE_WSGI_ENVIRON: true
+      FF_SYNCSERVER_FORWARDED_ALLOW_IPS: "*"
+      FF_SYNCSERVER_PUBLIC_URL: https://ffsync.garudalinux.org
+      FF_SYNCSERVER_SECRET: ${FF_SYNCSERVER_SECRET:-?err}
+      FF_SYNCSERVER_SQLURI: sqlite:////data/syncserver.db
+      TZ: Europe/Berlin
+    restart: always
+
+  # Web IRC access
+  thelounge:
+    image: thelounge/thelounge:4.4.3
+    container_name: thelounge
+    volumes: [./thelounge:/var/opt/thelounge]
+    ports: [9000:9000]
+    restart: always
+
+  # Password vault
+  bitwarden:
+    image: vaultwarden/server:1.31.0
+    container_name: bitwarden
+    volumes: [./bitwarden:/data]
+    ports: [8081:80]
+    environment:
+      ADMIN_TOKEN: ${BW_ADMIN_TOKEN:-?err}
+      DOMAIN: https://bitwarden.garudalinux.org
+      SIGNUPS_ALLOWED: true
+      SMTP_FROM: noreply@garudalinux.org
+      SMTP_HOST: mail.garudalinux.org
+      SMTP_PASSWORD: ${BW_SMTP_PASSWORD:-?err}
+      SMTP_PORT: 587
+      SMTP_SSL: false
+      SMTP_USERNAME: noreply@garudalinux.org
+      WEBSOCKET_ENABLED: true
+      YUBICO_CLIENT_ID: ${BW_YUBICO_CLIENT_ID:-?err}
+      YUBICO_SECRET_KEY: ${BW_YUBICO_ADMIN_SECRET:-?err}
+    restart: always
+
+  # Secure pastebin
+  privatebin:
+    image: privatebin/nginx-fpm-alpine:1.7.4
+    container_name: privatebin
+    volumes:
+      - ./privatebin:/srv/data
+      - ./configs/privatebin.cfg.php:/srv/cfg/conf.php
+    ports: [8082:8080]
+    restart: always
+
+  # Garuda startpage
+  homer:
+    image: b4bz/homer:v24.05.1
+    container_name: homer
+    volumes: [./startpage:/www/assets]
+    ports: [8083:8080]
+    restart: always
+
+  # MongoDB instance (Chaotic-AUR / repo metrics)
+  mongodb:
+    image: mongo:7.0.12
+    container_name: mongodb
+    volumes: [./mongo:/data/db]
+    ports: [27017:27017]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-?err}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-?err}
+    restart: always
+
+  # WikiJs
+  wikijs:
+    image: requarks/wiki:2.5
+    container_name: wikijs
+    volumes: [./wikijs/assets:/wiki/assets/favicons]
+    ports: [3001:3000]
+    environment:
+      DB_TYPE: postgres
+      DB_HOST: 10.0.5.50
+      DB_PORT: 5432
+      DB_USER: wikijs
+      DB_PASS: ${WIKIJS_DB_PASS:-?err}
+      DB_NAME: wikijs
+    restart: always
+
+  # Matrix homeserver
+  matrix:
+    image: matrixdotorg/synapse:v1.112.0
+    container_name: matrix
+    volumes: [./matrix/matrix:/data]
+    ports: [8008:8008]
+    restart: always
+  mautrix-telegram:
+    image: dock.mau.dev/mautrix/telegram
+    container_name: mautrix-telegram
+    volumes: [./matrix/mautrix-telegram:/data]
+    restart: always
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "! (grep -q 'System clock is wrong, set time offset to' /tmp/debug.log &&\
+          \ rm /tmp/debug.log && kill -SIGINT 1)"
+      interval: 1m
+      timeout: 10s
+  # matrix-appservice-discord:
+  #   image: ghcr.io/matrix-org/matrix-appservice-discord:develop
+  #   container_name: matrix-appservice-discord
+  #   volumes: [./matrix/matrix-appservice-discord:/data]
+  #   restart: always
+  matrix_web:
+    image: vectorim/element-web:v1.11.73
+    container_name: element_web
+    depends_on: [matrix]
+    volumes: [./matrix/element/config.json:/app/config.json]
+    ports: [8084:80]
+    restart: always
+
+  # Admin interface for Matrix
+  matrix_admin:
+    image: awesometechnologies/synapse-admin:latest # Versioned lags behind 7 months
+    container_name: matrix_admin
+    depends_on: [matrix]
+    ports: [8085:80]
+    restart: always
+
+  # Matrix to IRC/Discord/Telegram relay
+  matterbridge:
+    image: 42wim/matterbridge:1.26
+    container_name: matterbridge
+    depends_on: [matrix]
+    volumes:
+      - ./matterbridge/matterbridge.toml:/etc/matterbridge/matterbridge.toml:ro
+    restart: always
+
+  # Makes world content available for our Lemmy instance
+  lemmy_seeder:
+    image: nowsci/lcs:20240801065204
+    container_name: lemmy_lcs
+    environment:
+      COMMUNITY_COUNT: 50
+      COMMUNITY_SORT_METHODS: '[ "TopAll", "TopDay" ]'
+      COMMUNITY_TYPE: All
+      LOCAL_URL: https://lemmy.garudalinux.org
+      LOCAL_USERNAME: ${LOCAL_USERNAME:-?err}
+      LOCAL_PASSWORD: ${LOCAL_PASSWORD:-?err}
+      MINUTES_BETWEEN_RUNS: 240
+      NSFW: false
+      POST_COUNT: 50
+      REMOTE_INSTANCES:
+        '[ "beehaw.org", "lemmy.world", "lemmy.ml", "sh.itjust.works",
+        "lemmy.one" ]'
+      SECONDS_AFTER_COMMUNITY_ADD: 17
+    restart: unless-stopped
+
+  # Automated container updates
+  watchtower:
+    image: containrrr/watchtower:1.7.1
+    container_name: watchtower
+    command:
+      --cleanup matrix_web matrix_admin wikijs mongodb homer privatebin bitwarden
+      thelounge syncserver nextcloud_app lemmy_seeder
+    volumes: [/var/run/docker.sock:/var/run/docker.sock]
+    restart: always
+
+volumes:
+  nextcloud_aio_mastercontainer:
+    name: nextcloud_aio_mastercontainer # Don't change this!

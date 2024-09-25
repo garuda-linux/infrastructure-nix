@@ -5,15 +5,13 @@
 }:
 let
   wrapperScript = pkgs.writeScriptBin "chaotic-restart" ''
-    systemctl restart docker-compose-chaotic-v4-root.target 
+    cd /var/garuda/docker-compose-runner/chaotic-v4/
+    docker compose down
+    docker compose up -d
   '';
 in
 {
-  imports = sources.defaultModules ++ [
-    "${sources.chaotic-portable-builder}/nix/nixos.nix"
-    ../modules
-    ./chaotic-v4/docker-compose.nix
-  ];
+  imports = sources.defaultModules ++ [ ../modules "${sources.chaotic-portable-builder}/nix/nixos.nix" ];
 
   # Redis is used to distribute build jobs
   services.redis = {
@@ -24,6 +22,12 @@ in
       port = 6379;
       requirePassFile = "/var/garuda/secrets/chaotic/redis";
     };
+  };
+
+  # This container is just for docker-compose stuff
+  services.docker-compose-runner.chaotic-v4 = {
+    envfile = garuda-lib.secrets.docker-compose.chaotic-v4;
+    source = ../../docker-compose/chaotic-v4;
   };
 
   # Lock down chaotic-op group to SCP in landing zone

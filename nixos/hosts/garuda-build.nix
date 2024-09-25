@@ -4,15 +4,16 @@
 }:
 let
   wrapperScript = pkgs.writeScriptBin "chaotic-restart" ''
-    systemctl restart docker-compose-chaotic-v4-builder-root.target 
+    cd /var/garuda/docker-compose-runner/chaotic-v4-builder/
+    docker compose down
+    docker compose up -d
   '';
 in
 {
   imports = [
-    "${sources.chaotic-portable-builder}/nix/nixos.nix"
     ../modules
-    ./garuda-build/docker-compose.nix
     ./garuda-build/hardware-configuration.nix
+    "${sources.chaotic-portable-builder}/nix/nixos.nix"
   ];
 
   # Base configuration
@@ -25,6 +26,12 @@ in
 
   # At least try to prevent the insane spam of login attempts
   services.openssh.ports = [ 1022 ];
+
+  # Contains a builder container only
+  services.docker-compose-runner.chaotic-v4 = {
+    envfile = garuda-lib.secrets.docker-compose.chaotic-v4-builder;
+    source = ../../docker-compose/chaotic-v4-builder;
+  };
 
   # Lock down chaotic-op group to SCP in landing zone
   services.openssh.extraConfig = ''
