@@ -27,12 +27,6 @@ in
   # At least try to prevent the insane spam of login attempts
   services.openssh.ports = [ 1022 ];
 
-  # Contains a builder container only
-  services.docker-compose-runner.chaotic-v4 = {
-    envfile = garuda-lib.secrets.docker-compose.chaotic-v4-builder;
-    source = ../../docker-compose/chaotic-v4-builder;
-  };
-
   # Lock down chaotic-op group to SCP in landing zone
   services.openssh.extraConfig = ''
     Match Group chaotic-op
@@ -43,15 +37,6 @@ in
       PermitTunnel no
       X11Forwarding no
   '';
-
-  # Enable the user accounts of chaotic maintainers
-  garuda-lib.chaoticUsers = true;
-
-  # Allow controlling infra 4.0's containers without root
-  environment.systemPackages = [ wrapperScript ];
-  security.sudo.extraRules = [
-    { users = [ "xiota" ]; commands = [{ command = "${wrapperScript}/bin/chaotic-restart"; options = [ "NOPASSWD" ]; }]; }
-  ];
 
   system.stateVersion = "22.05";
 }

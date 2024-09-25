@@ -40,7 +40,7 @@ services:
 
   # Password vault
   bitwarden:
-    image: vaultwarden/server:1.31.0
+    image: vaultwarden/server:1.32.0-alpine
     container_name: bitwarden
     volumes: [./bitwarden:/data]
     ports: [8081:80]
@@ -105,7 +105,7 @@ services:
 
   # Matrix homeserver
   matrix:
-    image: matrixdotorg/synapse:v1.112.0
+    image: matrixdotorg/synapse:v1.115.0
     container_name: matrix
     volumes: [./matrix/matrix:/data]
     ports: [8008:8008]
@@ -128,7 +128,7 @@ services:
   #   volumes: [./matrix/matrix-appservice-discord:/data]
   #   restart: always
   matrix_web:
-    image: vectorim/element-web:v1.11.73
+    image: vectorim/element-web:v1.11.78
     container_name: element_web
     depends_on: [matrix]
     volumes: [./matrix/element/config.json:/app/config.json]
@@ -154,7 +154,7 @@ services:
 
   # Makes world content available for our Lemmy instance
   lemmy_seeder:
-    image: nowsci/lcs:20240801065204
+    image: nowsci/lcs:20240901065204
     container_name: lemmy_lcs
     environment:
       COMMUNITY_COUNT: 50

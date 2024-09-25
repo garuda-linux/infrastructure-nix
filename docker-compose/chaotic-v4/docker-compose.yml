@@ -6,6 +6,8 @@ services:
     command: builder
     environment:
       BUILDER_HOSTNAME: immortalis
+      BUILDER_TIMEOUT: 7200
+      CI_CODE_SKIP: 123
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
       REDIS_SSH_HOST: host.docker.internal
       REDIS_SSH_USER: package-deployer
@@ -28,6 +30,7 @@ services:
       # Address published to outside world
       DATABASE_HOST: builds.garudalinux.org
       DATABASE_PORT: 400
+      CI_CODE_SKIP: 123
       DATABASE_USER: package-deployer
       GPG_PATH: /var/garuda/docker-compose-runner/chaotic-v4/gnupg
       LANDING_ZONE_PATH: /var/garuda/docker-compose-runner/chaotic-v4/landing-zone
@@ -42,9 +45,6 @@ services:
         {
             "chaotic-aur": {
                 "url": "https://gitlab.com/chaotic-aur/pkgbuilds"
-            },
-            "chaotic-aur-kde": {
-                "url": "https://gitlab.com/chaotic-aur/pkgbuilds-kde"
             },
             "garuda": {
                 "url": "https://gitlab.com/garuda-linux/pkgbuilds"
@@ -61,19 +61,6 @@ services:
                         "name": "chaotic-aur",
                         "servers": [
                             "https://builds.garudalinux.org/chaotic-v4/x86_64"
-                        ]
-                    }
-                ],
-                "extra_keyrings": [
-                    "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
-                ]
-            },
-            "chaotic-aur-kde": {
-                "extra_repos": [
-                    {
-                        "name": "chaotic-aur-kde",
-                        "servers": [
-                            "https://builds.garudalinux.org/chaotic-kde-v4/x86_64"
                         ]
                     }
                 ],
