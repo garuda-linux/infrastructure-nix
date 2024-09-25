@@ -1,5 +1,6 @@
 { pkgs
 , sources
+, garuda-lib
 , ...
 }:
 {
@@ -12,12 +13,18 @@
     enableAuth = true;
     extraConfig = ''
       net.tls.mode: requireTLS
-      net.tls.certificateKeyFile: /etc/ssl/mongodb/mongodb.pem
-      net.tls.CAFile: /etc/ssl/mongodb/ca.crt
+      net.tls.certificateKeyFile: /run/credentials/mongodb.service/mongodb.pem
+      net.tls.CAFile: /run/credentials/mongodb.service/ca.crt
       net.tls.allowConnectionsWithoutCertificates: true
     '';
     quiet = true;
     initialRootPassword = "yupHasAlreadyBeenChanged";
+  };
+
+  systemd.services.mongodb = {
+    serviceConfig = {
+      LoadCredential = [ "ca.crt:${garuda-lib.secrets.mongodb.CA}" "mongodb.pem:${garuda-lib.secrets.mongodb.pem}" ];
+    };
   };
 
   # MongoDB port is being forwarded to this container

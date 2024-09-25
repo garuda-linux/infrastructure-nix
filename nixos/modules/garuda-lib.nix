@@ -105,6 +105,10 @@ in
             private = "/var/garuda/secrets/team_sshkey";
           };
         };
+        mongodb = {
+          CA = "/var/garuda/secrets/mongodb/ca.crt";
+          pem = "/var/garuda/secrets/mongodb/mongodb.pem";
+        };
       };
       xslt_style = ./static/style.xslt;
     };
