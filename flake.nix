@@ -23,7 +23,7 @@
 
     # The single source of truth
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
 
     # Our mailserver
     nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
@@ -32,7 +32,7 @@
     nixos-mailserver.inputs.nixpkgs-24_05.follows = "nixpkgs-stable";
 
     # Pre-commit hooks via nix-shell or nix develop
-    pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
+    pre-commit-hooks.url = "github:cachix/git-hooks.nix";
     pre-commit-hooks.inputs.flake-compat.follows = "flake-compat";
     pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
     pre-commit-hooks.inputs.nixpkgs-stable.follows = "nixpkgs-stable";
@@ -92,7 +92,7 @@
     };
 
     # Patches for nixos, automatically applied if they follow this format
-    nixos-patch-nat.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/277016.patch";
+    nixos-patch-nat.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/277016.diff";
     nixos-patch-nat.flake = false;
   };
 

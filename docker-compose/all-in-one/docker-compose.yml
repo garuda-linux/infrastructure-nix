@@ -77,17 +77,6 @@ services:
     ports: [8083:8080]
     restart: always
 
-  # MongoDB instance (Chaotic-AUR / repo metrics)
-  mongodb:
-    image: mongo:7.0.12
-    container_name: mongodb
-    volumes: [./mongo:/data/db]
-    ports: [27017:27017]
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-?err}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-?err}
-    restart: always
-
   # WikiJs
   wikijs:
     image: requarks/wiki:2.5
