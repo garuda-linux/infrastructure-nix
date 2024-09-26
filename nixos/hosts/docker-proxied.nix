@@ -1,5 +1,4 @@
 { garuda-lib
-, pkgs
 , sources
 , ...
 }: {
@@ -22,7 +21,7 @@
   };
 
   # This one is set manually as service because it needs restart: always
-  # (which the docker-compose-runner overwrites) - update: this does not help either.
+  # (which the docker-compose-runner overwrites)
   virtualisation.oci-containers = {
     backend = "docker";
     containers.whoogle = {
@@ -55,26 +54,6 @@
       user = "whoogle";
       volumes = [ "/var/garuda/docker-compose-runner/proxied/whoogle:/config" ];
     };
-  };
-
-  # This is another workaround for the Docker not restarting the container
-  systemd.services.check-whoogle = {
-    description = "Check whether Whoogle crashed again";
-    serviceConfig = {
-      ExecStart = pkgs.writeShellScript "execstart" ''
-        if ! curl -m 10 -s http://localhost:5000/ > /dev/null; then
-          docker restart whoogle
-        fi
-      '';
-      Restart = "on-failure";
-      RestartSec = "30";
-    };
-    wantedBy = [ "multi-user.target" ];
-  };
-  systemd.timers.check-whoogle = {
-    description = "Check whether Whoogle crashed again";
-    timerConfig.OnCalendar = [ "*:0/15" ];
-    wantedBy = [ "timers.target" ];
   };
 
   system.stateVersion = "23.05";
