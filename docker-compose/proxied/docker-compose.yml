@@ -28,7 +28,14 @@ services:
       WHOOGLE_CONFIG_URL: https://search.garudalinux.org
       WHOOGLE_CONFIG_VIEW_IMAGE: 1
       WHOOGLE_RESULTS_PER_PAGE: 15
-    pids_limit: 50
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget --spider -q --tries=1 http://127.0.0.1:5000 && rm -f /tmp/downtime || { if [ -f /tmp/downtime ]; then rm -f /tmp/downtime; killall -SIGINT python3; exit 1; fi; touch /tmp/downtime; exit 1; }
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 1
     restart: always
 
   # Searxng search engine
