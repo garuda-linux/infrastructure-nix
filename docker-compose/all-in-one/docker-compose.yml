@@ -88,7 +88,7 @@ services:
       DB_HOST: 10.0.5.50
       DB_PORT: 5432
       DB_USER: wikijs
-      DB_PASS: ${WIKIJS_DB_PASS:-?err}
+      DB_PASS: ${DB_PASS:-?err}
       DB_NAME: wikijs
     restart: always
 
