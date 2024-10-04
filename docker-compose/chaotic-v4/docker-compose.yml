@@ -15,6 +15,7 @@ services:
       # Override the default database host
       DATABASE_HOST: host.docker.internal
       DATABASE_PORT: 22
+      BUILDER_CLASS: 2
     volumes:
       - ./shared:/shared
       - ./sshkey:/app/sshkey
@@ -113,11 +114,6 @@ services:
                 "id": "54867625",
                 "token": "${GITLAB_TOKEN_CX:-?err}",
                 "check_name": "chaotic-aur: %pkgbase%"
-            },
-            "chaotic-aur-kde": {
-                "id": "54897682",
-                "token": "${GITLAB_TOKEN_CX:-?err}",
-                "check_name": "chaotic-aur-kde: %pkgbase%"
             },
             "garuda": {
                 "id": "48461689",
