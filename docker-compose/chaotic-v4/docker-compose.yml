@@ -4,6 +4,7 @@ services:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-builder
     command: builder
+    tty: true
     environment:
       BUILDER_HOSTNAME: immortalis
       BUILDER_TIMEOUT: 7200
@@ -27,6 +28,7 @@ services:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-manager
     command: database --web-port 8080
+    tty: true
     environment:
       # Address published to outside world
       DATABASE_HOST: builds.garudalinux.org
