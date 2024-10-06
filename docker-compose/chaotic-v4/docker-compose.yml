@@ -18,7 +18,7 @@ services:
       DATABASE_HOST: host.docker.internal
       DATABASE_PORT: 22
     volumes:
-      - ./shared/pkgout-2:/shared/pkgout
+      - ./shared:/shared
       - ./shared/sources:/shared/sources
       - ./shared/srcdest_cache:/shared/srcdest_cache
       - ./sshkey:/app/sshkey
@@ -44,7 +44,7 @@ services:
       DATABASE_HOST: host.docker.internal
       DATABASE_PORT: 22
     volumes:
-      - ./shared/pkgout:/shared/pkgout
+      - ./shared-2:/shared
       - ./shared/sources:/shared/sources
       - ./shared/srcdest_cache:/shared/srcdest_cache
       - ./sshkey:/app/sshkey
