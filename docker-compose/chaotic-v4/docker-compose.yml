@@ -158,7 +158,7 @@ services:
       - /srv/http/repos:/repo_root
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    ports: [8080:8080]
+    ports: [8080:8080, 3030:3030]
 
   # Metadata for the Chaotic website
   caur-backend:
