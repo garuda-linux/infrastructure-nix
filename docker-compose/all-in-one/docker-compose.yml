@@ -40,7 +40,7 @@ services:
 
   # Password vault
   bitwarden:
-    image: vaultwarden/server:1.32.0-alpine
+    image: vaultwarden/server:1.32.1-alpine
     container_name: bitwarden
     volumes: [./bitwarden:/data]
     ports: [8081:80]

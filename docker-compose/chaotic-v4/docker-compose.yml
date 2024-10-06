@@ -6,6 +6,7 @@ services:
     command: builder
     tty: true
     environment:
+      BUILDER_CLASS: 2
       BUILDER_HOSTNAME: immortalis
       BUILDER_TIMEOUT: 7200
       CI_CODE_SKIP: 123
@@ -16,7 +17,30 @@ services:
       # Override the default database host
       DATABASE_HOST: host.docker.internal
       DATABASE_PORT: 22
+    volumes:
+      - ./shared:/shared
+      - ./sshkey:/app/sshkey
+      - /var/run/docker.sock:/var/run/docker.sock
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  chaotic-builder-2:
+    image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
+    container_name: chaotic-builder-2
+    command: builder
+    tty: true
+    environment:
       BUILDER_CLASS: 2
+      BUILDER_HOSTNAME: immortalis-2
+      BUILDER_TIMEOUT: 7200
+      CI_CODE_SKIP: 123
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
+      REDIS_SSH_HOST: host.docker.internal
+      REDIS_SSH_USER: package-deployer
+      SHARED_PATH: /var/garuda/docker-compose-runner/chaotic-v4/shared
+      # Override the default database host
+      DATABASE_HOST: host.docker.internal
+      DATABASE_PORT: 22
     volumes:
       - ./shared:/shared
       - ./sshkey:/app/sshkey
@@ -155,6 +179,6 @@ services:
     image: containrrr/watchtower:latest
     container_name: watchtower
     command:
-      --cleanup chaotic-builder chaotic-manager watchtower caur-backend --interval 3600
+      --cleanup chaotic-builder chaotic-builder-2 chaotic-manager watchtower caur-backend --interval 3600
     volumes: [/var/run/docker.sock:/var/run/docker.sock]
     restart: always
