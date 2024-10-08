@@ -70,8 +70,14 @@ in
               isReadOnly = false;
               mountPoint = "/var/lib/prometheus2";
             };
+            "redis" = {
+              hostPath = "/data_1/containers/chaotic-v4/redis";
+              isReadOnly = false;
+              mountPoint = "/var/lib/redis-chaotic/";
+            };
           };
           enableTun = true;
+          ephemeral = lib.mkForce true;
         };
         ipAddress = "10.0.5.140";
         needsDocker = true;
