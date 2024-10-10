@@ -4,6 +4,10 @@ services:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-builder
     command: builder
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 60s
     tty: true
     environment:
       BUILDER_CLASS: 9
@@ -27,6 +31,10 @@ services:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-builder-2
     command: builder
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 60s
     tty: true
     environment:
       BUILDER_CLASS: 6
@@ -52,6 +60,10 @@ services:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-manager
     command: database --web-port 8080
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 60s
     tty: true
     environment:
       # Address published to outside world
@@ -158,27 +170,33 @@ services:
       - /srv/http/repos:/repo_root
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    ports: [8080:8080, 3030:3030]
+    ports: ["8080:8080", "3030:3030"]
 
   # Metadata for the Chaotic website
   caur-backend:
     image: ghcr.io/chaotic-cx/chaotic-next:main
     container_name: caur-backend
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 60s
     environment:
       CAUR_DEPLOY_LOG_ID: "-1002151616973"
       CAUR_NEWS_ID: "-1001293714071"
       TELEGRAM_API_HASH: ${TELEGRAM_API_HASH:-?err}
       TELEGRAM_API_ID: ${TELEGRAM_API_ID:-?err}
       TELEGRAM_DB_ENCRYPTION_KEY: ${TELEGRAM_DB_ENCRYPTION_KEY:-?err}
-    ports: [3000:3000]
-    volumes: [./tdlib:/app/tdlib]
-    restart: always
+    ports: ["3000:3000"]
+    volumes: ["./tdlib:/app/tdlib"]
 
   # Automated container updates
   watchtower:
     image: containrrr/watchtower:latest
     container_name: watchtower
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 60s
     command:
       --cleanup chaotic-builder chaotic-builder-2 chaotic-manager watchtower caur-backend --interval 3600
-    volumes: [/var/run/docker.sock:/var/run/docker.sock]
-    restart: always
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
