@@ -39,9 +39,9 @@ services:
     restart: always
 
   # Password vault
-  bitwarden:
-    image: vaultwarden/server:1.32.1-alpine
-    container_name: bitwarden
+  vaultwarden:
+    image: vaultwarden/server:1.32.2-alpine
+    container_name: vaultwarden
     volumes: [./bitwarden:/data]
     ports: [8081:80]
     environment:
@@ -69,14 +69,6 @@ services:
     ports: [8082:8080]
     restart: always
 
-  # Garuda startpage
-  homer:
-    image: b4bz/homer:v24.05.1
-    container_name: homer
-    volumes: [./startpage:/www/assets]
-    ports: [8083:8080]
-    restart: always
-
   # WikiJs
   wikijs:
     image: requarks/wiki:2.5
@@ -101,7 +93,7 @@ services:
     restart: always
 
   matrix_web:
-    image: vectorim/element-web:v1.11.79
+    image: vectorim/element-web:v1.11.80
     container_name: element_web
     depends_on: [matrix]
     volumes: [./matrix/element/config.json:/app/config.json]
@@ -150,7 +142,7 @@ services:
     image: containrrr/watchtower:1.7.1
     container_name: watchtower
     command:
-      --cleanup matrix_web matrix_admin wikijs mongodb homer privatebin bitwarden
+      --cleanup matrix_web matrix_admin wikijs mongodb homer privatebin vaultwarden
       thelounge syncserver nextcloud_app lemmy_seeder
     volumes: [/var/run/docker.sock:/var/run/docker.sock]
     restart: always
