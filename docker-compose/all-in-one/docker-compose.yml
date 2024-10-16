@@ -18,8 +18,8 @@ services:
   syncserver:
     container_name: syncserver
     image: crazymax/firefox-syncserver:edge # newest, versioned one 3 years old
-    volumes: [./syncserver:/data]
-    ports: [5001:5000]
+    volumes: ["./syncserver:/data"]
+    ports: ["5001:5000"]
     environment:
       FF_SYNCSERVER_ACCESSLOG: true
       FF_SYNCSERVER_FORCE_WSGI_ENVIRON: true
@@ -34,16 +34,16 @@ services:
   thelounge:
     image: thelounge/thelounge:4.4.3
     container_name: thelounge
-    volumes: [./thelounge:/var/opt/thelounge]
-    ports: [9000:9000]
+    volumes: ["./thelounge:/var/opt/thelounge"]
+    ports: ["9000:9000"]
     restart: always
 
   # Password vault
   vaultwarden:
     image: vaultwarden/server:1.32.2-alpine
     container_name: vaultwarden
-    volumes: [./bitwarden:/data]
-    ports: [8081:80]
+    volumes: ["./bitwarden:/data"]
+    ports: ["8081:80"]
     environment:
       ADMIN_TOKEN: ${BW_ADMIN_TOKEN:-?err}
       DOMAIN: https://bitwarden.garudalinux.org
@@ -66,15 +66,15 @@ services:
     volumes:
       - ./privatebin:/srv/data
       - ./configs/privatebin.cfg.php:/srv/cfg/conf.php
-    ports: [8082:8080]
+    ports: ["8082:8080"]
     restart: always
 
   # WikiJs
   wikijs:
     image: requarks/wiki:2.5
     container_name: wikijs
-    volumes: [./wikijs/assets:/wiki/assets/favicons]
-    ports: [3001:3000]
+    volumes: ["./wikijs/assets:/wiki/assets/favicons"]
+    ports: ["3001:3000"]
     environment:
       DB_TYPE: postgres
       DB_HOST: 10.0.5.50
@@ -88,34 +88,37 @@ services:
   matrix:
     image: matrixdotorg/synapse:v1.116.0
     container_name: matrix
-    volumes: [./matrix/matrix:/data]
-    ports: [8008:8008]
+    volumes: ["./matrix/matrix:/data"]
+    ports: ["8008:8008"]
     restart: always
 
   matrix_web:
     image: vectorim/element-web:v1.11.80
     container_name: element_web
-    depends_on: [matrix]
-    volumes: [./matrix/element/config.json:/app/config.json]
-    ports: [8084:80]
+    depends_on: ["matrix"]
+    volumes: ["./matrix/element/config.json:/app/config.json"]
+    ports: ["8084:80"]
     restart: always
 
   # Admin interface for Matrix
   matrix_admin:
     image: awesometechnologies/synapse-admin:latest # Versioned lags behind 7 months
     container_name: matrix_admin
-    depends_on: [matrix]
-    ports: [8085:80]
+    depends_on: ["matrix"]
+    ports: ["8085:80"]
     restart: always
 
-  # # Matrix to IRC/Discord/Telegram relay
-  # matterbridge:
-  #   image: 42wim/matterbridge:1.26
-  #   container_name: matterbridge
-  #   depends_on: [matrix]
-  #   volumes:
-  #     - ./matterbridge/matterbridge.toml:/etc/matterbridge/matterbridge.toml:ro
-  #   restart: always
+  # Matrix to IRC/Discord/Telegram relay
+  matterbridge:
+    image: 42wim/matterbridge:latest
+    container_name: matterbridge
+    depends_on: ["matrix"]
+    volumes:
+      - /var/garuda/secrets/docker-compose/matterbridge.toml:/etc/matterbridge/matterbridge.toml:ro
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 120s
 
   # Makes world content available for our Lemmy instance
   lemmy_seeder:
@@ -144,7 +147,7 @@ services:
     command:
       --cleanup matrix_web matrix_admin wikijs mongodb homer privatebin vaultwarden
       thelounge syncserver nextcloud_app lemmy_seeder
-    volumes: [/var/run/docker.sock:/var/run/docker.sock]
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
     restart: always
 
 volumes:
