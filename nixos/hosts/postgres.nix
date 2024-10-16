@@ -1,4 +1,5 @@
 { garuda-lib
+, inputs
 , pkgs
 , sources
 , config
@@ -121,6 +122,7 @@ in
       WEBSERVER_REMOTE_USER = "X-Forwarded-User";
       MASTER_PASSWORD_REQUIRED = false;
     };
+    package = inputs.nixpkgs-stable.legacyPackages."${pkgs.system}".pgadmin4;
   };
 
   systemd.services.pgadmin = {
