@@ -193,6 +193,7 @@ so that the Heroku instance the router runs on can access it easier.</p>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <pre><code class="language-nix">{ pkgs
 , sources
+, garuda-lib
 , ...
 }:
 {
@@ -205,12 +206,18 @@ so that the Heroku instance the router runs on can access it easier.</p>
     enableAuth = true;
     extraConfig = ''
       net.tls.mode: requireTLS
-      net.tls.certificateKeyFile: /etc/ssl/mongodb/mongodb.pem
-      net.tls.CAFile: /etc/ssl/mongodb/ca.crt
+      net.tls.certificateKeyFile: /run/credentials/mongodb.service/mongodb.pem
+      net.tls.CAFile: /run/credentials/mongodb.service/ca.crt
       net.tls.allowConnectionsWithoutCertificates: true
     '';
     quiet = true;
     initialRootPassword = "yupHasAlreadyBeenChanged";
+  };
+
+  systemd.services.mongodb = {
+    serviceConfig = {
+      LoadCredential = [ "ca.crt:${garuda-lib.secrets.mongodb.CA}" "mongodb.pem:${garuda-lib.secrets.mongodb.pem}" ];
+    };
   };
 
   # MongoDB port is being forwarded to this container

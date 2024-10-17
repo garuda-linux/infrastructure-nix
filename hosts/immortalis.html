@@ -289,7 +289,7 @@ It is unclear, what the exact reason is, yet.</p>
 
   # Increase /tmp &amp; /run size to make better use of RAM
   boot = {
-    kernelPackages = pkgs.linuxPackages_6_6;
+    kernelPackages = pkgs.linuxPackages_latest;
     loader.systemd-boot.enable = true;
     runSize = "50%";
     tmp = {
@@ -567,7 +567,7 @@ It is unclear, what the exact reason is, yet.</p>
   };
 
   # Can't really instantly remove this, need to find an alternative first
-  nixpkgs.config.permittedInsecurePackages = [ "squid-6.8" ];
+  nixpkgs.config.permittedInsecurePackages = [ "squid-6.10" ];
 
   # Adapt Nix to our core-count
   nix.settings.max-jobs = 8;

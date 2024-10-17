@@ -396,17 +396,6 @@ rec {
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "start.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = { "/" = { proxyPass = "http://10.0.5.100:8083"; }; };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
       "irc.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
@@ -579,7 +568,8 @@ rec {
         '';
         http3 = true;
         locations = {
-          "/" = { proxyPass = "http://10.0.5.100:8084"; };
+          # Redirect to forum post
+          "/" = { return = "301 https://forum.garudalinux.org/t/39538"; };
         };
         quic = true;
         useACMEHost = "garudalinux.org";
@@ -632,16 +622,11 @@ rec {
             port = 443;
             ssl = true;
           }
-          {
-            addr = "0.0.0.0";
-            port = 8448;
-            ssl = true;
-          }
         ];
         locations = {
           "/" = {
-            extraConfig = "client_max_body_size 50M;";
-            proxyPass = "http://10.0.5.100:8008";
+            # Redirect to forum post
+            return = "301 https://forum.garudalinux.org/t/39538";
           };
         };
         quic = true;
@@ -719,15 +704,16 @@ rec {
           };
         };
       };
-      "matrixadmin.garudalinux.net" = allowOnlyCloudflareZerotrust {
+      # Default catch-all for unknown domains
+      "_" = {
+        addSSL = true;
         extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
+          log_not_found off;
+          return 404;
         '';
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.100:8085";
-          };
-        };
+        http3 = true;
+        quic = true;
+        useACMEHost = "garudalinux.org";
       };
     };
   };
