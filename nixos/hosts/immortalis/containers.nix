@@ -45,6 +45,13 @@ in
     hostInterface = "eth0";
     hostIp = "10.0.5.1";
     dockerCache = "/data_1/dockercache/";
+
+    defaults = {
+      maxMemorySoft = 96636764160;
+      maxMemoryHard = 107374182400;
+      maxCpu = 30;
+    };
+
     containers = {
       chaotic-v4 = {
         config = import ../chaotic-v4.nix;
@@ -81,6 +88,9 @@ in
         };
         ipAddress = "10.0.5.140";
         needsDocker = true;
+        # Only entitled to 1/5 of the CPU resources in case of contention
+        cpuWeight = 20;
+        ioWeight = 20;
       };
       docker = {
         config = import ../docker.nix;
@@ -165,6 +175,9 @@ in
         };
         ipAddress = "10.0.5.130";
         needsDocker = true;
+        # Only entitled to 1/5 of the CPU resources in case of contention
+        cpuWeight = 20;
+        ioWeight = 20;
       };
       iso-runner = {
         config = import ../iso-runner.nix;

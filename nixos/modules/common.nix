@@ -1,6 +1,5 @@
 { config
 , garuda-lib
-, inputs
 , lib
 , pkgs
 , ...
@@ -157,10 +156,6 @@
 
   # General nix settings
   nix = {
-    # Do garbage collections whenever there is less than 1GB free space left
-    extraOptions = ''
-      min-free = ${toString (1024 * 1024 * 1024)}
-    '';
     # Do daily garbage collections
     gc = {
       automatic = true;
@@ -172,8 +167,11 @@
       experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
       builders-use-substitutes = true;
+      substituters = [ "https://garuda-linux.cachix.org" ];
+      trusted-public-keys = lib.mkAfter [ "garuda-linux.cachix.org-1:tWw7YBE6qZae0L6BbyNrHo8G8L4sHu5QoDp0OXv70bg=" ];
     };
-    nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
+
+    package = pkgs.lix;
   };
 
   services.cloudflared.user = "root";

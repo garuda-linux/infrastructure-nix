@@ -6,7 +6,49 @@
 }:
 let
   cfg = config.services.garuda-nspawn;
-  submoduleOptions.options = {
+
+  hasActiveQuotas = value: builtins.any (o: !builtins.isNull value."${o}") [
+    "maxMemorySoft"
+    "maxMemoryHard"
+    "maxCpu"
+    "cpuWeight"
+    "ioWeight"
+  ];
+
+  linkDefaults = options: lib.mapAttrs (name: value: value // { default = cfg.defaults."${name}"; }) options;
+
+  defaultableOptions = {
+    maxMemorySoft = lib.mkOption {
+      type = lib.types.nullOr lib.types.int;
+      default = null;
+    };
+    maxMemoryHard = lib.mkOption {
+      type = lib.types.nullOr lib.types.int;
+      default = null;
+    };
+    maxCpu = lib.mkOption {
+      type = lib.types.nullOr lib.types.int;
+      default = null;
+    };
+    cpuWeight = lib.mkOption {
+      type = lib.types.nullOr lib.types.int;
+      default = null;
+    };
+    ioWeight = lib.mkOption {
+      type = lib.types.nullOr lib.types.int;
+      default = null;
+    };
+    needsDocker = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
+    defaults = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+    };
+  };
+
+  individualOptions = {
     config = lib.mkOption { };
     mountHome = lib.mkOption {
       type = lib.types.nullOr lib.types.bool;
@@ -19,19 +61,9 @@ let
     ipAddress = lib.mkOption {
       type = lib.types.str;
     };
-    needsDocker = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-    };
-    restrictQuotas = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-    };
-    defaults = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-    };
   };
+
+  submoduleOptions.options = (linkDefaults defaultableOptions) // individualOptions;
 in
 {
   options.services.garuda-nspawn = {
@@ -55,8 +87,10 @@ in
     dockerCache = lib.mkOption {
       type = lib.types.str;
     };
+    defaults = lib.mkOption {
+      type = lib.types.submodule { options = defaultableOptions; };
+    };
   };
-  # lib.mkIf (cfg != { })
   config = {
     containers = lib.mapAttrs
       (name: value:
@@ -89,7 +123,6 @@ in
                 isReadOnly = true;
                 mountPoint = "/etc/ssh.host/";
               };
-
             })
             ++ (lib.lists.optional (if builtins.isNull cont.mountHome then cont.defaults else cont.mountHome) {
               "home" = {
@@ -154,14 +187,31 @@ in
         (name: _value: lib.nameValuePair "systemd/system.control/container@${name}.service.d/quotas.conf" {
           text = ''
             [Service]
-            CPUAccounting=true
-            CPUQuota=3000.00%
-            MemoryAccounting=true
-            MemoryHigh=96636764160
-            MemoryMax=107374182400
+            ${lib.optionalString (!builtins.isNull _value.maxCpu || !builtins.isNull _value.cpuWeight) ''
+              CPUAccounting=true
+              ${lib.optionalString (!builtins.isNull _value.maxCpu) ''
+                CPUQuota=${toString (_value.maxCpu * 100)}.00%
+              ''}
+              ${lib.optionalString (!builtins.isNull _value.cpuWeight) ''
+                CPUWeight=${toString _value.cpuWeight}
+              ''}
+            ''}
+            ${lib.optionalString (!builtins.isNull _value.maxMemorySoft || !builtins.isNull _value.maxMemoryHard) ''
+              MemoryAccounting=true
+              ${lib.optionalString (!builtins.isNull _value.maxMemorySoft) ''
+                MemoryHigh=${toString _value.maxMemorySoft}
+              ''}
+              ${lib.optionalString (!builtins.isNull _value.maxMemoryHard) ''
+                MemoryMax=${toString _value.maxMemoryHard}
+              ''}
+            ''}
+            ${lib.optionalString (!builtins.isNull _value.ioWeight) ''
+              IOAccounting=true
+              IOWeight=${toString _value.ioWeight}
+            ''}
           '';
         })
-        (lib.filterAttrs (_name: value: value.restrictQuotas) cfg.containers))
+        (lib.filterAttrs (_name: value: hasActiveQuotas value) cfg.containers))
     ];
 
     systemd.tmpfiles.rules = lib.mapAttrsToList (name: _value: "d ${cfg.dockerCache}/${name} 1555 root root") (lib.filterAttrs (_name: value: value.needsDocker) cfg.containers);
