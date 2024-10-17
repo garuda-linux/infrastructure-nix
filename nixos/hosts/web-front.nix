@@ -376,7 +376,8 @@ rec {
         '';
         http3 = true;
         locations = {
-          "/" = { proxyPass = "http://10.0.5.100:8084"; };
+          # Redirect to forum post
+          "/" = { return = "301 https://forum.garudalinux.org/t/39538"; };
         };
         quic = true;
         useACMEHost = "garudalinux.org";
@@ -429,16 +430,11 @@ rec {
             port = 443;
             ssl = true;
           }
-          {
-            addr = "0.0.0.0";
-            port = 8448;
-            ssl = true;
-          }
         ];
         locations = {
           "/" = {
-            extraConfig = "client_max_body_size 50M;";
-            proxyPass = "http://10.0.5.100:8008";
+            # Redirect to forum post
+            return = "301 https://forum.garudalinux.org/t/39538";
           };
         };
         quic = true;
@@ -513,16 +509,6 @@ rec {
               proxy_pass http://10.0.5.20:8384;
               proxy_set_header Authorization "Basic ${garuda-lib.secrets.syncthing.esxi-build.credentials.base64}";
             '';
-          };
-        };
-      };
-      "matrixadmin.garudalinux.net" = allowOnlyCloudflareZerotrust {
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.100:8085";
           };
         };
       };

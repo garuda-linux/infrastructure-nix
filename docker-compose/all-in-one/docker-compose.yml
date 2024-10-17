@@ -84,35 +84,10 @@ services:
       DB_NAME: wikijs
     restart: always
 
-  # Matrix homeserver
-  matrix:
-    image: matrixdotorg/synapse:v1.116.0
-    container_name: matrix
-    volumes: ["./matrix/matrix:/data"]
-    ports: ["8008:8008"]
-    restart: always
-
-  matrix_web:
-    image: vectorim/element-web:v1.11.80
-    container_name: element_web
-    depends_on: ["matrix"]
-    volumes: ["./matrix/element/config.json:/app/config.json"]
-    ports: ["8084:80"]
-    restart: always
-
-  # Admin interface for Matrix
-  matrix_admin:
-    image: awesometechnologies/synapse-admin:latest # Versioned lags behind 7 months
-    container_name: matrix_admin
-    depends_on: ["matrix"]
-    ports: ["8085:80"]
-    restart: always
-
-  # Matrix to IRC/Discord/Telegram relay
+  # IRC/Discord/Telegram relay
   matterbridge:
     image: 42wim/matterbridge:latest
     container_name: matterbridge
-    depends_on: ["matrix"]
     volumes:
       - /var/garuda/secrets/docker-compose/matterbridge.toml:/etc/matterbridge/matterbridge.toml:ro
     deploy:
@@ -145,8 +120,8 @@ services:
     image: containrrr/watchtower:1.7.1
     container_name: watchtower
     command:
-      --cleanup matrix_web matrix_admin wikijs mongodb homer privatebin vaultwarden
-      thelounge syncserver nextcloud_app lemmy_seeder
+      --cleanup matterbridge wikijs privatebin vaultwarden
+      thelounge syncserver lemmy_seeder
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
     restart: always
 

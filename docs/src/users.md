@@ -29,4 +29,3 @@ After confirming the trustworthiness of a new admin, the following actions need 
   accounts
 - Add them to the Cloudflare Account
 - Make them an admin of [Discourse](https://forum.garudalinux.org)
-- Make them an admin of [Matrix](https://matrix.garudalinux.org)
