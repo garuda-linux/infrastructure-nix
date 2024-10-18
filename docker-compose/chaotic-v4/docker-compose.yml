@@ -87,34 +87,12 @@ services:
             },
             "garuda": {
                 "url": "https://gitlab.com/garuda-linux/pkgbuilds"
-            },
-            "garuda-aur": {
-                "url": "https://gitlab.com/garuda-linux/pkgbuilds-aur"
             }
         }
       PACKAGE_TARGET_REPOS: >-
         {
             "chaotic-aur": {
                 "extra_repos": [
-                    {
-                        "name": "chaotic-aur",
-                        "servers": [
-                            "https://builds.garudalinux.org/chaotic-v4/x86_64"
-                        ]
-                    }
-                ],
-                "extra_keyrings": [
-                    "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
-                ]
-            },
-            "garuda": {
-                "extra_repos": [
-                    {
-                        "name": "garuda",
-                        "servers": [
-                            "https://builds.garudalinux.org/repos/garuda/x86_64"
-                        ]
-                    },
                     {
                         "name": "chaotic-aur",
                         "servers": [
@@ -126,7 +104,7 @@ services:
                     "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
                 ]
             },
-            "garuda-aur": {
+            "garuda": {
                 "extra_repos": [
                     {
                         "name": "garuda",
@@ -157,11 +135,6 @@ services:
                 "id": "48461689",
                 "token": "${GITLAB_TOKEN:-?err}",
                 "check_name": "garuda: %pkgbase%"
-            },
-            "garuda-aur": {
-                "id": "52092196",
-                "token": "${GITLAB_TOKEN:-?err}",
-                "check_name": "garuda: %pkgbase%"
             }
         }
     volumes:
@@ -170,7 +143,7 @@ services:
       - /srv/http/repos:/repo_root
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    ports: ["8080:8080", "3030:3030"]
+    ports: ["127.0.0.1:8080:8080", "127.0.0.1:3030:3030"]
 
   # Metadata for the Chaotic website
   caur-backend:
@@ -186,7 +159,7 @@ services:
       TELEGRAM_API_HASH: ${TELEGRAM_API_HASH:-?err}
       TELEGRAM_API_ID: ${TELEGRAM_API_ID:-?err}
       TELEGRAM_DB_ENCRYPTION_KEY: ${TELEGRAM_DB_ENCRYPTION_KEY:-?err}
-    ports: ["3000:3000"]
+    ports: ["127.0.0.1:3000:3000"]
     volumes: ["./tdlib:/app/tdlib"]
 
   # Automated container updates

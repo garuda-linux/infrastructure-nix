@@ -2,42 +2,6 @@
 , lib
 , ...
 }:
-let
-  chaotic_mounts = {
-    "gitconfig" = {
-      hostPath = "/root/.gitconfig";
-      mountPoint = "/root/.gitconfig";
-    };
-    "keyring" = {
-      hostPath = "/root/.gnupg";
-      isReadOnly = false;
-      mountPoint = "/root/.gnupg";
-    };
-    "pacman" = {
-      hostPath = "/data_2/chaotic/pkg";
-      isReadOnly = false;
-      mountPoint = "/var/cache/pacman/pkg";
-    };
-    "chaotic-sources" = {
-      hostPath = "/data_2/chaotic/sources";
-      isReadOnly = false;
-      mountPoint = "/var/cache/chaotic/sources";
-    };
-    "chaotic-cc" = {
-      hostPath = "/data_2/chaotic/cc";
-      isReadOnly = false;
-      mountPoint = "/var/cache/chaotic/cc";
-    };
-    "telegram-send-group" = {
-      hostPath = "/var/garuda/secrets/chaotic/telegram-send-group";
-      mountPoint = "/root/.config/telegram-send-group.conf";
-    };
-    "telegram-send-log" = {
-      hostPath = "/var/garuda/secrets/chaotic/telegram-send-log";
-      mountPoint = "/root/.config/telegram-send-log.conf";
-    };
-  };
-in
 {
   # Custom systemd nspawn container configurations
   services.garuda-nspawn = {
@@ -82,7 +46,39 @@ in
               isReadOnly = false;
               mountPoint = "/var/lib/redis-chaotic/";
             };
+            "iso-builds" = {
+              hostPath = "/data_2/iso/iso";
+              isReadOnly = false;
+              mountPoint = "/srv/http/iso";
+            };
+            "syncthing" = {
+              hostPath = "/data_1/containers/chaotic-v4/syncthing";
+              isReadOnly = false;
+              mountPoint = "/var/lib/syncthing";
+            };
           };
+          forwardPorts = [
+            {
+              containerPort = 873;
+              hostPort = 873;
+              protocol = "tcp";
+            }
+            {
+              containerPort = 21027;
+              hostPort = 21027;
+              protocol = "udp";
+            }
+            {
+              containerPort = 22000;
+              hostPort = 22000;
+              protocol = "tcp";
+            }
+            {
+              containerPort = 22000;
+              hostPort = 22000;
+              protocol = "udp";
+            }
+          ];
           enableTun = true;
           ephemeral = lib.mkForce true;
         };
@@ -289,78 +285,6 @@ in
           ephemeral = lib.mkForce true;
         };
         ipAddress = "10.0.5.50";
-      };
-      temeraire = {
-        config = import ../temeraire.nix;
-        extraOptions = {
-          bindMounts = lib.mkMerge [{
-            "chaotic-v4" = {
-              hostPath = "/data_2/chaotic-v4/chaotic-aur";
-              isReadOnly = false;
-              mountPoint = "/srv/http/chaotic-v4";
-            };
-            "garuda" = {
-              hostPath = "/data_2/chaotic-v4/garuda";
-              isReadOnly = false;
-              mountPoint = "/srv/http/repos/garuda";
-            };
-            "chaotic" = {
-              hostPath = "/data_2/chaotic-aur";
-              isReadOnly = false;
-              mountPoint = "/srv/http/repos";
-            };
-            "iso" = {
-              hostPath = "/data_2/iso/";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/buildiso";
-            };
-            "iso-builds" = {
-              hostPath = "/data_2/iso/iso";
-              isReadOnly = false;
-              mountPoint = "/srv/http/iso";
-            };
-            "repoctl" = {
-              hostPath = "/data_2/containers/temeraire/chaotic-repoctl.toml";
-              isReadOnly = false;
-              mountPoint = "/usr/local/etc/chaotic-repoctl.toml";
-            };
-            "syncthing" = {
-              hostPath = "/data_2/containers/temeraire/syncthing";
-              isReadOnly = false;
-              mountPoint = "/var/lib/syncthing";
-            };
-          }
-            chaotic_mounts];
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 22;
-              protocol = "tcp";
-            }
-            {
-              containerPort = 873;
-              hostPort = 873;
-              protocol = "tcp";
-            }
-            {
-              containerPort = 21027;
-              hostPort = 21027;
-              protocol = "udp";
-            }
-            {
-              containerPort = 22000;
-              hostPort = 22000;
-              protocol = "tcp";
-            }
-            {
-              containerPort = 22000;
-              hostPort = 22000;
-              protocol = "udp";
-            }
-          ];
-          tmpfs = [ "/tmp:size=25G" ];
-        };
-        ipAddress = "10.0.5.20";
       };
       web-front = {
         config = import ../web-front.nix;

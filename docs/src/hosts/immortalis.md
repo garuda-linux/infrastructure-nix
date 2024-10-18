@@ -28,7 +28,6 @@ lemmy          container systemd-nspawn nixos 24.11   10.0.5.120…
 mastodon       container systemd-nspawn nixos 24.11   10.0.5.80…
 mongodb        container systemd-nspawn nixos 24.11   10.0.5.60…
 postgres       container systemd-nspawn nixos 24.11   10.0.5.50…
-temeraire      container systemd-nspawn nixos 24.11   10.0.5.20…
 web-front      container systemd-nspawn nixos 24.11   10.0.5.10…
 ```
 
@@ -37,7 +36,7 @@ We are seeing:
 - 1 ISO builder (`iso-runner`)
 - 1 reverse proxy serving all the websites and services (`web-front`)
 - 2 Docker dedicated nspawn containers (`docker` & `docker-proxied`)
-- 3 Chaotic-AUR builders ( `chaotic-v4`, `github-runner` & `temeraire`)
+- 3 Chaotic-AUR builders ( `chaotic-v4`, `github-runner` )
 - 6 app dedicated containers (`forum`, `lemmy`, `mastodon`, `mongodb` & `postgres`)
 
 ### Connecting to the server
@@ -46,7 +45,6 @@ After connecting to the host via `ssh -p 666 $user@116.202.208.112`, containers 
 running `nixos-container login $containername`, eg. `nixos-container login web-front`. Some containers may also be
 connected via SSH using the following ports:
 
-- 22: `temeraire` (needs to be 22 to allow pushing packages to the main Chaotic-AUR node via rsync)
 - 224: `forum`
 - 225: `docker`
 - 227: `iso-runner`
@@ -62,24 +60,6 @@ custom [NixOS module](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/
 to deploy those with the rest of the system. Secrets are handled via our secret management which consists of a git
 submodule `secret` (private repo with `ansible-vault` encrypted files) and `garuda-lib` (see secrets section). Those
 contain a `docker-compose` directory in which the `.env` files for the `docker-compose.yml` are stored.
-
-### Chaotic-AUR / repository
-
-Our repository leverages [Chaotic-AUR's](https://aur.chaotic.cx) [toolbox](https://github.com/chaotic-aur/toolbox) to
-provide the main node for the `[chaotic-aur]` repository as well as two more instances building the `[garuda]`
-and `[chaotic-kde]` repositories. Users of the `chaotic_op` group may build packages on the corresponding
-nixos-container via the [chaotic](https://github.com/chaotic-aur/toolbox/blob/main/README.md) command:
-
-```sh
-chaotic get $package # pull PKGBUILD
-chaotic mkd $package # build package in the previously cloned directory
-chaotic bump $package # increment pkgver of $package by 0.1 to allow a rebuild
-chaotic rm $package # remove the package from the repository
-```
-
-Further information may be obtained by clicking `chaotic` seen above. The corresponding builders are:
-
-- `[chaotic-aur]`: `temeraire`
 
 ### Squid proxy
 

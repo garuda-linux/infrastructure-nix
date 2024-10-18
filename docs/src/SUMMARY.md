@@ -23,7 +23,6 @@
   - [mastodon](./nixos-containers/mastodon.md)
   - [mongodb](./nixos-containers/mongodb.md)
   - [postgres](./nixos-containers/postgres.md)
-  - [temeraire](./nixos-containers/temeraire.md)
   - [web-front](./nixos-containers/web-front.md)
 - [garuda-build](./hosts/garuda-build.md)
 - [garuda-mail](./hosts/garuda-mail.md)

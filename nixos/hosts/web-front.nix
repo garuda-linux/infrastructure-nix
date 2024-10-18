@@ -346,18 +346,10 @@ rec {
         http3 = true;
         locations = {
           "/" = {
-            proxyPass = "http://10.0.5.20:80";
-          };
-          # Api of the Chaotic Manager
-          "/api/" = {
-            proxyPass = "http://10.0.5.140:8080/api/";
-          };
-          # Api for the website, for displaying news and deploy logs
-          "/backend/" = {
-            proxyPass = "http://10.0.5.140:3000/";
+            proxyPass = "http://10.0.5.140:80";
           };
           "/logs/" = {
-            proxyPass = "http://10.0.5.140:8080/";
+            proxyPass = "http://10.0.5.140:80";
             extraConfig = ''
               proxy_buffering off;
               proxy_read_timeout 330s;
@@ -506,7 +498,7 @@ rec {
         locations = {
           "/" = {
             extraConfig = ''
-              proxy_pass http://10.0.5.20:8384;
+              proxy_pass http://10.0.5.140:8384;
               proxy_set_header Authorization "Basic ${garuda-lib.secrets.syncthing.esxi-build.credentials.base64}";
             '';
           };
