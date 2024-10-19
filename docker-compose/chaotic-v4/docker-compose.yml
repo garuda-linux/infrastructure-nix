@@ -154,7 +154,7 @@ services:
         condition: always
         delay: 60s
     environment:
-      CAUR_DEPLOY_LOG_ID: "-1002151616973"
+      CAUR_DEPLOY_LOG_ID: "-1001402311166"
       CAUR_NEWS_ID: "-1001293714071"
       TELEGRAM_API_HASH: ${TELEGRAM_API_HASH:-?err}
       TELEGRAM_API_ID: ${TELEGRAM_API_ID:-?err}

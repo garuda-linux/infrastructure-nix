@@ -178,7 +178,7 @@
           add_header X-XSS-Protection          "1; mode=block" always;
           add_header X-Content-Type-Options    "nosniff" always;
           add_header Referrer-Policy           "no-referrer-when-downgrade" always;
-          add_header Content-Security-Policy   "default-src 'self' http: https: data: blob: 'unsafe-inline'; frame-ancestors 'self';" always;
+          add_header Content-Security-Policy   "default-src 'self' http: https: data: blob: 'unsafe-inline'; frame-ancestors 'self' https://aur.chaotic.cx;" always;
           add_header Permissions-Policy        "interest-cohort=()" always;
 
           # Locations
