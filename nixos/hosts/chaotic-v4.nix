@@ -11,7 +11,7 @@
   services.redis = {
     vmOverCommit = true;
     servers."chaotic" = {
-      bind = "127.0.0.1";
+      bind = null;
       enable = true;
       port = 6379;
       requirePassFile = "/var/garuda/secrets/chaotic/redis";

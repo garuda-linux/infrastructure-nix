@@ -156,11 +156,21 @@ services:
     environment:
       CAUR_DEPLOY_LOG_ID: "-1001402311166"
       CAUR_NEWS_ID: "-1001293714071"
+      NODE_ENV: "production"
+      PG_DATABASE: "chaotic-aur"
+      PG_HOST: "10.0.5.50"
+      PG_PASSWORD: ${PG_PASSWORD:-?err}
+      PG_USER: "chaotic-aur"
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
+      REDIS_SSH_HOST: host.docker.internal
+      REDIS_SSH_USER: package-deployer
       TELEGRAM_API_HASH: ${TELEGRAM_API_HASH:-?err}
       TELEGRAM_API_ID: ${TELEGRAM_API_ID:-?err}
       TELEGRAM_DB_ENCRYPTION_KEY: ${TELEGRAM_DB_ENCRYPTION_KEY:-?err}
     ports: ["127.0.0.1:3000:3000"]
-    volumes: ["./tdlib:/app/tdlib"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes: ["./tdlib:/app/tdlib", "./sshkey:/app/sshkey"]
 
   # Automated container updates
   watchtower:
