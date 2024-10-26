@@ -155,9 +155,11 @@ services:
         delay: 60s
     environment:
       CAUR_DEPLOY_LOG_ID: "-1001402311166"
+      CAUR_JWT_SECRET: ${CAUR_JWT_SECRET:-?err}
       CAUR_NEWS_ID: "-1001293714071"
       CAUR_ROUTER_TOKEN: ${CAUR_ROUTER_TOKEN:-?err}
       CAUR_TRUST_PROXY: 172.18.0.1
+      CAUR_USERS: ${CAUR_USERS:-?err}
       NODE_ENV: "production"
       PG_DATABASE: "chaotic-aur"
       PG_HOST: "10.0.5.50"
