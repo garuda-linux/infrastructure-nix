@@ -146,9 +146,9 @@ services:
     ports: ["127.0.0.1:8080:8080", "127.0.0.1:3030:3030"]
 
   # Metadata for the Chaotic website
-  caur-backend:
+  chaotic-backend:
     image: ghcr.io/chaotic-cx/chaotic-next:main
-    container_name: caur-backend
+    container_name: chaotic-backend
     deploy:
       restart_policy:
         condition: always
@@ -159,9 +159,9 @@ services:
       AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET:-?err}
       AUTH0_DOMAIN: ${AUTH0_DOMAIN:-?err}
       CAUR_DEPLOY_LOG_ID: "-1001402311166"
+      CAUR_GITLAB_TOKEN: ${CAUR_GITLAB_TOKEN:-?err}
       CAUR_JWT_SECRET: ${CAUR_JWT_SECRET:-?err}
       CAUR_NEWS_ID: "-1001293714071"
-      CAUR_ROUTER_TOKEN: ${CAUR_ROUTER_TOKEN:-?err}
       CAUR_TRUST_PROXY: 172.18.0.1
       CAUR_USERS: ${CAUR_USERS:-?err}
       NODE_ENV: "production"
