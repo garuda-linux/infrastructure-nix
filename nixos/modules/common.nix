@@ -156,12 +156,6 @@
 
   # General nix settings
   nix = {
-    # Do daily garbage collections
-    gc = {
-      automatic = true;
-      dates = "daily";
-      options = "--delete-older-than 2d";
-    };
     settings = {
       # Allow using flakes
       experimental-features = [ "nix-command" "flakes" ];
@@ -174,18 +168,18 @@
     package = pkgs.lix;
   };
 
-  services.cloudflared.user = "root";
-
-  systemd.services.nix-clean-result = {
-    serviceConfig.Type = "oneshot";
-    description =
-      "Auto clean all result symlinks created by nixos-rebuild test";
-    script = ''
-      "${config.nix.package.out}/bin/nix-store" --gc --print-roots | "${pkgs.gawk}/bin/awk" 'match($0, /^(.*\/result) -> \/nix\/store\/[^-]+-nixos-system/, a) { print a[1] }' | xargs -r -d\\n rm
-    '';
-    before = [ "nix-gc.service" ];
-    wantedBy = [ "nix-gc.service" ];
+  # Do daily garbage collection
+  programs.nh = {
+    enable = true;
+    clean = {
+      enable = true;
+      extraArgs = "--keep-since 2d";
+      dates = "daily";
+    };
+    flake = "/etc/nixos";
   };
+
+  services.cloudflared.user = "root";
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
