@@ -30,6 +30,7 @@
       enable = true;
     };
     git = {
+      difftastic.enable = true;
       enable = true;
       extraConfig = {
         core = { editor = "micro"; };

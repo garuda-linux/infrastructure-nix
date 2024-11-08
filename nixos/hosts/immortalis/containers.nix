@@ -88,6 +88,36 @@
         cpuWeight = 20;
         ioWeight = 20;
       };
+      dev-container = {
+        config = import ../dev-container.nix;
+        defaults = false;
+        extraOptions = {
+          bindMounts = {
+            "persist" = {
+              hostPath = "/data_1/containers/dev-container/persist";
+              isReadOnly = false;
+              mountPoint = "/home/nico";
+            };
+            "sshKeys" = {
+              hostPath = "/data_1/containers/dev-container/ssh";
+              isReadOnly = false;
+              mountPoint = "/etc/ssh";
+            };
+          };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 231;
+              protocol = "tcp";
+            }
+          ];
+          ephemeral = lib.mkForce true;
+        };
+        ipAddress = "10.0.5.150";
+        needsDocker = true;
+        cpuWeight = 40;
+        ioWeight = 40;
+      };
       docker = {
         config = import ../docker.nix;
         extraOptions = {
@@ -159,6 +189,11 @@
               isReadOnly = false;
               mountPoint = "/etc/gitlab-runner";
             };
+            "sshKeys" = {
+              hostPath = "/data_1/containers/github-runner/ssh";
+              isReadOnly = false;
+              mountPoint = "/etc/ssh";
+            };
           };
           forwardPorts = [
             {
@@ -183,11 +218,6 @@
               hostPath = "/data_2/iso/";
               isReadOnly = false;
               mountPoint = "/var/garuda/buildiso";
-            };
-            "pacman" = {
-              hostPath = "/data_2/chaotic/pkg";
-              isReadOnly = false;
-              mountPoint = "/var/cache/pacman/pkg";
             };
           };
           forwardPorts = [
