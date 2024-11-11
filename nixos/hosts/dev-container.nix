@@ -110,6 +110,7 @@
   };
 
   environment.sessionVariables = {
+    DEV_CONTAINER = "1";
     EDITOR = "${pkgs.micro}/bin/micro";
     VISUAL = "${pkgs.micro}/bin/micro";
   };

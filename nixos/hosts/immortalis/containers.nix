@@ -115,8 +115,6 @@
         };
         ipAddress = "10.0.5.150";
         needsDocker = true;
-        cpuWeight = 40;
-        ioWeight = 40;
       };
       docker = {
         config = import ../docker.nix;

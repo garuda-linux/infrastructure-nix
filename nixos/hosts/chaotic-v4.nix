@@ -62,6 +62,7 @@
 
   networking.firewall.allowedTCPPorts = [
     config.services.grafana.settings.server.http_port # Grafana
+    config.services.redis.servers.chaotic.port # Redis
     config.services.rsyncd.port # Rsync
     8384 # Syncthing web interface
   ];
