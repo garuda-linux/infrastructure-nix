@@ -159,6 +159,9 @@ in
       "test@dr460nf1r3.org" = {
         hashedPasswordFile = "/var/garuda/secrets/mail/testatdf";
       };
+      "noreply@dr460nf1r3.org" = {
+        hashedPasswordFile = "/var/garuda/secrets/mail/noreplyatdf";
+      };
     };
     indexDir = "/var/lib/dovecot/indices";
     monitoring = {
