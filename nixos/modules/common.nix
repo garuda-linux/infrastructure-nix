@@ -2,6 +2,7 @@
 , garuda-lib
 , lib
 , pkgs
+, inputs
 , ...
 }:
 {
@@ -164,7 +165,7 @@
       substituters = [ "https://garuda-linux.cachix.org" ];
       trusted-public-keys = lib.mkAfter [ "garuda-linux.cachix.org-1:tWw7YBE6qZae0L6BbyNrHo8G8L4sHu5QoDp0OXv70bg=" ];
     };
-
+    nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
     package = pkgs.lix;
   };
 

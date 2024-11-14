@@ -309,6 +309,11 @@
               hostPort = 229;
               protocol = "tcp";
             }
+            {
+              containerPort = 5432;
+              hostPort = 5432;
+              protocol = "tcp";
+            }
           ];
           ephemeral = lib.mkForce true;
         };

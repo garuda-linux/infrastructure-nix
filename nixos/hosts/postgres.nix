@@ -36,6 +36,7 @@ in
       "lemmy"
       "mastodon"
       "wikijs"
+      "chaotic-aur"
     ];
     ensureUsers = [
       {
@@ -54,14 +55,25 @@ in
         name = "pgadmin";
         ensureClauses.superuser = true;
       }
+      {
+        name = "chaotic-router";
+      }
     ];
     initialScript = pkgs.writeText "backend-initScript" ''
       CREATE USER netdata;
       GRANT pg_monitor TO netdata;
     '';
-    authentication = "host all all 10.0.5.0/24 md5";
-    # We don't need to worry about different interfaces, because the only interface 
-    # available is eth0, which is fully isolated
+    authentication = lib.mkForce ''
+      local all all peer
+      host chaotic-aur chaotic-router 0.0.0.0/0 scram-sha-256
+      # Reject anything else coming from the outside world somehow someway
+      host all all 10.0.5.1/32 reject
+      # Allow connections from the internal network
+      host all all 10.0.5.0/24 md5
+      # Block the rest of the internet
+      host all all 0.0.0.0/0 reject
+    '';
+    # This is publically accesible now through port 5432, however only the chaotic-router user can access the database through the internet
     enableTCPIP = true;
   };
 
