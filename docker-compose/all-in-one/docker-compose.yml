@@ -61,7 +61,7 @@ services:
 
   # Secure pastebin
   privatebin:
-    image: privatebin/nginx-fpm-alpine:1.7.4
+    image: privatebin/nginx-fpm-alpine:1.7.5
     container_name: privatebin
     volumes:
       - ./privatebin:/srv/data
