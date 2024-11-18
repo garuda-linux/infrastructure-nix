@@ -40,7 +40,7 @@ services:
 
   # Password vault
   vaultwarden:
-    image: vaultwarden/server:1.32.4-alpine
+    image: vaultwarden/server:1.32.5-alpine
     container_name: vaultwarden
     volumes: ["./bitwarden:/data"]
     ports: ["8081:80"]
@@ -61,7 +61,7 @@ services:
 
   # Secure pastebin
   privatebin:
-    image: privatebin/nginx-fpm-alpine:1.7.4
+    image: privatebin/nginx-fpm-alpine:1.7.5
     container_name: privatebin
     volumes:
       - ./privatebin:/srv/data
