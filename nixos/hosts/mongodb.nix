@@ -8,8 +8,8 @@
 
   # Our MongoDB database
   services.mongodb = {
-    enable = true;
     bind_ip = "10.0.5.60";
+    enable = true;
     enableAuth = true;
     extraConfig = ''
       net.tls.mode: requireTLS
@@ -17,8 +17,10 @@
       net.tls.CAFile: /run/credentials/mongodb.service/ca.crt
       net.tls.allowConnectionsWithoutCertificates: true
     '';
-    quiet = true;
     initialRootPassword = "yupHasAlreadyBeenChanged";
+    # Prevent hours of waiting for mongodb to be compiled
+    package = pkgs.mongodb-ce;
+    quiet = true;
   };
 
   systemd.services.mongodb = {

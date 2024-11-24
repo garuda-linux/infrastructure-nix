@@ -23,7 +23,7 @@ let
         ;;
       *)
         echo "Access only allowed for building purposes!"
-        exit 666
+        exit 4
     esac
   '';
 in
