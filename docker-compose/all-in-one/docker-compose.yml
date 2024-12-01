@@ -106,7 +106,7 @@ services:
 
   # Makes world content available for our Lemmy instance
   lemmy_seeder:
-    image: nowsci/lcs:20241101065205
+    image: nowsci/lcs:20241201065204
     container_name: lemmy_lcs
     environment:
       COMMUNITY_COUNT: 50
