@@ -3,7 +3,52 @@
 , sources
 , garuda-lib
 , ...
-}: {
+}:
+let
+  # https://git.kempkens.io/daniel/dotfiles/src/branch/master/system/nixos/mastodon.nix
+  pkg-base = pkgs.mastodon;
+  pkg-mastodon = pkg-base.overrideAttrs (_: {
+    mastodonModules = pkg-base.mastodonModules.overrideAttrs (oldMods:
+      let
+        tangerine-ui = pkgs.fetchFromGitHub {
+          owner = "nileane";
+          repo = "TangerineUI-for-Mastodon";
+          rev = "v2.3";
+          hash = "sha256-Yl5UOjcp0Q3WpiLgfjQFVVEQs4WlVUSBCS7kuO+39wQ=";
+        };
+      in
+      {
+        pname = "${oldMods.pname}+themes";
+
+        postPatch = ''
+          styleDir=$PWD/app/javascript/styles
+
+          cp -r ${tangerine-ui}/mastodon/app/javascript/styles/* $styleDir
+
+          echo "tangerineui: styles/tangerineui.scss" >>$PWD/config/themes.yml
+          echo "tangerineui-purple: styles/tangerineui-purple.scss" >>$PWD/config/themes.yml
+          echo "tangerineui-cherry: styles/tangerineui-cherry.scss" >>$PWD/config/themes.yml
+          echo "tangerineui-lagoon: styles/tangerineui-lagoon.scss" >>$PWD/config/themes.yml
+        '';
+      });
+
+    nativeBuildInputs = [ pkgs.yq-go ];
+
+    postBuild = ''
+      # Make theme available
+      echo "tangerineui: styles/tangerineui.scss" >>$PWD/config/themes.yml
+      echo "tangerineui-purple: styles/tangerineui-purple.scss" >>$PWD/config/themes.yml
+      echo "tangerineui-cherry: styles/tangerineui-cherry.scss" >>$PWD/config/themes.yml
+      echo "tangerineui-lagoon: styles/tangerineui-lagoon.scss" >>$PWD/config/themes.yml
+
+      yq -i '.en.themes.tangerineui = "Tangerine UI"' $PWD/config/locales/en.yml
+      yq -i '.en.themes.tangerineui-purple = "Tangerine UI (Purple)"' $PWD/config/locales/en.yml
+      yq -i '.en.themes.tangerineui-cherry = "Tangerine UI (Cherry)"' $PWD/config/locales/en.yml
+      yq -i '.en.themes.tangerineui-lagoon = "Tangerine UI (Lagoon)"' $PWD/config/locales/en.yml
+    '';
+  });
+in
+{
   imports = sources.defaultModules ++ [ ../modules ];
 
   # Our Mastodon
@@ -24,7 +69,12 @@
     };
     extraEnvFiles = [ "/var/lib/mastodon/secrets/env" ];
     localDomain = "social.garudalinux.org";
-    mediaAutoRemove.enable = false;
+    mediaAutoRemove = {
+      enable = true;
+      startAt = "daily";
+      olderThanDays = 14;
+    };
+    package = pkg-mastodon;
     smtp = {
       authenticate = true;
       fromAddress = "noreply@garudalinux.org";
@@ -33,49 +83,7 @@
       port = 587;
       user = "noreply@garudalinux.org";
     };
-    streamingProcesses = 4;
-  };
-
-  # Run daily cleanup of statuses and media of Mastodon
-  systemd.services.mastodon-media-cleanup = {
-    description = "Run daily cleanup of statuses and media of Mastodon";
-    serviceConfig = {
-      ExecStart = pkgs.writeShellScript "execstart" ''
-        set -e
-        /run/current-system/sw/bin/mastodon-tootctl media remove --days=30
-        /run/current-system/sw/bin/mastodon-tootctl statuses remove --days=30
-      '';
-      Path = [ pkgs.mastodon ];
-      Restart = "on-failure";
-      RestartSec = "30";
-    };
-    wantedBy = [ "multi-user.target" ];
-  };
-  systemd.timers.mastodon-media-cleanup = {
-    description = "Monthly cleanup of statuses and media of Mastodon";
-    timerConfig.OnCalendar = [ "monthly" ];
-    wantedBy = [ "timers.target" ];
-  };
-
-  # Scan for orphaned media mo
-  systemd.services.mastodon-orphan-cleanup = {
-    description = "Run weekly cleanup of orphaned media of Mastodon";
-    serviceConfig = {
-      ExecStart = pkgs.writeShellScript "execstart" ''
-        set -e
-        /run/current-system/sw/bin/mastodon-tootctl media remove --days=7
-        /run/current-system/sw/bin/mastodon-tootctl statuses remove --days=7
-      '';
-      Path = [ pkgs.mastodon ];
-      Restart = "on-failure";
-      RestartSec = "30";
-    };
-    wantedBy = [ "multi-user.target" ];
-  };
-  systemd.timers.mastodon-orphan-cleanup = {
-    description = "Run weekly cleanup of orphaned media of Mastodon";
-    timerConfig.OnCalendar = [ "weekly" ];
-    wantedBy = [ "timers.target" ];
+    streamingProcesses = 16;
   };
 
   services.nginx = {
