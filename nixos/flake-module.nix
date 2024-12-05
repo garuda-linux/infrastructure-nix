@@ -68,11 +68,6 @@ in
 {
   flake = {
     nixosConfigurations = {
-      "garuda-build" = patchedNixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ [ ./hosts/garuda-build.nix ];
-      };
       "garuda-mail" = patchedNixosSystem {
         inherit system;
         inherit specialArgs;
