@@ -90,10 +90,6 @@
       url = "https://developers.cloudflare.com/ssl/static/authenticated_origin_pull_ca.pem";
       flake = false;
     };
-
-    # Patches for nixos, automatically applied if they follow this format
-    nixos-patch-nat.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/277016.diff";
-    nixos-patch-nat.flake = false;
   };
 
   outputs =
