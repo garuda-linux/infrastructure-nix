@@ -24,9 +24,7 @@ services:
       - ./shared:/shared
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
+    extra_hosts: [host.docker.internal:host-gateway]
   chaotic-builder-2:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-builder-2
@@ -53,9 +51,7 @@ services:
       - ./shared/srcdest_cache:/shared/srcdest_cache
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
+    extra_hosts: [host.docker.internal:host-gateway]
   chaotic-manager:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-manager
@@ -141,9 +137,8 @@ services:
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
       - /srv/http/repos:/repo_root
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    ports: ["127.0.0.1:8080:8080", "127.0.0.1:3030:3030"]
+    extra_hosts: [host.docker.internal:host-gateway]
+    ports: [127.0.0.1:8080:8080, 127.0.0.1:3030:3030]
 
   # Metadata for the Chaotic website
   chaotic-backend:
@@ -159,26 +154,25 @@ services:
       AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET:-?err}
       AUTH0_DOMAIN: ${AUTH0_DOMAIN:-?err}
       CAUR_DB_KEY: ${CAUR_DB_KEY:-?err}
-      CAUR_DEPLOY_LOG_ID: "-1001402311166"
+      CAUR_DEPLOY_LOG_ID: '-1001402311166'
       CAUR_JWT_SECRET: ${CAUR_JWT_SECRET:-?err}
-      CAUR_NEWS_ID: "-1001293714071"
+      CAUR_NEWS_ID: '-1001293714071'
       CAUR_TRUST_PROXY: 172.18.0.1
       CAUR_USERS: ${CAUR_USERS:-?err}
-      NODE_ENV: "production"
-      PG_DATABASE: "chaotic-aur"
-      PG_HOST: "10.0.5.50"
+      NODE_ENV: production
+      PG_DATABASE: chaotic-aur
+      PG_HOST: 10.0.5.50
       PG_PASSWORD: ${PG_PASSWORD:-?err}
-      PG_USER: "chaotic-aur"
+      PG_USER: chaotic-aur
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
       REDIS_SSH_HOST: host.docker.internal
       REDIS_SSH_USER: package-deployer
       TELEGRAM_API_HASH: ${TELEGRAM_API_HASH:-?err}
       TELEGRAM_API_ID: ${TELEGRAM_API_ID:-?err}
       TELEGRAM_DB_ENCRYPTION_KEY: ${TELEGRAM_DB_ENCRYPTION_KEY:-?err}
-    ports: ["127.0.0.1:3000:3000"]
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    volumes: ["./tdlib:/app/tdlib", "./sshkey:/app/sshkey"]
+    ports: [127.0.0.1:3000:3000]
+    extra_hosts: [host.docker.internal:host-gateway]
+    volumes: [./tdlib:/app/tdlib, ./sshkey:/app/sshkey]
 
   # Automated container updates
   watchtower:
@@ -188,6 +182,6 @@ services:
       restart_policy:
         condition: always
         delay: 60s
-    command:
-      --cleanup chaotic-builder chaotic-builder-2 chaotic-manager watchtower caur-backend --interval 3600
-    volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
+    command: --cleanup chaotic-builder chaotic-builder-2 chaotic-manager watchtower
+      caur-backend --interval 3600
+    volumes: [/var/run/docker.sock:/var/run/docker.sock]

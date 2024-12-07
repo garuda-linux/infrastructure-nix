@@ -13,4 +13,4 @@ services:
       RUNNER_SCOPE: org
       RUNNER_WORKDIR: /tmp/runner/work
     volumes: [/tmp/runner:/tmp/runner]
-    restart: "no"
+    restart: 'no'

@@ -113,7 +113,6 @@
                 actionlint.enable = true;
                 ansible-lint.enable = true;
                 check-json.enable = true;
-                check-yaml.enable = true;
                 commitizen.enable = true;
                 deadnix.enable = true;
                 detect-private-keys.enable = true;
@@ -122,6 +121,7 @@
                 nixpkgs-fmt.enable = true;
                 prettier.enable = true;
                 statix.enable = true;
+                yamllint.enable = true;
               };
               src = ./.;
             };
@@ -237,16 +237,6 @@
                     help = "Generates random IPv6 addresses in our /64 subnet to help rorating them";
                     category = "infra-nix";
                     command = ipv6-generator;
-                  }
-                  {
-                    name = "update-toolbox";
-                    help = "Updates the locked Chaotic toolbox commit and deploys the changes";
-                    category = "infra-nix";
-                    command = ''
-                      nix flake lock --update-input src-chaotic-toolbox
-                      ansible-playbook playbooks/garuda.yml -l immortalis
-                      ansible-playbook playbooks/apply.yml -l immortalis
-                    '';
                   }
                 ];
                 motd = ''
