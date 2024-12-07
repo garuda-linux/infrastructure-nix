@@ -2,7 +2,7 @@
 services:
   # Whoogle search engine
   whoogle:
-    image: benbusby/whoogle-search:latest # It tends do be important to stay current
+    image: benbusby/whoogle-search:latest  # It tends do be important to stay current
     container_name: whoogle
     user: whoogle
     security_opt: [no-new-privileges]
@@ -29,9 +29,7 @@ services:
       WHOOGLE_CONFIG_VIEW_IMAGE: 1
       WHOOGLE_RESULTS_PER_PAGE: 15
     healthcheck:
-      test:
-        - CMD-SHELL
-        - wget --spider -q --tries=1 http://127.0.0.1:5000 && rm -f /tmp/downtime || { if [ -f /tmp/downtime ]; then rm -f /tmp/downtime; killall -SIGINT python3; exit 1; fi; touch /tmp/downtime; exit 1; }
+      test: [CMD-SHELL, wget --spider -q --tries=1 http://127.0.0.1:5000]
       interval: 30s
       timeout: 10s
       start_period: 30s
@@ -40,7 +38,7 @@ services:
 
   # Searxng search engine
   searx:
-    image: searxng/searxng:latest # It tends do be important to stay current
+    image: searxng/searxng:latest  # It tends do be important to stay current
     container_name: searx
     volumes: [./searxng:/etc/searxng]
     ports: [8080:8080]
@@ -50,17 +48,26 @@ services:
       HTTPS_PROXY: http://10.0.5.1:3128
       HTTP_PROXY: http://10.0.5.1:3128
       INSTANCE_NAME: Garuda's SearxNG
-      NO_PROXY: "*.garudalinux.org"
+      NO_PROXY: '*.garudalinux.org'
     cap_drop: [ALL]
     cap_add: [CHOWN, SETGID, SETUID, DAC_OVERRIDE]
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - --no-verbose
+        - --tries=1
+        - --spider
+        - http://127.0.0.1:8080/info/en/about
+      interval: 2m
+      timeout: 5s
     restart: always
 
   # Librey search engine
   librey:
-    image: ghcr.io/ahwxorg/librey:latest # It tends do be important to stay current
+    image: ghcr.io/ahwxorg/librey:latest  # It tends do be important to stay current
     container_name: librey
-    ports:
-      - 8081:8080
+    ports: [8081:8080]
     environment:
       - CONFIG_CACHE_TIME=20
       - CONFIG_DISABLE_BITTORRENT_SEARCH=false
@@ -72,14 +79,24 @@ services:
       - CONFIG_NUMBER_OF_RESULTS=10
       - CONFIG_RATE_LIMIT_COOLDOWN=25
       - CONFIG_TEXT_SEARCH_ENGINE=google
-    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - --no-verbose
+        - --tries=1
+        - --spider
+        - http://127.0.0.1:8080
+      interval: 2m
+      timeout: 5s
+    restart: always
 
   # Lingva
   lingva:
-    image: thedaviddelta/lingva-translate:latest # Only latest tag is available
+    image: thedaviddelta/lingva-translate:latest  # Only latest tag is available
     container_name: lingva
     environment:
-      DARK_THEME: "true"
+      DARK_THEME: 'true'
       DEFAULT_SOURCE_LANG: auto
       DEFAULT_TARGET_LANG: en
       HTTP_PROXY: http://10.0.5.1:3128
@@ -88,10 +105,13 @@ services:
     ports: [3002:3000]
     restart: always
 
+  # Reddit frontend
   redlib:
     image: quay.io/redlib/redlib:latest
     container_name: redlib
     environment:
+      HTTP_PROXY: http://10.0.5.1:3128
+      HTTPS_PROXY: http://10.0.5.1:3128
       REDLIB_BANNER_: Garuda's Redlib
       REDLIB_DEFAULT_AUTOPLAY_VIDEOS: true
       REDLIB_DEFAULT_BLUR_NSFW: true
@@ -111,16 +131,19 @@ services:
       REDLIB_PUSHSHIFT_FRONTEND: undelete.pullpush.io
       REDLIB_ROBOTS_DISABLE_INDEXING: true
       REDLIB_SFW_ONLY: false
-    ports:
-      - 8082:8080
+    ports: [8082:8080]
     user: nobody
     read_only: true
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "--tries=1", "http://localhost:8082/settings"]
+      test:
+        - CMD
+        - wget
+        - --spider
+        - -q
+        - --tries=1
+        - http://127.0.0.1:8080/settings
       interval: 5m
       timeout: 3s
     restart: always
@@ -129,9 +152,18 @@ services:
   watchtower:
     image: containrrr/watchtower:1.7.1
     container_name: watchtower
-    command:
-      --cleanup searx lingva whoogle librey
+    command: --cleanup searx lingva whoogle librey
     volumes: [/var/run/docker.sock:/var/run/docker.sock]
     restart: always
-volumes:
-  piped_proxy:
+
+  # Auto-restart unhealthy containers (looking at you, Whoogle)
+  autoheal:
+    image: willfarrell/autoheal:latest
+    container_name: autoheal
+    environment:
+      AUTOHEAL_CONTAINER_LABEL: all
+    network_mode: none
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
