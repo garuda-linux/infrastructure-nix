@@ -17,7 +17,6 @@ A general overview of the folder structure can be found below:
 │     └── fonts
 ├── home-manager
 ├── host_vars
-│  ├── garuda-build
 │  ├── garuda-mail
 │  └── immortalis
 ├── nixos
@@ -26,7 +25,6 @@ A general overview of the folder structure can be found below:
 │  │  ├── docker
 │  │  │  └── configs
 │  │  ├── docker-proxied
-│  │  ├── garuda-build
 │  │  ├── garuda-mail
 │  │  ├── github-runner
 │  │  └── immortalis

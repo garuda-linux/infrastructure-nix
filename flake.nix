@@ -209,12 +209,19 @@
                     '';
                   }
                   {
+                    name = "restart";
+                    help = "Restarts all physical servers";
+                    command = ''
+                      ansible-playbook playbooks/reboot.yml
+                    '';
+                  }
+                  {
                     name = "update-forum";
                     help = "Updates the Discourse container of our forum";
                     category = "infra-nix";
                     command = ''
                       # We are assuming the NixOS user is named the same as the one using it
-                      ssh -p224 ${immortalis} "cd /var/disourse; sudo ./launcher rebuild app"
+                      ssh -p224 ${immortalis} "cd /var/discourse; sudo ./launcher rebuild app"
                     '';
                   }
                   {

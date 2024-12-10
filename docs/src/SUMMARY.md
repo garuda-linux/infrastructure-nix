@@ -24,7 +24,6 @@
   - [mongodb](./nixos-containers/mongodb.md)
   - [postgres](./nixos-containers/postgres.md)
   - [web-front](./nixos-containers/web-front.md)
-- [garuda-build](./hosts/garuda-build.md)
 - [garuda-mail](./hosts/garuda-mail.md)
 
 # Repository infrastructure

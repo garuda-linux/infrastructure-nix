@@ -5,5 +5,4 @@ sftp_enabled = true
 
 [nix]
 immortalis
-garuda-build
 garuda-mail

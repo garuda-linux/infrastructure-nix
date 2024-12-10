@@ -16,7 +16,6 @@
 ## Quick links
 
 - [Common maintenance tasks](https://docs.garudalinux.net/common)
-- [Host: garuda-build](./hosts/garuda-build.md)
 - [Host: garuda-mail](https://docs.garudalinux.net/hosts/garuda-mail)
 - [Host: immortalis](https://docs.garudalinux.net/hosts/immortalis)
 

@@ -5,5 +5,5 @@
   gather_facts: false
   tasks:
     - name: Collect garbage
-      ansible.builtin.shell: systemctl start --wait nix-clean-result.service && nix-collect-garbage -d
+      ansible.builtin.shell: nh clean all
       changed_when: false

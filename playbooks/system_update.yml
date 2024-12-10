@@ -5,7 +5,7 @@
   become: true
   tasks:
     - name: Update nix flake and push to cachix
-      ansible.builtin.shell: set -o pipefail;
+      ansible.builtin.shell: set -euo pipefail;
         nix flake update && export CACHIX_AUTH_TOKEN="$(<"/var/garuda/secrets/cachix")" && nix flake archive --json | jq -r '.inputs|to_entries[].value.path'
         | cachix push garuda-linux && nix-store -qR --include-outputs $(nix-store -qd $(nix build --cores 24 '.#nixosConfigurations."cachix".config.cachix' --json  | jq -r
         '.[].outputs | to_entries[].value')) | grep -v '\.drv$' | cachix push garuda-linux
