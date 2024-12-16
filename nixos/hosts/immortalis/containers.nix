@@ -125,6 +125,11 @@
               isReadOnly = false;
               mountPoint = "/var/garuda/docker-compose-runner/all-in-one";
             };
+            "nextcloud-local-backup" = {
+              hostPath = "/data_2/backup/nextcloud-aio";
+              isReadOnly = false;
+              mountPoint = "/var/garuda/backups/nextcloud";
+            };
           };
           forwardPorts = [
             {
