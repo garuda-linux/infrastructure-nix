@@ -100,11 +100,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1733754861,
-        "narHash": "sha256-3JKzIou54yjiMVmvgdJwopekEvZxX3JDT8DpKZs4oXY=",
+        "lastModified": 1735053786,
+        "narHash": "sha256-Gm+0DcbUS338vvkwyYWms5jsWlx8z8MeQBzcnIDuIkw=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "9ebaa80a227eaca9c87c53ed515ade013bc2bca9",
+        "rev": "35b98d20ca8f4ca1f6a2c30b8a2c8bb305a36d84",
         "type": "github"
       },
       "original": {
@@ -206,16 +206,16 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "nixpkgs-24_05": [
-          "nixpkgs-stable"
+        "nixpkgs-24_11": [
+          "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1722877200,
-        "narHash": "sha256-qgKDNJXs+od+1UbRy62uk7dYal3h98I4WojfIqMoGcg=",
+        "lastModified": 1734884447,
+        "narHash": "sha256-HA9fAmGNGf0cOYrhgoa+B6BxNVqGAYXfLyx8zIS0ZBY=",
         "owner": "simple-nixos-mailserver",
         "repo": "nixos-mailserver",
-        "rev": "af7d3bf5daeba3fc28089b015c0dd43f06b176f2",
+        "rev": "63209b1def2c9fc891ad271f474a3464a5833294",
         "type": "gitlab"
       },
       "original": {
@@ -227,11 +227,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1733581040,
-        "narHash": "sha256-Qn3nPMSopRQJgmvHzVqPcE3I03zJyl8cSbgnnltfFDY=",
+        "lastModified": 1734649271,
+        "narHash": "sha256-4EVBRhOjMDuGtMaofAIqzJbg4Ql7Ai0PSeuVZTHjyKQ=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "22c3f2cf41a0e70184334a958e6b124fb0ce3e01",
+        "rev": "d70bd19e0a38ad4790d3913bf08fcbfc9eeca507",
         "type": "github"
       },
       "original": {
@@ -243,11 +243,11 @@
     },
     "nixpkgs-stable": {
       "locked": {
-        "lastModified": 1733730953,
-        "narHash": "sha256-dlK7n82FEyZlHH7BFHQAM5tua+lQO1Iv7aAtglc1O5s=",
+        "lastModified": 1734835170,
+        "narHash": "sha256-JG6n9tQET7ZLjvwjH9BdYE6pES/Alcduxv2FDXliuBM=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "7109b680d161993918b0a126f38bc39763e5a709",
+        "rev": "6df924734e1b626efd70925545de844b1c25246f",
         "type": "github"
       },
       "original": {
@@ -271,11 +271,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1733665616,
-        "narHash": "sha256-+XTFXYlFJBxohhMGLDpYdEnhUNdxN8dyTA8WAd+lh2A=",
+        "lastModified": 1734797603,
+        "narHash": "sha256-ulZN7ps8nBV31SE+dwkDvKIzvN6hroRY8sYOT0w+E28=",
         "owner": "cachix",
         "repo": "git-hooks.nix",
-        "rev": "d8c02f0ffef0ef39f6063731fc539d8c71eb463a",
+        "rev": "f0f0dc4920a903c3e08f5bdb9246bb572fcae498",
         "type": "github"
       },
       "original": {
@@ -304,11 +304,9 @@
         "src-buildiso": "src-buildiso",
         "src-chaotic-mirror": "src-chaotic-mirror",
         "src-chaotic-portable-builder": "src-chaotic-portable-builder",
-        "src-chaotic-toolbox": "src-chaotic-toolbox",
         "src-cloudflare-authenticated_origin_pull_ca": "src-cloudflare-authenticated_origin_pull_ca",
         "src-cloudflare-ipv4": "src-cloudflare-ipv4",
-        "src-garuda-website": "src-garuda-website",
-        "src-repoctl": "src-repoctl"
+        "src-garuda-website": "src-garuda-website"
       }
     },
     "src-buildiso": {
@@ -359,22 +357,6 @@
         "type": "gitlab"
       }
     },
-    "src-chaotic-toolbox": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1712602478,
-        "narHash": "sha256-8siESLuP7+BEa1OWoyEi46zXc2oolelZpp6/JlE9iDM=",
-        "owner": "chaotic-aur",
-        "repo": "toolbox",
-        "rev": "4f956065224ba149baac3ce37f62aabde8815039",
-        "type": "github"
-      },
-      "original": {
-        "owner": "chaotic-aur",
-        "repo": "toolbox",
-        "type": "github"
-      }
-    },
     "src-cloudflare-authenticated_origin_pull_ca": {
       "flake": false,
       "locked": {
@@ -413,22 +395,6 @@
         "owner": "garuda-linux",
         "repo": "website%2Fgaruda",
         "type": "gitlab"
-      }
-    },
-    "src-repoctl": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1711199108,
-        "narHash": "sha256-D3TniMrIZaJzICGu+oXjsGxAjtXCaHHaZ8oOX5FzeH4=",
-        "owner": "cassava",
-        "repo": "repoctl",
-        "rev": "6ab74f4d889aed300c5a2dfd055e491d3592eb1a",
-        "type": "github"
-      },
-      "original": {
-        "owner": "cassava",
-        "repo": "repoctl",
-        "type": "github"
       }
     }
   },

@@ -29,7 +29,7 @@
     nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
     nixos-mailserver.inputs.flake-compat.follows = "flake-compat";
     nixos-mailserver.inputs.nixpkgs.follows = "nixpkgs";
-    nixos-mailserver.inputs.nixpkgs-24_05.follows = "nixpkgs-stable";
+    nixos-mailserver.inputs.nixpkgs-24_11.follows = "nixpkgs";
 
     # Pre-commit hooks via nix-shell or nix develop
     pre-commit-hooks.url = "github:cachix/git-hooks.nix";
@@ -54,8 +54,6 @@
     keys_pedrohlc.flake = false;
 
     # Sources for custom applications and files
-    src-chaotic-toolbox.url = "github:chaotic-aur/toolbox";
-    src-chaotic-toolbox.flake = false;
     # TODO: https://github.com/NixOS/nix/pull/9163
     src-chaotic-portable-builder = {
       type = "gitlab";
@@ -63,8 +61,6 @@
       repo = "tools%2Fchaotic-portable-builder";
       flake = false;
     };
-    src-repoctl.url = "github:cassava/repoctl";
-    src-repoctl.flake = false;
     # TODO: https://github.com/NixOS/nix/pull/9163
     src-buildiso = {
       type = "gitlab";
