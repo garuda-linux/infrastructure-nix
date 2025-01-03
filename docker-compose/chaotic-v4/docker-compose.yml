@@ -140,45 +140,6 @@ services:
     extra_hosts: [host.docker.internal:host-gateway]
     ports: [127.0.0.1:8080:8080, 127.0.0.1:3030:3030]
 
-  # Metadata for the Chaotic website
-  chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:main
-    container_name: chaotic-backend
-    deploy:
-      restart_policy:
-        condition: always
-        delay: 60s
-    environment:
-      AUTH0_AUDIENCE: http://localhost:3000/auth/auth0
-      AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID:-?err}
-      AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET:-?err}
-      AUTH0_DOMAIN: ${AUTH0_DOMAIN:-?err}
-      CAUR_AUTO_COMMIT_AUTHOR: ci@chaotic.cx
-      CAUR_DB_KEY: ${CAUR_DB_KEY:-?err}
-      CAUR_DEPLOY_LOG_ID: '-1001402311166'
-      CAUR_GITLAB_ID_CAUR: 54867625
-      CAUR_GITLAB_ID_GARUDA: 48461689
-      CAUR_GITLAB_TOKEN: ${GITLAB_TOKEN_CX:-?err}
-      CAUR_GITLAB_WEBHOOK_TOKEN: ${CAUR_GITLAB_WEBHOOK_TOKEN:-?err}
-      CAUR_JWT_SECRET: ${CAUR_JWT_SECRET:-?err}
-      CAUR_NEWS_ID: '-1001293714071'
-      CAUR_TRUST_PROXY: 172.18.0.1
-      CAUR_USERS: ${CAUR_USERS:-?err}
-      NODE_ENV: production
-      PG_DATABASE: chaotic-aur
-      PG_HOST: 10.0.5.50
-      PG_PASSWORD: ${PG_PASSWORD:-?err}
-      PG_USER: chaotic-aur
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
-      REDIS_SSH_HOST: host.docker.internal
-      REDIS_SSH_USER: package-deployer
-      TELEGRAM_API_HASH: ${TELEGRAM_API_HASH:-?err}
-      TELEGRAM_API_ID: ${TELEGRAM_API_ID:-?err}
-      TELEGRAM_DB_ENCRYPTION_KEY: ${TELEGRAM_DB_ENCRYPTION_KEY:-?err}
-    ports: [127.0.0.1:3000:3000]
-    extra_hosts: [host.docker.internal:host-gateway]
-    volumes: [./tdlib:/app/tdlib, ./sshkey:/app/sshkey]
-
   # Automated container updates
   watchtower:
     image: containrrr/watchtower:latest
@@ -187,6 +148,5 @@ services:
       restart_policy:
         condition: always
         delay: 60s
-    command: --cleanup chaotic-builder chaotic-builder-2 chaotic-manager watchtower
-      caur-backend --interval 3600
+    command: --cleanup chaotic-builder chaotic-builder-2 chaotic-manager watchtower --interval 3600
     volumes: [/var/run/docker.sock:/var/run/docker.sock]

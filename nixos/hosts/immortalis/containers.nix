@@ -88,6 +88,22 @@
         cpuWeight = 20;
         ioWeight = 20;
       };
+      chaotic-backend = {
+        config = import ../chaotic-backend.nix;
+        extraOptions = {
+          bindMounts = {
+            "chaotic" = {
+              hostPath = "/data_1/containers/chaotic-backend/chaotic";
+              isReadOnly = false;
+              mountPoint = "/var/garuda/docker-compose-runner/chaotic-backend";
+            };
+          };
+          enableTun = true;
+          ephemeral = lib.mkForce true;
+        };
+        ipAddress = "10.0.5.30";
+        needsDocker = true;
+      };
       dev-container = {
         config = import ../dev-container.nix;
         defaults = false;
@@ -111,6 +127,7 @@
               protocol = "tcp";
             }
           ];
+          enableTun = true;
           ephemeral = lib.mkForce true;
         };
         ipAddress = "10.0.5.150";

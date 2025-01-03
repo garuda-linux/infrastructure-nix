@@ -76,6 +76,7 @@ in
         };
         docker-compose = {
           all-in-one = "/var/garuda/secrets/docker-compose/all-in-one.env";
+          chaotic-backend = "/var/garuda/secrets/docker-compose/chaotic-backend.env";
           chaotic-v4 = "/var/garuda/secrets/docker-compose/chaotic-v4.env";
           chaotic-v4-builder = "/var/garuda/secrets/docker-compose/chaotic-v4-builder.env";
           github-runner = "/var/garuda/secrets/docker-compose/github-runner.env";
