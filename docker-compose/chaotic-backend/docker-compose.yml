@@ -30,3 +30,17 @@ services:
       REDIS_SSH_USER: package-deployer
     ports: [3000:3000]
     volumes: [./sshkey:/app/sshkey]
+
+  autoheal:
+    image: willfarrell/autoheal:latest
+    container_name: autoheal
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 30s
+    environment:
+      AUTOHEAL_CONTAINER_LABEL: all
+    network_mode: none
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock
