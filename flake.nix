@@ -35,7 +35,6 @@
     pre-commit-hooks.url = "github:cachix/git-hooks.nix";
     pre-commit-hooks.inputs.flake-compat.follows = "flake-compat";
     pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
-    pre-commit-hooks.inputs.nixpkgs-stable.follows = "nixpkgs-stable";
 
     # SSH keys of maintainers
     keys_nico.url = "https://github.com/dr460nf1r3.keys";

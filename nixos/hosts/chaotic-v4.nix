@@ -4,6 +4,13 @@
 , pkgs
 , ...
 }:
+let
+  wrapperScript = pkgs.writeScriptBin "chaotic-restart" ''
+    echo "Restarting Chaotic-AUR containers..."
+    systemctl restart docker-compose-runner-chaotic-v4.service
+    echo "Done."
+  '';
+in
 {
   imports = sources.defaultModules ++ [ ../modules "${sources.chaotic-portable-builder}/nix/nixos.nix" ];
 
@@ -23,6 +30,12 @@
     envfile = garuda-lib.secrets.docker-compose.chaotic-v4;
     source = ../../docker-compose/chaotic-v4;
   };
+
+  # Allow controlling infra 4.0's containers without root
+  environment.systemPackages = [ wrapperScript ];
+  security.sudo.extraRules = [
+    { users = [ "xiota" ]; commands = [{ command = "${wrapperScript}/bin/chaotic-restart"; options = [ "NOPASSWD" ]; }]; }
+  ];
 
   # Lock down chaotic-op group to SCP in landing zone
   services.openssh.extraConfig = ''
