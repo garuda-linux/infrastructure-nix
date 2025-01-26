@@ -26,13 +26,13 @@ services:
   # Firefox syncserver
   syncserver:
     container_name: syncserver
-    image: crazymax/firefox-syncserver:edge  # newest, versioned one 3 years old
+    image: crazymax/firefox-syncserver:edge # newest, versioned one 3 years old
     volumes: [./syncserver:/data]
     ports: [5001:5000]
     environment:
       FF_SYNCSERVER_ACCESSLOG: true
       FF_SYNCSERVER_FORCE_WSGI_ENVIRON: true
-      FF_SYNCSERVER_FORWARDED_ALLOW_IPS: '*'
+      FF_SYNCSERVER_FORWARDED_ALLOW_IPS: "*"
       FF_SYNCSERVER_PUBLIC_URL: https://ffsync.garudalinux.org
       FF_SYNCSERVER_SECRET: ${FF_SYNCSERVER_SECRET:-?err}
       FF_SYNCSERVER_SQLURI: sqlite:////data/syncserver.db
@@ -49,7 +49,7 @@ services:
 
   # Password vault
   vaultwarden:
-    image: vaultwarden/server:1.32.7-alpine
+    image: vaultwarden/server:1.33.0-alpine
     container_name: vaultwarden
     volumes: [./bitwarden:/data]
     ports: [8081:80]
@@ -118,7 +118,8 @@ services:
       MINUTES_BETWEEN_RUNS: 240
       NSFW: false
       POST_COUNT: 100
-      REMOTE_INSTANCES: '[ "beehaw.org", "lemmy.world", "lemmy.ml", "sh.itjust.works",
+      REMOTE_INSTANCES:
+        '[ "beehaw.org", "lemmy.world", "lemmy.ml", "sh.itjust.works",
         "lemmy.one", "programming.dev" ]'
       SECONDS_AFTER_COMMUNITY_ADD: 17
       TRACKER_FILE: /app/logs/tracker.log
@@ -142,7 +143,8 @@ services:
   watchtower:
     image: containrrr/watchtower:1.7.1
     container_name: watchtower
-    command: --cleanup matterbridge wikijs privatebin vaultwarden thelounge syncserver
+    command:
+      --cleanup matterbridge wikijs privatebin vaultwarden thelounge syncserver
       lemmy_lcs lemmy_lds
     volumes: [/var/run/docker.sock:/var/run/docker.sock]
     restart: always
