@@ -101,7 +101,6 @@
     garuda-tailscale.enable = lib.mkIf (!garuda-lib.minimalContainer) true;
     locate = {
       enable = true;
-      localuser = null;
       package = pkgs.plocate;
     };
     openssh.enable = true;

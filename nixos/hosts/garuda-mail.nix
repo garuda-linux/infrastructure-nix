@@ -78,7 +78,6 @@ in
     fullTextSearch = {
       enable = true;
       enforced = "body";
-      indexAttachments = true;
       memoryLimit = 512;
     };
     # To create the password hashes, use nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt'

@@ -17,7 +17,7 @@
       net.tls.CAFile: /run/credentials/mongodb.service/ca.crt
       net.tls.allowConnectionsWithoutCertificates: true
     '';
-    initialRootPassword = "yupHasAlreadyBeenChanged";
+    initialRootPasswordFile = pkgs.writeText "mongodb-initial-password" "yupHasAlreadyBeenChanged";
     # Prevent hours of waiting for mongodb to be compiled
     package = pkgs.mongodb-ce;
     quiet = true;

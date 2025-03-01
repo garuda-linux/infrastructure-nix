@@ -62,6 +62,14 @@
     enableUserSlices = true;
   };
 
+  # Tmpfs is mounted via systemd-nspawn --tmpfs instead in immortalis/containers.nix
+  boot = {
+    runSize = "50%";
+    tmp = {
+      useTmpfs = false;
+    };
+  };
+
   networking.firewall = {
     extraCommands = ''
       iptables -t nat -A PREROUTING -p tcp -d 172.17.0.1 --dport 3128 -j DNAT --to-destination 10.0.5.1:3128
