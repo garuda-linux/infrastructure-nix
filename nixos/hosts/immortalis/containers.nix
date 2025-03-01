@@ -198,9 +198,6 @@
         config = import ../github-runner.nix;
         defaults = false;
         extraOptions = {
-          tmpfs = [
-            "/tmp:nosuid,size=50%"
-          ];
           bindMounts = {
             "token" = {
               hostPath = garuda-lib.secrets.docker-compose.github-runner;

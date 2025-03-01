@@ -11,6 +11,6 @@ services:
       ORG_NAME: chaotic-cx
       RUNNER_NAME: immortalis
       RUNNER_SCOPE: org
-      RUNNER_WORKDIR: /tmp/runner/work
-    volumes: [/tmp/runner:/tmp/runner]
+      RUNNER_WORKDIR: /var/cache/github-runner/work
+    volumes: [/var/cache/github-runner/work:/var/cache/github-runner/work]
     restart: 'no'
