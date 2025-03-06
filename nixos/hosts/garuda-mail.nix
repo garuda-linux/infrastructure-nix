@@ -173,6 +173,9 @@ in
   # Fix dovecot errors caused by failed scudo allocations
   environment.memoryAllocator.provider = lib.mkForce "libc";
 
+  # Set up push notifications
+  services.dovecot2.mailPlugins.globally.enable = [ "notify" "push_notification" ];
+
   # Postmaster alias
   services.postfix.postmasterAlias = "nico@dr460nf1r3.org";
 
