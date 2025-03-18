@@ -1,6 +1,7 @@
 { garuda-lib
-, sources
 , lib
+, pkgs
+, sources
 , ...
 }:
 let
@@ -47,6 +48,37 @@ let
       isCloudflared = values: values ? listen && values.listen == (allowOnlyCloudflared { }).listen;
     in
     builtins.listToAttrs (lib.flatten (lib.mapAttrsToList (host: values: lib.optionals (isCloudflared values) (toIngress ([ host ] ++ (values.serverAliases or [ ])))) virtualHosts));
+
+  website =
+    let
+      # Run Nx command with fake TTY to avoid panic
+      # https://github.com/nrwl/nx/issues/22445
+      nx = pkgs.writeScript "nx-wrapper" ''
+        exec ${pkgs.faketty}/bin/faketty nx "$@"
+      '';
+    in
+    pkgs.stdenv.mkDerivation (finalAttrs: {
+      pname = "garuda-website";
+      version = "1.0.0";
+
+      src = sources.garuda-website;
+
+      nativeBuildInputs = with pkgs; [
+        nodejs_22
+        pnpm_10.configHook
+      ];
+      pnpmDeps = pkgs.pnpm_10.fetchDeps {
+        inherit (finalAttrs) pname version src;
+        hash = "sha256-g3OUBjhqbBayOUOTAQapnHfEnZHekoCA1Soq7M1TmTo=";
+      };
+      buildPhase = ''
+        export PATH=$(pnpm bin):$PATH
+        ${nx} build && ${nx} transloco:optimize
+      '';
+      installPhase = ''
+        cp -r ./dist/website/browser $out
+      '';
+    });
 in
 rec {
   imports = sources.defaultModules ++ [ ../modules ];
@@ -67,6 +99,45 @@ rec {
       };
     };
     virtualHosts = {
+      "garudalinux.org" = {
+        addSSL = true;
+        http3 = true;
+        locations = {
+          "/" = {
+            index = "index.html";
+            root = website;
+          };
+          "/discord" = {
+            extraConfig = "expires 12h;";
+            return = "307 https://discord.gg/w5jbhq3juh";
+          };
+          "/telegram" = {
+            extraConfig = "expires 12h;";
+            return = "307 https://t.me/garudalinux";
+          };
+          "/os/garuda-update/backuprepo" = {
+            extraConfig = ''
+              rewrite ^/os/garuda-update/backuprepo/(.*)$ https://geo-mirror.chaotic.cx/chaotic-aur/$1 redirect;
+            '';
+          };
+          "/os/garuda-update/remote-update" = {
+            extraConfig = "expires 12h;";
+            return =
+              "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update";
+          };
+          "/os/garuda-update/garuda-hotfixes-version" = {
+            extraConfig = "expires 5m;";
+            return = "200 '1'";
+          };
+          "/.well-known/webfinger" = {
+            extraConfig = "expires 12h;";
+            return = "301 https://social.garudalinux.org$request_uri";
+          };
+        };
+        quic = true;
+        serverAliases = [ "www.garudalinux.org" ];
+        useACMEHost = "garudalinux.org";
+      };
       "cloud.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
@@ -240,40 +311,6 @@ rec {
         };
         quic = true;
         serverAliases = [ "vault.garudalinux.org" ];
-        useACMEHost = "garudalinux.org";
-      };
-      "status.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = { tryFiles = "/status.html /status.html"; };
-          "=/status.html" = {
-            extraConfig = "expires 30d;";
-            root = "${sources.garuda-website}/internal";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "stats.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = { tryFiles = "/stats.html /stats.html"; };
-          "=/stats.html" = {
-            extraConfig = "expires 30d;";
-            root = "${sources.garuda-website}/internal";
-          };
-        };
-        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "forum.garudalinux.org" = {
