@@ -312,7 +312,6 @@ in
     fullTextSearch = {
       enable = true;
       enforced = "body";
-      indexAttachments = true;
       memoryLimit = 512;
     };
     # To create the password hashes, use nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt'
@@ -407,6 +406,9 @@ in
 
   # Fix dovecot errors caused by failed scudo allocations
   environment.memoryAllocator.provider = lib.mkForce "libc";
+
+  # Set up push notifications
+  services.dovecot2.mailPlugins.globally.enable = [ "notify" "push_notification" ];
 
   # Postmaster alias
   services.postfix.postmasterAlias = "nico@dr460nf1r3.org";

@@ -1001,7 +1001,7 @@ It is unclear, what the exact reason is, yet.</p>
   };
 
   # Can't really instantly remove this, need to find an alternative first
-  nixpkgs.config.permittedInsecurePackages = [ "squid-6.10" ];
+  nixpkgs.config.permittedInsecurePackages = [ "squid-7.0.1" ];
 
   # Adapt Nix to our core-count
   nix.settings.max-jobs = 8;
@@ -1208,6 +1208,7 @@ on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortali
   # Our Lemmy instance
   services.lemmy = {
     database.uri = "postgresql://lemmy:${garuda-lib.secrets.lemmy.database}@10.0.5.50/lemmy";
+    nginx.enable = true;
     enable = true;
     settings = {
       hostname = "lemmy.garudalinux.org";
@@ -1221,75 +1222,13 @@ on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortali
     };
   };
 
-  # Force newest version due to Nixpkgs having dropped 0.3.X. 
+  # Force newest version due to Nixpkgs having dropped 0.3.X.
   # Manual migration from 0.3.X -&gt; 0.4.X -&gt; 0.5.X has been performed.
   # https://github.com/NixOS/nixpkgs/pull/336077
   services.pict-rs.package = pkgs.pict-rs;
 
-  services.nginx = {
-    enable = true;
-    httpConfig = ''
-      map "$request_method:$http_accept" $proxpass {
-          # If no explicit matches exists below, send traffic to lemmy-ui
-          default "http://lemmy-ui";
-
-          # GET/HEAD requests that accepts ActivityPub or Linked Data JSON should go to lemmy
-          # "~^(?:GET|HEAD):.*?application\/(?:activity|ld)\+json" "http://lemmy";
-
-          # All non-GET/HEAD requests should go to lemmy
-          "~^(?!(GET|HEAD)).*:" "http://lemmy";
-      }
-
-      upstream lemmy {
-        server "127.0.0.1:8536";
-      }
-      upstream lemmy-ui {
-        server "127.0.0.1:1234";
-      }
-      
-      server {
-          listen 80;
-          
-          server_name lemmy.garudalinux.org;
-          server_tokens off;
-
-          gzip on;
-          gzip_types text/css application/javascript image/svg+xml;
-          gzip_vary on;
-
-          client_max_body_size 25M;
-
-          add_header X-Frame-Options SAMEORIGIN;
-          add_header X-Content-Type-Options nosniff;
-          add_header X-XSS-Protection "1; mode=block";
-
-          real_ip_header X-Real-IP;
-          set_real_ip_from 10.0.5.10;
-
-          # frontend general requests
-          location / {
-              proxy_pass $proxpass;
-              rewrite ^(.+)/+$ $1 permanent;
-              proxy_set_header X-Real-IP $remote_addr;
-              proxy_set_header Host $host;
-          }
-
-          # backend
-          location ~ ^/(api|pictrs|feeds|nodeinfo|.well-known) {
-              proxy_pass "http://lemmy";
-              proxy_http_version 1.1;
-              proxy_set_header Upgrade $http_upgrade;
-              proxy_set_header Connection "upgrade";
-              proxy_set_header X-Real-IP $remote_addr;
-              proxy_set_header Host $host;
-          }
-      }
-    '';
-  };
-
   system.stateVersion = "23.05";
 }
-
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="mastodon"><a class="header" href="#mastodon">mastodon</a></h1>
 <h2 id="general-6"><a class="header" href="#general-6">General</a></h2>
@@ -1433,7 +1372,7 @@ so that the Heroku instance the router runs on can access it easier.</p>
       net.tls.CAFile: /run/credentials/mongodb.service/ca.crt
       net.tls.allowConnectionsWithoutCertificates: true
     '';
-    initialRootPassword = "yupHasAlreadyBeenChanged";
+    initialRootPasswordFile = pkgs.writeText "mongodb-initial-password" "yupHasAlreadyBeenChanged";
     # Prevent hours of waiting for mongodb to be compiled
     package = pkgs.mongodb-ce;
     quiet = true;
@@ -1594,8 +1533,9 @@ It also contains a Cloudflared instance,
 which a few services are only being exposed to, instead of being reverse proxied by Nginx itself.</p>
 <h2 id="nix-expression-9"><a class="header" href="#nix-expression-9">Nix expression</a></h2>
 <pre><code class="language-nix">{ garuda-lib
-, sources
 , lib
+, pkgs
+, sources
 , ...
 }:
 let
@@ -1642,6 +1582,37 @@ let
       isCloudflared = values: values ? listen &amp;&amp; values.listen == (allowOnlyCloudflared { }).listen;
     in
     builtins.listToAttrs (lib.flatten (lib.mapAttrsToList (host: values: lib.optionals (isCloudflared values) (toIngress ([ host ] ++ (values.serverAliases or [ ])))) virtualHosts));
+
+  website =
+    let
+      # Run Nx command with fake TTY to avoid panic
+      # https://github.com/nrwl/nx/issues/22445
+      nx = pkgs.writeScript "nx-wrapper" ''
+        exec ${pkgs.faketty}/bin/faketty nx "$@"
+      '';
+    in
+    pkgs.stdenv.mkDerivation (finalAttrs: {
+      pname = "garuda-website";
+      version = "1.0.0";
+
+      src = sources.garuda-website;
+
+      nativeBuildInputs = with pkgs; [
+        nodejs_22
+        pnpm_10.configHook
+      ];
+      pnpmDeps = pkgs.pnpm_10.fetchDeps {
+        inherit (finalAttrs) pname version src;
+        hash = "sha256-g3OUBjhqbBayOUOTAQapnHfEnZHekoCA1Soq7M1TmTo=";
+      };
+      buildPhase = ''
+        export PATH=$(pnpm bin):$PATH
+        ${nx} build &amp;&amp; ${nx} transloco:optimize
+      '';
+      installPhase = ''
+        cp -r ./dist/website/browser $out
+      '';
+    });
 in
 rec {
   imports = sources.defaultModules ++ [ ../modules ];
@@ -1662,6 +1633,45 @@ rec {
       };
     };
     virtualHosts = {
+      "garudalinux.org" = {
+        addSSL = true;
+        http3 = true;
+        locations = {
+          "/" = {
+            index = "index.html";
+            root = website;
+          };
+          "/discord" = {
+            extraConfig = "expires 12h;";
+            return = "307 https://discord.gg/w5jbhq3juh";
+          };
+          "/telegram" = {
+            extraConfig = "expires 12h;";
+            return = "307 https://t.me/garudalinux";
+          };
+          "/os/garuda-update/backuprepo" = {
+            extraConfig = ''
+              rewrite ^/os/garuda-update/backuprepo/(.*)$ https://geo-mirror.chaotic.cx/chaotic-aur/$1 redirect;
+            '';
+          };
+          "/os/garuda-update/remote-update" = {
+            extraConfig = "expires 12h;";
+            return =
+              "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update";
+          };
+          "/os/garuda-update/garuda-hotfixes-version" = {
+            extraConfig = "expires 5m;";
+            return = "200 '1'";
+          };
+          "/.well-known/webfinger" = {
+            extraConfig = "expires 12h;";
+            return = "301 https://social.garudalinux.org$request_uri";
+          };
+        };
+        quic = true;
+        serverAliases = [ "www.garudalinux.org" ];
+        useACMEHost = "garudalinux.org";
+      };
       "cloud.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
@@ -1835,40 +1845,6 @@ rec {
         };
         quic = true;
         serverAliases = [ "vault.garudalinux.org" ];
-        useACMEHost = "garudalinux.org";
-      };
-      "status.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = { tryFiles = "/status.html /status.html"; };
-          "=/status.html" = {
-            extraConfig = "expires 30d;";
-            root = "${sources.garuda-website}/internal";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "stats.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = { tryFiles = "/stats.html /stats.html"; };
-          "=/stats.html" = {
-            extraConfig = "expires 30d;";
-            root = "${sources.garuda-website}/internal";
-          };
-        };
-        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "forum.garudalinux.org" = {
@@ -2253,7 +2229,6 @@ in
     fullTextSearch = {
       enable = true;
       enforced = "body";
-      indexAttachments = true;
       memoryLimit = 512;
     };
     # To create the password hashes, use nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt'
@@ -2348,6 +2323,9 @@ in
 
   # Fix dovecot errors caused by failed scudo allocations
   environment.memoryAllocator.provider = lib.mkForce "libc";
+
+  # Set up push notifications
+  services.dovecot2.mailPlugins.globally.enable = [ "notify" "push_notification" ];
 
   # Postmaster alias
   services.postfix.postmasterAlias = "nico@dr460nf1r3.org";
