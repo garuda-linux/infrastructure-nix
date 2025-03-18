@@ -179,8 +179,6 @@
     flake = "/etc/nixos";
   };
 
-  services.cloudflared.user = "root";
-
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 

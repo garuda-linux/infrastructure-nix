@@ -73,7 +73,7 @@
     src-garuda-website = {
       type = "gitlab";
       owner = "garuda-linux";
-      repo = "website%2Fgaruda";
+      repo = "website%2Fwebsite-catppuccin";
       flake = false;
     };
 
