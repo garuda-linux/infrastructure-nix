@@ -106,6 +106,11 @@ rec {
           "/" = {
             index = "index.html";
             root = website;
+            extraConfig = ''
+              # First attempt to serve request as file, then
+              # as directory, then redirect to index(Angular) if no file found.
+              try_files $uri $uri/ /index.html;
+            '';
           };
           "/discord" = {
             extraConfig = "expires 12h;";
