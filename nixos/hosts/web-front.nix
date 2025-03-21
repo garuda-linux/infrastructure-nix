@@ -108,7 +108,7 @@ rec {
             root = website;
             extraConfig = ''
               # First attempt to serve request as file, then
-              # as directory, then redirect to index(Angular) if no file found.
+              # as directory, then redirect to index.html (Angular) if no file found.
               try_files $uri $uri/ /index.html;
             '';
           };
@@ -118,7 +118,7 @@ rec {
           };
           "/telegram" = {
             extraConfig = "expires 12h;";
-            return = "307 https://t.me/garudalinux";
+            return = "307 https://t.me/+TAZWHgryP6elOyS8";
           };
           "/os/garuda-update/backuprepo" = {
             extraConfig = ''
