@@ -69,7 +69,7 @@ let
       ];
       pnpmDeps = pkgs.pnpm_10.fetchDeps {
         inherit (finalAttrs) pname version src;
-        hash = "sha256-g3OUBjhqbBayOUOTAQapnHfEnZHekoCA1Soq7M1TmTo=";
+        hash = "sha256-MpoGl7hzLAqGrqAz0hZYfQmvEZAe+V8o8jOotwlMXKI=";
       };
       buildPhase = ''
         export PATH=$(pnpm bin):$PATH
@@ -229,8 +229,8 @@ rec {
               proxy_read_timeout 86400s;
               client_max_body_size 0;
 
-                 # Allow accessing through trusted domain
-                 set_real_ip_from      172.0.0.0/16;
+              # Allow accessing through trusted domain
+              set_real_ip_from      172.0.0.0/16;
             '';
             proxyPass = "https://10.0.5.100:8080";
           };

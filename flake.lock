@@ -211,11 +211,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1741986986,
-        "narHash": "sha256-V/OjvrJHCuTcPsT/JA/GGhDSrdOdUQp2HS4kk/7t1hQ=",
+        "lastModified": 1742413977,
+        "narHash": "sha256-NkhM9GVu3HL+MiXtGD0TjuPCQ4GFVJPBZ8KyI2cFDGU=",
         "owner": "simple-nixos-mailserver",
         "repo": "nixos-mailserver",
-        "rev": "90539a1a993a7ec16563139e82fa66f1c439ba0f",
+        "rev": "b4fbffe79c00f19be94b86b4144ff67541613659",
         "type": "gitlab"
       },
       "original": {
@@ -381,11 +381,11 @@
     "src-garuda-website": {
       "flake": false,
       "locked": {
-        "lastModified": 1742283490,
-        "narHash": "sha256-OAAoqgWXjmIg/gQ00x1AlnV/FwVlxU/6/lt7jayExsQ=",
+        "lastModified": 1743091600,
+        "narHash": "sha256-8tHkaB1lM6LYVXGHXS34huT49p/E1PNX8WYNEb/J7Go=",
         "owner": "garuda-linux",
         "repo": "website%2Fwebsite-catppuccin",
-        "rev": "1ed8e6f6f775059acb64e9fc017b5fdf741b5cc5",
+        "rev": "ea2dc7e7c9f53f430ffb5942c71efd60a528cb6c",
         "type": "gitlab"
       },
       "original": {
