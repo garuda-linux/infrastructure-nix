@@ -84,12 +84,12 @@ in
 
     services.rsyncd.enable = true;
     services.rsyncd.settings = {
-      iso = {
+      sections.iso = {
         path = "/var/garuda/buildiso/iso/";
         comment = "ISO downloads";
         "read only" = "yes";
       };
-      global = {
+      globalSection = {
         gid = "nobody";
         "max connections" = 80;
         uid = "nobody";

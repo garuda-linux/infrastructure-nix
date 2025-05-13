@@ -285,24 +285,26 @@ in
   services.rsyncd = {
     enable = true;
     settings = {
-      chaotic = {
-        "read only" = "yes";
-        comment = "Chaotic-AUR repository";
-        exclude = "/chaotic-aur/archive/*** /garuda/archive/***";
-        path = "/srv/http/repos/";
+      sections = {
+        chaotic = {
+          "read only" = "yes";
+          comment = "Chaotic-AUR repository";
+          exclude = "/chaotic-aur/archive/*** /garuda/archive/***";
+          path = "/srv/http/repos/";
+        };
+        chaotic-minimal = {
+          "read only" = "yes";
+          comment = "Chaotic-AUR repository minus largest packages";
+          exclude = "/chaotic-aur/archive/*** /garuda/archive/*** /chaotic-aur/x86_64/quartus* /chaotic-aur/x86_64/unrealtournament4* /chaotic-aur/x86_64/urbanterror*";
+          path = "/srv/http/repos/";
+        };
+        iso = {
+          path = "/srv/http/iso/";
+          comment = "ISO downloads";
+          "read only" = "yes";
+        };
       };
-      chaotic-minimal = {
-        "read only" = "yes";
-        comment = "Chaotic-AUR repository minus largest packages";
-        exclude = "/chaotic-aur/archive/*** /garuda/archive/*** /chaotic-aur/x86_64/quartus* /chaotic-aur/x86_64/unrealtournament4* /chaotic-aur/x86_64/urbanterror*";
-        path = "/srv/http/repos/";
-      };
-      iso = {
-        path = "/srv/http/iso/";
-        comment = "ISO downloads";
-        "read only" = "yes";
-      };
-      global = {
+      globalSection = {
         "max connections" = 80;
         "max verbosity" = 3;
         "transfer logging" = true;

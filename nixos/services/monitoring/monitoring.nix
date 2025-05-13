@@ -54,7 +54,7 @@ in {
         enable = true;
 
         # https://github.com/nix-community/nixpkgs.lib/commit/1111263e3da005fe29fd72b87283fc17bfba2d81
-        package = pkgs.netdata.override { withCloud = true; };
+        package = pkgs.netdata.override { withCloudUi = true; };
 
         # Extra Python packages required for Netdata to function
         python.extraPackages = ps: [ ps.psycopg2 ];
