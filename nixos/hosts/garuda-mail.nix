@@ -167,8 +167,10 @@ in
       alertAddress = "team@garudalinux.org";
       enable = true;
     };
-    rebootAfterKernelUpgrade.enable = true;
   };
+
+  # Previously called "mailserver.rebootAfterKernelUpgrade.enable"
+  system.autoUpgrade.allowReboot = true;
 
   # Fix dovecot errors caused by failed scudo allocations
   environment.memoryAllocator.provider = lib.mkForce "libc";
