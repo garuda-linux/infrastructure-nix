@@ -104,35 +104,6 @@
         ipAddress = "10.0.5.30";
         needsDocker = true;
       };
-      dev-container = {
-        config = import ../dev-container.nix;
-        defaults = false;
-        extraOptions = {
-          bindMounts = {
-            "persist" = {
-              hostPath = "/data_1/containers/dev-container/persist";
-              isReadOnly = false;
-              mountPoint = "/home/nico";
-            };
-            "sshKeys" = {
-              hostPath = "/data_1/containers/dev-container/ssh";
-              isReadOnly = false;
-              mountPoint = "/etc/ssh";
-            };
-          };
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 231;
-              protocol = "tcp";
-            }
-          ];
-          enableTun = true;
-          ephemeral = lib.mkForce true;
-        };
-        ipAddress = "10.0.5.150";
-        needsDocker = true;
-      };
       docker = {
         config = import ../docker.nix;
         extraOptions = {
