@@ -150,14 +150,6 @@ in
         hashedPasswordFile = "/var/garuda/secrets/mail/nicoatcx";
       };
       # dr460nf1r3.org
-      "nico@dr460nf1r3.org" = {
-        aliases = [ "@dr460nf1r3.org" ];
-        catchAll = [ "dr460nf1r3.org" ];
-        hashedPasswordFile = "/var/garuda/secrets/mail/nicoatdf";
-      };
-      "test@dr460nf1r3.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/testatdf";
-      };
       "noreply@dr460nf1r3.org" = {
         hashedPasswordFile = "/var/garuda/secrets/mail/noreplyatdf";
       };
