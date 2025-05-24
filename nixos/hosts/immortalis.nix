@@ -11,8 +11,8 @@
 
   # Increase /tmp & /run size to make better use of RAM
   boot = {
-    # Seems to be buggy currently (2025-05-23)
-    # kernelPackages = pkgs.linuxPackages_latest;
+    # Latest seems to be buggy currently (2025-05-23)
+    kernelPackages = pkgs.linuxPackages;
     loader.systemd-boot.enable = true;
     runSize = "50%";
     tmp = {
