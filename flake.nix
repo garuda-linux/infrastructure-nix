@@ -178,7 +178,6 @@
                   { package = "mdbook-admonish"; }
                   { package = "mdbook-emojicodes"; }
                   { package = "nodePackages.prettier"; }
-                  { package = "nixos-install-tools"; }
                   { package = "pre-commit"; }
                   {
                     name = "apply";
@@ -274,7 +273,7 @@
         inputs.devshell.flakeModule
         inputs.pre-commit-hooks.flakeModule
       ];
-      systems = [ "x86_64-linux" "aarch64-linux" ];
+      systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       inherit perSystem;
     };
 }
