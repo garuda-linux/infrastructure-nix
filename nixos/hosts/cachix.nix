@@ -1,10 +1,9 @@
 { config
 , lib
 , pkgs
-, sources
 , ...
 }: {
-  imports = sources.defaultModules ++ [ ../modules ];
+  imports = [ ../modules ];
 
   options.cachix = lib.mkOption { type = lib.types.package; };
 
@@ -13,7 +12,7 @@
     boot.loader.grub.device = "nodev";
     cachix = pkgs.buildEnv {
       name = "cachix";
-      paths = [ config.services.nginx.package config.services.cloudflared.package config.services.netdata.package ];
+      paths = [ config.services.nginx.package config.services.cloudflared.package config.services.netdata.package config.nix.package ];
     };
   };
 }
