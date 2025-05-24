@@ -4,7 +4,6 @@
 
 This container houses our Postgres database. Multiple services access it:
 
-- Lemmy
 - Mastodon
 - Matrix
 - Matrix bridges

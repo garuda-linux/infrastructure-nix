@@ -1,0 +1,19 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+max_line_length = 120
+trim_trailing_whitespace = true
+
+[*.md]
+indent_size = unset
+tab_width = unset
+trim_trailing_whitespace = false
+
+[*.lock]
+# These are auto-generated, so lets not touch them
+indent_size = unset

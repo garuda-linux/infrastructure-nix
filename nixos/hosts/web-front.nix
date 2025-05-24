@@ -474,21 +474,6 @@ rec {
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "lemmy.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.120:80";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
       "lingva.garudalinux.org" = allowOnlyCloudflared {
         addSSL = true;
         http3 = true;

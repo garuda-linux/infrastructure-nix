@@ -33,16 +33,11 @@ in
   services.postgresql = {
     enable = true;
     ensureDatabases = [
-      "lemmy"
       "mastodon"
       "wikijs"
       "chaotic-aur"
     ];
     ensureUsers = [
-      {
-        name = "lemmy";
-        ensureDBOwnership = true;
-      }
       {
         name = "mastodon";
         ensureDBOwnership = true;
@@ -114,4 +109,3 @@ in
 
   system.stateVersion = "23.05";
 }
-

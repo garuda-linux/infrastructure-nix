@@ -7,10 +7,6 @@
     "monitoring_channel": "-10000000",
     "updates_channel": "-10000000"
   },
-  "lemmy": {
-    "database": "abcdefghijklmnop",
-    "smtp_password": "abcdefghijklmnop"
-  },
   "matrix": {
     "db_string": "abcdefg:abcdefg"
   },

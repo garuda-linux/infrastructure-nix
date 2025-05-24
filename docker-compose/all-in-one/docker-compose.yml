@@ -103,49 +103,11 @@ services:
       restart_policy:
         condition: always
         delay: 120s
-
-  # Makes world content available for our Lemmy instance
-  lemmy_lcs:
-    image: nowsci/lcs:latest
-    container_name: lemmy_lcs
-    environment:
-      COMMUNITY_COUNT: 100
-      COMMUNITY_SORT_METHODS: '[ "TopAll", "TopDay" ]'
-      COMMUNITY_TYPE: All
-      LOCAL_URL: https://lemmy.garudalinux.org
-      LOCAL_USERNAME: ${LOCAL_USERNAME:-?err}
-      LOCAL_PASSWORD: ${LOCAL_PASSWORD:-?err}
-      MINUTES_BETWEEN_RUNS: 240
-      NSFW: false
-      POST_COUNT: 100
-      REMOTE_INSTANCES:
-        '[ "beehaw.org", "lemmy.world", "lemmy.ml", "sh.itjust.works",
-        "lemmy.one", "programming.dev" ]'
-      SECONDS_AFTER_COMMUNITY_ADD: 17
-      TRACKER_FILE: /app/logs/tracker.log
-    volumes:
-      - ./lemmy_lcs:/app/logs
-    restart: unless-stopped
-
-  # Lemmy deferation sync (has only latest tag)
-  lemmy_lds:
-    image: nowsci/lds:latest
-    container_name: lemmy_lds
-    environment:
-      LOCAL_PASSWORD: ${LOCAL_PASSWORD:-?err}
-      LOCAL_URL: https://lemmy.garudalinux.org
-      LOCAL_USERNAME: ${LOCAL_USERNAME:-?err}
-      MINUTES_BETWEEN_RUNS: 1440
-      REMOTE_INSTANCES: '[ "lemmy.world", "lemmy.one" ]'
-    restart: unless-stopped
-
   # Automated container updates
   watchtower:
     image: containrrr/watchtower:1.7.1
     container_name: watchtower
-    command:
-      --cleanup matterbridge wikijs privatebin vaultwarden thelounge syncserver
-      lemmy_lcs lemmy_lds
+    command: --cleanup matterbridge wikijs privatebin vaultwarden thelounge syncserver
     volumes: [/var/run/docker.sock:/var/run/docker.sock]
     restart: always
 volumes:

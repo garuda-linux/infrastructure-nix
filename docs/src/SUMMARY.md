@@ -19,7 +19,6 @@
   - [docker-proxied](./nixos-containers/docker-proxied.md)
   - [forum](./nixos-containers/forum.md)
   - [github-runner](./nixos-containers/github-runner.md)
-  - [lemmy](./nixos-containers/lemmy.md)
   - [mastodon](./nixos-containers/mastodon.md)
   - [mongodb](./nixos-containers/mongodb.md)
   - [postgres](./nixos-containers/postgres.md)

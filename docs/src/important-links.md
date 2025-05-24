@@ -40,7 +40,6 @@ This is a collection of important links when working with the infrastructure:
 - [Discourse](https://forum.garudalinux.org)
 - [Chaotic-AUR](https://aur.chaotic.cx)
 - [Firefox syncserver](https://ffsync.garudalinux.org)
-- [Lemmy](https://lemmy.garudalinux.org)
 - [Lingva](https://lingva.garudalinux.org)
 - [Mastodon](https://social.garudalinux.org)
 - [Nextcloud](https://cloud.garudalinux.org)
