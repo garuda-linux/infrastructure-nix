@@ -17,10 +17,15 @@ in {
         claimTokenFile = "/var/garuda/secrets/netdata_claim_token";
         config = {
           db = {
-            "dbengine disk space MB" = "10240";
-            "dbengine multihost disk space MB" = "10240";
             "mode" = "dbengine";
             "update every" = "2";
+            "storage tiers" = "3";
+            "dbengine tier 0 retention size" = "1GiB";
+            "dbengine tier 0 retention time" = "14d";
+            "dbengine tier 1 retention size" = "1GiB";
+            "dbengine tier 1 retention time" = "3m";
+            "dbengine tier 2 retention size" = "1GiB";
+            "dbengine tier 2 retention time" = "2y";
           };
           ml = { "enabled" = "yes"; };
           web = { "mode" = "none"; };
