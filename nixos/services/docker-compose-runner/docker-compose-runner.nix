@@ -6,6 +6,20 @@
 with lib;
 let
   cfg = config.services.docker-compose-runner;
+  filesType = types.submodule {
+    options = {
+      targetFileName = mkOption {
+        type = types.str;
+      };
+      file = mkOption {
+        type = types.path;
+      };
+      noClobber = mkOption {
+        type = types.bool;
+        default = false;
+      };
+    };
+  };
 in
 {
   options.services.docker-compose-runner = mkOption {
@@ -15,6 +29,16 @@ in
           type = types.path;
           description = "Folder containing a docker-compose file.";
         };
+        extraFiles = mkOption {
+          type = types.listOf (types.either types.path filesType);
+          description = "Extra files that will be copied to the docker-compose file directory";
+          default = [ ];
+        };
+        extraEnv = mkOption {
+          type = types.attrsOf types.str;
+          description = "Extra env variables that are visible in the nix store";
+          default = { };
+        };
         envfile = mkOption {
           type = types.nullOr types.path;
           description = "Direct path to a valid .env file";
@@ -23,7 +47,7 @@ in
         args = mkOption {
           type = types.str;
           description = "Additional arguments to pass to docker-compose up";
-          default = "up";
+          default = "up --remove-orphans --force-recreate";
         };
       };
     });
@@ -42,7 +66,7 @@ in
               set -e
               mkdir "$out"
               sed -r 's/(^\s+restart:\s*)(unless-stopped|always)(\s*($|#))/\1on-failure\3/g' "$src/docker-compose.yml" > "$out/docker-compose.yml"
-              rsync -a "$src/" "$out"
+              rsync --exclude="/docker-compose.yml" -a "$src/" "$out"
             '';
             inherit (pkgs.hostPlatform) system;
           };
@@ -63,13 +87,18 @@ in
                   cp "${value.envfile}" "${statepath}/.env"
                   chmod 600 "${statepath}/.env"
               ''}
+              ${concatMapStringsSep "\n" (x:
+              	if isAttrs x
+              	then ''cp ${optionalString x.noClobber "--update=none "}"${x.file}" "${statepath}/${x.targetFileName}"''
+              	else ''cp ${optionalString x.noClobber "--update=none "}"${x}" "${statepath}/"''
+              ) value.extraFiles}
               cd "${statepath}"
-              docker-compose ${value.args}
+              docker compose ${value.args}
             '';
             ExecStopPost = pkgs.writeShellScript ("execstop-docker-compose-runner-" + name) ''
               set -e
               cd "${statepath}"
-              docker-compose down
+              docker compose down --remove-orphans
             '';
             Restart = "always";
             RestartSec = 5;
@@ -79,6 +108,7 @@ in
             StopPropagatedFrom = "docker.service";
             Requisite = "docker.service";
           };
+          environment = value.extraEnv;
         }
       ))
       cfg;
