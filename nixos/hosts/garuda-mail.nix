@@ -217,4 +217,7 @@ in
   services.monit.enable = lib.mkForce false;
 
   system.stateVersion = "22.05";
+
+  # https://nixos-mailserver.readthedocs.io/en/latest/migrations.html
+  mailserver.stateVersion = 2;
 }
