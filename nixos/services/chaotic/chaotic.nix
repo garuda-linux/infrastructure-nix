@@ -1,9 +1,10 @@
-{ config
-, garuda-lib
-, lib
-, pkgs
-, sources
-, ...
+{
+  config,
+  garuda-lib,
+  lib,
+  pkgs,
+  sources,
+  ...
 }:
 with lib;
 let
@@ -54,8 +55,7 @@ in
     repos-dir = mkOption {
       type = types.str;
       default = "/srv/http/repos/";
-      description =
-        "Where repos will be stored as well as the nginx webroot served.";
+      description = "Where repos will be stored as well as the nginx webroot served.";
     };
     host = mkOption {
       type = types.str;
@@ -184,7 +184,11 @@ in
           after = [ "network-online.target" ];
           wants = [ "network-online.target" ];
           description = "Chaotic setup";
-          path = [ pkgs.git pkgs.pacman pkgs.gnupg ];
+          path = [
+            pkgs.git
+            pkgs.pacman
+            pkgs.gnupg
+          ];
           serviceConfig = {
             Type = "oneshot";
             ExecStart = pkgs.writeShellScript "execstart" ''
@@ -199,8 +203,8 @@ in
           };
         };
       }
-      (builtins.listToAttrs (builtins.map
-        (x: {
+      (builtins.listToAttrs (
+        builtins.map (x: {
           name = "chaotic-" + x;
           value = {
             description = "Chaotic's ${x} routine";
@@ -219,24 +223,22 @@ in
               Nice = 19;
             };
           };
-        })
-        cfg.routines))
+        }) cfg.routines
+      ))
     ];
-    systemd.timers = builtins.listToAttrs (builtins.map
-      (x: {
+    systemd.timers = builtins.listToAttrs (
+      builtins.map (x: {
         name = "chaotic-" + x;
         value = {
           description = "Chaotic's ${x} routine";
           wantedBy = [ "timers.target" ];
           timerConfig = {
-            OnCalendar =
-              lib.attrByPath [ x ] (abort "Routine not defined in calendarmap")
-                cfg.calendarmap;
+            OnCalendar = lib.attrByPath [ x ] (abort "Routine not defined in calendarmap") cfg.calendarmap;
             Persistent = false;
           };
         };
-      })
-      cfg.routines);
+      }) cfg.routines
+    );
     security.wrappers = {
       chaotic = {
         setuid = true;

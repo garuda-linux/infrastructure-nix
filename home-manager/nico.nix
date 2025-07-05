@@ -1,8 +1,9 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   # Always needed home-manager settings - don't touch!
   home.username = "nico";
   home.homeDirectory = "/home/nico";
-  home.stateVersion = "22.05";
+  home.stateVersion = "25.05";
 
   # Application user configuration
   programs = {
@@ -16,7 +17,9 @@
     };
     bat = {
       enable = true;
-      config = { theme = "Dracula"; };
+      config = {
+        theme = "Dracula";
+      };
     };
     btop = {
       enable = true;
@@ -33,9 +36,15 @@
       difftastic.enable = true;
       enable = true;
       extraConfig = {
-        core = { editor = "micro"; };
-        init = { defaultBranch = "main"; };
-        pull = { rebase = true; };
+        core = {
+          editor = "micro";
+        };
+        init = {
+          defaultBranch = "main";
+        };
+        pull = {
+          rebase = true;
+        };
       };
       userEmail = "root@dr460nf1r3.org";
       userName = "Nico Jensch";

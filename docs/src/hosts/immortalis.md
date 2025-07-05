@@ -55,7 +55,7 @@ connected via SSH using the following ports:
 
 Some services not packaged in NixOS or are easier to deploy this way are serviced via the Docker engine. This contains
 services like Piped, Whoogle, and Matrix. We use a
-custom [NixOS module](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/garuda/services/docker-compose-runner/docker-compose-runner.nix?ref_type=heads)
+custom [NixOS module](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/garuda/services/compose-runner/compose-runner.nix?ref_type=heads)
 to deploy those with the rest of the system. Secrets are handled via our secret management which consists of a git
 submodule `secret` (private repo with `ansible-vault` encrypted files) and `garuda-lib` (see secrets section). Those
 contain a `docker-compose` directory in which the `.env` files for the `docker-compose.yml` are stored.

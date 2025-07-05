@@ -32,7 +32,7 @@ A general overview of the folder structure can be found below:
 │  │  └── static
 │  └── services
 │     ├── chaotic
-│     ├── docker-compose-runner
+│     ├── compose-runner
 │     └── monitoring
 ├── playbooks
 ├── scripts

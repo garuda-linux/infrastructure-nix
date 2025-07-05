@@ -1,9 +1,0 @@
----
-- name: Run the garbage collector
-  hosts: nix
-  become: true
-  gather_facts: false
-  tasks:
-    - name: Collect garbage
-      ansible.builtin.shell: nh clean all
-      changed_when: false

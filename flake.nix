@@ -2,7 +2,9 @@
   description = "Garuda Linux infrastructure flake ❄️";
 
   nixConfig.extra-substituters = [ "https://garuda-linux.cachix.org" ];
-  nixConfig.extra-trusted-public-keys = [ "garuda-linux.cachix.org-1:tWw7YBE6qZae0L6BbyNrHo8G8L4sHu5QoDp0OXv70bg=" ];
+  nixConfig.extra-trusted-public-keys = [
+    "garuda-linux.cachix.org-1:tWw7YBE6qZae0L6BbyNrHo8G8L4sHu5QoDp0OXv70bg="
+  ];
 
   inputs = {
     # Devshell to set up a development environment
@@ -21,25 +23,24 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # Lix overlay for all things
-    lix-module.url = "https://git.lix.systems/lix-project/nixos-module/archive/2.93.0.tar.gz";
-    lix-module.inputs.nixpkgs.follows = "nixpkgs";
+    # Impermanence for keeping things clean
+    impermanence.url = "github:nix-community/impermanence";
 
     # The single source of truth
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
 
-    # Our mailserver
-    nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
-    nixos-mailserver.inputs.flake-compat.follows = "flake-compat";
-    nixos-mailserver.inputs.git-hooks.follows = "";
-    nixos-mailserver.inputs.nixpkgs.follows = "nixpkgs";
-    nixos-mailserver.inputs.nixpkgs-25_05.follows = "nixpkgs";
-
     # Pre-commit hooks via nix-shell or nix develop
     pre-commit-hooks.url = "github:cachix/git-hooks.nix";
     pre-commit-hooks.inputs.flake-compat.follows = "flake-compat";
     pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Sops-nix for managing secrets
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Formatting
+    treefmt-nix.url = "github:numtide/treefmt-nix";
 
     # SSH keys of maintainers
     keys_nico.url = "https://github.com/dr460nf1r3.keys";
@@ -72,15 +73,6 @@
       repo = "tools%2Fbuildiso-docker";
       flake = false;
     };
-    src-chaotic-mirror.url = "github:chaotic-aur/docker-mirror";
-    src-chaotic-mirror.flake = false;
-    # TODO: https://github.com/NixOS/nix/pull/9163
-    src-garuda-website = {
-      type = "gitlab";
-      owner = "garuda-linux";
-      repo = "website%2Fwebsite-catppuccin";
-      flake = false;
-    };
 
     src-cloudflare-ipv4 = {
       url = "https://www.cloudflare.com/ips-v4";
@@ -93,40 +85,23 @@
   };
 
   outputs =
-    { flake-parts
-    , nixpkgs
-    , pre-commit-hooks
-    , self
-    , ...
-    } @ inputs:
+    {
+      flake-parts,
+      nixpkgs,
+      pre-commit-hooks,
+      self,
+      treefmt-nix,
+      ...
+    }@inputs:
     let
       perSystem =
-        { pkgs
-        , system
-        , ...
-        }: {
+        {
+          pkgs,
+          system,
+          ...
+        }:
+        rec {
           apps.default = self.outputs.devShells.${system}.default.flakeApp;
-
-          checks = {
-            pre-commit-check = pre-commit-hooks.lib.${system}.run {
-              hooks = {
-                actionlint.enable = true;
-                ansible-lint.enable = true;
-                check-json.enable = true;
-                commitizen.enable = true;
-                deadnix.enable = true;
-                detect-private-keys.enable = true;
-                flake-checker.enable = true;
-                nil.enable = true;
-                nixpkgs-fmt.enable = true;
-                prettier.enable = true;
-                statix.enable = true;
-                yamllint.enable = true;
-              };
-              src = ./.;
-            };
-          };
-
           devShells =
             let
               buildiso = ''
@@ -145,10 +120,11 @@
                        -v "./buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
                        buildiso /bin/bash
               '';
-              immortalis = "builds.garudalinux.org";
+              immortals = "builds.garudalinux.org";
               ipv6-generator = builtins.readFile ./scripts/ipv6-generator.sh;
               makeDevshell = import "${inputs.devshell}/modules" pkgs;
-              mkShell = config:
+              mkShell =
+                config:
                 (makeDevshell {
                   configuration = {
                     inherit config;
@@ -162,11 +138,11 @@
                 devshell = {
                   name = "infra-nix";
                   startup = {
-                    preCommitHooks.text = self.checks.${system}.pre-commit-check.shellHook;
-                    dr460nixedEnv.text = ''
+                    infra-nix-shell.text = ''
                       export LC_ALL="C.UTF-8"
                       export NIX_PATH=nixpkgs=${nixpkgs}
                     '';
+                    preCommitHooks.text = self.checks.${system}.pre-commit-check.shellHook;
                   };
                 };
                 commands = [
@@ -178,40 +154,51 @@
                   { package = "mdbook-admonish"; }
                   { package = "mdbook-emojicodes"; }
                   { package = "nodePackages.prettier"; }
+                  { package = "sops"; }
                   { package = "pre-commit"; }
                   {
                     name = "apply";
                     help = "Applies the infra-nix configuration pushed to the servers";
                     command = ''
+                      pushd ansible
                       ansible-playbook playbooks/apply.yml
+                      popd
                     '';
                   }
                   {
                     name = "clean";
                     help = "Runs the garbage collection on the servers";
                     command = ''
+                      pushd ansible
                       ansible-playbook playbooks/garbage_collect.yml
+                      popd
                     '';
                   }
                   {
                     name = "deploy";
                     help = "Deploys the local NixOS configuration to the servers";
                     command = ''
+                      pushd ansible
                       ansible-playbook playbooks/garuda.yml
+                      popd
                     '';
                   }
                   {
                     name = "update";
                     help = "Performs a full system update on the servers bumping flake lock";
                     command = ''
+                      pushd ansible
                       ansible-playbook playbooks/system_update.yml
+                      popd
                     '';
                   }
                   {
                     name = "restart";
                     help = "Restarts all physical servers";
                     command = ''
+                      pushd ansible
                       ansible-playbook playbooks/reboot.yml
+                      popd
                     '';
                   }
                   {
@@ -220,7 +207,7 @@
                     category = "infra-nix";
                     command = ''
                       # We are assuming the NixOS user is named the same as the one using it
-                      ssh -p224 ${immortalis} "cd /var/discourse; sudo ./launcher rebuild app"
+                      ssh -p224 ${immortals} "cd /var/discourse; sudo ./launcher rebuild app"
                     '';
                   }
                   {
@@ -229,7 +216,7 @@
                     category = "infra-nix";
                     command = ''
                       # We are assuming the NixOS user is named the same as the one using it
-                      ssh -p227 -t ${immortalis} "buildiso"
+                      ssh -p227 -t ${immortals} "buildiso"
                     '';
                   }
                   {
@@ -252,18 +239,28 @@
               };
             };
 
-          formatter = pkgs.nixpkgs-fmt;
+          checks.pre-commit-check = inputs.pre-commit-hooks.lib.${system}.run {
+            hooks = {
+              check-json.enable = true;
+              commitizen.enable = true;
+              detect-private-keys.enable = true;
+              check-yaml.enable = true;
+              ripsecrets.enable = true;
+            };
+            src = ./.;
+          };
 
-          packages = {
-            docs =
-              pkgs.runCommand "infra-docs"
-                { nativeBuildInputs = with pkgs; [ bash mdbook ]; }
-                ''
-                  bash -c "errors=$(mdbook build -d $out ${./.}/docs |& grep ERROR)
-                  if [ \"$errors\" ]; then
-                    exit 1
-                  fi"
-                '';
+          treefmt = {
+            build.check = true;
+            programs = {
+              actionlint.enable = true;
+              deadnix.enable = true;
+              nixfmt.enable = true;
+              shellcheck.enable = true;
+              shfmt.enable = true;
+              statix.enable = true;
+              yamlfmt.enable = true;
+            };
           };
         };
     in
@@ -272,8 +269,14 @@
         ./nixos/flake-module.nix
         inputs.devshell.flakeModule
         inputs.pre-commit-hooks.flakeModule
+        inputs.treefmt-nix.flakeModule
       ];
-      systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
       inherit perSystem;
     };
 }

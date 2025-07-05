@@ -1,0 +1,8 @@
+[all:vars]
+ansible_connection = ssh
+ansible_user = ansible
+sftp_enabled = true
+
+[nix]
+stormwing
+aerialis

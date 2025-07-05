@@ -1,8 +1,10 @@
-{ config
-, lib
-, pkgs
-, ...
-}: {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
   # Recommended settings replacing custom configuration
   services.nginx = {
     additionalModules = with pkgs; [ nginxModules.brotli ];
@@ -51,7 +53,10 @@
     recommendedOptimisation = true;
     recommendedTlsSettings = true;
     resolver = {
-      addresses = [ "1.1.1.1" "1.0.0.1" ];
+      addresses = [
+        "1.1.1.1"
+        "1.0.0.1"
+      ];
       ipv6 = false;
       valid = "60s";
     };
@@ -67,7 +72,10 @@
 
   # Need to explicitly open our web server ports
   networking.firewall = lib.mkIf config.services.nginx.enable {
-    allowedTCPPorts = [ 80 443 ];
+    allowedTCPPorts = [
+      80
+      443
+    ];
     allowedUDPPorts = [ 443 ];
   };
 

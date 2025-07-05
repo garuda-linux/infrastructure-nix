@@ -1,8 +1,9 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   # Always needed home-manager settings - don't touch!
   home.username = "alexjp";
   home.homeDirectory = "/home/alexjp";
-  home.stateVersion = "22.05";
+  home.stateVersion = "25.05";
 
   # Application user configuration
   programs = {
@@ -24,9 +25,15 @@
       userEmail = "programming.hubmaking@slmail.me";
       userName = "Alex JP";
       extraConfig = {
-        core = { editor = "nvim"; };
-        init = { defaultBranch = "main"; };
-        pull = { rebase = true; };
+        core = {
+          editor = "nvim";
+        };
+        init = {
+          defaultBranch = "main";
+        };
+        pull = {
+          rebase = true;
+        };
       };
     };
     tmux = {

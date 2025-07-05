@@ -1,10 +1,12 @@
-{ config
-, garuda-lib
-, keys
-, lib
-, pkgs
-, ...
-}: {
+{
+  config,
+  garuda-lib,
+  keys,
+  lib,
+  pkgs,
+  ...
+}:
+{
   # Generate password files with
   # nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt' > /path/to/hashedPasswordFile
   # and add them to infra-nix-secrets repo
@@ -16,20 +18,25 @@
       extraGroups = [ "wheel" ];
       home = "/home/ansible";
       isNormalUser = true;
-      openssh.authorizedKeys.keyFiles = [ keys.nico keys.tne ];
+      openssh.authorizedKeys.keyFiles = [
+        keys.nico
+        keys.tne
+      ];
       uid = lib.mkIf garuda-lib.unifiedUID 1000;
     };
 
     # Garuda admins - god mode
-    /*
-      ANCHOR: admins
-    */
+    # ANCHOR: admins
     users.nico = {
-      extraGroups = [ "wheel" "docker" "chaotic_op" ];
+      extraGroups = [
+        "wheel"
+        "docker"
+        "chaotic_op"
+      ];
       home = "/home/nico";
       isNormalUser = true;
       openssh.authorizedKeys.keyFiles = [ keys.nico ];
-      hashedPasswordFile = "/var/garuda/secrets/pass/nico";
+      hashedPasswordFile = config.sops.secrets."passwords/nico".path;
       uid = lib.mkIf garuda-lib.unifiedUID 1001;
     };
     users.sgs = {
@@ -39,24 +46,24 @@
       openssh.authorizedKeys.keys = [
         "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDxBY8TX0iEQkf3Bym+3XVlrk8OLOwHOrj7Uy+WxjncOkkutyZ1WsY9liF4j9yjptyQG7Lx8OM8q44NE6+Rk1OXJXMF7CZ4Jq/WvMVnh2zKyNnF8wHBcspsAdG90wCxo6OmNpnY/rRRlNwwnore7raF2PrERtSlsEvLsUgvspYQ8cnLwerJP43QeETlpE1oR0FrbXWQet0I63Ky6UDEp07x0yee21VHnAG74rjGeFGwJBmCPSxnfGVNhCaR0zyu9+hh222liBrlilYm8nqLlsYGZCXiVdOxXJbBy89EVpHds7Lutf+TAYwsPGZf7U4k+g2Jx8N0JHXyzVZa0zS+I48+tqBBflEOqU9oEfGuz4cU/qWys5soLcRX2p9td+RF3OEdBKlTW4UYsINJUri6QSEUrsGaXqQZy8Ds2FBdUpb4pmFVlo9+4qRouiI80a5xVa7a1E5eS5xK5BzWH4fNg5SqtT5L9i2i1ocZp7FA0oa+ixnXNiC1umPZaY/9s+5fh1s= sgs-linux@shell.sf.net"
       ];
-      hashedPasswordFile = "/var/garuda/secrets/pass/sgs";
+      hashedPasswordFile = config.sops.secrets."passwords/sgs".path;
       uid = lib.mkIf garuda-lib.unifiedUID 1002;
     };
     users.tne = {
-      extraGroups = [ "wheel" "docker" "chaotic_op" ];
+      extraGroups = [
+        "wheel"
+        "docker"
+        "chaotic_op"
+      ];
       home = "/home/tne";
       isNormalUser = true;
       openssh.authorizedKeys.keyFiles = [ keys.tne ];
-      hashedPasswordFile = "/var/garuda/secrets/pass/tne";
+      hashedPasswordFile = config.sops.secrets."passwords/tne".path;
       uid = lib.mkIf garuda-lib.unifiedUID 1003;
     };
-    /*
-      ANCHOR_END: admins
-    */
+    # ANCHOR_END: admins
     # Garuda maintainers - limited access to buildiso
-    /*
-      ANCHOR: maintainers
-    */
+    # ANCHOR: maintainers
     users.frank = {
       home = "/home/frank";
       isNormalUser = true;
@@ -64,13 +71,9 @@
       shell = lib.mkIf (!config.services.garuda-iso.enable) "${pkgs.util-linux}/bin/nologin";
       uid = lib.mkIf garuda-lib.unifiedUID 1007;
     };
-    /*
-      ANCHOR_END: maintainers
-    */
+    # ANCHOR_END: maintainers
     # Chaotic-AUR maintainers - limited access to chaotic-aur builders
-    /*
-      ANCHOR: chaotic-aur
-    */
+    # ANCHOR: chaotic-aur
     users.technetium = {
       extraGroups = lib.mkIf garuda-lib.chaoticUsers [ "chaotic_op" ];
       home = "/home/technetium";
@@ -95,15 +98,18 @@
       shell = lib.mkIf (!garuda-lib.chaoticUsers) "${pkgs.util-linux}/bin/nologin";
       uid = lib.mkIf garuda-lib.unifiedUID 1006;
     };
-    /*
-      ANCHOR_END: chaotic-aur
-    */
+    # ANCHOR_END: chaotic-aur
   };
 
   # Sudo configuration
   security.sudo.extraRules = [
     {
-      users = [ "ansible" "tne" "nico" "sgs" ];
+      users = [
+        "ansible"
+        "tne"
+        "nico"
+        "sgs"
+      ];
       commands = [
         {
           command = "ALL";
@@ -112,4 +118,10 @@
       ];
     }
   ];
+
+  sops.secrets = {
+    "passwords/nico".neededForUsers = true;
+    "passwords/tne".neededForUsers = true;
+    "passwords/sgs".neededForUsers = true;
+  };
 }

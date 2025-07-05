@@ -1,7 +1,8 @@
-{ config
-, lib
-, pkgs
-, ...
+{
+  config,
+  lib,
+  pkgs,
+  ...
 }:
 with lib;
 let
@@ -36,9 +37,10 @@ in
   };
 
   config = {
-    systemd.services = mapAttrs'
-      (name: value:
-        nameValuePair ("garuda-rclone-" + name) (lib.mkMerge [
+    systemd.services = mapAttrs' (
+      name: value:
+      nameValuePair ("garuda-rclone-" + name) (
+        lib.mkMerge [
           {
             description = ''Garuda rclone "${name}" routine'';
             inherit (value) startAt;
@@ -47,7 +49,8 @@ in
             };
           }
           value.extraConfig
-        ]))
-      cfg;
+        ]
+      )
+    ) cfg;
   };
 }

@@ -1,14 +1,18 @@
-{ config
-, garuda-lib
-, lib
-, pkgs
-, inputs
-, ...
+{
+  config,
+  garuda-lib,
+  lib,
+  pkgs,
+  inputs,
+  ...
 }:
 {
   # Network stuff - DNS gets overridden by Tailscale magic DNS
   networking = lib.mkIf (!garuda-lib.minimalContainer) {
-    nameservers = [ "1.1.1.1" "1.0.0.1" ];
+    nameservers = [
+      "1.1.1.1"
+      "1.0.0.1"
+    ];
     useDHCP = false;
     usePredictableInterfaceNames = true;
   };
@@ -28,7 +32,10 @@
   time.timeZone = "Europe/Berlin";
   i18n = {
     defaultLocale = "en_GB.UTF-8";
-    supportedLocales = [ "en_GB.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" ];
+    supportedLocales = [
+      "en_GB.UTF-8/UTF-8"
+      "en_US.UTF-8/UTF-8"
+    ];
   };
   console.keyMap = "de";
 
@@ -95,7 +102,7 @@
   # This does not work in containers
   programs.mosh.enable = lib.mkIf (!garuda-lib.minimalContainer) true;
 
-  # Services 
+  # Services
   services = {
     garuda-monitoring.enable = lib.mkIf (!garuda-lib.minimalContainer) true;
     garuda-tailscale.enable = lib.mkIf (!garuda-lib.minimalContainer) true;
@@ -153,21 +160,28 @@
       rustc
     ];
     # Increase Mosh timeout
-    variables = { MOSH_SERVER_NETWORK_TMOUT = "604800"; };
+    variables = {
+      MOSH_SERVER_NETWORK_TMOUT = "604800";
+    };
   };
 
   # General nix settings
   nix = {
     settings = {
       # Allow using flakes
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       auto-optimise-store = true;
       builders-use-substitutes = true;
       substituters = [ "https://garuda-linux.cachix.org" ];
-      trusted-public-keys = lib.mkAfter [ "garuda-linux.cachix.org-1:tWw7YBE6qZae0L6BbyNrHo8G8L4sHu5QoDp0OXv70bg=" ];
+      trusted-public-keys = lib.mkAfter [
+        "garuda-linux.cachix.org-1:tWw7YBE6qZae0L6BbyNrHo8G8L4sHu5QoDp0OXv70bg="
+      ];
     };
     nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
-    package = pkgs.lix;
+    package = pkgs.lixPackageSets.latest.lix;
   };
 
   # Do daily garbage collection
@@ -205,4 +219,10 @@
   # Workaround https://discourse.nixos.org/t/logrotate-config-fails-due-to-missing-group-30000/28501
   # for now
   services.logrotate.checkConfig = false;
+
+  # Secrets management
+  sops = {
+    defaultSopsFile = ../../secrets/shared.yaml;
+    age.sshKeyPaths = [ garuda-lib.sshkeys.ed25519 ];
+  };
 }

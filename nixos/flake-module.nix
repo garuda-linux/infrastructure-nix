@@ -5,34 +5,27 @@ let
   defaultModules = [
     "${inputs.nixpkgs}/nixos/modules/profiles/hardened.nix"
     inputs.home-manager.nixosModules.home-manager
-    inputs.lix-module.nixosModules.default
-    overlay-unstable
+    inputs.sops-nix.nixosModules.sops
+  ];
+
+  newGenModules = [
+    inputs.impermanence.nixosModules.impermanence
+    ./modules/special/newgen.nix
   ];
 
   inherit (inputs) nixpkgs;
 
-  overlay-unstable = _: {
-    nixpkgs.overlays = [
-      (_final: prev: {
-        unstable = inputs.nixpkgs.legacyPackages.${prev.system};
-      })
-    ];
-  };
-
   specialArgs = {
     inherit inputs;
     sources = {
-      buildiso = inputs.src-buildiso;
-      chaotic-mirror = inputs.src-chaotic-mirror;
-      chaotic-toolbox = inputs.src-chaotic-toolbox;
       chaotic-portable-builder = inputs.src-chaotic-portable-builder;
       cloudflare-ipv4 = inputs.src-cloudflare-ipv4;
       cloudflare-authenticated_origin_pull_ca = inputs.src-cloudflare-authenticated_origin_pull_ca;
       garuda-website = inputs.src-garuda-website;
+      buildiso = inputs.src-buildiso;
       inherit defaultModules;
       inherit nixpkgs;
       inherit specialArgs;
-      repoctl = inputs.src-repoctl;
     };
     keys = {
       alexjp = inputs.keys_alexjp;
@@ -45,21 +38,26 @@ let
     };
   };
 
-  patchedNixosSystem = args:
+  patchedNixosSystem =
+    args:
     let
       inherit (args) system;
       unpatched = nixpkgs.legacyPackages."${system}";
-      patches = builtins.filter (a: a != null) (nixpkgs.lib.mapAttrsToList (name: patch: if nixpkgs.lib.hasPrefix "nixos-patch-" name then patch else null) inputs);
+      patches = builtins.filter (a: a != null) (
+        nixpkgs.lib.mapAttrsToList (
+          name: patch: if nixpkgs.lib.hasPrefix "nixos-patch-" name then patch else null
+        ) inputs
+      );
       result =
         if builtins.length patches > 0 then
-          import
-            (unpatched.applyPatches
-              {
-                inherit patches;
-                name = "nixpkgs-patched";
-                src = nixpkgs;
-              } + /nixos/lib/eval-config.nix)
-            args
+          import (
+            unpatched.applyPatches {
+              inherit patches;
+              name = "nixpkgs-patched";
+              src = nixpkgs;
+            }
+            + /nixos/lib/eval-config.nix
+          ) args
         else
           nixpkgs.lib.nixosSystem args;
     in
@@ -69,23 +67,15 @@ in
 {
   flake = {
     nixosConfigurations = {
-      "garuda-mail" = patchedNixosSystem {
+      "stormwing" = patchedNixosSystem {
         inherit system;
         inherit specialArgs;
-        modules = defaultModules ++ [
-          ./hosts/garuda-mail.nix
-          inputs.nixos-mailserver.nixosModule
-        ];
+        modules = defaultModules ++ newGenModules ++ [ ./hosts/stormwing.nix ];
       };
-      "immortalis" = patchedNixosSystem {
+      "aerialis" = patchedNixosSystem {
         inherit system;
         inherit specialArgs;
-        modules = defaultModules ++ [ ./hosts/immortalis.nix ];
-      };
-      "cachix" = patchedNixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ [ ./hosts/cachix.nix ];
+        modules = defaultModules ++ newGenModules ++ [ ./hosts/aerialis.nix ];
       };
     };
   };

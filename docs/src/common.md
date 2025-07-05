@@ -119,7 +119,7 @@ If containers are to be updated manually, this can be achieved by connecting to 
 running `nixos-container root-login $containername`, and executing:
 
 ```sh
-cd /var/garuda/docker-compose-runner/$name/ # replace $name with the actual docker-compose.yml or autocomplete via tab
+cd /var/garuda/compose-runner/$name/ # replace $name with the actual docker-compose.yml or autocomplete via tab
 sudo docker compose pull
 sudo docker compose up -d
 ```
@@ -170,7 +170,7 @@ or use [compose2nix](https://github.com/aksiksi/compose2nix)
 to transform an existing `docker-compose.yml` to valid Nix expressions.
 Using native Nix expressions has the advantage of being more flexible and easier to maintain,
 as well as taking advantage of Systemd service management, e.g., by restarting crashed containers.
-This was not working reliably with our `docker-compose-runner` module, which simply started
+This was not working reliably with our `compose-runner` module, which simply started
 existing `docker-compose.yml` files.
 In case secrets are required, one needs to provide them via `.env` files and
 the `virtualisation.oci-containers.containers.environmentFiles` key.

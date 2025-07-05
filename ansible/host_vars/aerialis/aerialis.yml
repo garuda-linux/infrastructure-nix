@@ -1,0 +1,4 @@
+# Base values
+actual_hostname: aerialis
+ansible_host: 157.180.57.100
+ansible_port: 666

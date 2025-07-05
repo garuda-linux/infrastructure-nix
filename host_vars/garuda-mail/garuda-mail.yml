@@ -1,5 +1,0 @@
----
-# Base values
-actual_hostname: garuda-mail
-ansible_host: 94.16.112.218
-ansible_port: 1022

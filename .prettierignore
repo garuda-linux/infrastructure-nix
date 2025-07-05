@@ -1,5 +1,5 @@
 .github/**
-docker-compose/**
+compose/**
 docs/theme/index.hbs
 flake.lock
 renovate.json

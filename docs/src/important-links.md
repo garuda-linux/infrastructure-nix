@@ -54,7 +54,7 @@ This is a collection of important links when working with the infrastructure:
 
 - [Startpage](https://start.garudalinux.org)
   - This one needs to be updated by pulling latest changes from the repository. It lives inside the `docker`
-    nixos-container, `/var/garuda/docker-compose-runner/docker/startpage`.
+    nixos-container, `/var/garuda/compose-runner/docker/startpage`.
 - [Website](https://garudalinux.org)
   - This one is hosted on Cloudflare pages and will automatically update
     whenever a new commit is pushed to the repository.

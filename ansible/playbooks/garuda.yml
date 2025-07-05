@@ -1,0 +1,17 @@
+- name: Deploy NixOS configurations
+  hosts: nix
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Deploy Nix files
+      ansible.posix.synchronize:
+        dest: /etc/nixos/
+        archive: true
+        src: ../../{{ item }}
+      loop: # Filtering was for whatever reason not working properly
+        - nixos # No alphabetical order to be able to push this first
+        - flake.nix
+        - flake.lock
+        - compose
+        - home-manager
+        - secrets

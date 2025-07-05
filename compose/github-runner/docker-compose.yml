@@ -1,0 +1,15 @@
+services:
+  github-runner:
+    image: myoung34/github-runner:latest
+    container_name: github-runner
+    privileged: true
+    environment:
+      ACCESS_TOKEN: ${ACCESS_TOKEN:-?err}
+      EPHEMERAL: true
+      LABELS: nyxbuilder
+      ORG_NAME: chaotic-cx
+      RUNNER_NAME: immortalis
+      RUNNER_SCOPE: org
+      RUNNER_WORKDIR: /var/cache/github-runner/work
+    volumes: ['/var/cache/github-runner/work:/var/cache/github-runner/work']
+    restart: 'no'

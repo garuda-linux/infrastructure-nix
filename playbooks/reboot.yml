@@ -1,8 +1,0 @@
----
-- name: Reboot all servers
-  hosts: all
-  become: true
-  tasks:
-    - name: Reboot all servers
-      ansible.builtin.reboot:
-        search_paths: [/run/current-system/sw/bin]

@@ -1,17 +1,15 @@
-{ config
-, garuda-lib
-, lib
-, pkgs
-, sources
-, ...
+{
+  config,
+  garuda-lib,
+  lib,
+  pkgs,
+  sources,
+  ...
 }:
 with lib;
 let
   cfg = config.services.garuda-iso;
-  envfile = pkgs.writeText "iso-env"
-    "TELEGRAM=tgram://${garuda-lib.secrets.telegram.token}/${garuda-lib.secrets.telegram.updates_channel}";
-  buildiso_script =
-    pkgs.writeScriptBin "buildiso" "docker exec -it buildiso bash";
+  buildiso_script = pkgs.writeScriptBin "buildiso" "docker exec -it buildiso bash";
 in
 {
   options.services.garuda-iso = {
@@ -27,15 +25,18 @@ in
       serviceConfig = {
         ExecStart = pkgs.writeShellScript "execstart" ''
           set -e
+
+          TELEGRAM_TOKEN="$(cat "${config.sops.secrets."telegram/buildiso_token".path}")"
+
           docker run --rm --privileged --name buildiso \
             -v "/var/garuda/buildiso/cache/buildiso:/var/cache/garuda-tools/garuda-chroots/buildiso" \
             -v "/var/garuda/buildiso/cache/anacron:/var/spool/anacron" \
             -v "/var/cache/pacman/pkg/:/var/cache/pacman/pkg/" \
             -v "/var/garuda/buildiso/iso:/var/cache/garuda-tools/garuda-builds/iso/" \
             -v "/var/garuda/buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
-            -v "${garuda-lib.secrets.ssh.team.private}:/root/.ssh/id_ed25519" \
-            -v "${garuda-lib.secrets.cloudflare.r2.rclone}:/root/.config/rclone/rclone.conf" \
-            -v "${envfile}:/var/cache/garuda-tools/garuda-builds/.env" \
+            -v "${config.sops.secrets."keypairs/ssh_team/private".path}:/root/.ssh/id_ed25519" \
+            -v "${config.sops.secrets."cloudflare/r2_rclone".path}:/root/.config/rclone/rclone.conf" \
+            -e "TELEGRAM=tgram://''${TELEGRAM_TOKEN}/${garuda-lib.secrets.telegram.updates_channel}"
             "$(docker build -q "${sources.buildiso}")" auto-noweekly
         '';
         Restart = "on-failure";
@@ -75,10 +76,8 @@ in
           break;
         '';
       };
-      locations."/".extraConfig =
-        "return 301 https://builds.garudalinux.org$request_uri;";
-      useACMEHost =
-        if !garuda-lib.behind_proxy then "garudalinux.org" else null;
+      locations."/".extraConfig = "return 301 https://builds.garudalinux.org$request_uri;";
+      useACMEHost = if !garuda-lib.behind_proxy then "garudalinux.org" else null;
       forceSSL = !garuda-lib.behind_proxy;
     };
 
@@ -99,8 +98,13 @@ in
       };
     };
 
-    networking.firewall.allowedTCPPorts =
-      [ config.services.rsyncd.port ];
+    networking.firewall.allowedTCPPorts = [ config.services.rsyncd.port ];
     environment.systemPackages = [ buildiso_script ];
+
+    sops.secrets = {
+      "cloudflare/r2_rclone" = {};
+      "keypairs/ssh_team/private" = { };
+      "telegram/buildiso_token" = { };
+    };
   };
 }

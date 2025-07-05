@@ -1,0 +1,156 @@
+services:
+  chaotic-builder-1:
+    image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
+    container_name: chaotic-builder
+    command: builder
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 60s
+    tty: true
+    environment:
+      BUILDER_CLASS: 9
+      BUILDER_HOSTNAME: immortalis-1
+      BUILDER_TIMEOUT: 7200
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
+      REDIS_SSH_HOST: host.docker.internal
+      REDIS_SSH_USER: package-deployer
+      SHARED_PATH: /var/garuda/compose-runner/chaotic-v4/shared
+      # Override the default database host
+      DATABASE_HOST: host.docker.internal
+      DATABASE_PORT: 22
+    volumes:
+      - ./shared:/shared
+      - ./sshkey:/app/sshkey
+      - /var/run/docker.sock:/var/run/docker.sock
+    extra_hosts: ['host.docker.internal:host-gateway']
+  chaotic-builder-2:
+    image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
+    container_name: chaotic-builder-2
+    command: builder
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 60s
+    tty: true
+    environment:
+      BUILDER_CLASS: 6
+      BUILDER_HOSTNAME: immortalis-2
+      BUILDER_TIMEOUT: 7200
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
+      REDIS_SSH_HOST: host.docker.internal
+      REDIS_SSH_USER: package-deployer
+      SHARED_PATH: /var/garuda/compose-runner/chaotic-v4/shared-2
+      BUILDER_SRCDEST_CACHE_OVERRIDE: /var/garuda/compose-runner/chaotic-v4/shared/srcdest_cache
+      # Override the default database host
+      DATABASE_HOST: host.docker.internal
+      DATABASE_PORT: 22
+    volumes:
+      - ./shared-2:/shared
+      - ./shared/srcdest_cache:/shared/srcdest_cache
+      - ./sshkey:/app/sshkey
+      - /var/run/docker.sock:/var/run/docker.sock
+    extra_hosts: ['host.docker.internal:host-gateway']
+  chaotic-manager:
+    image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
+    container_name: chaotic-manager
+    command: database --web-port 8080
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 60s
+    tty: true
+    environment:
+      # Address published to outside world
+      DATABASE_HOST: builds.garudalinux.org
+      DATABASE_PORT: 400
+      CI_CODE_SKIP: 123
+      DATABASE_USER: package-deployer
+      GPG_PATH: /var/garuda/compose-runner/chaotic-v4/gnupg
+      LANDING_ZONE_PATH: /var/garuda/compose-runner/chaotic-v4/landing-zone
+      LOGS_URL: https://builds.garudalinux.org/logs/logs.html
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
+      REDIS_SSH_HOST: host.docker.internal
+      REDIS_SSH_USER: package-deployer
+      REPO_PATH: /srv/http/repos
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-?err}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-?err}
+      PACKAGE_REPOS: >-
+        {
+
+
+            "chaotic-aur": {
+                "url": "https://gitlab.com/chaotic-aur/pkgbuilds"
+            },
+            "garuda": {
+                "url": "https://gitlab.com/garuda-linux/pkgbuilds"
+            }
+        }
+      PACKAGE_TARGET_REPOS: >-
+        {
+
+
+            "chaotic-aur": {
+                "extra_repos": [
+                    {
+                        "name": "chaotic-aur",
+                        "servers": [
+                            "https://builds.garudalinux.org/repos/chaotic-aur/x86_64"
+                        ]
+                    }
+                ],
+                "extra_keyrings": [
+                    "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
+                ]
+            },
+            "garuda": {
+                "extra_repos": [
+                    {
+                        "name": "garuda",
+                        "servers": [
+                            "https://builds.garudalinux.org/repos/garuda/x86_64"
+                        ]
+                    },
+                    {
+                        "name": "chaotic-aur",
+                        "servers": [
+                            "https://builds.garudalinux.org/repos/chaotic-aur/x86_64"
+                        ]
+                    }
+                ],
+                "extra_keyrings": [
+                    "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
+                ]
+            }
+        }
+      PACKAGE_REPOS_NOTIFIERS: >-
+        {
+
+
+            "chaotic-aur": {
+                "id": "54867625",
+                "token": "${GITLAB_TOKEN_CX:-?err}",
+                "check_name": "chaotic-aur: %pkgbase%"
+            },
+            "garuda": {
+                "id": "48461689",
+                "token": "${GITLAB_TOKEN:-?err}",
+                "check_name": "garuda: %pkgbase%"
+            }
+        }
+    volumes:
+      - ./sshkey:/app/sshkey
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /srv/http/repos:/repo_root
+    extra_hosts: ['host.docker.internal:host-gateway']
+    ports: ['127.0.0.1:8080:8080', '127.0.0.1:3030:3030']
+  # Automated container updates
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 60s
+    command: --cleanup chaotic-builder chaotic-builder-2 chaotic-manager watchtower --interval 3600
+    volumes: ['/var/run/docker.sock:/var/run/docker.sock']

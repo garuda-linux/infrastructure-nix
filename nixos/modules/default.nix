@@ -1,8 +1,7 @@
 { ... }:
 {
   imports = [
-    ../services/services.nix
-    ./acme.nix
+    ../services
     ./common.nix
     ./garuda-lib.nix
     ./hardening.nix

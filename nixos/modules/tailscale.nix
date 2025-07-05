@@ -1,8 +1,7 @@
-{ config
-, garuda-lib
-, lib
-, pkgs
-, ...
+{
+  config,
+  lib,
+  ...
 }:
 let
   cfg = config.services.garuda-tailscale;
@@ -19,39 +18,19 @@ in
   config = lib.mkIf cfg.enable {
     # Enable the Tailscale service
     services.tailscale = {
+      authKeyFile = config.sops.secrets."tailscale/authkey".path;
       enable = true;
+      extraUpFlags = [
+        "--ssh"
+        "--accept-routes"
+      ];
+      openFirewall = true;
       useRoutingFeatures = lib.mkDefault "client";
-    };
-
-    # Autoconnect to our networks
-    systemd.services.tailscale-autoconnect = {
-      description = "Automatic connection to Tailscale";
-
-      # Make sure tailscale is running before trying to connect to tailscale
-      after = [ "network-pre.target" "tailscale.service" ];
-      wants = [ "network-pre.target" "tailscale.service" ];
-      wantedBy = [ "multi-user.target" ];
-
-      # Set this service as a oneshot job
-      serviceConfig.Type = "oneshot";
-
-      # Have the job run this shell script
-      script = with pkgs; ''
-        sleep 2
-        status="$(${tailscale}/bin/tailscale status -json | ${jq}/bin/jq -r .BackendState)"
-        if [ $status = "Running" ]; then
-          exit 0
-        fi
-        ${tailscale}/bin/tailscale up --authkey ${garuda-lib.secrets.tailscale.authkey} \
-          --accept-routes
-      '';
     };
 
     # Always allow traffic from Tailscale network
     networking.firewall.trustedInterfaces = [ "tailscale0" ];
 
-    # Allow the Tailscale UDP port through the firewall
-    networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
+    sops.secrets."tailscale/authkey" = { };
   };
 }
-

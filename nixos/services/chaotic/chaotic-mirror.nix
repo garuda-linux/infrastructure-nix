@@ -1,8 +1,9 @@
-{ config
-, lib
-, pkgs
-, sources
-, ...
+{
+  config,
+  lib,
+  pkgs,
+  sources,
+  ...
 }:
 with lib;
 let
@@ -13,10 +14,7 @@ let
     envfile = pkgs.writeText "envfile" ''
       DOMAIN_NAME=${cfg.domain}
       EMAIL=${cfg.email}
-      ${if pkgs.hostPlatform.system == "aarch64-linux" then
-        "LETSENCRYPT_TAG=arm64v8-latest"
-      else
-        ""}
+      ${if pkgs.hostPlatform.system == "aarch64-linux" then "LETSENCRYPT_TAG=arm64v8-latest" else ""}
       RESTART=on-failure
     '';
     builder = pkgs.writeShellScript "build" ''
@@ -40,7 +38,13 @@ in
     systemd.services.chaotic-mirror = {
       wantedBy = [ "multi-user.target" ];
       description = "Start the chaotic-aur mirror";
-      path = with pkgs; [ rsync docker-compose docker bash gawk ];
+      path = with pkgs; [
+        rsync
+        docker-compose
+        docker
+        bash
+        gawk
+      ];
       serviceConfig = {
         CacheDirectory = "chaotic-mirror";
         CacheDirectoryMode = "0755";

@@ -1,18 +1,4 @@
 {
-  "tailscale": {
-    "authkey": "tskey-auth-xxxxxxx"
-  },
-  "telegram": {
-    "token": "123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
-    "monitoring_channel": "-10000000",
-    "updates_channel": "-10000000"
-  },
-  "matrix": {
-    "db_string": "abcdefg:abcdefg"
-  },
-  "netdata": {
-    "stream_token": "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-  },
   "syncthing": {
     "esxi-build": {
       "id": "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"

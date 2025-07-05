@@ -1,11 +1,14 @@
-{ config
-, lib
-, pkgs
-, ...
+{
+  config,
+  lib,
+  pkgs,
+  ...
 }:
 with lib;
-let cfg = config.services.garuda-monitoring;
-in {
+let
+  cfg = config.services.garuda-monitoring;
+in
+{
   options.services.garuda-monitoring = {
     enable = mkEnableOption "Garuda monitoring stack";
     parent = mkOption { type = types.str; };
@@ -14,7 +17,7 @@ in {
   config = mkIf cfg.enable {
     services = {
       netdata = {
-        claimTokenFile = "/var/garuda/secrets/netdata_claim_token";
+        claimTokenFile = config.sops.secrets."netdata/claim_token".path;
         config = {
           db = {
             "mode" = "dbengine";
@@ -27,8 +30,12 @@ in {
             "dbengine tier 2 retention size" = "1GiB";
             "dbengine tier 2 retention time" = "2y";
           };
-          ml = { "enabled" = "yes"; };
-          web = { "mode" = "none"; };
+          ml = {
+            "enabled" = "yes";
+          };
+          web = {
+            "mode" = "none";
+          };
         };
         configDir = {
           "go.d.conf" = pkgs.writeText "go.d.conf" ''
@@ -43,18 +50,20 @@ in {
             postgres: no
             web_log: no
           '';
-          "go.d/nginx.conf" = mkIf config.services.nginx.enable
-            (pkgs.writeText "nginx.conf" ''
+          "go.d/nginx.conf" = mkIf config.services.nginx.enable (
+            pkgs.writeText "nginx.conf" ''
               jobs:
                 - name: local
                   url: http://localhost/nginx_status
-            '');
-          "go.d/postgres.conf" = mkIf config.services.postgresql.enable
-            (pkgs.writeText "postgres.conf" ''
+            ''
+          );
+          "go.d/postgres.conf" = mkIf config.services.postgresql.enable (
+            pkgs.writeText "postgres.conf" ''
               jobs:
                 - name: web-two
                   dsn: 'postgres://netdata:netdata@localhost:5432/'
-            '');
+            ''
+          );
         };
         enable = true;
 
@@ -65,11 +74,13 @@ in {
         python.extraPackages = ps: [ ps.psycopg2 ];
       };
 
-      # Let Netdata poll Nginx' status page 
+      # Let Netdata poll Nginx' status page
       nginx.statusPage = true;
     };
 
     # System packages required for Netdata to function
     systemd.services.netdata.path = with pkgs; [ jq ];
+
+    sops.secrets."netdata/claim_token" = { };
   };
 }
