@@ -34,7 +34,9 @@ _: {
     hideMounts = true;
     directories = [
       "/home"
+      "/var/cache/netdata"
       "/var/cache/tailscale"
+      "/var/lib/netdata"
       "/var/lib/nixos"
       "/var/lib/tailscale"
       "/var/lib/vnstat"

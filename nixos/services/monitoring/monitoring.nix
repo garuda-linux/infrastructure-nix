@@ -68,7 +68,7 @@ in
         enable = true;
 
         # https://github.com/nix-community/nixpkgs.lib/commit/1111263e3da005fe29fd72b87283fc17bfba2d81
-        package = pkgs.netdata.override { withCloudUi = true; };
+        package = pkgs.netdataCloud;
 
         # Extra Python packages required for Netdata to function
         python.extraPackages = ps: [ ps.psycopg2 ];
@@ -81,6 +81,10 @@ in
     # System packages required for Netdata to function
     systemd.services.netdata.path = with pkgs; [ jq ];
 
-    sops.secrets."netdata/claim_token" = { };
+    sops.secrets."netdata/claim_token" = {
+      mode = "0600";
+      owner = "netdata";
+      group = "netdata";
+    };
   };
 }

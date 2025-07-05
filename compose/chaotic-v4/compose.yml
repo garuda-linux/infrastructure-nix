@@ -23,7 +23,7 @@ services:
       - ./shared:/shared
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
-    extra_hosts: ['host.docker.internal:host-gateway']
+    extra_hosts: ["host.docker.internal:host-gateway"]
   chaotic-builder-2:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-builder-2
@@ -50,7 +50,7 @@ services:
       - ./shared/srcdest_cache:/shared/srcdest_cache
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
-    extra_hosts: ['host.docker.internal:host-gateway']
+    extra_hosts: ["host.docker.internal:host-gateway"]
   chaotic-manager:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-manager
@@ -77,8 +77,6 @@ services:
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-?err}
       PACKAGE_REPOS: >-
         {
-
-
             "chaotic-aur": {
                 "url": "https://gitlab.com/chaotic-aur/pkgbuilds"
             },
@@ -88,8 +86,6 @@ services:
         }
       PACKAGE_TARGET_REPOS: >-
         {
-
-
             "chaotic-aur": {
                 "extra_repos": [
                     {
@@ -125,8 +121,6 @@ services:
         }
       PACKAGE_REPOS_NOTIFIERS: >-
         {
-
-
             "chaotic-aur": {
                 "id": "54867625",
                 "token": "${GITLAB_TOKEN_CX:-?err}",
@@ -142,8 +136,8 @@ services:
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
       - /srv/http/repos:/repo_root
-    extra_hosts: ['host.docker.internal:host-gateway']
-    ports: ['127.0.0.1:8080:8080', '127.0.0.1:3030:3030']
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    ports: ["127.0.0.1:8080:8080", "127.0.0.1:3030:3030"]
   # Automated container updates
   watchtower:
     image: containrrr/watchtower:latest
@@ -153,4 +147,4 @@ services:
         condition: always
         delay: 60s
     command: --cleanup chaotic-builder chaotic-builder-2 chaotic-manager watchtower --interval 3600
-    volumes: ['/var/run/docker.sock:/var/run/docker.sock']
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock"]

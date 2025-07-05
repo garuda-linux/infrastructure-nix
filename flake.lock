@@ -264,6 +264,18 @@
         "url": "https://git.lix.systems/lix-project/nixos-module/archive/2.93.2-1.tar.gz"
       }
     },
+    "nixos-patch-netdata": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-hgMDohR47yTZKlA9ormQ+TQ8NZu6D0ClWtyPukinPeM=",
+        "type": "file",
+        "url": "https://github.com/NixOS/nixpkgs/pull/410815.patch"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/NixOS/nixpkgs/pull/410815.patch"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1751271578,
@@ -335,6 +347,7 @@
         "keys_tne": "keys_tne",
         "keys_xiota": "keys_xiota",
         "lix-module": "lix-module",
+        "nixos-patch-netdata": "nixos-patch-netdata",
         "nixpkgs": "nixpkgs",
         "nixpkgs-stable": "nixpkgs-stable",
         "pre-commit-hooks": "pre-commit-hooks",

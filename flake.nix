@@ -88,6 +88,10 @@
       url = "https://developers.cloudflare.com/ssl/static/authenticated_origin_pull_ca.pem";
       flake = false;
     };
+
+    # Patches
+    nixos-patch-netdata.url = "https://github.com/NixOS/nixpkgs/pull/410815.patch";
+    nixos-patch-netdata.flake = false;
   };
 
   outputs =
