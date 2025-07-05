@@ -10,10 +10,11 @@ services:
     tty: true
     environment:
       BUILDER_CLASS: 9
-      BUILDER_HOSTNAME: immortalis-1
+      BUILDER_HOSTNAME: stormwing-1
       BUILDER_TIMEOUT: 7200
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
-      REDIS_SSH_HOST: host.docker.internal
+      REDIS_SSH_HOST: ${REDIS_SSH_HOST:-?err}
+      REDIS_SSH_PORT: ${REDIS_SSH_PORT:-270}
       REDIS_SSH_USER: package-deployer
       SHARED_PATH: /var/garuda/compose-runner/chaotic-v4/shared
       # Override the default database host
@@ -35,10 +36,11 @@ services:
     tty: true
     environment:
       BUILDER_CLASS: 6
-      BUILDER_HOSTNAME: immortalis-2
+      BUILDER_HOSTNAME: stormwing-2
       BUILDER_TIMEOUT: 7200
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
-      REDIS_SSH_HOST: host.docker.internal
+      REDIS_SSH_HOST: ${REDIS_SSH_HOST:-?err}
+      REDIS_SSH_PORT: ${REDIS_SSH_PORT:-270}
       REDIS_SSH_USER: package-deployer
       SHARED_PATH: /var/garuda/compose-runner/chaotic-v4/shared-2
       BUILDER_SRCDEST_CACHE_OVERRIDE: /var/garuda/compose-runner/chaotic-v4/shared/srcdest_cache
@@ -70,13 +72,15 @@ services:
       LANDING_ZONE_PATH: /var/garuda/compose-runner/chaotic-v4/landing-zone
       LOGS_URL: https://builds.garudalinux.org/logs/logs.html
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
-      REDIS_SSH_HOST: host.docker.internal
+      REDIS_SSH_HOST: ${REDIS_SSH_HOST:-?err}
+      REDIS_SSH_PORT: ${REDIS_SSH_PORT:-270}
       REDIS_SSH_USER: package-deployer
       REPO_PATH: /srv/http/repos
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-?err}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-?err}
       PACKAGE_REPOS: >-
         {
+
             "chaotic-aur": {
                 "url": "https://gitlab.com/chaotic-aur/pkgbuilds"
             },
@@ -86,6 +90,7 @@ services:
         }
       PACKAGE_TARGET_REPOS: >-
         {
+
             "chaotic-aur": {
                 "extra_repos": [
                     {
@@ -121,6 +126,7 @@ services:
         }
       PACKAGE_REPOS_NOTIFIERS: >-
         {
+
             "chaotic-aur": {
                 "id": "54867625",
                 "token": "${GITLAB_TOKEN_CX:-?err}",

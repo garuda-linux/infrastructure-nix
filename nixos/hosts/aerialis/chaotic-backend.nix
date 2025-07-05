@@ -4,7 +4,10 @@
   ...
 }:
 {
-  imports = sources.defaultModules ++ [ ../../modules ];
+  imports = sources.defaultModules ++ [
+    ../../modules
+    ../../modules/special/ssh-allow-chaotic.nix
+  ];
 
   garuda.services.compose-runner.chaotic-backend = {
     envfile = config.sops.secrets."compose/chaotic-backend".path;
@@ -22,9 +25,6 @@
     };
   };
 
-  networking.firewall.allowedTCPPorts = [
-    config.services.redis.servers.chaotic.port # Redis
-  ];
 
   sops.secrets = {
     "compose/chaotic-backend" = { };

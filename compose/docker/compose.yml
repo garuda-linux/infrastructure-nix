@@ -87,15 +87,15 @@ services:
       DB_NAME: wikijs
     restart: always
   # IRC/Discord/Telegram relay
-  matterbridge:
-    image: 42wim/matterbridge:latest
-    container_name: matterbridge
-    volumes:
-      - /var/garuda/secrets/compose/matterbridge.toml:/etc/matterbridge/matterbridge.toml:ro
-    deploy:
-      restart_policy:
-        condition: always
-        delay: 120s
+  # matterbridge:
+  #   image: 42wim/matterbridge:latest
+  #   container_name: matterbridge
+  #   volumes:
+  #     - ${MATTERBRIDGE_CONFIG:-?err}:/etc/matterbridge/matterbridge.toml:ro
+  #   deploy:
+  #     restart_policy:
+  #       condition: always
+  #       delay: 120s
   # Automated container updates
   watchtower:
     image: containrrr/watchtower:1.7.1

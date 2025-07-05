@@ -7,11 +7,7 @@
       ansible.posix.synchronize:
         dest: /etc/nixos/
         archive: true
-        src: ../../{{ item }}
-      loop: # Filtering was for whatever reason not working properly
-        - nixos # No alphabetical order to be able to push this first
-        - flake.nix
-        - flake.lock
-        - compose
-        - home-manager
-        - secrets
+        src: ../../../
+        delete: true
+        rsync_opts:
+          - "--delete-excluded"

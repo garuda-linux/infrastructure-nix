@@ -170,18 +170,18 @@
                     name = "apply";
                     help = "Applies the infra-nix configuration pushed to the servers";
                     command = ''
-                      pushd ansible
+                      pushd ansible &>/dev/null
                       ansible-playbook playbooks/apply.yml
-                      popd
+                      popd &>/dev/null
                     '';
                   }
                   {
                     name = "clean";
                     help = "Runs the garbage collection on the servers";
                     command = ''
-                      pushd ansible
+                      pushd ansible &>/dev/null
                       ansible-playbook playbooks/garbage_collect.yml
-                      popd
+                      popd &>/dev/null
                     '';
                   }
                   {
@@ -248,7 +248,7 @@
               check-yaml.enable = true;
               ripsecrets.enable = true;
               treefmt = {
-                enable = true;
+                enable = false;
                 name = "treefmt";
                 entry = "treefmt";
                 types = [

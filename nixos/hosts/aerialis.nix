@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   ...
 }:
@@ -99,7 +98,13 @@
             };
           };
           enableTun = true;
-          ephemeral = lib.mkForce true;
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 270;
+              protocol = "tcp";
+            }
+          ];
         };
         ipAddress = "10.0.5.70";
         needsDocker = true;
@@ -199,7 +204,6 @@
               protocol = "tcp";
             }
           ];
-          ephemeral = lib.mkForce true;
         };
         ipAddress = "10.0.5.20";
       };

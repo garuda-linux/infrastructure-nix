@@ -1,0 +1,8 @@
++ /nixos/***
++ /flake.nix
++ /flake.lock
++ /compose/***
++ /home-manager/***
+- /secrets/.git
++ /secrets/***
+- *

@@ -161,18 +161,22 @@ in
             [ cont.config ]
             ++ lib.lists.optional cont.defaults {
               config.garuda-lib.minimalContainer = true;
+              config.garuda-lib.sshkeys = {
+                ed25519 = "/etc/ssh.host/ssh_host_ed25519_key";
+                rsa = "/etc/ssh.host/ssh_host_rsa_key";
+              };
+
               config.services.openssh.hostKeys = [
                 {
                   bits = 4096;
-                  path = garuda-lib.sshkeysContainer.rsa;
+                  path = garuda-lib.sshkeys.rsa;
                   type = "rsa";
                 }
                 {
-                  path = garuda-lib.sshkeysContainer.ed25519;
+                  path = garuda-lib.sshkeys.ed25519;
                   type = "ed25519";
                 }
               ];
-              config.sops.age.sshKeyPaths = [ garuda-lib.sshkeysContainer.ed25519 ];
             }
             ++ lib.lists.optional (garuda-lib.unifiedUID && cont.defaults) {
               config.garuda-lib.unifiedUID = true;
@@ -183,6 +187,7 @@ in
           hostBridge = cfg.bridgeInterface;
           localAddress = "${cont.ipAddress}/${builtins.toString cfg.networkPrefix}";
           privateNetwork = true;
+          timeoutStartSec = "10m";
           inherit (sources) specialArgs;
         }
         cont.extraOptions
