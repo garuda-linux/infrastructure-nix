@@ -3,6 +3,7 @@
   imports = [
     ../services
     ./common.nix
+    ./create-home.nix
     ./garuda-lib.nix
     ./hardening.nix
     ./motd.nix

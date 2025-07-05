@@ -30,6 +30,17 @@
     ];
   };
 
+  fileSystems."/data_2" = {
+    device = "/dev/disk/by-label/NIXDATA";
+    fsType = "btrfs";
+    options = [
+      "defaults"
+      "noatime"
+      "nodiratime"
+      "compress=zstd:1"
+    ];
+  };
+
   fileSystems."/boot" = {
     device = "/dev/disk/by-label/NIXBOOT";
     fsType = "vfat";

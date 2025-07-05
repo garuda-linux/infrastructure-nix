@@ -1,11 +1,6 @@
 {
   description = "Garuda Linux infrastructure flake ❄️";
 
-  nixConfig.extra-substituters = [ "https://garuda-linux.cachix.org" ];
-  nixConfig.extra-trusted-public-keys = [
-    "garuda-linux.cachix.org-1:tWw7YBE6qZae0L6BbyNrHo8G8L4sHu5QoDp0OXv70bg="
-  ];
-
   inputs = {
     # Devshell to set up a development environment
     devshell.url = "github:numtide/devshell";

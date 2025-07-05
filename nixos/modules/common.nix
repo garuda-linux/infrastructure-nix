@@ -136,7 +136,6 @@
     # Packages the system needs, individual user packages shall be put into home-manager configurations
     systemPackages = with pkgs; [
       btop
-      cachix
       eza
       fancy-motd
       fishPlugins.autopair
@@ -175,10 +174,6 @@
       ];
       auto-optimise-store = true;
       builders-use-substitutes = true;
-      substituters = [ "https://garuda-linux.cachix.org" ];
-      trusted-public-keys = lib.mkAfter [
-        "garuda-linux.cachix.org-1:tWw7YBE6qZae0L6BbyNrHo8G8L4sHu5QoDp0OXv70bg="
-      ];
     };
     nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
     package = pkgs.lixPackageSets.latest.lix;
