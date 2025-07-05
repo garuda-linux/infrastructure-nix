@@ -1,4 +1,9 @@
-{ lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   imports = [
     ../modules
@@ -106,7 +111,7 @@
             "compose" = {
               hostPath = "/data_1/containers/docker/";
               isReadOnly = false;
-              mountPoint = "/var/garuda/compose-runner/all-in-one";
+              mountPoint = "/var/garuda/compose-runner/docker";
             };
             "nextcloud-local-backup" = {
               hostPath = "/data_2/backup/nextcloud-aio";
@@ -224,5 +229,80 @@
         ipAddress = "10.0.5.10";
       };
     };
+  };
+
+  # Monitor a few services of the containers
+  services = {
+    netdata.configDir = {
+      "go.d/postgres.conf" = pkgs.writeText "postgres.conf" ''
+        jobs:
+          - name: postgres
+            dsn: 'postgres://netdata:netdata@10.0.5.20:5432/'
+      '';
+      "go.d/squidlog.conf" = pkgs.writeText "squidlog.conf" ''
+        jobs:
+          - name: squid
+            path: /var/log/squid/access.log
+            log_type: csv
+            csv_config:
+              format: '- resp_time client_address result_code resp_size req_method - - hierarchy mime_type'
+      '';
+      "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
+        jobs:
+          - name: nginx
+            path: /data_2/containers/web-front/nginx/access.log
+      '';
+    };
+  };
+
+  # Fix permissions of nginx log files to allow Netdata to read it (gets reset frequently)
+  system.activationScripts.netdata = "chown 60:netdata -R /data_2/containers/web-front/nginx";
+
+  # Backup configurations to Hetzner storage box
+  programs.ssh.macs = [ "hmac-sha2-512" ];
+  services.borgbackup.jobs = {
+    backupToHetzner = {
+      compression = "auto,zstd";
+      doInit = true;
+      encryption = {
+        mode = "repokey-blake2";
+        passCommand = ''
+          cat "${config.sops.secrets."backup/repo_key".path}"
+        '';
+      };
+      environment = {
+        BORG_RSH = "ssh -i ${config.sops.secrets."backup/ssh_aerialis".path} -p 23";
+      };
+      exclude = [
+        "/data_1/dockercache"
+        "/data_1/dockerdata"
+      ];
+      paths = [
+        "/data_1/persistent/etc/ssh"
+        "/data_1/containers"
+        "/data_2/backup/nextcloud-aio/"
+        "/data_2/containers/mastodon"
+        "/data_2/containers/postgres"
+      ];
+      prune.keep = {
+        within = "1d";
+        daily = 3;
+        weekly = 1;
+        monthly = 1;
+      };
+      repo = "u342919@u342919.your-storagebox.de:./aerialis";
+      startAt = "daily";
+    };
+  };
+
+  sops.secrets = {
+    "backup/repo_key" = { };
+    "backup/ssh_aerialis" = { };
+  };
+
+  deployment = {
+    targetHost = "157.180.57.100";
+    targetPort = 666;
+    targetUser = "ansible";
   };
 }

@@ -54,6 +54,10 @@ in
         ed25519 = "/etc/ssh/ssh_host_ed25519_key";
         rsa = "/etc/ssh/ssh_host_rsa_key";
       };
+      sshkeysContainer = {
+        ed25519 = "/etc/ssh.host/ssh_host_ed25519_key";
+        rsa = "/etc/ssh.host/ssh_host_rsa_key";
+      };
       inherit secrets;
       xslt_style = ./static/style.xslt;
     };

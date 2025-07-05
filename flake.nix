@@ -2,6 +2,9 @@
   description = "Garuda Linux infrastructure flake ❄️";
 
   inputs = {
+    # Deployment tool
+    colmena.url = "github:zhaofengli/colmena";
+
     # Devshell to set up a development environment
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
@@ -96,6 +99,7 @@
 
   outputs =
     {
+      colmena,
       flake-parts,
       nixpkgs,
       self,
@@ -221,6 +225,12 @@
                     help = "Spawns a local buildiso shell to build to ./buildiso (needs Docker)";
                     category = "infra-nix";
                     command = buildiso;
+                  }
+                  {
+                    name = "colmena";
+                    help = "Runs the Colmena deployment tool";
+                    category = "infra-nix";
+                    package = colmena.defaultPackage.${system};
                   }
                 ];
                 motd = ''

@@ -41,5 +41,16 @@
 
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
+  # Better have an eye on the disks
+  services = {
+    smartd = {
+      enable = true;
+      extraOptions = [
+        "-A /var/log/smartd/"
+        "--interval=600"
+      ];
+    };
+  };
+
   system.stateVersion = "25.05";
 }

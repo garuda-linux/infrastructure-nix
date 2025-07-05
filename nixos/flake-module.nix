@@ -1,5 +1,7 @@
-{ inputs, ... }:
+{ inputs, self, ... }:
 let
+  conf = self.nixosConfigurations;
+
   system = "x86_64-linux";
 
   defaultModules = [
@@ -72,12 +74,28 @@ in
         inherit system;
         inherit specialArgs;
         modules = defaultModules ++ newGenModules ++ [ ./hosts/stormwing.nix ];
+        extraModules = [ inputs.colmena.nixosModules.deploymentOptions ];
       };
       "aerialis" = patchedNixosSystem {
         inherit system;
         inherit specialArgs;
         modules = defaultModules ++ newGenModules ++ [ ./hosts/aerialis.nix ];
+        extraModules = [ inputs.colmena.nixosModules.deploymentOptions ];
       };
     };
+
+    colmena = {
+      defaults.deployment = {
+        allowLocalDeployment = true;
+        buildOnTarget = true;
+      };
+      meta = {
+        description = "Garuda Linux infrastructure";
+        nixpkgs = import inputs.nixpkgs { inherit system; };
+        nodeNixpkgs = builtins.mapAttrs (name: value: value.pkgs) conf;
+        nodeSpecialArgs = builtins.mapAttrs (name: value: value._module.specialArgs) conf;
+      };
+    } // builtins.mapAttrs (name: value: { imports = value._module.args.modules; }) conf;
+    colmenaHive = inputs.colmena.lib.makeHive self.outputs.colmena;
   };
 }

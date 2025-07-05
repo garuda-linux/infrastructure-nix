@@ -8,12 +8,12 @@ Recently, the `compose-runner` module has been replaced by native Nix expression
 ## Nextcloud AIO
 
 This container also runs a Nextcloud AIO master container, which administrates its containers by itself.
-Consult its [extensive documentation for more information](https://github.com/nextcloud/all-in-one).
+Consult its [extensive documentation for more information](https://github.com/nextcloud/docker).
 Since this container requires a Nextcloud volume at a fixed place, without being able to change it, it is not
 included in the regular data directory.
 
 Instead, backups are regularly performed via the inbuilt backup function in the admin interface.
-They can be found at `/var/garuda/compose-runner/all-in-one/nextcloud-aio`
+They can be found at `/var/garuda/compose-runner/docker/nextcloud-aio`
 and are included in the offsite system backups.
 
 ## Nix expression

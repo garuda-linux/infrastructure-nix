@@ -14,11 +14,13 @@
 
   sops.secrets = {
     "compose/docker" = {
+      neededForUsers = true;
       restartUnits = [ "compose-runner-docker.service" ];
     };
     "compose/matterbridge" = {
       path = "/var/garuda/secrets/compose/matterbridge.toml";
       mode = "0600";
+      neededForUsers = true;
       owner = "1001";
       group = "1001";
       restartUnits = [ "compose-runner-docker.service" ];

@@ -20,7 +20,7 @@ services:
     environment:
       APACHE_PORT: 11000
       APACHE_IP_BINDING: 10.0.5.100
-      NEXTCLOUD_DATADIR: /var/garuda/compose-runner/all-in-one/nextcloud-aio/nextcloud_data
+      NEXTCLOUD_DATADIR: /var/garuda/compose-runner/docker/nextcloud-aio/nextcloud_data
   # Firefox syncserver
   syncserver:
     container_name: syncserver
@@ -108,35 +108,35 @@ volumes:
     name: nextcloud_aio_mastercontainer
     driver_opts:
       type: none
-      device: /var/garuda/compose-runner/all-in-one/nextcloud-aio/mastercontainer
+      device: /var/garuda/compose-runner/docker/nextcloud-aio/mastercontainer
       o: bind
   nextcloud_aio_clamav:
     name: nextcloud_aio_clamav
     driver_opts:
       type: none
-      device: /var/garuda/compose-runner/all-in-one/nextcloud-aio/clamav
+      device: /var/garuda/compose-runner/docker/nextcloud-aio/clamav
       o: bind
   nextcloud_aio_database:
     name: nextcloud_aio_database
     driver_opts:
       type: none
-      device: /var/garuda/compose-runner/all-in-one/nextcloud-aio/database
+      device: /var/garuda/compose-runner/docker/nextcloud-aio/database
       o: bind
   nextcloud_aio_nextcloud:
     name: nextcloud_aio_nextcloud
     driver_opts:
       type: none
-      device: /var/garuda/compose-runner/all-in-one/nextcloud-aio/nextcloud
+      device: /var/garuda/compose-runner/docker/nextcloud-aio/nextcloud
       o: bind
   nextcloud_aio_nextcloud_data:
     name: nextcloud_aio_nextcloud_data
     driver_opts:
       type: none
-      device: /var/garuda/compose-runner/all-in-one/nextcloud-aio/nextcloud_data
+      device: /var/garuda/compose-runner/docker/nextcloud-aio/nextcloud_data
       o: bind
   nextcloud_aio_redis:
     name: nextcloud_aio_redis
     driver_opts:
       type: none
-      device: /var/garuda/compose-runner/all-in-one/nextcloud-aio/redis
+      device: /var/garuda/compose-runner/docker/nextcloud-aio/redis
       o: bind
