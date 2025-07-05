@@ -1,0 +1,18 @@
+[default]
+extend-ignore-identifiers-re = [
+  "crypted",
+  "immortalis",
+  "odf",
+  "tne"
+]
+
+[type.css]
+check-file = false
+
+[type.secrets]
+extend-glob = ["shared.yaml"]
+check-file = false
+
+[type.changelog]
+extend-glob = ["CHANGELOG.md"]
+check-file = false

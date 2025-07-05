@@ -5,6 +5,7 @@ let
   defaultModules = [
     "${inputs.nixpkgs}/nixos/modules/profiles/hardened.nix"
     inputs.home-manager.nixosModules.home-manager
+    inputs.lix-module.nixosModules.default
     inputs.sops-nix.nixosModules.sops
   ];
 

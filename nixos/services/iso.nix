@@ -102,7 +102,7 @@ in
     environment.systemPackages = [ buildiso_script ];
 
     sops.secrets = {
-      "cloudflare/r2_rclone" = {};
+      "cloudflare/r2_rclone" = { };
       "keypairs/ssh_team/private" = { };
       "telegram/buildiso_token" = { };
     };

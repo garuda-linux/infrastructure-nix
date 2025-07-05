@@ -21,6 +21,10 @@
     # Impermanence for keeping things clean
     impermanence.url = "github:nix-community/impermanence";
 
+    # Lix-module, because it's awesome
+    lix-module.url = "https://git.lix.systems/lix-project/nixos-module/archive/2.93.2-1.tar.gz";
+    lix-module.inputs.nixpkgs.follows = "nixpkgs";
+
     # The single source of truth
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
@@ -36,6 +40,7 @@
 
     # Formatting
     treefmt-nix.url = "github:numtide/treefmt-nix";
+    treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
 
     # SSH keys of maintainers
     keys_nico.url = "https://github.com/dr460nf1r3.keys";
@@ -68,6 +73,12 @@
       repo = "tools%2Fbuildiso-docker";
       flake = false;
     };
+    src-garuda-website = {
+      type = "gitlab";
+      owner = "garuda-linux";
+      repo = "website%2Fwebsite-catppuccin";
+      flake = false;
+    };
 
     src-cloudflare-ipv4 = {
       url = "https://www.cloudflare.com/ips-v4";
@@ -83,9 +94,7 @@
     {
       flake-parts,
       nixpkgs,
-      pre-commit-hooks,
       self,
-      treefmt-nix,
       ...
     }@inputs:
     let
@@ -95,7 +104,7 @@
           system,
           ...
         }:
-        rec {
+        {
           apps.default = self.outputs.devShells.${system}.default.flakeApp;
           devShells =
             let
@@ -116,7 +125,6 @@
                        buildiso /bin/bash
               '';
               immortals = "builds.garudalinux.org";
-              ipv6-generator = builtins.readFile ./scripts/ipv6-generator.sh;
               makeDevshell = import "${inputs.devshell}/modules" pkgs;
               mkShell =
                 config:
@@ -137,20 +145,19 @@
                       export LC_ALL="C.UTF-8"
                       export NIX_PATH=nixpkgs=${nixpkgs}
                     '';
-                    preCommitHooks.text = self.checks.${system}.pre-commit-check.shellHook;
+                    pre-commit-hooks.text = self.checks.${system}.pre-commit-check.shellHook;
                   };
                 };
                 commands = [
                   { package = "ansible"; }
-                  { package = "rsync"; }
                   { package = "commitizen"; }
                   { package = "manix"; }
                   { package = "mdbook"; }
                   { package = "mdbook-admonish"; }
                   { package = "mdbook-emojicodes"; }
-                  { package = "nodePackages.prettier"; }
-                  { package = "sops"; }
                   { package = "pre-commit"; }
+                  { package = "rsync"; }
+                  { package = "sops"; }
                   {
                     name = "apply";
                     help = "Applies the infra-nix configuration pushed to the servers";
@@ -173,36 +180,27 @@
                     name = "deploy";
                     help = "Deploys the local NixOS configuration to the servers";
                     command = ''
-                      pushd ansible
+                      pushd ansible &>/dev/null
                       ansible-playbook playbooks/garuda.yml
-                      popd
+                      popd &>/dev/null
                     '';
                   }
                   {
                     name = "update";
                     help = "Performs a full system update on the servers bumping flake lock";
                     command = ''
-                      pushd ansible
+                      pushd ansible &>/dev/null
                       ansible-playbook playbooks/system_update.yml
-                      popd
+                      popd &>/dev/null
                     '';
                   }
                   {
                     name = "restart";
                     help = "Restarts all physical servers";
                     command = ''
-                      pushd ansible
+                      pushd ansible &>/dev/null
                       ansible-playbook playbooks/reboot.yml
-                      popd
-                    '';
-                  }
-                  {
-                    name = "update-forum";
-                    help = "Updates the Discourse container of our forum";
-                    category = "infra-nix";
-                    command = ''
-                      # We are assuming the NixOS user is named the same as the one using it
-                      ssh -p224 ${immortals} "cd /var/discourse; sudo ./launcher rebuild app"
+                      popd &>/dev/null
                     '';
                   }
                   {
@@ -220,12 +218,6 @@
                     category = "infra-nix";
                     command = buildiso;
                   }
-                  {
-                    name = "ipv6-generator";
-                    help = "Generates random IPv6 addresses in our /64 subnet to help rorating them";
-                    category = "infra-nix";
-                    command = ipv6-generator;
-                  }
                 ];
                 motd = ''
                   {202}🔨 Welcome to Garuda's infra-nix shell{reset} ❄️
@@ -241,6 +233,15 @@
               detect-private-keys.enable = true;
               check-yaml.enable = true;
               ripsecrets.enable = true;
+              treefmt = {
+                enable = true;
+                name = "treefmt";
+                entry = "treefmt";
+                types = [
+                  "text"
+                ];
+                pass_filenames = false;
+              };
             };
             src = ./.;
           };

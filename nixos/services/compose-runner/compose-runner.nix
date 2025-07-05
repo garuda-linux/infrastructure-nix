@@ -29,11 +29,11 @@ in
         options = {
           source = mkOption {
             type = types.path;
-            description = "Folder containing a docker-compose file.";
+            description = "Folder containing a compose file.";
           };
           extraFiles = mkOption {
             type = types.listOf (types.either types.path filesType);
-            description = "Extra files that will be copied to the docker-compose file directory";
+            description = "Extra files that will be copied to the compose file directory";
             default = [ ];
           };
           extraEnv = mkOption {
@@ -48,7 +48,7 @@ in
           };
           args = mkOption {
             type = types.str;
-            description = "Additional arguments to pass to docker-compose up";
+            description = "Additional arguments to pass to docker compose up";
             default = "up --remove-orphans --force-recreate";
           };
         };
@@ -69,8 +69,8 @@ in
               PATH="${pkgs.rsync}/bin:${pkgs.coreutils}/bin:${pkgs.gnused}/bin"
               set -e
               mkdir "$out"
-              sed -r 's/(^\s+restart:\s*)(unless-stopped|always)(\s*($|#))/\1on-failure\3/g' "$src/docker-compose.yml" > "$out/docker-compose.yml"
-              rsync --exclude="/docker-compose.yml" -a "$src/" "$out"
+              sed -r 's/(^\s+restart:\s*)(unless-stopped|always)(\s*($|#))/\1on-failure\3/g' "$src/compose.yml" > "$out/compose.yml"
+              rsync --exclude="/compose.yml" -a "$src/" "$out"
             '';
             inherit (pkgs.hostPlatform) system;
           };
@@ -78,7 +78,7 @@ in
         in
         {
           wantedBy = [ "multi-user.target" ];
-          description = "docker-compose runner for ${name}";
+          description = "Compose runner for ${name}";
           path = with pkgs; [
             rsync
             docker-compose

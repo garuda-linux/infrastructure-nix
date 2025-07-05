@@ -1,3 +1,5 @@
+.ansible
+.crates-lsp
 .direnv
 .idea
 .pre-commit-config.yaml

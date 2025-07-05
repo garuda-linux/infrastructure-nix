@@ -18,19 +18,7 @@ in
     "${sources.chaotic-portable-builder}/nix/nixos.nix"
   ];
 
-  # Redis is used to distribute build jobs
-  # TODO FIXME MOVE TO AERIALIS
-  services.redis = {
-    vmOverCommit = true;
-    servers."chaotic" = {
-      bind = null;
-      enable = true;
-      port = 6379;
-      requirePassFile = config.sops.secrets."redis/chaotic".path;
-    };
-  };
-
-  # This container is just for docker-compose stuff
+  # This container is just for compose stuff
   garuda.services.compose-runner.chaotic-v4 = {
     envfile = config.sops.secrets."compose/chaotic-v4".path;
     source = ../../../compose/chaotic-v4;
@@ -85,7 +73,6 @@ in
   };
 
   networking.firewall.allowedTCPPorts = [
-    config.services.redis.servers.chaotic.port # Redis
     config.services.rsyncd.port # Rsync
     8384 # Syncthing web interface
   ];
@@ -316,19 +303,18 @@ in
         xargs -rP 0 -I % ${pkgs.bash}/bin/bash -c 'upload "%"'
     '';
     serviceConfig = {
-      EnvironmentFile = config.sops.secrets."cloudflare/api-keys".path;
+      EnvironmentFile = config.sops.secrets."cloudflare/api_keys".path;
       Restart = "always";
       WorkingDirectory = "/srv/http";
     };
   };
 
   sops.secrets = {
-    "cloudflare/api-keys" = { };
+    "cloudflare/api_keys" = { };
     "cloudflare/r2_rclone" = { };
     "compose/chaotic-v4" = { };
     "keypairs/syncthing/cert" = { };
     "keypairs/syncthing/private" = { };
-    "redis/chaotic" = { };
   };
 
   system.stateVersion = "25.05";

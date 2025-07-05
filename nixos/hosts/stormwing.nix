@@ -104,7 +104,7 @@
             "chaotic" = {
               hostPath = "/data_1/containers/chaotic-v4/chaotic";
               isReadOnly = false;
-              mountPoint = "/var/garuda/docker-compose-runner/chaotic-v4";
+              mountPoint = "/var/garuda/compose-runner/chaotic-v4";
             };
             "redis" = {
               hostPath = "/data_1/containers/chaotic-v4/redis";
@@ -216,6 +216,31 @@
         };
         ipAddress = "10.0.5.20";
         needsDocker = true;
+      };
+      web-front = {
+        config = import ./stormwing/web-front.nix;
+        extraOptions = {
+          bindMounts = {
+            "acme" = {
+              hostPath = "/data_2/containers/web-front/acme";
+              isReadOnly = false;
+              mountPoint = "/var/lib/acme";
+            };
+            "nginx" = {
+              hostPath = "/data_2/containers/web-front/nginx";
+              isReadOnly = false;
+              mountPoint = "/var/log/nginx";
+            };
+          };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 222;
+              protocol = "tcp";
+            }
+          ];
+        };
+        ipAddress = "10.0.5.40";
       };
     };
   };

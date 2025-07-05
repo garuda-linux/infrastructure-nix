@@ -132,11 +132,6 @@ in
                 hostPath = "/dev/loop0";
                 mountPoint = "/dev/loop0";
               };
-              "secrets" = {
-                hostPath = "/var/garuda/secrets";
-                isReadOnly = false;
-                mountPoint = "/var/garuda/secrets";
-              };
               "ssh_ed25519" = {
                 hostPath = builtins.dirOf garuda-lib.sshkeys.ed25519;
                 isReadOnly = true;

@@ -2,6 +2,7 @@
 {
   imports = [
     ../services
+    ./acme.nix
     ./common.nix
     ./create-home.nix
     ./garuda-lib.nix
