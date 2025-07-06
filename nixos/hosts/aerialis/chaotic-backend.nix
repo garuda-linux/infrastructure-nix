@@ -1,6 +1,5 @@
 {
   config,
-  pkgs,
   sources,
   ...
 }:
@@ -16,19 +15,6 @@
     extraEnv = {
       "SSH_KEY" = config.sops.secrets."keypairs/chaotic/private".path;
     };
-  };
-
-  # Redis is used to distribute build jobs
-  services.redis = {
-    package = pkgs.keydb;
-    servers."chaotic" = {
-      bind = null;
-      enable = true;
-      logLevel = "debug";
-      port = 6379;
-      requirePassFile = config.sops.secrets."redis/chaotic".path;
-    };
-    vmOverCommit = true;
   };
 
   sops.secrets = {

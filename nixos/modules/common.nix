@@ -110,7 +110,20 @@
       enable = true;
       package = pkgs.plocate;
     };
-    openssh.enable = true;
+    openssh = {
+      hostKeys = [
+        {
+          bits = 4096;
+          path = garuda-lib.sshkeys.rsa;
+          type = "rsa";
+        }
+        {
+          path = garuda-lib.sshkeys.ed25519;
+          type = "ed25519";
+        }
+      ];
+      enable = true;
+    };
     vnstat.enable = true;
   };
 

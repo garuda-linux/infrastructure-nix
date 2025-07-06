@@ -64,12 +64,11 @@ in
 
   # Syncthing setup
   services.syncthing = {
-    # TODO FIXME
-    enable = false;
+    enable = true;
     openDefaultPorts = true;
     configDir = config.services.syncthing.dataDir;
-    cert = config.sops.secrets."keypairs/syncthing/cert";
-    key = config.sops.secrets."keypairs/syncthing/private";
+    cert = config.sops.secrets."keypairs/syncthing/cert".path;
+    key = config.sops.secrets."keypairs/syncthing/private".path;
     overrideFolders = false;
     overrideDevices = false;
     user = "root";

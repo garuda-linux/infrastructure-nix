@@ -7,7 +7,7 @@ let
   defaultModules = [
     "${inputs.nixpkgs}/nixos/modules/profiles/hardened.nix"
     inputs.home-manager.nixosModules.home-manager
-    inputs.lix-module.nixosModules.default
+    inputs.lix-module.nixosModules.lixFromNixpkgs
     inputs.sops-nix.nixosModules.sops
   ];
 
@@ -81,6 +81,14 @@ in
         inherit specialArgs;
         modules = defaultModules ++ newGenModules ++ [ ./hosts/aerialis.nix ];
         extraModules = [ inputs.colmena.nixosModules.deploymentOptions ];
+      };
+      "garuda-mail" = patchedNixosSystem {
+        inherit system;
+        inherit specialArgs;
+        modules = defaultModules ++ [
+          ./hosts/garuda-mail.nix
+          inputs.nixos-mailserver.nixosModule
+        ];
       };
     };
 

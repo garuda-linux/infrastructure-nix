@@ -65,7 +65,7 @@ services:
     environment:
       # Address published to outside world
       DATABASE_HOST: builds.garudalinux.org
-      DATABASE_PORT: 400
+      DATABASE_PORT: 210
       CI_CODE_SKIP: 123
       DATABASE_USER: package-deployer
       GPG_PATH: /var/garuda/compose-runner/chaotic-v4/gnupg
@@ -81,6 +81,7 @@ services:
       PACKAGE_REPOS: >-
         {
 
+
             "chaotic-aur": {
                 "url": "https://gitlab.com/chaotic-aur/pkgbuilds"
             },
@@ -90,6 +91,7 @@ services:
         }
       PACKAGE_TARGET_REPOS: >-
         {
+
 
             "chaotic-aur": {
                 "extra_repos": [
@@ -126,6 +128,7 @@ services:
         }
       PACKAGE_REPOS_NOTIFIERS: >-
         {
+
 
             "chaotic-aur": {
                 "id": "54867625",

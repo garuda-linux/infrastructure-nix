@@ -19,7 +19,7 @@ services:
     ports: ["8080:8080"]
     environment:
       APACHE_PORT: 11000
-      APACHE_IP_BINDING: 10.0.5.100
+      APACHE_IP_BINDING: 10.0.5.60
       NEXTCLOUD_DATADIR: /var/garuda/compose-runner/docker/nextcloud-aio/nextcloud_data
   # Firefox syncserver
   syncserver:
@@ -80,22 +80,22 @@ services:
     ports: ["3001:3000"]
     environment:
       DB_TYPE: postgres
-      DB_HOST: 10.0.5.50
+      DB_HOST: 10.0.5.20
       DB_PORT: 5432
       DB_USER: wikijs
       DB_PASS: ${DB_PASS:-?err}
       DB_NAME: wikijs
     restart: always
   # IRC/Discord/Telegram relay
-  # matterbridge:
-  #   image: 42wim/matterbridge:latest
-  #   container_name: matterbridge
-  #   volumes:
-  #     - ${MATTERBRIDGE_CONFIG:-?err}:/etc/matterbridge/matterbridge.toml:ro
-  #   deploy:
-  #     restart_policy:
-  #       condition: always
-  #       delay: 120s
+  matterbridge:
+    image: 42wim/matterbridge:latest
+    container_name: matterbridge
+    volumes:
+      - ${MATTERBRIDGE_CONFIG:-?err}:/etc/matterbridge/matterbridge.toml:ro
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 120s
   # Automated container updates
   watchtower:
     image: containrrr/watchtower:1.7.1

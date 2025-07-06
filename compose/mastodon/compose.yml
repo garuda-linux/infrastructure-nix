@@ -1,0 +1,10 @@
+services:
+  # TODO: revert to NixOS service once it no longer segfaults
+  redis:
+    image: redis:8.2-m01-alpine
+    container_name: redis
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning
+    ports: ["127.0.0.1:6379:6379"]
+    volumes:
+      - ./redis:/data

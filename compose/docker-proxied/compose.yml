@@ -43,8 +43,6 @@ services:
     environment:
       BASE_URL: https://searx.garudalinux.org/
       BIND_ADDRESS: 0.0.0.0:8080
-      HTTPS_PROXY: http://10.0.5.1:3128
-      HTTP_PROXY: http://10.0.5.1:3128
       INSTANCE_NAME: Garuda's SearxNG
       NO_PROXY: '*.garudalinux.org'
     cap_drop: [ALL]
@@ -95,8 +93,6 @@ services:
       DARK_THEME: 'true'
       DEFAULT_SOURCE_LANG: auto
       DEFAULT_TARGET_LANG: en
-      HTTP_PROXY: http://10.0.5.1:3128
-      HTTPS_PROXY: http://10.0.5.1:3128
       SITE_DOMAIN: lingva.garudalinux.org
     ports: ['3002:3000']
     restart: always
@@ -105,8 +101,6 @@ services:
     image: quay.io/redlib/redlib:latest
     container_name: redlib
     environment:
-      HTTP_PROXY: http://10.0.5.1:3128
-      HTTPS_PROXY: http://10.0.5.1:3128
       REDLIB_BANNER_: Garuda's Redlib
       REDLIB_DEFAULT_AUTOPLAY_VIDEOS: true
       REDLIB_DEFAULT_BLUR_NSFW: true

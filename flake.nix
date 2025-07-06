@@ -32,6 +32,13 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
 
+    # Our mailserver
+    nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/master";
+    nixos-mailserver.inputs.flake-compat.follows = "flake-compat";
+    nixos-mailserver.inputs.git-hooks.follows = "";
+    nixos-mailserver.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-mailserver.inputs.nixpkgs-25_05.follows = "nixpkgs";
+
     # Pre-commit hooks via nix-shell or nix develop
     pre-commit-hooks.url = "github:cachix/git-hooks.nix";
     pre-commit-hooks.inputs.flake-compat.follows = "flake-compat";

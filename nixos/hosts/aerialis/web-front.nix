@@ -1,81 +1,14 @@
 {
   config,
   garuda-lib,
-  lib,
   pkgs,
   sources,
   ...
 }:
 let
-  allowOnlyCloudflared =
-    config:
-    (
-      config
-      // {
-        listen = [
-          {
-            addr = "127.0.0.1";
-            port = 80;
-          }
-        ];
-        extraConfig =
-          (config.extraConfig or "")
-          + ''
-            real_ip_header CF-Connecting-IP;
-            set_real_ip_from 127.0.0.1;
-          '';
-      }
-    );
-  # This is technically unecessary, but safety!
-  # This refers to the Cloudflare service "Cloudflare Access" to allow only specified users to access the service
-  allowOnlyCloudflareZerotrust =
-    base_config:
-    let
-      config = allowOnlyCloudflared base_config;
-    in
-    config
-    // {
-      extraConfig =
-        config.extraConfig
-        + ''
-          ssl_verify_client on;
-          underscores_in_headers off;
-          ssl_client_certificate ${sources.cloudflare-authenticated_origin_pull_ca};
-        '';
-      locations = lib.mapAttrs (
-        _: location:
-        location
-        // {
-          extraConfig =
-            ''
-              if ($http_cf_access_authenticated_user_email = "") {
-                  return 403;
-              }
-            ''
-            + (location.extraConfig or "");
-        }
-      ) config.locations;
-    };
-  generateCloudflaredIngress =
-    virtualHosts:
-    let
-      destination = "http://127.0.0.1:80";
-      toIngress =
-        array:
-        map (host: {
-          name = host;
-          value = destination;
-        }) array;
-      isCloudflared = values: values ? listen && values.listen == (allowOnlyCloudflared { }).listen;
-    in
-    builtins.listToAttrs (
-      lib.flatten (
-        lib.mapAttrsToList (
-          host: values:
-          lib.optionals (isCloudflared values) (toIngress ([ host ] ++ (values.serverAliases or [ ])))
-        ) virtualHosts
-      )
-    );
+  inherit (garuda-lib) allowOnlyCloudflared;
+  inherit (garuda-lib) allowOnlyCloudflareZerotrust;
+  inherit (garuda-lib) generateCloudflaredIngress;
 
   website =
     let
@@ -317,11 +250,11 @@ rec {
         http3 = true;
         locations = {
           "/" = {
-            proxyPass = "http://10.0.5.70:80";
+            proxyPass = "http://10.0.5.40:80";
           };
           "/c/announcements/announcements-maintenance/45.json" = {
             extraConfig = "expires 2m;";
-            proxyPass = "http://10.0.5.70:80";
+            proxyPass = "http://10.0.5.40:80";
           };
         };
         quic = true;
@@ -337,10 +270,10 @@ rec {
         http3 = true;
         locations = {
           "/" = {
-            proxyPass = "https://10.0.5.30:443";
+            proxyPass = "http://10.0.5.30";
           };
           "/.well-known/webfinger" = {
-            proxyPass = "https://10.0.5.30:443";
+            proxyPass = "http://10.0.5.30";
             extraConfig = ''
               if ($args ~* "resource=acct:(.*)@(chaotic.cx|social.garudalinux.org)$") {
                 set $w1 $1;
@@ -359,7 +292,7 @@ rec {
           ${garuda-lib.setRealIpFromConfig}
           ${garuda-lib.nginxReverseProxySettings}
           location ~* .(mp4|webm)$ {
-            proxy_pass https://10.0.5.30:443;
+            proxy_pass http://10.0.5.30;
           }
         '';
         locations = {
@@ -425,7 +358,7 @@ rec {
         http3 = true;
         locations = {
           "/" = {
-            proxyPass = "http://10.0.5.60:8082";
+            proxyPass = "http://10.0.5.50:8082";
           };
         };
         quic = true;
@@ -449,6 +382,31 @@ rec {
             '';
           };
         };
+      };
+      "wiki.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        http3 = true;
+        locations = { "/" = { proxyPass = "http://10.0.5.60:3001"; }; };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "chaotic-backend.garudalinux.org" = {
+        addSSL = true;
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.70:3000";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
       };
       # Default catch-all for unknown domains
       "_" = {

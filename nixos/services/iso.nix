@@ -36,7 +36,7 @@ in
             -v "/var/garuda/buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
             -v "${config.sops.secrets."keypairs/ssh_team/private".path}:/root/.ssh/id_ed25519" \
             -v "${config.sops.secrets."cloudflare/r2_rclone".path}:/root/.config/rclone/rclone.conf" \
-            -e "TELEGRAM=tgram://''${TELEGRAM_TOKEN}/${garuda-lib.secrets.telegram.updates_channel}"
+            -e "TELEGRAM=tgram://''${TELEGRAM_TOKEN}/${garuda-lib.secrets.telegram.updates_channel}" \
             "$(docker build -q "${sources.buildiso}")" auto-noweekly
         '';
         Restart = "on-failure";

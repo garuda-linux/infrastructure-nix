@@ -70,11 +70,41 @@
         ];
       };
     };
+    nat.forwardPorts = [
+      {
+        # web-front (HTTP)
+        destination = "10.0.5.10:80";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "tcp";
+        sourcePort = 80;
+      }
+      {
+        # web-front (HTTPS)
+        destination = "10.0.5.10:443";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "tcp";
+        sourcePort = 443;
+      }
+      {
+        # web-front (HTTPS)
+        destination = "10.0.5.10:443";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "udp";
+        sourcePort = 443;
+      }
+      {
+        # web-front (HTTPS)
+        destination = "10.0.5.10:443";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "udp";
+        sourcePort = 443;
+      }
+    ];
     firewall.trustedInterfaces = [ "br0" ];
   };
 
   # Can't set this inside the containers
-  services.redis.vmOverCommit = true;
+  boot.kernel.sysctl."vm.overcommit_memory" = "1";
 
   # Container config
   services.garuda-nspawn = {
@@ -138,7 +168,7 @@
             "compose" = {
               hostPath = "/data_1/containers/docker-proxied/";
               isReadOnly = false;
-              mountPoint = "/var/garuda/compose-runner/proxied";
+              mountPoint = "/var/garuda/compose-runner/docker-proxied";
             };
           };
         };
@@ -159,9 +189,9 @@
         ipAddress = "10.0.5.40";
         needsDocker = true;
       };
-
       mastodon = {
         config = import ./aerialis/mastodon.nix;
+        needsDocker = true;
         extraOptions = {
           bindMounts = {
             "mastodon" = {
@@ -169,12 +199,10 @@
               isReadOnly = false;
               mountPoint = "/var/lib/mastodon";
             };
-          };
-          bindMounts = {
-            "redis" = {
-              hostPath = "/data_1/containers/mastodon/redis/";
+            "compose" = {
+              hostPath = "/data_1/containers/mastodon/compose";
               isReadOnly = false;
-              mountPoint = "/var/lib/redis-mastodon";
+              mountPoint = "/var/garuda/compose-runner/mastodon";
             };
           };
         };
@@ -198,7 +226,7 @@
           forwardPorts = [
             {
               containerPort = 22;
-              hostPort = 229;
+              hostPort = 220;
               protocol = "tcp";
             }
             {
@@ -228,7 +256,7 @@
           forwardPorts = [
             {
               containerPort = 22;
-              hostPort = 222;
+              hostPort = 210;
               protocol = "tcp";
             }
           ];
@@ -285,9 +313,10 @@
         "/data_1/dockerdata"
       ];
       paths = [
-        "/data_1/persistent/etc/ssh"
         "/data_1/containers"
+        "/data_1/persistent/etc/ssh"
         "/data_2/backup/nextcloud-aio/"
+        "/data_2/containers/chaotic-backend/chaotic/database"
         "/data_2/containers/mastodon"
         "/data_2/containers/postgres"
       ];

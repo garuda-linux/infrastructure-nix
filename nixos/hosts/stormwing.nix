@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   imports = [
     ../modules
@@ -73,10 +78,38 @@
       # In general, SSH ports should not be here.
       {
         # chaotic-v4 (SSH)
-        destination = "10.0.5.140:22";
+        destination = "10.0.5.10:22";
         loopbackIPs = [ "157.180.57.51" ];
         proto = "tcp";
         sourcePort = 210;
+      }
+      {
+        # web-front (HTTP)
+        destination = "10.0.5.40:80";
+        loopbackIPs = [ "157.180.57.51" ];
+        proto = "tcp";
+        sourcePort = 80;
+      }
+      {
+        # web-front (HTTPS)
+        destination = "10.0.5.40:443";
+        loopbackIPs = [ "157.180.57.51" ];
+        proto = "tcp";
+        sourcePort = 443;
+      }
+      {
+        # web-front (HTTPS)
+        destination = "10.0.5.40:443";
+        loopbackIPs = [ "157.180.57.51" ];
+        proto = "udp";
+        sourcePort = 443;
+      }
+      {
+        # web-front (HTTPS)
+        destination = "10.0.5.40:443";
+        loopbackIPs = [ "157.180.57.51" ];
+        proto = "udp";
+        sourcePort = 443;
       }
     ];
     firewall.trustedInterfaces = [ "br0" ];
@@ -105,11 +138,6 @@
               hostPath = "/data_1/containers/chaotic-v4/chaotic";
               isReadOnly = false;
               mountPoint = "/var/garuda/compose-runner/chaotic-v4";
-            };
-            "redis" = {
-              hostPath = "/data_1/containers/chaotic-v4/redis";
-              isReadOnly = false;
-              mountPoint = "/var/lib/redis-chaotic/";
             };
             "syncthing" = {
               hostPath = "/data_1/containers/chaotic-v4/syncthing";
@@ -235,13 +263,24 @@
           forwardPorts = [
             {
               containerPort = 22;
-              hostPort = 222;
+              hostPort = 240;
               protocol = "tcp";
             }
           ];
         };
         ipAddress = "10.0.5.40";
       };
+    };
+  };
+
+  # Monitor a few services of the containers
+  services = {
+    netdata.configDir = {
+      "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
+        jobs:
+          - name: nginx
+            path: /data_2/containers/web-front/nginx/access.log
+      '';
     };
   };
 

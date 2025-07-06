@@ -91,7 +91,7 @@ in
             ExecStart = pkgs.writeShellScript ("execstart-compose-runner-" + name) ''
               set -e
               mkdir -p "${statepath}"
-              rsync -a --no-owner --size-only "${output}/" "${statepath}"
+              rsync -a --no-owner --checksum "${output}/" "${statepath}"
               ${optionalString (value.envfile != null) ''
                 cp "${value.envfile}" "${statepath}/.env"
                 chmod 600 "${statepath}/.env"

@@ -22,7 +22,7 @@
 
   # This container is just for compose stuff
   garuda.services.compose-runner.github-runner = {
-    envfile = "/var/garuda/secrets/github-runner.env";
+    envfile = "/var/.github-runner.env";
     source = ../../../compose/github-runner;
   };
   garuda.services.compose-runner.gitlab-runner = {

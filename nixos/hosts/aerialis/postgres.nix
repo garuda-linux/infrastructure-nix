@@ -53,6 +53,10 @@ in
       {
         name = "chaotic-router";
       }
+      {
+        name = "chaotic-aur";
+        ensureDBOwnership = true;
+      }
     ];
     initialScript = pkgs.writeText "backend-initScript" ''
       CREATE USER netdata;
@@ -65,6 +69,8 @@ in
       host all all 10.0.5.1/32 reject
       # Allow connections from the internal network
       host all all 10.0.5.0/24 md5
+      # Allow localhost connections
+      host all all 127.0.0.1/32 md5
       # Block the rest of the internet
       host all all 0.0.0.0/0 reject
     '';
@@ -109,5 +115,5 @@ in
 
   sops.secrets."postgres/pg_admin" = { };
 
-  system.stateVersion = "25.05";
+  system.stateVersion = "23.05";
 }

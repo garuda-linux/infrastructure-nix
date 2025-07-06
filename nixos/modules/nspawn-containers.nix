@@ -165,18 +165,6 @@ in
                 ed25519 = "/etc/ssh.host/ssh_host_ed25519_key";
                 rsa = "/etc/ssh.host/ssh_host_rsa_key";
               };
-
-              config.services.openssh.hostKeys = [
-                {
-                  bits = 4096;
-                  path = garuda-lib.sshkeys.rsa;
-                  type = "rsa";
-                }
-                {
-                  path = garuda-lib.sshkeys.ed25519;
-                  type = "ed25519";
-                }
-              ];
             }
             ++ lib.lists.optional (garuda-lib.unifiedUID && cont.defaults) {
               config.garuda-lib.unifiedUID = true;
