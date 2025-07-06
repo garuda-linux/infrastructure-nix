@@ -21,14 +21,15 @@ services:
       CAUR_USERS: ${CAUR_USERS:-?err}
       NODE_ENV: production
       PG_DATABASE: chaotic-aur
-      PG_HOST: 10.0.5.50
+      PG_HOST: 10.0.5.20
       PG_PASSWORD: ${PG_PASSWORD:-?err}
       PG_USER: chaotic-aur
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
-      REDIS_SSH_HOST: 10.0.5.140
+      REDIS_SSH_HOST: host.docker.internal
       REDIS_SSH_USER: package-deployer
-    ports: ['3000:3000']
-    volumes: ['./sshkey:/app/sshkey']
+    ports: ["3000:3000"]
+    volumes: ["${SSH_KEY:-?err}:/app/sshkey"]
+    extra_hosts: ["host.docker.internal:host-gateway"]
   autoheal:
     image: willfarrell/autoheal:latest
     container_name: autoheal

@@ -129,6 +129,9 @@
     };
   };
 
+  # This costs way too much time during reboot
+  boot.loader.timeout = 1;
+
   # Environment
   environment = {
     # Fix for Ghostty acting weird (https://ghostty.org/docs/help/terminfo)

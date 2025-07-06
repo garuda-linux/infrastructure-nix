@@ -73,6 +73,9 @@
     firewall.trustedInterfaces = [ "br0" ];
   };
 
+  # Can't set this inside the containers
+  services.redis.vmOverCommit = true;
+
   # Container config
   services.garuda-nspawn = {
     bridgeInterface = "br0";
