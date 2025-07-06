@@ -104,13 +104,6 @@
         proto = "udp";
         sourcePort = 443;
       }
-      {
-        # web-front (HTTPS)
-        destination = "10.0.5.40:443";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "udp";
-        sourcePort = 443;
-      }
     ];
     firewall.trustedInterfaces = [ "br0" ];
   };
