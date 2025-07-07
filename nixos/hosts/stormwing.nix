@@ -201,6 +201,11 @@
               isReadOnly = false;
               mountPoint = "/etc/ssh";
             };
+            "github-cache" = {
+              hostPath = "/data_1/cache/github-runner";
+              isReadOnly = false;
+              mountPoint = "/var/cache/github-runner";
+            };
           };
           forwardPorts = [
             {
@@ -225,6 +230,16 @@
               hostPath = "/data_2/iso/";
               isReadOnly = false;
               mountPoint = "/var/garuda/buildiso";
+            };
+            "cache" = {
+              hostPath = "/data_1/cache/iso-runner";
+              isReadOnly = false;
+              mountPoint = "/var/garuda/buildiso/cache";
+            };
+            "pacman_cache" = {
+              hostPath = "/data_1/cache/pacman-cache";
+              isReadOnly = false;
+              mountPoint = "/var/cache/pacman/pkg";
             };
           };
           forwardPorts = [
