@@ -279,7 +279,7 @@ command.</p>
 │  │  └── static
 │  └── services
 │     ├── chaotic
-│     ├── docker-compose-runner
+│     ├── compose-runner
 │     └── monitoring
 ├── playbooks
 ├── scripts
@@ -423,7 +423,7 @@ The remaining ones can be updated by changing their version in the corresponding
 running <code>deploy</code> &amp; <code>apply</code>.
 If containers are to be updated manually, this can be achieved by connecting to the host,
 running <code>nixos-container root-login $containername</code>, and executing:</p>
-<pre><code class="language-sh">cd /var/garuda/docker-compose-runner/$name/ # replace $name with the actual docker-compose.yml or autocomplete via tab
+<pre><code class="language-sh">cd /var/garuda/compose-runner/$name/ # replace $name with the actual docker-compose.yml or autocomplete via tab
 sudo docker compose pull
 sudo docker compose up -d
 </code></pre>
@@ -459,7 +459,7 @@ or use <a href="https://github.com/aksiksi/compose2nix">compose2nix</a>
 to transform an existing <code>docker-compose.yml</code> to valid Nix expressions.
 Using native Nix expressions has the advantage of being more flexible and easier to maintain,
 as well as taking advantage of Systemd service management, e.g., by restarting crashed containers.
-This was not working reliably with our <code>docker-compose-runner</code> module, which simply started
+This was not working reliably with our <code>compose-runner</code> module, which simply started
 existing <code>docker-compose.yml</code> files.
 In case secrets are required, one needs to provide them via <code>.env</code> files and
 the <code>virtualisation.oci-containers.containers.environmentFiles</code> key.</p>
@@ -521,7 +521,7 @@ the <code>virtualisation.oci-containers.containers.environmentFiles</code> key.<
 <li><a href="https://start.garudalinux.org">Startpage</a>
 <ul>
 <li>This one needs to be updated by pulling latest changes from the repository. It lives inside the <code>docker</code>
-nixos-container, <code>/var/garuda/docker-compose-runner/docker/startpage</code>.</li>
+nixos-container, <code>/var/garuda/compose-runner/docker/startpage</code>.</li>
 </ul>
 </li>
 <li><a href="https://garudalinux.org">Website</a>
@@ -561,13 +561,16 @@ accounts</li>
 <h2 id="admins"><a class="header" href="#admins">Admins</a></h2>
 <p>Admins have root access to all servers and may therefore change everything.
 They are responsible for the well-being of the infrastructure and its development.</p>
-<pre><code class="language-nix">    */
-    users.nico = {
-      extraGroups = [ "wheel" "docker" "chaotic_op" ];
+<pre><code class="language-nix">    users.nico = {
+      extraGroups = [
+        "wheel"
+        "docker"
+        "chaotic_op"
+      ];
       home = "/home/nico";
       isNormalUser = true;
       openssh.authorizedKeys.keyFiles = [ keys.nico ];
-      hashedPasswordFile = "/var/garuda/secrets/pass/nico";
+      hashedPasswordFile = config.sops.secrets."passwords/nico".path;
       uid = lib.mkIf garuda-lib.unifiedUID 1001;
     };
     users.sgs = {
@@ -575,39 +578,39 @@ They are responsible for the well-being of the infrastructure and its developmen
       home = "/home/sgs";
       isNormalUser = true;
       openssh.authorizedKeys.keys = [
-        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDxBY8TX0iEQkf3Bym+3XVlrk8OLOwHOrj7Uy+WxjncOkkutyZ1WsY9liF4j9yjptyQG7Lx8OM8q44NE6+Rk1OXJXMF7CZ4Jq/WvMVnh2zKyNnF8wHBcspsAdG90wCxo6OmNpnY/rRRlNwwnore7raF2PrERtSlsEvLsUgvspYQ8cnLwerJP43QeETlpE1oR0FrbXWQet0I63Ky6UDEp07x0yee21VHnAG74rjGeFGwJBmCPSxnfGVNhCaR0zyu9+hh222liBrlilYm8nqLlsYGZCXiVdOxXJbBy89EVpHds7Lutf+TAYwsPGZf7U4k+g2Jx8N0JHXyzVZa0zS+I48+tqBBflEOqU9oEfGuz4cU/qWys5soLcRX2p9td+RF3OEdBKlTW4UYsINJUri6QSEUrsGaXqQZy8Ds2FBdUpb4pmFVlo9+4qRouiI80a5xVa7a1E5eS5xK5BzWH4fNg5SqtT5L9i2i1ocZp7FA0oa+ixnXNiC1umPZaY/9s+5fh1s= sgs-linux@shell.sf.net"
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDxBY8TX0iEQkf3Bym+3XVlrk8OLOwHOrj7Uy+WxjncOkkutyZ1WsY9liF4j9yjptyQG7Lx8OM8q44NE6+Rk1OXJXMF7CZ4Jq/WvMVnh2zKyNnF8wHBcspsAdG90wCxo6OmNpnY/rRRlNwwnore7raF2PrERtSlsEvLsUgvspYQ8cnLwerJP43QeETlpE1oR0FrbXWQet0I63Ky6UDEp07x0yee21VHnAG74rjGeFGwJBmCPSxnfGVNhCaR0zyu9+hh222liBrlilYm8nqLlsYGZCXiVdOxXJbBy89EVpHds7Lutf+TAYwsPGZf7U4k+g2Jx8N0JHXyzVZa0zS+I48+tqBBflEOqU9oEfGuz4cU/qWys5soLcRX2p9td+RF3OEdBKlTW4UYsINJUri6QSEUrsGaXqQZy8Ds2FBdUpb4pmFVlo9+4qRouiI80a5xVa7a1E5eS5xK5BzWH4fNg5SqtT5L9i2i1ocZp7FA0oa+ixnXNiC1umPZaY/9s+5fh1s= sgs-linux@shell.sf.net" # pragma: allowlist secret,
       ];
-      hashedPasswordFile = "/var/garuda/secrets/pass/sgs";
+      hashedPasswordFile = config.sops.secrets."passwords/sgs".path;
       uid = lib.mkIf garuda-lib.unifiedUID 1002;
     };
     users.tne = {
-      extraGroups = [ "wheel" "docker" "chaotic_op" ];
+      extraGroups = [
+        "wheel"
+        "docker"
+        "chaotic_op"
+      ];
       home = "/home/tne";
       isNormalUser = true;
       openssh.authorizedKeys.keyFiles = [ keys.tne ];
-      hashedPasswordFile = "/var/garuda/secrets/pass/tne";
+      hashedPasswordFile = config.sops.secrets."passwords/tne".path;
       uid = lib.mkIf garuda-lib.unifiedUID 1003;
     };
-    /*
 </code></pre>
 <h2 id="maintainers"><a class="header" href="#maintainers">Maintainers</a></h2>
 <p>Maintainers have restricted access, which allows them to use <code>buildiso</code> to build new ISO files via the <code>iso-runner</code>
 container.</p>
-<pre><code class="language-nix">    */
-    users.frank = {
+<pre><code class="language-nix">    users.frank = {
       home = "/home/frank";
       isNormalUser = true;
       openssh.authorizedKeys.keyFiles = lib.mkIf config.services.garuda-iso.enable [ keys.frank ];
       shell = lib.mkIf (!config.services.garuda-iso.enable) "${pkgs.util-linux}/bin/nologin";
       uid = lib.mkIf garuda-lib.unifiedUID 1007;
     };
-    /*
 </code></pre>
 <h2 id="chaotic-aur-maintainers"><a class="header" href="#chaotic-aur-maintainers">Chaotic-AUR maintainers</a></h2>
 <p>Chaotic-AUR maintainers have access to the builder containers of our infrastructure.
 They may operate the repository by doing all kinds of packaging-related tasks such as adding or removing those.</p>
-<pre><code class="language-nix">    */
-    users.technetium = {
+<pre><code class="language-nix">    users.technetium = {
       extraGroups = lib.mkIf garuda-lib.chaoticUsers [ "chaotic_op" ];
       home = "/home/technetium";
       isNormalUser = true;
@@ -631,7 +634,6 @@ They may operate the repository by doing all kinds of packaging-related tasks su
       shell = lib.mkIf (!garuda-lib.chaoticUsers) "${pkgs.util-linux}/bin/nologin";
       uid = lib.mkIf garuda-lib.unifiedUID 1006;
     };
-    /*
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="immortalis-hetzner-dedicated"><a class="header" href="#immortalis-hetzner-dedicated">immortalis (Hetzner dedicated)</a></h2>
 <h3 id="general"><a class="header" href="#general">General</a></h3>
@@ -676,12 +678,12 @@ connected via SSH using the following ports:</p>
 <li>227: <code>iso-runner</code></li>
 <li>228: <code>web-front</code></li>
 <li>229: <code>postgres</code> (access the database in <code>127.0.0.1</code> via <code>ssh -p 229 $user@116.202.208.112 -L 5432:127.0.0.1:5432</code>)</li>
-<li>400: <code>chaotic-v4</code></li>
+<li>210: <code>chaotic-v4</code></li>
 </ul>
 <h3 id="docker-containers"><a class="header" href="#docker-containers">Docker containers</a></h3>
 <p>Some services not packaged in NixOS or are easier to deploy this way are serviced via the Docker engine. This contains
 services like Piped, Whoogle, and Matrix. We use a
-custom <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/garuda/services/docker-compose-runner/docker-compose-runner.nix?ref_type=heads">NixOS module</a>
+custom <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/garuda/services/compose-runner/compose-runner.nix?ref_type=heads">NixOS module</a>
 to deploy those with the rest of the system. Secrets are handled via our secret management which consists of a git
 submodule <code>secret</code> (private repo with <code>ansible-vault</code> encrypted files) and <code>garuda-lib</code> (see secrets section). Those
 contain a <code>docker-compose</code> directory in which the <code>.env</code> files for the <code>docker-compose.yml</code> are stored.</p>
@@ -708,333 +710,22 @@ if <code>tailscale up --accept-routes</code> was used to set up the service.</p>
 In this case, re-running the command will fix the issue.
 It is unclear, what the exact reason is, yet.</p>
 <h3 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h3>
-<pre><code class="language-nix">{ garuda-lib
-, pkgs
-, config
-, ...
-}: {
-  imports = [
-    ../modules
-    ./immortalis/containers.nix
-    ./immortalis/hardware-configuration.nix
-  ];
-
-  # Increase /tmp &amp; /run size to make better use of RAM
-  boot = {
-    # Latest seems to be buggy currently (2025-05-23)
-    kernelPackages = pkgs.linuxPackages;
-    loader.systemd-boot.enable = true;
-    runSize = "50%";
-    tmp = {
-      tmpfsSize = "95%";
-      useTmpfs = true;
-    };
-  };
-
-  # Network configuration with a bridge interface
-  networking = {
-    defaultGateway = "116.202.208.65";
-    defaultGateway6 = {
-      address = "fe80::1";
-      interface = "eth0";
-    };
-    hostName = "immortalis";
-    interfaces = {
-      "eth0" = {
-        ipv4.addresses = [
-          {
-            address = "116.202.208.112";
-            prefixLength = 26;
-          }
-        ];
-        ipv6.addresses = [
-          # Random outgoing
-          {
-            address = "2a01:4f8:2200:30ac:cf2d:7d73:eddf:8871";
-            prefixLength = 64;
-          }
-          {
-            address = "2a01:4f8:2200:30ac:5b38:dbde:e5a7:91b2";
-            prefixLength = 64;
-          }
-          {
-            address = "2a01:4f8:2200:30ac:fa33:0d97:0755:6833";
-            prefixLength = 64;
-          }
-          {
-            address = "2a01:4f8:2200:30ac:8f15:81f6:355c:d9d6";
-            prefixLength = 64;
-          }
-          {
-            address = "2a01:4f8:2200:30ac:4436:e5e7:2236:0d77";
-            prefixLength = 64;
-          }
-          {
-            address = "2a01:4f8:2200:30ac:1ea4:1794:1963:b8da";
-            prefixLength = 64;
-          }
-          {
-            address = "2a01:4f8:2200:30ac:5628:7e9f:d8ec:544d";
-            prefixLength = 64;
-          }
-          {
-            address = "2a01:4f8:2200:30ac:d830:ce99:e2b7:3e43";
-            prefixLength = 64;
-          }
-          {
-            address = "2a01:4f8:2200:30ac:edc9:2d08:2b32:e532";
-            prefixLength = 64;
-          }
-          {
-            address = "2a01:4f8:2200:30ac:a833:0fd7:29d4:5309";
-            prefixLength = 64;
-          }
-        ];
-      };
-    };
-    # Specify these here to allow containers to access
-    # our services from the internal network via NAT reflection
-    nat.forwardPorts = [
-      {
-        # web-front (HTTP)
-        destination = "10.0.5.10:80";
-        loopbackIPs = [ "116.202.208.112" ];
-        proto = "tcp";
-        sourcePort = 80;
-      }
-      {
-        # web-front (HTTPS)
-        destination = "10.0.5.10:443";
-        loopbackIPs = [ "116.202.208.112" ];
-        proto = "tcp";
-        sourcePort = 443;
-      }
-      {
-        # web-front (HTTPS)
-        destination = "10.0.5.10:443";
-        loopbackIPs = [ "116.202.208.112" ];
-        proto = "udp";
-        sourcePort = 443;
-      }
-      {
-        # web-front (Matrix)
-        destination = "10.0.5.10:8448";
-        loopbackIPs = [ "116.202.208.112" ];
-        proto = "tcp";
-        sourcePort = 8448;
-      }
-      # Here because we need to take advantage of NAT reflection.
-      # In general, SSH ports should not be here.
-      {
-        # chaotic-v4 (SSH)
-        destination = "10.0.5.140:22";
-        loopbackIPs = [ "116.202.208.112" ];
-        proto = "tcp";
-        sourcePort = 400;
-      }
-    ];
-    firewall.trustedInterfaces = [ "br0" ];
-  };
-
-  # OpenSSH on another port to keep Chaotic's main node working
-  services.openssh.ports = [ 666 ];
-
-  # Make use of all threads!
-  security.allowSimultaneousMultithreading = true;
-
-  # Raise limits to support many containers
-  # (from LXC's recommendedSysctlSettings)
-  boot.kernel.sysctl = {
-    "fs.inotify.max_user_instances" = 1048576;
-    "fs.inotify.max_user_watches" = 1048576;
-    "kernel.dmesg_restrict" = 1;
-    "kernel.keys.maxkeys" = 2000;
-    "kernel.pid_max" = 4194303;
-    "net.ipv4.neigh.default.gc_thresh3" = 8192;
-    "net.ipv6.neigh.default.gc_thresh3" = 8192;
-  };
-
-  # Improve nspawn container performance since we grant all capabilities anyway
-  # https://github.com/systemd/systemd/issues/18370#issuecomment-768645418
-  environment.variables.SYSTEMD_SECCOMP = "0";
-
-  # Custom tailscale configuration to advertise our bridge's subnet route
-  systemd.services.tailscale-autoconnect.script = with pkgs; ''
-    sleep 2
-    status="$(${tailscale}/bin/tailscale status -json | ${jq}/bin/jq -r .BackendState)"
-    if [ $status = "Running" ]; then
-      exit 0
-    fi
-    ${tailscale}/bin/tailscale up --authkey ${garuda-lib.secrets.tailscale.authkey} \
-      --advertise-routes=10.0.5.0/24
-  '';
-
-  # We want to have same UID's in all containers to allow sharing home directories
-  garuda-lib.unifiedUID = true;
-
-  # Monitor a few services of the containers
-  services = {
-    netdata.configDir = {
-      "go.d/postgres.conf" = pkgs.writeText "postgres.conf" ''
-        jobs:
-          - name: postgres
-            dsn: 'postgres://netdata:netdata@10.0.5.50:5432/'
-      '';
-      "go.d/squidlog.conf" = pkgs.writeText "squidlog.conf" ''
-        jobs:
-          - name: squid
-            path: /var/log/squid/access.log
-            log_type: csv
-            csv_config:
-              format: '- resp_time client_address result_code resp_size req_method - - hierarchy mime_type'
-      '';
-      "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
-        jobs:
-          - name: nginx
-            path: /var/log/nginx/access.log
-      '';
-    };
-    smartd = {
-      enable = true;
-      extraOptions = [ "-A /var/log/smartd/" "--interval=600" ];
-    };
-  };
-
-  # Fix permissions of nginx log files to allow Netdata to read it (gets reset frequently)
-  system.activationScripts.netdata = ''chown 60:netdata -R /var/log/nginx'';
-
-  # Backup configurations to Hetzner storage box
-  programs.ssh.macs = [ "hmac-sha2-512" ];
-  services.borgbackup.jobs = {
-    backupToHetzner = {
-      compression = "auto,zstd";
-      doInit = true;
-      encryption = {
-        mode = "repokey-blake2";
-        passCommand = "cat /var/garuda/secrets/backup/repo_key";
-      };
-      environment = {
-        BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_immortalis -p 23";
-      };
-      exclude = [ "/data_1/dockercache" "/data_1/dockerdata" ];
-      paths = [ "/data_1" ];
-      prune.keep = {
-        within = "1d";
-        daily = 3;
-        weekly = 2;
-        monthly = 2;
-      };
-      repo = "u342919@u342919.your-storagebox.de:./immortalis";
-      startAt = "daily";
-    };
-  };
-
-  # A proxy server making use of our IPv6 IP addresses
-  # traffic sent through the proxy is only allowing IPv6 connections
-  services.squid = {
-    enable = true;
-    extraConfig = ''
-      forwarded_for delete
-      dns_nameservers 2606:4700:4700::1111
-
-      acl tenth random 1/10
-      acl ninth random 1/9
-      acl eighth random 1/8
-      acl seventh random 1/7
-      acl sixth random 1/6
-      acl fifth random 1/5
-      acl fourth random 1/4
-      acl third random 1/3
-      acl half random 1/2
-
-      # Invalid IP
-      tcp_outgoing_address 10.254.254.254
-      tcp_outgoing_address 2a01:4f8:2200:30ac:cf2d:7d73:eddf:8871 tenth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:5b38:dbde:e5a7:91b2 ninth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:fa33:0d97:0755:6833 eighth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:8f15:81f6:355c:d9d6 seventh
-      tcp_outgoing_address 2a01:4f8:2200:30ac:4436:e5e7:2236:0d77 sixth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:1ea4:1794:1963:b8da fifth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:5628:7e9f:d8ec:544d fourth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:d830:ce99:e2b7:3e43 third
-      tcp_outgoing_address 2a01:4f8:2200:30ac:edc9:2d08:2b32:e532 half
-      tcp_outgoing_address 2a01:4f8:2200:30ac:a833:0fd7:29d4:5309
-
-      # Invalid IP
-      udp_outgoing_address 10.254.254.254
-      udp_outgoing_address 2a01:4f8:2200:30ac:cf2d:7d73:eddf:8871 tenth
-      udp_outgoing_address 2a01:4f8:2200:30ac:5b38:dbde:e5a7:91b2 ninth
-      udp_outgoing_address 2a01:4f8:2200:30ac:fa33:0d97:0755:6833 eighth
-      udp_outgoing_address 2a01:4f8:2200:30ac:8f15:81f6:355c:d9d6 seventh
-      udp_outgoing_address 2a01:4f8:2200:30ac:4436:e5e7:2236:0d77 sixth
-      udp_outgoing_address 2a01:4f8:2200:30ac:1ea4:1794:1963:b8da fifth
-      udp_outgoing_address 2a01:4f8:2200:30ac:5628:7e9f:d8ec:544d fourth
-      udp_outgoing_address 2a01:4f8:2200:30ac:d830:ce99:e2b7:3e43 third
-      udp_outgoing_address 2a01:4f8:2200:30ac:edc9:2d08:2b32:e532 half
-      udp_outgoing_address 2a01:4f8:2200:30ac:a833:0fd7:29d4:5309
-
-      # This does not rotate the logs, but asks squid to reopen the log file so that logrotate can rotate it
-      logfile_rotate 0
-    '';
-    proxyAddress = "10.0.5.1";
-  };
-  systemd.services.squid = {
-    serviceConfig = {
-      Restart = "always";
-      RestartSec = 10;
-      # Shut off all logging but level 1 errors as we get spamming a lot due to
-      # not being able to use our invalid address 10.254.254.254
-      LogLevelMax = 1;
-    };
-    startLimitIntervalSec = 80;
-    startLimitBurst = 6;
-  };
-  services.logrotate.settings.squid = {
-    files = "/var/log/squid/*.log";
-    frequency = "daily";
-    su = "squid squid";
-    rotate = 5;
-    compress = true;
-    delaycompress = true;
-    postrotate = "${config.systemd.package}/bin/systemctl kill --signal=SIGUSR1 squid";
-  };
-
-  # Can't really instantly remove this, need to find an alternative first
-  nixpkgs.config.permittedInsecurePackages = [ "squid-7.0.1" ];
-
-  # Adapt Nix to our core-count
-  nix.settings.max-jobs = 8;
-
-  system.stateVersion = "23.05";
-}
+<pre><code class="language-nix">{{#include ../../../nixos/hosts/immortalis.nix}}
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="docker"><a class="header" href="#docker">docker</a></h1>
 <h2 id="general-1"><a class="header" href="#general-1">General</a></h2>
 <p>This container is used to run regular Docker containers.
-Recently, the <code>docker-compose-runner</code> module has been replaced by native Nix expressions.</p>
+Recently, the <code>compose-runner</code> module has been replaced by native Nix expressions.</p>
 <h2 id="nextcloud-aio"><a class="header" href="#nextcloud-aio">Nextcloud AIO</a></h2>
 <p>This container also runs a Nextcloud AIO master container, which administrates its containers by itself.
-Consult its <a href="https://github.com/nextcloud/all-in-one">extensive documentation for more information</a>.
+Consult its <a href="https://github.com/nextcloud/docker">extensive documentation for more information</a>.
 Since this container requires a Nextcloud volume at a fixed place, without being able to change it, it is not
 included in the regular data directory.</p>
 <p>Instead, backups are regularly performed via the inbuilt backup function in the admin interface.
-They can be found at <code>/var/garuda/docker-compose-runner/all-in-one/nextcloud-aio</code>
+They can be found at <code>/var/garuda/compose-runner/docker/nextcloud-aio</code>
 and are included in the offsite system backups.</p>
 <h2 id="nix-expression-1"><a class="header" href="#nix-expression-1">Nix expression</a></h2>
-<pre><code class="language-nix">{ garuda-lib
-, sources
-, ...
-}: {
-  imports = sources.defaultModules ++ [ ../modules ];
-
-  # This container is just for docker-compose stuff
-  services.docker-compose-runner.all-in-one = {
-    envfile = garuda-lib.secrets.docker-compose.all-in-one;
-    source = ../../docker-compose/all-in-one;
-  };
-
-  system.stateVersion = "23.05";
-}
+<pre><code class="language-nix">{{#include ../../../nixos/hosts/docker.nix}}
 </code></pre>
 <h3 id="docker-containers-1"><a class="header" href="#docker-containers-1">Docker containers</a></h3>
 <pre><code class="language-nix">{{#include ../../../nixos/hosts/docker/docker-compose.nix}}
@@ -1047,30 +738,7 @@ and are included in the offsite system backups.</p>
 <pre><code class="language-bash">sudo systemctl restart docker-compose-proxied-root
 </code></pre>
 <h2 id="nix-expression-2"><a class="header" href="#nix-expression-2">Nix expression</a></h2>
-<pre><code class="language-nix">{ garuda-lib
-, sources
-, ...
-}: {
-  imports = sources.defaultModules ++ [ ../modules ];
-
-  # This container runs proxied docker containers
-  services.docker-compose-runner.proxied = {
-    envfile = garuda-lib.secrets.docker-compose.proxied;
-    source = ../../docker-compose/proxied;
-  };
-
-  # Let Docker use squid as outgoig proxy
-  # Fails to pull images if *.docker.io is not excluded from proxy
-  systemd.services.docker = {
-    environment = {
-      HTTPS_PROXY = "http://10.0.5.1:3128";
-      HTTP_PROXY = "http://10.0.5.1:3128";
-      NO_PROXY = "localhost,127.0.0.1,*.docker.io,ghcr.io";
-    };
-  };
-
-  system.stateVersion = "23.05";
-}
+<pre><code class="language-nix">{{#include ../../../nixos/hosts/docker-proxied.nix}}
 </code></pre>
 <h3 id="docker-containers-2"><a class="header" href="#docker-containers-2">Docker containers</a></h3>
 <pre><code class="language-nix">{{#include ../../../nixos/hosts/docker-proxied/docker-compose.nix}}
@@ -1084,18 +752,7 @@ scripts are provided to handle the container, not much is to be seen here.</p>
 <li><a href="https://github.com/discourse/discourse_docker">Discourse Docker</a></li>
 </ul>
 <h2 id="nix-expression-3"><a class="header" href="#nix-expression-3">Nix expression</a></h2>
-<pre><code class="language-nix">{ sources, ... }: {
-  imports = sources.defaultModules ++ [ ../modules ];
-
-  # Enable Docker since we use the official Docker image in /var/discourse
-  virtualisation.docker.enable = true;
-
-  # Open required port
-  networking.firewall.allowedTCPPorts = [ 80 ];
-
-  system.stateVersion = "23.05";
-}
-
+<pre><code class="language-nix">{{#include ../../../nixos/hosts/forum.nix}}
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="github-runner"><a class="header" href="#github-runner">github-runner</a></h1>
 <h2 id="general-4"><a class="header" href="#general-4">General</a></h2>
@@ -1109,83 +766,7 @@ on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortali
 </code></pre>
 <p>Watchtower additionally keeps the containers up to date.</p>
 <h2 id="nix-expression-4"><a class="header" href="#nix-expression-4">Nix expression</a></h2>
-<pre><code class="language-nix">{ keys
-, ...
-}: {
-  # No default modules, untrusted container!
-  # imports = sources.defaultModules ++ [
-  #   ./garuda/garuda.nix
-  # ];
-
-  imports = [
-    ../modules/hardening.nix
-    ../modules/motd.nix
-    ../services/docker-compose-runner/docker-compose-runner.nix
-  ];
-
-  # Common Docker configurations
-  virtualisation.docker = {
-    autoPrune.enable = true;
-    autoPrune.flags = [ "-a" ];
-  };
-
-  # This container is just for docker-compose stuff
-  services.docker-compose-runner.github-runner = {
-    envfile = "/var/garuda/secrets/github-runner.env";
-    source = ../../docker-compose/github-runner;
-  };
-  services.docker-compose-runner.gitlab-runner = {
-    source = ../../docker-compose/gitlab-runner;
-  };
-
-  # Enable SSH
-  services.openssh.enable = true;
-
-  # No custom users - only Pedro and root via nixos-container root-login
-  users = {
-    allowNoPasswordLogin = true;
-    mutableUsers = false;
-    users.pedrohlc = {
-      home = "/home/pedrohlc";
-      isNormalUser = true;
-      openssh.authorizedKeys.keyFiles = [ keys.pedrohlc ];
-    };
-  };
-
-  # Make Pedro god here
-  nix.settings.trusted-users = [ "pedrohlc" ];
-  security.sudo.extraRules = [
-    {
-      users = [ "pedrohlc" ];
-      commands = [
-        {
-          command = "ALL";
-          options = [ "NOPASSWD" ];
-        }
-      ];
-    }
-  ];
-
-  # OOM prevention
-  systemd.oomd = {
-    enable = true; # This is actually the default, anyways...
-    enableSystemSlice = true;
-    enableUserSlices = true;
-  };
-
-  networking.firewall = {
-    extraCommands = ''
-      iptables -t nat -A PREROUTING -p tcp -d 172.17.0.1 --dport 3128 -j DNAT --to-destination 10.0.5.1:3128
-      iptables -t nat -A POSTROUTING -p tcp -d 172.17.0.1 --dport 3128 -j SNAT --to-source 10.0.5.130
-    '';
-    extraStopCommands = ''
-      iptables -t nat -D PREROUTING -p tcp -d 10.130.0.1 --dport 3128 -j DNAT --to-destination 10.0.5.1:3128
-      iptables -t nat -D POSTROUTING -p tcp -d 10.0.5.1 --dport 3128 -j SNAT --to-source 10.0.5.130
-    '';
-  };
-
-  system.stateVersion = "23.05";
-}
+<pre><code class="language-nix">{{#include ../../../nixos/hosts/github-runner.nix}}
 </code></pre>
 <h3 id="docker-containers-github"><a class="header" href="#docker-containers-github">Docker containers (GitHub)</a></h3>
 <pre><code class="language-nix">{{#include ../../../nixos/hosts/github-runner/github-compose.nix}}
@@ -1197,117 +778,7 @@ on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortali
 <h2 id="general-5"><a class="header" href="#general-5">General</a></h2>
 <p>This container provides our Mastodon instance.</p>
 <h2 id="nix-expression-5"><a class="header" href="#nix-expression-5">Nix expression</a></h2>
-<pre><code class="language-nix">{ lib
-, pkgs
-, sources
-, garuda-lib
-, ...
-}:
-let
-  # https://git.kempkens.io/daniel/dotfiles/src/branch/master/system/nixos/mastodon.nix
-  pkg-base = pkgs.mastodon;
-  pkg-mastodon = pkg-base.overrideAttrs (_: {
-    mastodonModules = pkg-base.mastodonModules.overrideAttrs (oldMods:
-      let
-        tangerine-ui = pkgs.fetchFromGitHub {
-          owner = "nileane";
-          repo = "TangerineUI-for-Mastodon";
-          rev = "v2.3";
-          hash = "sha256-Yl5UOjcp0Q3WpiLgfjQFVVEQs4WlVUSBCS7kuO+39wQ=";
-        };
-      in
-      {
-        pname = "${oldMods.pname}+themes";
-
-        postPatch = ''
-          styleDir=$PWD/app/javascript/styles
-
-          cp -r ${tangerine-ui}/mastodon/app/javascript/styles/* $styleDir
-
-          echo "tangerineui: styles/tangerineui.scss" &gt;&gt;$PWD/config/themes.yml
-          echo "tangerineui-purple: styles/tangerineui-purple.scss" &gt;&gt;$PWD/config/themes.yml
-          echo "tangerineui-cherry: styles/tangerineui-cherry.scss" &gt;&gt;$PWD/config/themes.yml
-          echo "tangerineui-lagoon: styles/tangerineui-lagoon.scss" &gt;&gt;$PWD/config/themes.yml
-        '';
-      });
-
-    nativeBuildInputs = [ pkgs.yq-go ];
-
-    postBuild = ''
-      # Make theme available
-      echo "tangerineui: styles/tangerineui.scss" &gt;&gt;$PWD/config/themes.yml
-      echo "tangerineui-purple: styles/tangerineui-purple.scss" &gt;&gt;$PWD/config/themes.yml
-      echo "tangerineui-cherry: styles/tangerineui-cherry.scss" &gt;&gt;$PWD/config/themes.yml
-      echo "tangerineui-lagoon: styles/tangerineui-lagoon.scss" &gt;&gt;$PWD/config/themes.yml
-
-      yq -i '.en.themes.tangerineui = "Tangerine UI"' $PWD/config/locales/en.yml
-      yq -i '.en.themes.tangerineui-purple = "Tangerine UI (Purple)"' $PWD/config/locales/en.yml
-      yq -i '.en.themes.tangerineui-cherry = "Tangerine UI (Cherry)"' $PWD/config/locales/en.yml
-      yq -i '.en.themes.tangerineui-lagoon = "Tangerine UI (Lagoon)"' $PWD/config/locales/en.yml
-    '';
-  });
-in
-{
-  imports = sources.defaultModules ++ [ ../modules ];
-
-  # Our Mastodon
-  services.mastodon = {
-    configureNginx = true;
-    database = {
-      createLocally = false;
-      host = "10.0.5.50";
-      name = "mastodon";
-      passwordFile = "/var/lib/mastodon/secrets/db-password";
-      user = "mastodon";
-    };
-    enable = true;
-    extraConfig = {
-      "LOCAL_DOMAIN" = "garudalinux.org";
-      "SMTP_DOMAIN" = "social.garudalinux.org";
-      "WEB_DOMAIN" = "social.garudalinux.org";
-    };
-    extraEnvFiles = [ "/var/lib/mastodon/secrets/env" ];
-    localDomain = "social.garudalinux.org";
-    mediaAutoRemove = {
-      enable = true;
-      startAt = "daily";
-      olderThanDays = 14;
-    };
-    package = pkg-mastodon;
-    smtp = {
-      authenticate = true;
-      fromAddress = "noreply@garudalinux.org";
-      host = "mail.garudalinux.net";
-      passwordFile = "/var/lib/mastodon/secrets/smtp-password";
-      port = 587;
-      user = "noreply@garudalinux.org";
-    };
-    streamingProcesses = 16;
-  };
-
-  services.nginx = {
-    virtualHosts."social.garudalinux.org" = {
-      enableACME = lib.mkForce false;
-      useACMEHost = "garudalinux.org";
-      extraConfig = ''
-        ${garuda-lib.nginxReverseProxySettings}
-        real_ip_header X-Real-IP;
-        set_real_ip_from 10.0.5.10;
-      '';
-      locations = {
-        "@proxy" = {
-          proxyWebsockets = lib.mkForce false;
-        };
-        "/api/v1/streaming/" = {
-          proxyWebsockets = lib.mkForce false;
-        };
-      };
-    };
-  };
-
-  system.stateVersion = "23.05";
-}
-
+<pre><code class="language-nix">{{#include ../../../nixos/hosts/mastodon.nix}}
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="mongodb"><a class="header" href="#mongodb">mongodb</a></h1>
 <h2 id="general-6"><a class="header" href="#general-6">General</a></h2>
@@ -1316,46 +787,7 @@ in
 so that the Heroku instance the router runs on can access it easier.</p>
 <p>Access happens via the regular MongoDB port, <code>27017</code> and the domain <code>builds.garudalinux.org</code>.</p>
 <h2 id="nix-expression-6"><a class="header" href="#nix-expression-6">Nix expression</a></h2>
-<pre><code class="language-nix">{ pkgs
-, sources
-, garuda-lib
-, ...
-}:
-{
-  imports = sources.defaultModules ++ [ ../modules ];
-
-  # Our MongoDB database
-  services.mongodb = {
-    bind_ip = "10.0.5.60";
-    enable = true;
-    enableAuth = true;
-    extraConfig = ''
-      net.tls.mode: requireTLS
-      net.tls.certificateKeyFile: /run/credentials/mongodb.service/mongodb.pem
-      net.tls.CAFile: /run/credentials/mongodb.service/ca.crt
-      net.tls.allowConnectionsWithoutCertificates: true
-    '';
-    initialRootPasswordFile = pkgs.writeText "mongodb-initial-password" "yupHasAlreadyBeenChanged";
-    # Prevent hours of waiting for mongodb to be compiled
-    package = pkgs.mongodb-ce;
-    quiet = true;
-  };
-
-  systemd.services.mongodb = {
-    serviceConfig = {
-      LoadCredential = [ "ca.crt:${garuda-lib.secrets.mongodb.CA}" "mongodb.pem:${garuda-lib.secrets.mongodb.pem}" ];
-    };
-  };
-
-  # MongoDB port is being forwarded to this container
-  networking.firewall = { allowedTCPPorts = [ 27017 ]; };
-
-  # Local management
-  environment.systemPackages = [ pkgs.mongosh ];
-
-  system.stateVersion = "24.05";
-}
-
+<pre><code class="language-nix">{{#include ../../../nixos/hosts/mongodb.nix}}
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="postgres"><a class="header" href="#postgres">postgres</a></h1>
 <h2 id="general-7"><a class="header" href="#general-7">General</a></h2>
@@ -1370,117 +802,7 @@ so that the Heroku instance the router runs on can access it easier.</p>
 <p>The admin interface powered by Pgadmin can be accessed <a href="https://pgadmin.garudalinux.net">here</a>.
 Authentication happens via Cloudflare Access.</p>
 <h2 id="nix-expression-7"><a class="header" href="#nix-expression-7">Nix expression</a></h2>
-<pre><code class="language-nix">{ garuda-lib
-, inputs
-, pkgs
-, sources
-, config
-, lib
-, ...
-}:
-let
-  server_config = pkgs.writeText "server-config" ''
-    {
-      "Servers": {
-        "1": {
-          "Name": "Main",
-          "Group": "Garuda",
-          "Username": "pgadmin",
-          "Host": "/var/run/postgresql",
-          "Port": 5432,
-          "SSLMode": "prefer",
-          "MaintenanceDB": "postgres",
-          "PassFile": "/dev/null",
-          "Shared": true,
-          "SharedUsername": "pgadmin"
-        }
-      }
-    }
-  '';
-in
-{
-  imports = sources.defaultModules ++ [ ../modules ];
-
-  # Our Postgres database
-  services.postgresql = {
-    enable = true;
-    ensureDatabases = [
-      "mastodon"
-      "wikijs"
-      "chaotic-aur"
-    ];
-    ensureUsers = [
-      {
-        name = "mastodon";
-        ensureDBOwnership = true;
-      }
-      {
-        name = "wikijs";
-        ensureDBOwnership = true;
-      }
-      {
-        name = "pgadmin";
-        ensureClauses.superuser = true;
-      }
-      {
-        name = "chaotic-router";
-      }
-    ];
-    initialScript = pkgs.writeText "backend-initScript" ''
-      CREATE USER netdata;
-      GRANT pg_monitor TO netdata;
-    '';
-    authentication = lib.mkForce ''
-      local all all peer
-      host chaotic-aur chaotic-router 0.0.0.0/0 scram-sha-256
-      # Reject anything else coming from the outside world somehow someway
-      host all all 10.0.5.1/32 reject
-      # Allow connections from the internal network
-      host all all 10.0.5.0/24 md5
-      # Block the rest of the internet
-      host all all 0.0.0.0/0 reject
-    '';
-    # This is publically accesible now through port 5432, however only the chaotic-router user can access the database through the internet
-    enableTCPIP = true;
-  };
-
-  # Regular backups for our database (every 6h)
-  services.postgresqlBackup = {
-    compression = "zstd";
-    enable = true;
-    location = "/var/garuda/backups/postgres";
-  };
-
-  services.pgadmin = {
-    enable = true;
-    initialEmail = "team@garudalinux.org";
-    initialPasswordFile = garuda-lib.secrets.pgadmin_password;
-    openFirewall = true;
-    settings = {
-      FIXED_BINARY_PATHS = {
-        "pg" = "${config.services.postgresql.package}/bin";
-      };
-      SUPPORT_SSH_TUNNEL = false;
-      AUTHENTICATION_SOURCES = [ "webserver" ];
-      WEBSERVER_REMOTE_USER = "X-Forwarded-User";
-      MASTER_PASSWORD_REQUIRED = false;
-    };
-    package = inputs.nixpkgs-stable.legacyPackages."${pkgs.system}".pgadmin4;
-  };
-
-  systemd.services.pgadmin = {
-    preStart = lib.mkAfter ''
-      EMAIL=${lib.escapeShellArg config.services.pgadmin.initialEmail}
-      FILE=${lib.escapeShellArg server_config}
-      ${config.services.pgadmin.package}/bin/pgadmin4-cli load-servers "$FILE" --user "$EMAIL"
-    '';
-  };
-
-  # Open up ports for Postgres
-  networking.firewall.allowedTCPPorts = [ 5432 ];
-
-  system.stateVersion = "23.05";
-}
+<pre><code class="language-nix">{{#include ../../../nixos/hosts/postgres.nix}}
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="web-front"><a class="header" href="#web-front">web-front</a></h1>
 <h2 id="general-8"><a class="header" href="#general-8">General</a></h2>
@@ -1488,564 +810,7 @@ in
 It also contains a Cloudflared instance,
 which a few services are only being exposed to, instead of being reverse proxied by Nginx itself.</p>
 <h2 id="nix-expression-8"><a class="header" href="#nix-expression-8">Nix expression</a></h2>
-<pre><code class="language-nix">{ garuda-lib
-, lib
-, pkgs
-, sources
-, ...
-}:
-let
-  allowOnlyCloudflared = config: (
-    config // {
-      listen = [
-        {
-          addr = "127.0.0.1";
-          port = 80;
-        }
-      ];
-      extraConfig = (config.extraConfig or "") + ''
-        real_ip_header CF-Connecting-IP;
-        set_real_ip_from 127.0.0.1;
-      '';
-    }
-  );
-  # This is technically unecessary, but safety!
-  # This refers to the Cloudflare service "Cloudflare Access" to allow only specified users to access the service
-  allowOnlyCloudflareZerotrust = base_config:
-    let
-      config = allowOnlyCloudflared base_config;
-    in
-    config // {
-      extraConfig = config.extraConfig + ''
-        ssl_verify_client on;
-        underscores_in_headers off;
-        ssl_client_certificate ${sources.cloudflare-authenticated_origin_pull_ca};
-      '';
-      locations = lib.mapAttrs
-        (_: location: location // {
-          extraConfig = ''
-            if ($http_cf_access_authenticated_user_email = "") {
-                return 403;
-            }
-          '' + (location.extraConfig or "");
-        })
-        config.locations;
-    };
-  generateCloudflaredIngress = virtualHosts:
-    let
-      destination = "http://127.0.0.1:80";
-      toIngress = array: map (host: { name = host; value = destination; }) array;
-      isCloudflared = values: values ? listen &amp;&amp; values.listen == (allowOnlyCloudflared { }).listen;
-    in
-    builtins.listToAttrs (lib.flatten (lib.mapAttrsToList (host: values: lib.optionals (isCloudflared values) (toIngress ([ host ] ++ (values.serverAliases or [ ])))) virtualHosts));
-
-  website =
-    let
-      # Run Nx command with fake TTY to avoid panic
-      # https://github.com/nrwl/nx/issues/22445
-      nx = pkgs.writeScript "nx-wrapper" ''
-        exec ${pkgs.faketty}/bin/faketty nx "$@"
-      '';
-    in
-    pkgs.stdenv.mkDerivation (finalAttrs: {
-      pname = "garuda-website";
-      version = "1.0.0";
-
-      src = sources.garuda-website;
-
-      nativeBuildInputs = with pkgs; [
-        nodejs_22
-        pnpm_10.configHook
-      ];
-      pnpmDeps = pkgs.pnpm_10.fetchDeps {
-        inherit (finalAttrs) pname version src;
-        hash = "sha256-3A6n+PXg1MpDpP3l7zmv2gPKdLbVzLfW1BjSC/0V60E=";
-      };
-      buildPhase = ''
-        export PATH=$(pnpm bin):$PATH
-        ${nx} build &amp;&amp; ${nx} transloco:optimize
-      '';
-      installPhase = ''
-        cp -r ./dist/website/browser $out
-      '';
-    });
-in
-rec {
-  imports = sources.defaultModules ++ [ ../modules ];
-
-  # Reverse proxy for our docker-compose stack
-  services.nginx = {
-    enable = true;
-    upstreams = {
-      "grafana" = {
-        servers = {
-          "10.0.5.140:3001" = { };
-        };
-      };
-      "prometheus" = {
-        servers = {
-          "10.0.5.140:9090" = { };
-        };
-      };
-    };
-    virtualHosts = {
-      "garudalinux.org" = {
-        addSSL = true;
-        http3 = true;
-        locations = {
-          "/" = {
-            index = "index.html";
-            root = website;
-            extraConfig = ''
-              # First attempt to serve request as file, then
-              # as directory, then redirect to index.html (Angular) if no file found.
-              try_files $uri $uri/ /index.html;
-            '';
-          };
-          "/discord" = {
-            extraConfig = "expires 12h;";
-            return = "307 https://discord.gg/w5jbhq3juh";
-          };
-          "/telegram" = {
-            extraConfig = "expires 12h;";
-            return = "307 https://t.me/+TAZWHgryP6elOyS8";
-          };
-          "/os/garuda-update/backuprepo" = {
-            extraConfig = ''
-              rewrite ^/os/garuda-update/backuprepo/(.*)$ https://geo-mirror.chaotic.cx/chaotic-aur/$1 redirect;
-            '';
-          };
-          "/os/garuda-update/remote-update" = {
-            extraConfig = "expires 12h;";
-            return =
-              "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update";
-          };
-          "/os/garuda-update/garuda-hotfixes-version" = {
-            extraConfig = "expires 5m;";
-            return = "200 '1'";
-          };
-          "/.well-known/webfinger" = {
-            extraConfig = "expires 12h;";
-            return = "301 https://social.garudalinux.org$request_uri";
-          };
-        };
-        quic = true;
-        serverAliases = [ "www.garudalinux.org" ];
-        useACMEHost = "garudalinux.org";
-      };
-      "cloud.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            extraConfig = ''
-              # Increase our buffer size to allow bigger up- &amp; downloads
-              client_max_body_size                  2048M;
-              proxy_max_temp_file_size              2048M;
-              proxy_request_buffering               off;
-
-              # HSTS headers
-              add_header Strict-Transport-Security "max-age=31536000; includeSubdomains; preload" always;
-
-              # Allow accessing through trusted domain
-              set_real_ip_from      172.0.0.0/16;
-            '';
-            proxyPass = "https://10.0.5.100:443";
-          };
-          "/.well-known/carddav" = {
-            extraConfig = "expires 12h;";
-            return = "301 $scheme://$host/remote.php/dav";
-          };
-          "/.well-known/caldav" = {
-            extraConfig = "expires 12h;";
-            return = "301 $scheme://$host/remote.php/dav";
-          };
-          "/.well-known/webfinger" = {
-            return = "301 $scheme://$host/index.php/.well-known/webfinger";
-            extraConfig = ''
-              access_log    off;
-              log_not_found off;
-            '';
-          };
-          "/.well-known/nodeinfo" = {
-            extraConfig = ''
-              access_log    off;
-              log_not_found off;
-            '';
-            return = "301 $scheme://$host/index.php/.well-known/nodeinfo";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "cloud-aio.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            extraConfig = ''
-              client_body_buffer_size 512k;
-              proxy_read_timeout 86400s;
-              client_max_body_size 0;
-
-              # Allow accessing through trusted domain
-              set_real_ip_from      172.0.0.0/16;
-            '';
-            proxyPass = "http://10.0.5.100:11000";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "cloud-temp.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            extraConfig = ''
-              client_body_buffer_size 512k;
-              proxy_read_timeout 86400s;
-              client_max_body_size 0;
-
-              # Allow accessing through trusted domain
-              set_real_ip_from      172.0.0.0/16;
-            '';
-            proxyPass = "https://10.0.5.100:8080";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "search.garudalinux.org" = allowOnlyCloudflared {
-        addSSL = true;
-        http3 = true;
-        locations = { "/" = { proxyPass = "http://10.0.5.110:5000"; }; };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-      };
-      "searx.garudalinux.org" = allowOnlyCloudflared {
-        addSSL = true;
-        http3 = true;
-        locations = { "/" = { proxyPass = "http://10.0.5.110:8080"; }; };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-      };
-      "librey.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = { "/" = { proxyPass = "http://10.0.5.110:8081"; }; };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "ffsync.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = { "/" = { proxyPass = "http://10.0.5.100:5001"; }; };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "irc.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = { "/" = { proxyPass = "http://10.0.5.100:9000"; }; };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "bin.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = { "/" = { proxyPass = "http://10.0.5.100:8082"; }; };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "bitwarden.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.100:8081";
-          };
-        };
-        quic = true;
-        serverAliases = [ "vault.garudalinux.org" ];
-        useACMEHost = "garudalinux.org";
-      };
-      "forum.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          client_max_body_size 100M;
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = { proxyPass = "http://10.0.5.70:80"; };
-          "/c/announcements/announcements-maintenance/45.json" = {
-            extraConfig = "expires 2m;";
-            proxyPass = "http://10.0.5.70:80";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "social.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          client_max_body_size 100M;
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "https://10.0.5.80:443";
-          };
-          "/.well-known/webfinger" = {
-            proxyPass = "https://10.0.5.80:443";
-            extraConfig = ''
-              if ($args ~* "resource=acct:(.*)@(chaotic.cx|social.garudalinux.org)$") {
-                set $w1 $1;
-                rewrite .* /.well-known/webfinger?resource=acct:$w1@garudalinux.org? break;
-              }
-            '';
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "social-video.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          client_max_body_size 100M;
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-          location ~* .(mp4|webm)$ {
-            proxy_pass https://10.0.5.80:443;
-          }
-        '';
-        locations = {
-          "/" = { return = "301 https://social.garudalinux.org$request_uri"; };
-        };
-        http3 = true;
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "builds.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          proxy_buffering off;
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.140:80";
-          };
-          "/logs/" = {
-            proxyPass = "http://10.0.5.140:80";
-            extraConfig = ''
-              proxy_buffering off;
-              proxy_read_timeout 330s;
-            '';
-          };
-        };
-        quic = true;
-        serverAliases = [ "cf-builds.garudalinux.org" "iso.builds.garudalinux.org" ];
-        useACMEHost = "garudalinux.org";
-      };
-      "element.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          # Redirect to forum post
-          "/" = { return = "301 https://forum.garudalinux.org/t/39538"; };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "grafana.garudalinux.net" = allowOnlyCloudflareZerotrust {
-        locations = {
-          "/" = {
-            proxyPass = "http://grafana";
-            # Workaround the tedious origin not allowed error. This can likely be fixed
-            # better, but this works for now. It is behind CF Zero Trust anyways.
-            extraConfig = ''
-              proxy_set_header Host grafana.garudalinux.net;
-              proxy_set_header Origin https://grafana.garudalinux.net;
-            '';
-          };
-          "/api/live/" = {
-            proxyPass = "http://grafana";
-            proxyWebsockets = true;
-            extraConfig = ''
-              proxy_set_header Host grafana.garudalinux.net;
-              proxy_set_header Origin https://grafana.garudalinux.net;
-            '';
-          };
-        };
-      };
-      "prometheus.garudalinux.net" = allowOnlyCloudflareZerotrust {
-        locations = {
-          "/" = {
-            proxyPass = "http://prometheus";
-          };
-        };
-      };
-      "wiki.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = { "/" = { proxyPass = "http://10.0.5.100:3001"; }; };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "matrix.garudalinux.org" = {
-        addSSL = true;
-        http3 = true;
-        listen = [
-          {
-            addr = "0.0.0.0";
-            port = 443;
-            ssl = true;
-          }
-        ];
-        locations = {
-          "/" = {
-            # Redirect to forum post
-            return = "301 https://forum.garudalinux.org/t/39538";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "lingva.garudalinux.org" = allowOnlyCloudflared {
-        addSSL = true;
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.110:3002";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-      };
-      "reddit.garudalinux.org" = allowOnlyCloudflared {
-        addSSL = true;
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.110:8082";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-      };
-      "pgadmin.garudalinux.net" = allowOnlyCloudflareZerotrust {
-        locations = {
-          "/" = {
-            extraConfig = ''
-              ${garuda-lib.nginxReverseProxySettings}
-
-              proxy_pass http://10.0.5.50:5050;
-              proxy_set_header X-Forwarded-User $http_cf_access_authenticated_user_email;
-
-              proxy_hide_header Cache-Control;
-              proxy_hide_header Expires;
-              add_header Cache-Control 'no-store';
-            '';
-          };
-        };
-      };
-      "syncthing-build.garudalinux.net" = allowOnlyCloudflareZerotrust {
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        locations = {
-          "/" = {
-            extraConfig = ''
-              proxy_pass http://10.0.5.140:8384;
-              proxy_set_header Authorization "Basic ${garuda-lib.secrets.syncthing.esxi-build.credentials.base64}";
-            '';
-          };
-        };
-      };
-      # Default catch-all for unknown domains
-      "_" = {
-        addSSL = true;
-        extraConfig = ''
-          log_not_found off;
-          return 404;
-        '';
-        http3 = true;
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-    };
-  };
-
-  services.garuda-cloudflared = {
-    enable = true;
-    ingress = {
-      # "example.garudalinux.net" = "http://10.0.5.100:8085";
-    } // (generateCloudflaredIngress services.nginx.virtualHosts);
-    tunnel-credentials =
-      garuda-lib.secrets.cloudflare.cloudflared.esxi-web.cred;
-  };
-
-  system.stateVersion = "23.05";
-}
+<pre><code class="language-nix">{{#include ../../../nixos/hosts/web-front.nix}}
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h2 id="garuda-mail-netcup-vps"><a class="header" href="#garuda-mail-netcup-vps">garuda-mail (Netcup VPS)</a></h2>
 <h3 id="general-9"><a class="header" href="#general-9">General</a></h3>
@@ -2095,10 +860,11 @@ junk (<a href="https://mailserver.readthedocs.io/en/latest/options.html#cmdoptio
 There can be cases of the persisted files need to be deleted in order for the service to recover from dumping core.
 See <a href="https://gitlab.nic.cz/knot/knot-resolver/-/issues/627">this issue</a> for reference.</p>
 <h3 id="nix-expression-9"><a class="header" href="#nix-expression-9">Nix expression</a></h3>
-<pre><code class="language-nix">{ config
-, lib
-, pkgs
-, ...
+<pre><code class="language-nix">{
+  config,
+  lib,
+  pkgs,
+  ...
 }:
 let
   authres_status = pkgs.roundcubePlugins.roundcubePlugin rec {
@@ -2113,14 +879,36 @@ in
 {
   imports = [
     ../modules
-    ./garuda-mail/hardware-configuration.nix
   ];
 
   # Base configuration
-  networking.interfaces.ens3.ipv4.addresses = [{
-    address = "94.16.112.218";
-    prefixLength = 22;
-  }];
+  boot.initrd.availableKernelModules = [
+    "ata_piix"
+    "uhci_hcd"
+    "virtio_pci"
+    "sr_mod"
+    "virtio_blk"
+  ];
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/f52d63bd-a9e6-48a2-a25f-1772b988c424";
+    fsType = "ext4";
+  };
+
+  swapDevices = [
+    {
+      device = "/var/lib/swapfile";
+      size = 6 * 1024;
+    }
+  ];
+
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+
+  networking.interfaces.ens3.ipv4.addresses = [
+    {
+      address = "94.16.112.218";
+      prefixLength = 22;
+    }
+  ];
   networking.hostName = "garuda-mail";
   networking.defaultGateway = "94.16.112.3";
 
@@ -2135,12 +923,17 @@ in
       doInit = true;
       encryption = {
         mode = "repokey-blake2";
-        passCommand = "cat /var/garuda/secrets/backup/repo_key";
+        passCommand = ''
+          cat "${config.sops.secrets."backup/repo_key".path}"
+        '';
       };
       environment = {
-        BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_garuda-mail -p 23";
+        BORG_RSH = "ssh -i ${config.sops.secrets."backup/ssh_aerialis".path} -p 23";
       };
-      paths = [ config.mailserver.mailDirectory "/var/dkim" ];
+      paths = [
+        config.mailserver.mailDirectory
+        "/var/dkim"
+      ];
       prune.keep = {
         within = "1d";
         daily = 5;
@@ -2160,17 +953,11 @@ in
       enable = true;
       organizationName = "Garuda Linux";
     };
-    domains = [ "garudalinux.org" "chaotic.cx" "dr460nf1r3.org" ];
+    domains = [
+      "garudalinux.org"
+      "dr460nf1r3.org"
+    ];
     enable = true;
-    enableManageSieve = true;
-    # Forwards (mostly chaotic.cx only)
-    forwards =
-      {
-        "coffee-machine@chaotic.cx" = "root@pedrohlc.com";
-        "islandc0der@chaotic.cx" = "jf.mundox@gmail.com";
-        "pedrohlc@chaotic.cx" = "root@pedrohlc.com";
-        "xstefen@chaotic.cx" = "me@xstefen.dev";
-      };
     fqdn = "mail.garudalinux.net";
     fullTextSearch = {
       enable = true;
@@ -2181,42 +968,42 @@ in
     loginAccounts = {
       # garudalinux.org
       "cloud@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/cloudatgl";
+        hashedPasswordFile = config.sops.secrets."mail/cloudatgl".path;
         sendOnly = true;
       };
       "complaints@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/complaintsatgl";
+        hashedPasswordFile = config.sops.secrets."mail/complaintsatgl".path;
       };
       "dr460nf1r3@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/dr460nf1r3atgl";
+        hashedPasswordFile = config.sops.secrets."mail/dr460nf1r3atgl".path;
       };
       "filo@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/filoatgl";
+        hashedPasswordFile = config.sops.secrets."mail/filoatgl".path;
       };
       "gitlab@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/gitlabatgl";
+        hashedPasswordFile = config.sops.secrets."mail/gitlabatgl".path;
       };
       "mastodon@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/mastodonatgl";
+        hashedPasswordFile = config.sops.secrets."mail/mastodonatgl".path;
         sendOnly = true;
       };
       "naman@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/namanatgl";
+        hashedPasswordFile = config.sops.secrets."mail/namanatgl".path;
       };
       "noreply@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/noreplyatgl";
+        hashedPasswordFile = config.sops.secrets."mail/noreplyatgl".path;
       };
       "rohit@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/rohitatgl";
+        hashedPasswordFile = config.sops.secrets."mail/rohitatgl".path;
       };
       "security@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/securityatgl";
+        hashedPasswordFile = config.sops.secrets."mail/securityatgl".path;
       };
       "sgs@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/sgsatgl";
+        hashedPasswordFile = config.sops.secrets."mail/sgsatgl".path;
       };
       "spam-reports@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/spam-reportsatgl";
+        hashedPasswordFile = config.sops.secrets."mail/spam-reportsatgl".path;
       };
       "team@garudalinux.org" = {
         aliases = [
@@ -2225,30 +1012,20 @@ in
           "root@garudalinux.org"
           "webmaster@garudalinux.org"
         ];
-        hashedPasswordFile = "/var/garuda/secrets/mail/teamatgl";
+        hashedPasswordFile = config.sops.secrets."mail/teamatgl".path;
       };
       "tne@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/tneatgl";
+        hashedPasswordFile = config.sops.secrets."mail/tneatgl".path;
       };
       "yorper@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/yorperatgl";
-      };
-      # chaotic.cx
-      "actions@chaotic.cx" = {
-        aliases = [ "temeraire@chaotic.cx" ];
-        hashedPasswordFile = "/var/garuda/secrets/mail/actionsatcx";
-      };
-      "nico@chaotic.cx" = {
-        aliases = [
-          "dr460nf1r3@chaotic.cx"
-          "root@chaotic.cx"
-          "webmaster@chaotic.cx"
-        ];
-        hashedPasswordFile = "/var/garuda/secrets/mail/nicoatcx";
+        hashedPasswordFile = config.sops.secrets."mail/yorperatgl".path;
       };
       # dr460nf1r3.org
       "noreply@dr460nf1r3.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/noreplyatdf";
+        hashedPasswordFile = config.sops.secrets."mail/noreplyatdf".path;
+      };
+      "test@dr460nf1r3.org" = {
+        hashedPasswordFile = config.sops.secrets."mail/testatdf".path;
       };
     };
     indexDir = "/var/lib/dovecot/indices";
@@ -2265,7 +1042,10 @@ in
   environment.memoryAllocator.provider = lib.mkForce "libc";
 
   # Set up push notifications
-  services.dovecot2.mailPlugins.globally.enable = [ "notify" "push_notification" ];
+  services.dovecot2.mailPlugins.globally.enable = [
+    "notify"
+    "push_notification"
+  ];
 
   # Postmaster alias
   services.postfix.postmasterAlias = "nico@dr460nf1r3.org";
@@ -2283,16 +1063,14 @@ in
       $config['smtp_user'] = "%u";
       $config['smtp_pass'] = "%p";
     '';
-    package = pkgs.roundcube.withPlugins (
-      plugins: [
-        authres_status
-        plugins.carddav
-        plugins.contextmenu
-        plugins.custom_from
-        plugins.persistent_login
-        plugins.thunderbird_labels
-      ]
-    );
+    package = pkgs.roundcube.withPlugins (plugins: [
+      authres_status
+      plugins.carddav
+      plugins.contextmenu
+      plugins.custom_from
+      plugins.persistent_login
+      plugins.thunderbird_labels
+    ]);
     plugins = [
       "attachment_reminder" # Roundcube internal plugin
       "authres_status"
@@ -2307,13 +1085,41 @@ in
     ];
   };
 
+  # Secrets
+  sops.secrets = {
+    "backup/repo_key" = { };
+    "backup/ssh_aerialis" = { };
+    "mail/cloudatgl" = { };
+    "mail/complaintsatgl" = { };
+    "mail/dr460nf1r3atgl" = { };
+    "mail/filoatgl" = { };
+    "mail/gitlabatgl" = { };
+    "mail/mastodonatgl" = { };
+    "mail/namanatgl" = { };
+    "mail/noreplyatgl" = { };
+    "mail/rohitatgl" = { };
+    "mail/securityatgl" = { };
+    "mail/sgsatgl" = { };
+    "mail/spam-reportsatgl" = { };
+    "mail/teamatgl" = { };
+    "mail/testatdf" = { };
+    "mail/tneatgl" = { };
+    "mail/yorperatgl" = { };
+    "mail/noreplyatdf" = { };
+  };
+
   # At least try to prevent the insane spam of login attempts
   services.openssh.ports = [ 1022 ];
 
   # This mostly sends annoying notifications because SSH port is non-default
   services.monit.enable = lib.mkForce false;
 
+  services.garuda-monitoring.enable = lib.mkForce false;
+
   system.stateVersion = "22.05";
+
+  # https://nixos-mailserver.readthedocs.io/en/latest/migrations.html
+  mailserver.stateVersion = 3;
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="repositories"><a class="header" href="#repositories">Repositories</a></h1>

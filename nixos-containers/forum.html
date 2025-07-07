@@ -193,18 +193,7 @@ scripts are provided to handle the container, not much is to be seen here.</p>
 <li><a href="https://github.com/discourse/discourse_docker">Discourse Docker</a></li>
 </ul>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
-<pre><code class="language-nix">{ sources, ... }: {
-  imports = sources.defaultModules ++ [ ../modules ];
-
-  # Enable Docker since we use the official Docker image in /var/discourse
-  virtualisation.docker.enable = true;
-
-  # Open required port
-  networking.firewall.allowedTCPPorts = [ 80 ];
-
-  system.stateVersion = "23.05";
-}
-
+<pre><code class="language-nix">{{#include ../../../nixos/hosts/forum.nix}}
 </code></pre>
 
                     </main>

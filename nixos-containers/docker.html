@@ -187,30 +187,17 @@
                         <h1 id="docker"><a class="header" href="#docker">docker</a></h1>
 <h2 id="general"><a class="header" href="#general">General</a></h2>
 <p>This container is used to run regular Docker containers.
-Recently, the <code>docker-compose-runner</code> module has been replaced by native Nix expressions.</p>
+Recently, the <code>compose-runner</code> module has been replaced by native Nix expressions.</p>
 <h2 id="nextcloud-aio"><a class="header" href="#nextcloud-aio">Nextcloud AIO</a></h2>
 <p>This container also runs a Nextcloud AIO master container, which administrates its containers by itself.
-Consult its <a href="https://github.com/nextcloud/all-in-one">extensive documentation for more information</a>.
+Consult its <a href="https://github.com/nextcloud/docker">extensive documentation for more information</a>.
 Since this container requires a Nextcloud volume at a fixed place, without being able to change it, it is not
 included in the regular data directory.</p>
 <p>Instead, backups are regularly performed via the inbuilt backup function in the admin interface.
-They can be found at <code>/var/garuda/docker-compose-runner/all-in-one/nextcloud-aio</code>
+They can be found at <code>/var/garuda/compose-runner/docker/nextcloud-aio</code>
 and are included in the offsite system backups.</p>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
-<pre><code class="language-nix">{ garuda-lib
-, sources
-, ...
-}: {
-  imports = sources.defaultModules ++ [ ../modules ];
-
-  # This container is just for docker-compose stuff
-  services.docker-compose-runner.all-in-one = {
-    envfile = garuda-lib.secrets.docker-compose.all-in-one;
-    source = ../../docker-compose/all-in-one;
-  };
-
-  system.stateVersion = "23.05";
-}
+<pre><code class="language-nix">{{#include ../../../nixos/hosts/docker.nix}}
 </code></pre>
 <h3 id="docker-containers"><a class="header" href="#docker-containers">Docker containers</a></h3>
 <pre><code class="language-nix">{{#include ../../../nixos/hosts/docker/docker-compose.nix}}

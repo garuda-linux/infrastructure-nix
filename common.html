@@ -270,7 +270,7 @@ The remaining ones can be updated by changing their version in the corresponding
 running <code>deploy</code> &amp; <code>apply</code>.
 If containers are to be updated manually, this can be achieved by connecting to the host,
 running <code>nixos-container root-login $containername</code>, and executing:</p>
-<pre><code class="language-sh">cd /var/garuda/docker-compose-runner/$name/ # replace $name with the actual docker-compose.yml or autocomplete via tab
+<pre><code class="language-sh">cd /var/garuda/compose-runner/$name/ # replace $name with the actual docker-compose.yml or autocomplete via tab
 sudo docker compose pull
 sudo docker compose up -d
 </code></pre>
@@ -306,7 +306,7 @@ or use <a href="https://github.com/aksiksi/compose2nix">compose2nix</a>
 to transform an existing <code>docker-compose.yml</code> to valid Nix expressions.
 Using native Nix expressions has the advantage of being more flexible and easier to maintain,
 as well as taking advantage of Systemd service management, e.g., by restarting crashed containers.
-This was not working reliably with our <code>docker-compose-runner</code> module, which simply started
+This was not working reliably with our <code>compose-runner</code> module, which simply started
 existing <code>docker-compose.yml</code> files.
 In case secrets are required, one needs to provide them via <code>.env</code> files and
 the <code>virtualisation.oci-containers.containers.environmentFiles</code> key.</p>

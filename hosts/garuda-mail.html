@@ -232,10 +232,11 @@ junk (<a href="https://mailserver.readthedocs.io/en/latest/options.html#cmdoptio
 There can be cases of the persisted files need to be deleted in order for the service to recover from dumping core.
 See <a href="https://gitlab.nic.cz/knot/knot-resolver/-/issues/627">this issue</a> for reference.</p>
 <h3 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h3>
-<pre><code class="language-nix">{ config
-, lib
-, pkgs
-, ...
+<pre><code class="language-nix">{
+  config,
+  lib,
+  pkgs,
+  ...
 }:
 let
   authres_status = pkgs.roundcubePlugins.roundcubePlugin rec {
@@ -250,14 +251,36 @@ in
 {
   imports = [
     ../modules
-    ./garuda-mail/hardware-configuration.nix
   ];
 
   # Base configuration
-  networking.interfaces.ens3.ipv4.addresses = [{
-    address = "94.16.112.218";
-    prefixLength = 22;
-  }];
+  boot.initrd.availableKernelModules = [
+    "ata_piix"
+    "uhci_hcd"
+    "virtio_pci"
+    "sr_mod"
+    "virtio_blk"
+  ];
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/f52d63bd-a9e6-48a2-a25f-1772b988c424";
+    fsType = "ext4";
+  };
+
+  swapDevices = [
+    {
+      device = "/var/lib/swapfile";
+      size = 6 * 1024;
+    }
+  ];
+
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+
+  networking.interfaces.ens3.ipv4.addresses = [
+    {
+      address = "94.16.112.218";
+      prefixLength = 22;
+    }
+  ];
   networking.hostName = "garuda-mail";
   networking.defaultGateway = "94.16.112.3";
 
@@ -272,12 +295,17 @@ in
       doInit = true;
       encryption = {
         mode = "repokey-blake2";
-        passCommand = "cat /var/garuda/secrets/backup/repo_key";
+        passCommand = ''
+          cat "${config.sops.secrets."backup/repo_key".path}"
+        '';
       };
       environment = {
-        BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_garuda-mail -p 23";
+        BORG_RSH = "ssh -i ${config.sops.secrets."backup/ssh_aerialis".path} -p 23";
       };
-      paths = [ config.mailserver.mailDirectory "/var/dkim" ];
+      paths = [
+        config.mailserver.mailDirectory
+        "/var/dkim"
+      ];
       prune.keep = {
         within = "1d";
         daily = 5;
@@ -297,17 +325,11 @@ in
       enable = true;
       organizationName = "Garuda Linux";
     };
-    domains = [ "garudalinux.org" "chaotic.cx" "dr460nf1r3.org" ];
+    domains = [
+      "garudalinux.org"
+      "dr460nf1r3.org"
+    ];
     enable = true;
-    enableManageSieve = true;
-    # Forwards (mostly chaotic.cx only)
-    forwards =
-      {
-        "coffee-machine@chaotic.cx" = "root@pedrohlc.com";
-        "islandc0der@chaotic.cx" = "jf.mundox@gmail.com";
-        "pedrohlc@chaotic.cx" = "root@pedrohlc.com";
-        "xstefen@chaotic.cx" = "me@xstefen.dev";
-      };
     fqdn = "mail.garudalinux.net";
     fullTextSearch = {
       enable = true;
@@ -318,42 +340,42 @@ in
     loginAccounts = {
       # garudalinux.org
       "cloud@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/cloudatgl";
+        hashedPasswordFile = config.sops.secrets."mail/cloudatgl".path;
         sendOnly = true;
       };
       "complaints@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/complaintsatgl";
+        hashedPasswordFile = config.sops.secrets."mail/complaintsatgl".path;
       };
       "dr460nf1r3@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/dr460nf1r3atgl";
+        hashedPasswordFile = config.sops.secrets."mail/dr460nf1r3atgl".path;
       };
       "filo@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/filoatgl";
+        hashedPasswordFile = config.sops.secrets."mail/filoatgl".path;
       };
       "gitlab@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/gitlabatgl";
+        hashedPasswordFile = config.sops.secrets."mail/gitlabatgl".path;
       };
       "mastodon@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/mastodonatgl";
+        hashedPasswordFile = config.sops.secrets."mail/mastodonatgl".path;
         sendOnly = true;
       };
       "naman@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/namanatgl";
+        hashedPasswordFile = config.sops.secrets."mail/namanatgl".path;
       };
       "noreply@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/noreplyatgl";
+        hashedPasswordFile = config.sops.secrets."mail/noreplyatgl".path;
       };
       "rohit@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/rohitatgl";
+        hashedPasswordFile = config.sops.secrets."mail/rohitatgl".path;
       };
       "security@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/securityatgl";
+        hashedPasswordFile = config.sops.secrets."mail/securityatgl".path;
       };
       "sgs@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/sgsatgl";
+        hashedPasswordFile = config.sops.secrets."mail/sgsatgl".path;
       };
       "spam-reports@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/spam-reportsatgl";
+        hashedPasswordFile = config.sops.secrets."mail/spam-reportsatgl".path;
       };
       "team@garudalinux.org" = {
         aliases = [
@@ -362,30 +384,20 @@ in
           "root@garudalinux.org"
           "webmaster@garudalinux.org"
         ];
-        hashedPasswordFile = "/var/garuda/secrets/mail/teamatgl";
+        hashedPasswordFile = config.sops.secrets."mail/teamatgl".path;
       };
       "tne@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/tneatgl";
+        hashedPasswordFile = config.sops.secrets."mail/tneatgl".path;
       };
       "yorper@garudalinux.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/yorperatgl";
-      };
-      # chaotic.cx
-      "actions@chaotic.cx" = {
-        aliases = [ "temeraire@chaotic.cx" ];
-        hashedPasswordFile = "/var/garuda/secrets/mail/actionsatcx";
-      };
-      "nico@chaotic.cx" = {
-        aliases = [
-          "dr460nf1r3@chaotic.cx"
-          "root@chaotic.cx"
-          "webmaster@chaotic.cx"
-        ];
-        hashedPasswordFile = "/var/garuda/secrets/mail/nicoatcx";
+        hashedPasswordFile = config.sops.secrets."mail/yorperatgl".path;
       };
       # dr460nf1r3.org
       "noreply@dr460nf1r3.org" = {
-        hashedPasswordFile = "/var/garuda/secrets/mail/noreplyatdf";
+        hashedPasswordFile = config.sops.secrets."mail/noreplyatdf".path;
+      };
+      "test@dr460nf1r3.org" = {
+        hashedPasswordFile = config.sops.secrets."mail/testatdf".path;
       };
     };
     indexDir = "/var/lib/dovecot/indices";
@@ -402,7 +414,10 @@ in
   environment.memoryAllocator.provider = lib.mkForce "libc";
 
   # Set up push notifications
-  services.dovecot2.mailPlugins.globally.enable = [ "notify" "push_notification" ];
+  services.dovecot2.mailPlugins.globally.enable = [
+    "notify"
+    "push_notification"
+  ];
 
   # Postmaster alias
   services.postfix.postmasterAlias = "nico@dr460nf1r3.org";
@@ -420,16 +435,14 @@ in
       $config['smtp_user'] = "%u";
       $config['smtp_pass'] = "%p";
     '';
-    package = pkgs.roundcube.withPlugins (
-      plugins: [
-        authres_status
-        plugins.carddav
-        plugins.contextmenu
-        plugins.custom_from
-        plugins.persistent_login
-        plugins.thunderbird_labels
-      ]
-    );
+    package = pkgs.roundcube.withPlugins (plugins: [
+      authres_status
+      plugins.carddav
+      plugins.contextmenu
+      plugins.custom_from
+      plugins.persistent_login
+      plugins.thunderbird_labels
+    ]);
     plugins = [
       "attachment_reminder" # Roundcube internal plugin
       "authres_status"
@@ -444,13 +457,41 @@ in
     ];
   };
 
+  # Secrets
+  sops.secrets = {
+    "backup/repo_key" = { };
+    "backup/ssh_aerialis" = { };
+    "mail/cloudatgl" = { };
+    "mail/complaintsatgl" = { };
+    "mail/dr460nf1r3atgl" = { };
+    "mail/filoatgl" = { };
+    "mail/gitlabatgl" = { };
+    "mail/mastodonatgl" = { };
+    "mail/namanatgl" = { };
+    "mail/noreplyatgl" = { };
+    "mail/rohitatgl" = { };
+    "mail/securityatgl" = { };
+    "mail/sgsatgl" = { };
+    "mail/spam-reportsatgl" = { };
+    "mail/teamatgl" = { };
+    "mail/testatdf" = { };
+    "mail/tneatgl" = { };
+    "mail/yorperatgl" = { };
+    "mail/noreplyatdf" = { };
+  };
+
   # At least try to prevent the insane spam of login attempts
   services.openssh.ports = [ 1022 ];
 
   # This mostly sends annoying notifications because SSH port is non-default
   services.monit.enable = lib.mkForce false;
 
+  services.garuda-monitoring.enable = lib.mkForce false;
+
   system.stateVersion = "22.05";
+
+  # https://nixos-mailserver.readthedocs.io/en/latest/migrations.html
+  mailserver.stateVersion = 3;
 }
 </code></pre>
 

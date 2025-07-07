@@ -192,30 +192,7 @@
 <pre><code class="language-bash">sudo systemctl restart docker-compose-proxied-root
 </code></pre>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
-<pre><code class="language-nix">{ garuda-lib
-, sources
-, ...
-}: {
-  imports = sources.defaultModules ++ [ ../modules ];
-
-  # This container runs proxied docker containers
-  services.docker-compose-runner.proxied = {
-    envfile = garuda-lib.secrets.docker-compose.proxied;
-    source = ../../docker-compose/proxied;
-  };
-
-  # Let Docker use squid as outgoig proxy
-  # Fails to pull images if *.docker.io is not excluded from proxy
-  systemd.services.docker = {
-    environment = {
-      HTTPS_PROXY = "http://10.0.5.1:3128";
-      HTTP_PROXY = "http://10.0.5.1:3128";
-      NO_PROXY = "localhost,127.0.0.1,*.docker.io,ghcr.io";
-    };
-  };
-
-  system.stateVersion = "23.05";
-}
+<pre><code class="language-nix">{{#include ../../../nixos/hosts/docker-proxied.nix}}
 </code></pre>
 <h3 id="docker-containers"><a class="header" href="#docker-containers">Docker containers</a></h3>
 <pre><code class="language-nix">{{#include ../../../nixos/hosts/docker-proxied/docker-compose.nix}}
