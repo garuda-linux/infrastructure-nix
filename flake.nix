@@ -149,6 +149,71 @@
                     imports = [ ];
                   };
                 }).shell;
+              shared_commands = [
+                { package = "ansible"; }
+                { package = "rsync"; }
+                { package = "sops"; }
+                {
+                  name = "apply";
+                  help = "Applies the infra-nix configuration pushed to the servers";
+                  command = ''
+                    pushd ansible &>/dev/null
+                    ansible-playbook playbooks/apply.yml
+                    popd &>/dev/null
+                  '';
+                }
+                {
+                  name = "clean";
+                  help = "Runs the garbage collection on the servers";
+                  command = ''
+                    pushd ansible &>/dev/null
+                    ansible-playbook playbooks/garbage_collect.yml
+                    popd &>/dev/null
+                  '';
+                }
+                {
+                  name = "deploy";
+                  help = "Deploys the local NixOS configuration to the servers";
+                  command = ''
+                    pushd ansible &>/dev/null
+                    ansible-playbook playbooks/garuda.yml
+                    popd &>/dev/null
+                  '';
+                }
+                {
+                  name = "update";
+                  help = "Performs a full system update on the servers bumping flake lock";
+                  command = ''
+                    pushd ansible &>/dev/null
+                    ansible-playbook playbooks/system_update.yml
+                    popd &>/dev/null
+                  '';
+                }
+                {
+                  name = "restart";
+                  help = "Restarts all physical servers";
+                  command = ''
+                    pushd ansible &>/dev/null
+                    ansible-playbook playbooks/reboot.yml
+                    popd &>/dev/null
+                  '';
+                }
+                {
+                  name = "buildiso-remote";
+                  help = "Spawns a buildiso shell on the iso-runner builder";
+                  category = "infra-nix";
+                  command = ''
+                    # We are assuming the NixOS user is named the same as the one using it
+                    ssh -p227 -t ${immortals} "buildiso"
+                  '';
+                }
+                {
+                  name = "buildiso-local";
+                  help = "Spawns a local buildiso shell to build to ./buildiso (needs Docker)";
+                  category = "infra-nix";
+                  command = buildiso;
+                }
+              ];
             in
             rec {
               default = infra-nix-shell;
@@ -164,84 +229,37 @@
                   };
                 };
                 commands = [
-                  { package = "ansible"; }
                   { package = "commitizen"; }
                   { package = "manix"; }
                   { package = "mdbook"; }
                   { package = "mdbook-admonish"; }
                   { package = "mdbook-emojicodes"; }
                   { package = "pre-commit"; }
-                  { package = "rsync"; }
-                  { package = "sops"; }
-                  {
-                    name = "apply";
-                    help = "Applies the infra-nix configuration pushed to the servers";
-                    command = ''
-                      pushd ansible &>/dev/null
-                      ansible-playbook playbooks/apply.yml
-                      popd &>/dev/null
-                    '';
-                  }
-                  {
-                    name = "clean";
-                    help = "Runs the garbage collection on the servers";
-                    command = ''
-                      pushd ansible &>/dev/null
-                      ansible-playbook playbooks/garbage_collect.yml
-                      popd &>/dev/null
-                    '';
-                  }
-                  {
-                    name = "deploy";
-                    help = "Deploys the local NixOS configuration to the servers";
-                    command = ''
-                      pushd ansible &>/dev/null
-                      ansible-playbook playbooks/garuda.yml
-                      popd &>/dev/null
-                    '';
-                  }
-                  {
-                    name = "update";
-                    help = "Performs a full system update on the servers bumping flake lock";
-                    command = ''
-                      pushd ansible &>/dev/null
-                      ansible-playbook playbooks/system_update.yml
-                      popd &>/dev/null
-                    '';
-                  }
-                  {
-                    name = "restart";
-                    help = "Restarts all physical servers";
-                    command = ''
-                      pushd ansible &>/dev/null
-                      ansible-playbook playbooks/reboot.yml
-                      popd &>/dev/null
-                    '';
-                  }
-                  {
-                    name = "buildiso-remote";
-                    help = "Spawns a buildiso shell on the iso-runner builder";
-                    category = "infra-nix";
-                    command = ''
-                      # We are assuming the NixOS user is named the same as the one using it
-                      ssh -p227 -t ${immortals} "buildiso"
-                    '';
-                  }
-                  {
-                    name = "buildiso-local";
-                    help = "Spawns a local buildiso shell to build to ./buildiso (needs Docker)";
-                    category = "infra-nix";
-                    command = buildiso;
-                  }
                   {
                     name = "colmena";
                     help = "Runs the Colmena deployment tool";
                     category = "infra-nix";
                     package = colmena.defaultPackage.${system};
                   }
-                ];
+                ] ++ shared_commands;
                 motd = ''
                   {202}🔨 Welcome to Garuda's infra-nix shell{reset} ❄️
+                  $(type -p menu &>/dev/null && menu)
+                '';
+              };
+              minimal = mkShell {
+                devshell = {
+                  name = "minimal";
+                  startup = {
+                    infra-nix-shell.text = ''
+                      export LC_ALL="C.UTF-8"
+                      export NIX_PATH=nixpkgs=${nixpkgs}
+                    '';
+                  };
+                };
+                commands = shared_commands;
+                motd = ''
+                  {202}🔨 Welcome to Garuda's infra-nix minimal shell{reset} ❄️
                   $(type -p menu &>/dev/null && menu)
                 '';
               };
