@@ -259,6 +259,22 @@
     };
   };
 
+  # Make sure postgres is started before other containers
+  systemd.services = {
+    "container@docker".requires = [ "container@postgres.service" ];
+    "container@docker-proxied".requires = [ "container@postgres.service" ];
+    "container@mastodon".requires = [ "container@postgres.service" ];
+    "container@chaotic-backend".requires = [ "container@postgres.service" ];
+    "container@postgres" = {
+      before = [
+        "container@docker-proxied.service"
+        "container@docker.service"
+        "container@mastodon.service"
+        "container@chaotic-backend.service"
+      ];
+    };
+  };
+
   # Monitor a few services of the containers
   services = {
     netdata.configDir = {
