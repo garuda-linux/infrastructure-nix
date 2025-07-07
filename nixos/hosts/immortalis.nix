@@ -195,102 +195,102 @@
 
   # Backup configurations to Hetzner storage box
   programs.ssh.macs = [ "hmac-sha2-512" ];
-  services.borgbackup.jobs = {
-    backupToHetzner = {
-      compression = "auto,zstd";
-      doInit = true;
-      encryption = {
-        mode = "repokey-blake2";
-        passCommand = "cat /var/garuda/secrets/backup/repo_key";
-      };
-      environment = {
-        BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_immortalis -p 23";
-      };
-      exclude = [ "/data_1/dockercache" "/data_1/dockerdata" ];
-      paths = [ "/data_1" ];
-      prune.keep = {
-        within = "1d";
-        daily = 3;
-        weekly = 2;
-        monthly = 2;
-      };
-      repo = "u342919@u342919.your-storagebox.de:./immortalis";
-      startAt = "daily";
-    };
-  };
+  # services.borgbackup.jobs = {
+  #   backupToHetzner = {
+  #     compression = "auto,zstd";
+  #     doInit = true;
+  #     encryption = {
+  #       mode = "repokey-blake2";
+  #       passCommand = "cat /var/garuda/secrets/backup/repo_key";
+  #     };
+  #     environment = {
+  #       BORG_RSH = "ssh -i /var/garuda/secrets/backup/ssh_immortalis -p 23";
+  #     };
+  #     exclude = [ "/data_1/dockercache" "/data_1/dockerdata" ];
+  #     paths = [ "/data_1" ];
+  #     prune.keep = {
+  #       within = "1d";
+  #       daily = 3;
+  #       weekly = 2;
+  #       monthly = 2;
+  #     };
+  #     repo = "u342919@u342919.your-storagebox.de:./immortalis";
+  #     startAt = "daily";
+  #   };
+  # };
 
   # A proxy server making use of our IPv6 IP addresses
   # traffic sent through the proxy is only allowing IPv6 connections
-  services.squid = {
-    enable = true;
-    extraConfig = ''
-      forwarded_for delete
-      dns_nameservers 2606:4700:4700::1111
+  # services.squid = {
+  #   enable = true;
+  #   extraConfig = ''
+  #     forwarded_for delete
+  #     dns_nameservers 2606:4700:4700::1111
 
-      acl tenth random 1/10
-      acl ninth random 1/9
-      acl eighth random 1/8
-      acl seventh random 1/7
-      acl sixth random 1/6
-      acl fifth random 1/5
-      acl fourth random 1/4
-      acl third random 1/3
-      acl half random 1/2
+  #     acl tenth random 1/10
+  #     acl ninth random 1/9
+  #     acl eighth random 1/8
+  #     acl seventh random 1/7
+  #     acl sixth random 1/6
+  #     acl fifth random 1/5
+  #     acl fourth random 1/4
+  #     acl third random 1/3
+  #     acl half random 1/2
 
-      # Invalid IP
-      tcp_outgoing_address 10.254.254.254
-      tcp_outgoing_address 2a01:4f8:2200:30ac:cf2d:7d73:eddf:8871 tenth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:5b38:dbde:e5a7:91b2 ninth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:fa33:0d97:0755:6833 eighth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:8f15:81f6:355c:d9d6 seventh
-      tcp_outgoing_address 2a01:4f8:2200:30ac:4436:e5e7:2236:0d77 sixth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:1ea4:1794:1963:b8da fifth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:5628:7e9f:d8ec:544d fourth
-      tcp_outgoing_address 2a01:4f8:2200:30ac:d830:ce99:e2b7:3e43 third
-      tcp_outgoing_address 2a01:4f8:2200:30ac:edc9:2d08:2b32:e532 half
-      tcp_outgoing_address 2a01:4f8:2200:30ac:a833:0fd7:29d4:5309
+  #     # Invalid IP
+  #     tcp_outgoing_address 10.254.254.254
+  #     tcp_outgoing_address 2a01:4f8:2200:30ac:cf2d:7d73:eddf:8871 tenth
+  #     tcp_outgoing_address 2a01:4f8:2200:30ac:5b38:dbde:e5a7:91b2 ninth
+  #     tcp_outgoing_address 2a01:4f8:2200:30ac:fa33:0d97:0755:6833 eighth
+  #     tcp_outgoing_address 2a01:4f8:2200:30ac:8f15:81f6:355c:d9d6 seventh
+  #     tcp_outgoing_address 2a01:4f8:2200:30ac:4436:e5e7:2236:0d77 sixth
+  #     tcp_outgoing_address 2a01:4f8:2200:30ac:1ea4:1794:1963:b8da fifth
+  #     tcp_outgoing_address 2a01:4f8:2200:30ac:5628:7e9f:d8ec:544d fourth
+  #     tcp_outgoing_address 2a01:4f8:2200:30ac:d830:ce99:e2b7:3e43 third
+  #     tcp_outgoing_address 2a01:4f8:2200:30ac:edc9:2d08:2b32:e532 half
+  #     tcp_outgoing_address 2a01:4f8:2200:30ac:a833:0fd7:29d4:5309
 
-      # Invalid IP
-      udp_outgoing_address 10.254.254.254
-      udp_outgoing_address 2a01:4f8:2200:30ac:cf2d:7d73:eddf:8871 tenth
-      udp_outgoing_address 2a01:4f8:2200:30ac:5b38:dbde:e5a7:91b2 ninth
-      udp_outgoing_address 2a01:4f8:2200:30ac:fa33:0d97:0755:6833 eighth
-      udp_outgoing_address 2a01:4f8:2200:30ac:8f15:81f6:355c:d9d6 seventh
-      udp_outgoing_address 2a01:4f8:2200:30ac:4436:e5e7:2236:0d77 sixth
-      udp_outgoing_address 2a01:4f8:2200:30ac:1ea4:1794:1963:b8da fifth
-      udp_outgoing_address 2a01:4f8:2200:30ac:5628:7e9f:d8ec:544d fourth
-      udp_outgoing_address 2a01:4f8:2200:30ac:d830:ce99:e2b7:3e43 third
-      udp_outgoing_address 2a01:4f8:2200:30ac:edc9:2d08:2b32:e532 half
-      udp_outgoing_address 2a01:4f8:2200:30ac:a833:0fd7:29d4:5309
+  #     # Invalid IP
+  #     udp_outgoing_address 10.254.254.254
+  #     udp_outgoing_address 2a01:4f8:2200:30ac:cf2d:7d73:eddf:8871 tenth
+  #     udp_outgoing_address 2a01:4f8:2200:30ac:5b38:dbde:e5a7:91b2 ninth
+  #     udp_outgoing_address 2a01:4f8:2200:30ac:fa33:0d97:0755:6833 eighth
+  #     udp_outgoing_address 2a01:4f8:2200:30ac:8f15:81f6:355c:d9d6 seventh
+  #     udp_outgoing_address 2a01:4f8:2200:30ac:4436:e5e7:2236:0d77 sixth
+  #     udp_outgoing_address 2a01:4f8:2200:30ac:1ea4:1794:1963:b8da fifth
+  #     udp_outgoing_address 2a01:4f8:2200:30ac:5628:7e9f:d8ec:544d fourth
+  #     udp_outgoing_address 2a01:4f8:2200:30ac:d830:ce99:e2b7:3e43 third
+  #     udp_outgoing_address 2a01:4f8:2200:30ac:edc9:2d08:2b32:e532 half
+  #     udp_outgoing_address 2a01:4f8:2200:30ac:a833:0fd7:29d4:5309
 
-      # This does not rotate the logs, but asks squid to reopen the log file so that logrotate can rotate it
-      logfile_rotate 0
-    '';
-    proxyAddress = "10.0.5.1";
-  };
-  systemd.services.squid = {
-    serviceConfig = {
-      Restart = "always";
-      RestartSec = 10;
-      # Shut off all logging but level 1 errors as we get spamming a lot due to
-      # not being able to use our invalid address 10.254.254.254
-      LogLevelMax = 1;
-    };
-    startLimitIntervalSec = 80;
-    startLimitBurst = 6;
-  };
-  services.logrotate.settings.squid = {
-    files = "/var/log/squid/*.log";
-    frequency = "daily";
-    su = "squid squid";
-    rotate = 5;
-    compress = true;
-    delaycompress = true;
-    postrotate = "${config.systemd.package}/bin/systemctl kill --signal=SIGUSR1 squid";
-  };
+  #     # This does not rotate the logs, but asks squid to reopen the log file so that logrotate can rotate it
+  #     logfile_rotate 0
+  #   '';
+  #   proxyAddress = "10.0.5.1";
+  # };
+  # systemd.services.squid = {
+  #   serviceConfig = {
+  #     Restart = "always";
+  #     RestartSec = 10;
+  #     # Shut off all logging but level 1 errors as we get spamming a lot due to
+  #     # not being able to use our invalid address 10.254.254.254
+  #     LogLevelMax = 1;
+  #   };
+  #   startLimitIntervalSec = 80;
+  #   startLimitBurst = 6;
+  # };
+  # services.logrotate.settings.squid = {
+  #   files = "/var/log/squid/*.log";
+  #   frequency = "daily";
+  #   su = "squid squid";
+  #   rotate = 5;
+  #   compress = true;
+  #   delaycompress = true;
+  #   postrotate = "${config.systemd.package}/bin/systemctl kill --signal=SIGUSR1 squid";
+  # };
 
   # Can't really instantly remove this, need to find an alternative first
-  nixpkgs.config.permittedInsecurePackages = [ "squid-7.0.1" ];
+  # nixpkgs.config.permittedInsecurePackages = [ "squid-7.0.1" ];
 
   # Adapt Nix to our core-count
   nix.settings.max-jobs = 8;
