@@ -1,5 +1,6 @@
 - name: Reboot all servers
   hosts: all
+  gather_facts: false
   become: true
   tasks:
     - name: Reboot all servers
