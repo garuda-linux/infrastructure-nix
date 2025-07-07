@@ -1,5 +1,4 @@
-_:
-{
+_: {
   # Lock down chaotic-op group to SCP in landing zone
   services.openssh.extraConfig = ''
     Match Group chaotic-op

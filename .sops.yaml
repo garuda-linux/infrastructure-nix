@@ -8,8 +8,8 @@ creation_rules:
   - path_regex: secrets/shared.yaml$
     key_groups:
       - age:
-          - *tne
-          - *nico
-          - *stormwing
-          - *aerialis
-          - *garuda-mail
+          - *tne 
+          - *nico 
+          - *stormwing 
+          - *aerialis 
+          - *garuda-mail 

@@ -1,7 +1,8 @@
-{ config
-, lib
-, pkgs
-, ...
+{
+  config,
+  lib,
+  pkgs,
+  ...
 }:
 let
   authres_status = pkgs.roundcubePlugins.roundcubePlugin rec {
@@ -19,23 +20,33 @@ in
   ];
 
   # Base configuration
-  boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "virtio_pci" "sr_mod" "virtio_blk" ];
+  boot.initrd.availableKernelModules = [
+    "ata_piix"
+    "uhci_hcd"
+    "virtio_pci"
+    "sr_mod"
+    "virtio_blk"
+  ];
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/f52d63bd-a9e6-48a2-a25f-1772b988c424";
     fsType = "ext4";
   };
 
-  swapDevices = [{
-    device = "/var/lib/swapfile";
-    size = 6 * 1024;
-  }];
+  swapDevices = [
+    {
+      device = "/var/lib/swapfile";
+      size = 6 * 1024;
+    }
+  ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
-  networking.interfaces.ens3.ipv4.addresses = [{
-    address = "94.16.112.218";
-    prefixLength = 22;
-  }];
+  networking.interfaces.ens3.ipv4.addresses = [
+    {
+      address = "94.16.112.218";
+      prefixLength = 22;
+    }
+  ];
   networking.hostName = "garuda-mail";
   networking.defaultGateway = "94.16.112.3";
 
@@ -57,7 +68,10 @@ in
       environment = {
         BORG_RSH = "ssh -i ${config.sops.secrets."backup/ssh_aerialis".path} -p 23";
       };
-      paths = [ config.mailserver.mailDirectory "/var/dkim" ];
+      paths = [
+        config.mailserver.mailDirectory
+        "/var/dkim"
+      ];
       prune.keep = {
         within = "1d";
         daily = 5;
@@ -77,7 +91,10 @@ in
       enable = true;
       organizationName = "Garuda Linux";
     };
-    domains = [ "garudalinux.org" "dr460nf1r3.org" ];
+    domains = [
+      "garudalinux.org"
+      "dr460nf1r3.org"
+    ];
     enable = true;
     fqdn = "mail.garudalinux.net";
     fullTextSearch = {
@@ -143,10 +160,10 @@ in
       };
       # dr460nf1r3.org
       "noreply@dr460nf1r3.org" = {
-        hashedPasswordFile =config.sops.secrets."mail/noreplyatdf".path;
+        hashedPasswordFile = config.sops.secrets."mail/noreplyatdf".path;
       };
       "test@dr460nf1r3.org" = {
-        hashedPasswordFile =config.sops.secrets."mail/testatdf".path;
+        hashedPasswordFile = config.sops.secrets."mail/testatdf".path;
       };
     };
     indexDir = "/var/lib/dovecot/indices";
@@ -163,7 +180,10 @@ in
   environment.memoryAllocator.provider = lib.mkForce "libc";
 
   # Set up push notifications
-  services.dovecot2.mailPlugins.globally.enable = [ "notify" "push_notification" ];
+  services.dovecot2.mailPlugins.globally.enable = [
+    "notify"
+    "push_notification"
+  ];
 
   # Postmaster alias
   services.postfix.postmasterAlias = "nico@dr460nf1r3.org";
@@ -181,16 +201,14 @@ in
       $config['smtp_user'] = "%u";
       $config['smtp_pass'] = "%p";
     '';
-    package = pkgs.roundcube.withPlugins (
-      plugins: [
-        authres_status
-        plugins.carddav
-        plugins.contextmenu
-        plugins.custom_from
-        plugins.persistent_login
-        plugins.thunderbird_labels
-      ]
-    );
+    package = pkgs.roundcube.withPlugins (plugins: [
+      authres_status
+      plugins.carddav
+      plugins.contextmenu
+      plugins.custom_from
+      plugins.persistent_login
+      plugins.thunderbird_labels
+    ]);
     plugins = [
       "attachment_reminder" # Roundcube internal plugin
       "authres_status"
@@ -205,29 +223,28 @@ in
     ];
   };
 
-# Secrets
-sops.secrets = {
-  "backup/repo_key" = {};
-  "backup/ssh_aerialis" = {};
-  "mail/cloudatgl" = {};
-  "mail/complaintsatgl" = {};
-  "mail/dr460nf1r3atgl" = {};
-  "mail/filoatgl" = {};
-  "mail/gitlabatgl" = {};
-  "mail/mastodonatgl" = {};
-  "mail/namanatgl" = {};
-  "mail/noreplyatgl" = {};
-  "mail/rohitatgl" = {};
-  "mail/securityatgl" = {};
-  "mail/sgsatgl" = {};
-  "mail/spam-reportsatgl" = {};
-  "mail/teamatgl" = {};
-  "mail/testatdf" = {};
-  "mail/tneatgl" = {};
-  "mail/yorperatgl" = {};
-  "mail/noreplyatdf" = {};
-};
-
+  # Secrets
+  sops.secrets = {
+    "backup/repo_key" = { };
+    "backup/ssh_aerialis" = { };
+    "mail/cloudatgl" = { };
+    "mail/complaintsatgl" = { };
+    "mail/dr460nf1r3atgl" = { };
+    "mail/filoatgl" = { };
+    "mail/gitlabatgl" = { };
+    "mail/mastodonatgl" = { };
+    "mail/namanatgl" = { };
+    "mail/noreplyatgl" = { };
+    "mail/rohitatgl" = { };
+    "mail/securityatgl" = { };
+    "mail/sgsatgl" = { };
+    "mail/spam-reportsatgl" = { };
+    "mail/teamatgl" = { };
+    "mail/testatdf" = { };
+    "mail/tneatgl" = { };
+    "mail/yorperatgl" = { };
+    "mail/noreplyatdf" = { };
+  };
 
   # At least try to prevent the insane spam of login attempts
   services.openssh.ports = [ 1022 ];

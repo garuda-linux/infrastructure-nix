@@ -80,8 +80,6 @@ services:
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-?err}
       PACKAGE_REPOS: >-
         {
-
-
             "chaotic-aur": {
                 "url": "https://gitlab.com/chaotic-aur/pkgbuilds"
             },
@@ -91,8 +89,6 @@ services:
         }
       PACKAGE_TARGET_REPOS: >-
         {
-
-
             "chaotic-aur": {
                 "extra_repos": [
                     {
@@ -128,8 +124,6 @@ services:
         }
       PACKAGE_REPOS_NOTIFIERS: >-
         {
-
-
             "chaotic-aur": {
                 "id": "54867625",
                 "token": "${GITLAB_TOKEN_CX:-?err}",

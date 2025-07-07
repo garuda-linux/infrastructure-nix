@@ -390,7 +390,11 @@ rec {
           ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
-        locations = { "/" = { proxyPass = "http://10.0.5.60:3001"; }; };
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.60:3001";
+          };
+        };
         quic = true;
         useACMEHost = "garudalinux.org";
       };
