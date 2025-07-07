@@ -277,7 +277,7 @@
     "keys_tne": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-5+km8r1tnw99bAJKQjDt7S1cx53Ov7GO+eF8LZv3Uzk=",
+        "narHash": "sha256-LyZIq6tPr0Y4nBGXVtTtqiaMOB7ICuX+yc6zNg14atI=",
         "type": "file",
         "url": "https://github.com/justtne.keys"
       },
