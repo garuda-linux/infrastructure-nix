@@ -139,7 +139,7 @@
                        -v "./buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
                        buildiso /bin/bash
               '';
-              immortals = "builds.garudalinux.org";
+              stormwing = "builds.garudalinux.org";
               makeDevshell = import "${inputs.devshell}/modules" pkgs;
               mkShell =
                 config:
@@ -204,7 +204,7 @@
                   category = "infra-nix";
                   command = ''
                     # We are assuming the NixOS user is named the same as the one using it
-                    ssh -p227 -t ${immortals} "buildiso"
+                    ssh -p220 -t ${stormwing} "buildiso"
                   '';
                 }
                 {
@@ -294,7 +294,6 @@
               shellcheck.enable = true;
               shfmt.enable = true;
               statix.enable = true;
-              yamlfmt.enable = true;
             };
           };
         };
