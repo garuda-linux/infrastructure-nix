@@ -51,6 +51,13 @@
     fsType = "vfat";
   };
 
+  swapDevices = [
+    {
+      device = "/data_1/swapfile";
+      size = 32 * 1024;
+    }
+  ];
+
   services.openssh.ports = [ 666 ];
 
   # Network configuration with a bridge interface
