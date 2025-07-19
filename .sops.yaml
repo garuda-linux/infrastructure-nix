@@ -3,13 +3,11 @@ keys:
   - &nico age1hvfhax6eysywun0up8um52yj435z99xq3wpu2py54je263hmjfqsjguk0z
   - &stormwing age1fesput9yl8q0kvhejrjxaesxp2z9208pnex7gghjahmn0xemcuvqlrg92t
   - &aerialis age1cjuy5mc4fphcc3x4x9uh6puzhetrsuzaa4kn9j3edjvfa0rrcfasjchnkk
-  - &garuda-mail age1xyyhfx8yddnu7gsdv86y64ynqxfwd9zr998tk97elllja7wqtfpsu00hkh
 creation_rules:
   - path_regex: secrets/shared.yaml$
     key_groups:
       - age:
-          - *tne 
-          - *nico 
-          - *stormwing 
-          - *aerialis 
-          - *garuda-mail 
+          - *tne
+          - *nico
+          - *stormwing
+          - *aerialis
