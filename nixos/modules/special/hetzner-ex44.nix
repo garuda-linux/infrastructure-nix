@@ -39,7 +39,7 @@
 
   nix.settings.max-jobs = 8;
 
-  hardware.enableAllFirmware = true;
+  hardware.enableRedistributableFirmware = true;
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
   # Better have an eye on the disks

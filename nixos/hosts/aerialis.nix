@@ -201,6 +201,56 @@
         };
         ipAddress = "10.0.5.30";
       };
+      mail = {
+        config = import ./aerialis/mail.nix;
+        extraOptions = {
+          bindMounts = {
+            "acme" = {
+              hostPath = "/data_2/containers/web-front/acme";
+              isReadOnly = false;
+              mountPoint = "/var/lib/acme";
+            };
+            "dkim" = {
+              hostPath = "/data_1/containers/mail/dkim";
+              isReadOnly = false;
+              mountPoint = "/var/dkim";
+            };
+            "rspamd" = {
+              hostPath = "/data_1/containers/mail/rspamd";
+              isReadOnly = false;
+              mountPoint = "/var/lib/redis-rspamd";
+            };
+            "sieve" = {
+              hostPath = "/data_1/containers/mail/sieve";
+              isReadOnly = false;
+              mountPoint = "/var/sieve";
+            };
+            "vmail" = {
+              hostPath = "/data_1/containers/mail/vmail";
+              isReadOnly = false;
+              mountPoint = "/var/vmail";
+            };
+          };
+          forwardPorts = [
+            {
+              containerPort = 993;
+              hostPort = 993;
+              protocol = "tcp";
+            }
+            {
+              containerPort = 587;
+              hostPort = 587;
+              protocol = "tcp";
+            }
+            {
+              containerPort = 465;
+              hostPort = 465;
+              protocol = "tcp";
+            }
+          ];
+        };
+        ipAddress = "10.0.5.80";
+      };
       postgres = {
         config = import ./aerialis/postgres.nix;
         extraOptions = {

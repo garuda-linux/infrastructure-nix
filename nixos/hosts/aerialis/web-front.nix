@@ -30,7 +30,8 @@ let
       ];
       pnpmDeps = pkgs.pnpm_10.fetchDeps {
         inherit (finalAttrs) pname version src;
-        hash = "sha256-IatSw2EUQVSt0lXgxBCDzCfyzEHNq8JffFodIALGXTk=";
+        fetcherVersion = 1;
+        hash = "sha256-tjcD/1Opv5jGeWdFvA4xw4V5L7nj1HBs3WiwNXPjWHk=";
       };
       buildPhase = ''
         export PATH=$(pnpm bin):$PATH
@@ -411,6 +412,20 @@ rec {
         extraConfig = ''
           ${garuda-lib.nginxReverseProxySettings}
         '';
+      };
+      "mail.garudalinux.net" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.80:80";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.net";
       };
       # Default catch-all for unknown domains
       "_" = {
