@@ -92,6 +92,20 @@
         proto = "udp";
         sourcePort = 443;
       }
+      {
+        # mail (SMTP)
+        destination = "10.0.5.80:587";
+        loopbackIPs =  [ "157.180.57.100" ];
+        proto = "tcp";
+        sourcePort = 587;
+      }
+      {
+        # mail (SMTP over SSL)
+        destination = "10.0.5.80:465";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "tcp";
+        sourcePort = 465;
+      }
     ];
     firewall.trustedInterfaces = [ "br0" ];
   };
@@ -235,16 +249,6 @@
             {
               containerPort = 993;
               hostPort = 993;
-              protocol = "tcp";
-            }
-            {
-              containerPort = 587;
-              hostPort = 587;
-              protocol = "tcp";
-            }
-            {
-              containerPort = 465;
-              hostPort = 465;
               protocol = "tcp";
             }
           ];

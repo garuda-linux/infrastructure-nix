@@ -6,4 +6,3 @@ sftp_enabled = true
 [nix]
 stormwing
 aerialis
-garuda-mail

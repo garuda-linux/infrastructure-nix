@@ -83,14 +83,6 @@ in
         modules = defaultModules ++ newGenModules ++ [ ./hosts/aerialis.nix ];
         extraModules = [ inputs.colmena.nixosModules.deploymentOptions ];
       };
-      "garuda-mail" = patchedNixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ [
-          ./hosts/garuda-mail.nix
-          inputs.nixos-mailserver.nixosModule
-        ];
-      };
     };
 
     colmena = {
