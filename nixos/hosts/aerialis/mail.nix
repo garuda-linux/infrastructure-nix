@@ -100,10 +100,9 @@ in
       };
     };
     indexDir = "/var/lib/dovecot/indices";
-    monitoring = {
-      alertAddress = "team@garudalinux.org";
-      enable = true;
-    };
+    # We do it via UptimeKuma, and since we don't enable NAT reflection in this server, this
+    # shuts down the services.
+    monitoring.enable = false;
     systemDomain = "garudalinux.org";
     systemName = "Garuda Linux";
   };
