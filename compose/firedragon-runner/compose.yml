@@ -1,0 +1,15 @@
+services:
+  firedragon-runner:
+    image: gitlab/gitlab-runner:alpine
+    container_name: firedragon-runner
+    volumes:
+      - ./firedragon-runner:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: 'no'
+  firedragon-runner-dind:
+    image: gitlab/gitlab-runner:alpine
+    container_name: firedragon-runner-dind
+    volumes:
+      - ./firedragon-runner-dind:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: 'no'

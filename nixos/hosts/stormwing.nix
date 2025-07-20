@@ -229,6 +229,25 @@
         cpuWeight = 20;
         ioWeight = 20;
       };
+      firedragon-runner = {
+        config = import ./stormwing/firedragon-runner.nix;
+        defaults = false;
+        extraOptions = {
+          bindMounts = {
+            "firedragon-runner" = {
+              hostPath = "/data_1/containers/firedragon-runner";
+              isReadOnly = false;
+              mountPoint = "/var/garuda/compose-runner/firedragon-runner";
+            };
+          };
+          ephemeral = lib.mkForce true;
+        };
+        ipAddress = "10.0.5.50";
+        needsDocker = true;
+        # Only entitled to 10% of the CPU resources in case of contention
+        cpuWeight = 10;
+        ioWeight = 10;
+      };
       iso-runner = {
         config = import ./stormwing/iso-runner.nix;
         extraOptions = {
