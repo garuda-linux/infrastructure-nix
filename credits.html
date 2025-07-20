@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="mocha" dir="ltr">
+<html lang="en" class="mocha sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -24,29 +24,44 @@
         <link rel="stylesheet" href="fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="./theme/mdbook-admonish.css">
         <link rel="stylesheet" href="./theme/catppuccin.css">
         <link rel="stylesheet" href="./theme/catppuccin-admonish.css">
 
-    </head>
-    <body class="sidebar-visible no-js">
-    <div id="body-container">
-        <!-- Provide site root to javascript -->
-        <script>
-            var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "mocha" : "mocha";
-        </script>
 
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "mocha";
+            const default_dark_theme = "mocha";
+            window.path_to_searchindex_js = "searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
-                var theme = localStorage.getItem('mdbook-theme');
-                var sidebar = localStorage.getItem('mdbook-sidebar');
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
 
                 if (theme.startsWith('"') && theme.endsWith('"')) {
                     localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
@@ -60,65 +75,46 @@
 
         <!-- Set the theme before any content is loaded, prevents flash -->
         <script>
-            var theme;
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
+            const html = document.documentElement;
             html.classList.remove('mocha')
             html.classList.add(theme);
-            var body = document.querySelector('body');
-            body.classList.remove('no-js')
-            body.classList.add('js');
+            html.classList.add("js");
         </script>
 
         <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var body = document.querySelector('body');
-            var sidebar = null;
-            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
+                sidebar_toggle.checked = false;
             }
-            sidebar_toggle.checked = sidebar === 'visible';
-            body.classList.remove('sidebar-visible');
-            body.classList.add("sidebar-" + sidebar);
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Users</li><li class="chapter-item expanded "><a href="users.html"><strong aria-hidden="true">5.</strong> Users</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="users/current_users.html"><strong aria-hidden="true">5.1.</strong> Current users</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="hosts/aerialis.html"><strong aria-hidden="true">6.</strong> aerialis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="hosts/aerialis/chaotic-backend.html"><strong aria-hidden="true">6.1.</strong> chaotic-backend</a></li><li class="chapter-item expanded "><a href="hosts/aerialis/docker.html"><strong aria-hidden="true">6.2.</strong> docker</a></li><li class="chapter-item expanded "><a href="hosts/aerialis/docker-proxied.html"><strong aria-hidden="true">6.3.</strong> docker-proxied</a></li><li class="chapter-item expanded "><a href="hosts/aerialis/forum.html"><strong aria-hidden="true">6.4.</strong> forum</a></li><li class="chapter-item expanded "><a href="hosts/aerialis/mail.html"><strong aria-hidden="true">6.5.</strong> mail</a></li><li class="chapter-item expanded "><a href="hosts/aerialis/mastodon.html"><strong aria-hidden="true">6.6.</strong> mastodon</a></li><li class="chapter-item expanded "><a href="hosts/aerialis/postgres.html"><strong aria-hidden="true">6.7.</strong> postgres</a></li><li class="chapter-item expanded "><a href="hosts/aerialis/web-front.html"><strong aria-hidden="true">6.8.</strong> web-front</a></li></ol></li><li class="chapter-item expanded "><a href="hosts/stormwing.html"><strong aria-hidden="true">7.</strong> stormwing</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="hosts/stormwing/chaotic-v4.html"><strong aria-hidden="true">7.1.</strong> chaotic-v4</a></li><li class="chapter-item expanded "><a href="hosts/stormwing/firedragon-runner.html"><strong aria-hidden="true">7.2.</strong> firedragon-runner</a></li><li class="chapter-item expanded "><a href="hosts/stormwing/github-runner.html"><strong aria-hidden="true">7.3.</strong> github-runner</a></li><li class="chapter-item expanded "><a href="hosts/stormwing/iso-runner.html"><strong aria-hidden="true">7.4.</strong> iso-runner</a></li><li class="chapter-item expanded "><a href="hosts/stormwing/web-front.html"><strong aria-hidden="true">7.5.</strong> web-front</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Repository infrastructure</li><li class="chapter-item expanded "><a href="repositories/general.html"><strong aria-hidden="true">8.</strong> General information</a></li><li class="chapter-item expanded "><a href="repositories/pkgbuilds.html"><strong aria-hidden="true">9.</strong> PKGBUILDs</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><a href="services/chaotic-4.0.html"><strong aria-hidden="true">10.</strong> Chaotic 4.0</a></li><li class="chapter-item expanded "><a href="services/discourse.html"><strong aria-hidden="true">11.</strong> Discourse</a></li><li class="chapter-item expanded "><a href="websites/documentation.html"><strong aria-hidden="true">12.</strong> Documentation</a></li><li class="chapter-item expanded "><a href="services/tailscale.html"><strong aria-hidden="true">13.</strong> Tailscale</a></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><a href="code-of-conduct.html"><strong aria-hidden="true">14.</strong> Code of Conduct</a></li><li class="chapter-item expanded "><a href="privacy-policy.html"><strong aria-hidden="true">15.</strong> Privacy policy</a></li><li class="chapter-item expanded "><a href="security.html"><strong aria-hidden="true">16.</strong> Security</a></li><li class="chapter-item expanded "><a href="credits.html"><strong aria-hidden="true">17.</strong> Credits</a></li></ol>
-            </div>
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
             </div>
         </nav>
-
-        <!-- Track and set sidebar scroll position -->
-        <script>
-            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
-            sidebarScrollbox.addEventListener('click', function(e) {
-                if (e.target.tagName === 'A') {
-                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
-                }
-            }, { passive: true });
-            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
-            sessionStorage.removeItem('sidebar-scroll');
-            if (sidebarScrollTop) {
-                // preserve sidebar scroll position when navigating via links within sidebar
-                sidebarScrollbox.scrollTop = sidebarScrollTop;
-            } else {
-                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
-                var activeSection = document.querySelector('#sidebar .active');
-                if (activeSection) {
-                    activeSection.scrollIntoView({ block: 'center' });
-                }
-            }
-        </script>
 
         <div id="page-wrapper" class="page-wrapper">
 
@@ -133,6 +129,7 @@
                             <i class="fa fa-paint-brush"></i>
                         </button>
                         <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
@@ -143,7 +140,7 @@
                             <li role="none"><button role="menuitem" class="theme" id="macchiato">Macchiato</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="mocha">Mocha</button></li>
                         </ul>
-                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
                     </div>
@@ -163,7 +160,12 @@
 
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -231,6 +233,7 @@
         <script src="book.js"></script>
 
         <!-- Custom JS scripts -->
+
 
 
     </div>
