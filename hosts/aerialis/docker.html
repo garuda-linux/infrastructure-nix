@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Users - Garuda&#x27;s infra documentation</title>
+        <title>docker - Garuda&#x27;s infra documentation</title>
 
 
         <!-- Custom HTML head -->
@@ -12,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="./theme/mdbook-admonish.css">
-        <link rel="stylesheet" href="./theme/catppuccin.css">
-        <link rel="stylesheet" href="./theme/catppuccin-admonish.css">
+        <link rel="stylesheet" href="../.././theme/mdbook-admonish.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin-admonish.css">
 
     </head>
     <body class="sidebar-visible no-js">
     <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "";
+            var path_to_root = "../../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "mocha" : "mocha";
         </script>
 
@@ -151,7 +151,7 @@
                     <h1 class="menu-title">Garuda&#x27;s infra documentation</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                         <a href="https://github.com/garuda-linux/infrastructure-nix" title="Git repository" aria-label="Git repository">
@@ -183,39 +183,203 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="users"><a class="header" href="#users">Users</a></h1>
-<p>Multiple kinds of users can make use of our infrastructure. A current list of users is
-available <a href="./users/current_users.html">here</a>.</p>
-<h2 id="adding-new-users"><a class="header" href="#adding-new-users">Adding new users</a></h2>
-<p>New users can be added by supplying a fitting configuration in the <code>users.nix</code> module.
-In case of a password being required, its hash needs to be generated as follows:</p>
-<pre><code class="language-sh">nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt' &gt; /path/to/hashedPasswordFile
+                        <h1 id="docker-aerialis"><a class="header" href="#docker-aerialis">docker (aerialis)</a></h1>
+<p>This container runs general-purpose Docker workloads for services that are not packaged natively in NixOS.</p>
+<h2 id="general"><a class="header" href="#general">General</a></h2>
+<p>This container is used to run regular Docker containers.
+Recently, the <code>compose-runner</code> module has been replaced by native Nix expressions.</p>
+<h2 id="nextcloud-aio"><a class="header" href="#nextcloud-aio">Nextcloud AIO</a></h2>
+<p>This container also runs a Nextcloud AIO master container, which administrates its containers by itself.
+Consult its <a href="https://github.com/nextcloud/docker">extensive documentation for more information</a>.
+Since this container requires a Nextcloud volume at a fixed place, without being able to change it, it is not
+included in the regular data directory.</p>
+<p>Instead, backups are regularly performed via the inbuilt backup function in the admin interface.
+They can be found at <code>/var/garuda/compose-runner/docker/nextcloud-aio</code>
+and are included in the offsite system backups.</p>
+<h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
+<pre><code class="language-nix">{
+  config,
+  sources,
+  ...
+}:
+{
+  imports = sources.defaultModules ++ [ ../../modules ];
+
+  # This container is just for compose stuff
+  garuda.services.compose-runner.docker = {
+    envfile = config.sops.secrets."compose/docker".path;
+    source = ../../../compose/docker;
+    extraEnv = {
+      "MATTERBRIDGE_CONFIG" = config.sops.secrets."compose/matterbridge".path;
+    };
+  };
+
+  sops.secrets = {
+    "compose/docker" = {
+      restartUnits = [ "compose-runner-docker.service" ];
+    };
+    "compose/matterbridge" = {
+      restartUnits = [ "compose-runner-docker.service" ];
+    };
+  };
+
+  system.stateVersion = "25.05";
+}
 </code></pre>
-<p>The file then needs to be added to our sops file and committed to our <a href="https://gitlab.com/garuda-linux/infra-nix-secrets">secrets</a> repository.
-This one is only available to members of our GitLab org and usually is cloned as git submodule to <code>./secrets</code>.</p>
-<h2 id="onboarding-a-new-admin"><a class="header" href="#onboarding-a-new-admin">Onboarding a new admin</a></h2>
-<p>After confirming the trustworthiness of a new admin, the following actions need to be executed:</p>
-<ul>
-<li>Add them to the <a href="./users/current_users.html#admins">admin users</a></li>
-<li>Add their ssh public key to
-the <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/flake.nix?ref_type=heads#L59">flake inputs</a>
-and <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/flake-module.nix?ref_type=heads#L38">specialArgs</a></li>
-<li>Make them an owner of the <a href="https://gitlab.com/garuda-linux">GitLab organization</a></li>
-<li>Add them to our <a href="https://vault.garudalinux.org">Vaultwarden organization</a> to allow access to passwords and email
-accounts</li>
-<li>Add them to the Cloudflare Account</li>
-<li>Make them an admin of <a href="https://forum.garudalinux.org">Discourse</a></li>
-</ul>
+<h3 id="docker-containers"><a class="header" href="#docker-containers">Docker containers</a></h3>
+<pre><code class="language-yaml">services:
+  # Nextcloud AIO (self-managed containers)
+  # The dummy mounts are for creating the required volumes, even
+  # though the container doesn't use them. The actual containers
+  # making use of these volumes are started by the master container.
+  # Do *not* change container and volume names!
+  nextcloud-aio-mastercontainer:
+    image: nextcloud/all-in-one:latest
+    restart: always
+    container_name: nextcloud-aio-mastercontainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - nextcloud_aio_clamav:/dummy/clamav
+      - nextcloud_aio_database:/dummy/database
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
+      - nextcloud_aio_nextcloud:/dummy/nextcloud
+      - nextcloud_aio_nextcloud_data:/dummy/nextcloud_data
+      - nextcloud_aio_redis:/dummy/redis
+    ports: ["8080:8080"]
+    environment:
+      APACHE_PORT: 11000
+      APACHE_IP_BINDING: 10.0.5.60
+      NEXTCLOUD_DATADIR: /var/garuda/compose-runner/docker/nextcloud-aio/nextcloud_data
+  # Firefox syncserver
+  syncserver:
+    container_name: syncserver
+    image: crazymax/firefox-syncserver:edge # newest, versioned one 3 years old
+    volumes: ["./syncserver:/data"]
+    ports: ["5001:5000"]
+    environment:
+      FF_SYNCSERVER_ACCESSLOG: true
+      FF_SYNCSERVER_FORCE_WSGI_ENVIRON: true
+      FF_SYNCSERVER_FORWARDED_ALLOW_IPS: "*"
+      FF_SYNCSERVER_PUBLIC_URL: https://ffsync.garudalinux.org
+      FF_SYNCSERVER_SECRET: ${FF_SYNCSERVER_SECRET:-?err}
+      FF_SYNCSERVER_SQLURI: sqlite:////data/syncserver.db
+      TZ: Europe/Berlin
+    restart: always
+  # Web IRC access
+  thelounge:
+    image: thelounge/thelounge:4.4.3
+    container_name: thelounge
+    volumes: ["./thelounge:/var/opt/thelounge"]
+    ports: ["9000:9000"]
+    restart: always
+  # Password vault
+  vaultwarden:
+    image: vaultwarden/server:1.34.1-alpine
+    container_name: vaultwarden
+    volumes: ["./bitwarden:/data"]
+    ports: ["8081:80"]
+    environment:
+      ADMIN_TOKEN: ${BW_ADMIN_TOKEN:-?err}
+      DOMAIN: https://bitwarden.garudalinux.org
+      SIGNUPS_ALLOWED: true
+      SMTP_FROM: noreply@garudalinux.org
+      SMTP_HOST: mail.garudalinux.org
+      SMTP_PASSWORD: ${BW_SMTP_PASSWORD:-?err}
+      SMTP_PORT: 587
+      SMTP_SSL: false
+      SMTP_USERNAME: noreply@garudalinux.org
+      WEBSOCKET_ENABLED: true
+      YUBICO_CLIENT_ID: ${BW_YUBICO_CLIENT_ID:-?err}
+      YUBICO_SECRET_KEY: ${BW_YUBICO_ADMIN_SECRET:-?err}
+    restart: always
+  # Secure pastebin
+  privatebin:
+    image: privatebin/nginx-fpm-alpine:1.7.6
+    container_name: privatebin
+    volumes:
+      - ./privatebin:/srv/data
+      - ./configs/privatebin.cfg.php:/srv/cfg/conf.php
+    ports: ["8082:8080"]
+    restart: always
+  # WikiJs
+  wikijs:
+    image: requarks/wiki:2.5
+    container_name: wikijs
+    volumes: ["./wikijs/assets:/wiki/assets/favicons"]
+    ports: ["3001:3000"]
+    environment:
+      DB_TYPE: postgres
+      DB_HOST: 10.0.5.20
+      DB_PORT: 5432
+      DB_USER: wikijs
+      DB_PASS: ${DB_PASS:-?err}
+      DB_NAME: wikijs
+    restart: always
+  # IRC/Discord/Telegram relay
+  matterbridge:
+    image: 42wim/matterbridge:latest
+    container_name: matterbridge
+    volumes:
+      - ${MATTERBRIDGE_CONFIG:-?err}:/etc/matterbridge/matterbridge.toml:ro
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 120s
+  # Automated container updates
+  watchtower:
+    image: containrrr/watchtower:1.7.1
+    container_name: watchtower
+    command: --cleanup matterbridge wikijs privatebin vaultwarden thelounge syncserver
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
+    restart: always
+volumes:
+  nextcloud_aio_mastercontainer:
+    name: nextcloud_aio_mastercontainer
+    driver_opts:
+      type: none
+      device: /var/garuda/compose-runner/docker/nextcloud-aio/mastercontainer
+      o: bind
+  nextcloud_aio_clamav:
+    name: nextcloud_aio_clamav
+    driver_opts:
+      type: none
+      device: /var/garuda/compose-runner/docker/nextcloud-aio/clamav
+      o: bind
+  nextcloud_aio_database:
+    name: nextcloud_aio_database
+    driver_opts:
+      type: none
+      device: /var/garuda/compose-runner/docker/nextcloud-aio/database
+      o: bind
+  nextcloud_aio_nextcloud:
+    name: nextcloud_aio_nextcloud
+    driver_opts:
+      type: none
+      device: /var/garuda/compose-runner/docker/nextcloud-aio/nextcloud
+      o: bind
+  nextcloud_aio_nextcloud_data:
+    name: nextcloud_aio_nextcloud_data
+    driver_opts:
+      type: none
+      device: /var/garuda/compose-runner/docker/nextcloud-aio/nextcloud_data
+      o: bind
+  nextcloud_aio_redis:
+    name: nextcloud_aio_redis
+    driver_opts:
+      type: none
+      device: /var/garuda/compose-runner/docker/nextcloud-aio/redis
+      o: bind
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="important-links.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../hosts/aerialis/chaotic-backend.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="users/current_users.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../hosts/aerialis/docker-proxied.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -225,11 +389,11 @@ accounts</li>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="important-links.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../hosts/aerialis/chaotic-backend.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="users/current_users.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../hosts/aerialis/docker-proxied.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -244,13 +408,13 @@ accounts</li>
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

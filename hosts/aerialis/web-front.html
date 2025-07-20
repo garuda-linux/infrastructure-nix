@@ -1,0 +1,700 @@
+<!DOCTYPE HTML>
+<html lang="en" class="mocha" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>web-front - Garuda&#x27;s infra documentation</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="Contains the documentation for the Garuda Linux infrastructure.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../.././theme/mdbook-admonish.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin-admonish.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "mocha" : "mocha";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('mocha')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">Welcome</li><li class="chapter-item expanded "><a href="intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="general.html"><strong aria-hidden="true">2.</strong> General information</a></li><li class="chapter-item expanded "><a href="common.html"><strong aria-hidden="true">3.</strong> Common tasks</a></li><li class="chapter-item expanded "><a href="important-links.html"><strong aria-hidden="true">4.</strong> Important links</a></li><li class="chapter-item expanded affix "><li class="part-title">Users</li><li class="chapter-item expanded "><a href="users.html"><strong aria-hidden="true">5.</strong> Users</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="users/current_users.html"><strong aria-hidden="true">5.1.</strong> Current users</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Hosts</li><li class="chapter-item expanded "><a href="hosts/aerialis.html"><strong aria-hidden="true">6.</strong> aerialis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="hosts/aerialis/chaotic-backend.html"><strong aria-hidden="true">6.1.</strong> chaotic-backend</a></li><li class="chapter-item expanded "><a href="hosts/aerialis/docker.html"><strong aria-hidden="true">6.2.</strong> docker</a></li><li class="chapter-item expanded "><a href="hosts/aerialis/docker-proxied.html"><strong aria-hidden="true">6.3.</strong> docker-proxied</a></li><li class="chapter-item expanded "><a href="hosts/aerialis/forum.html"><strong aria-hidden="true">6.4.</strong> forum</a></li><li class="chapter-item expanded "><a href="hosts/aerialis/mail.html"><strong aria-hidden="true">6.5.</strong> mail</a></li><li class="chapter-item expanded "><a href="hosts/aerialis/mastodon.html"><strong aria-hidden="true">6.6.</strong> mastodon</a></li><li class="chapter-item expanded "><a href="hosts/aerialis/postgres.html"><strong aria-hidden="true">6.7.</strong> postgres</a></li><li class="chapter-item expanded "><a href="hosts/aerialis/web-front.html"><strong aria-hidden="true">6.8.</strong> web-front</a></li></ol></li><li class="chapter-item expanded "><a href="hosts/stormwing.html"><strong aria-hidden="true">7.</strong> stormwing</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="hosts/stormwing/chaotic-v4.html"><strong aria-hidden="true">7.1.</strong> chaotic-v4</a></li><li class="chapter-item expanded "><a href="hosts/stormwing/firedragon-runner.html"><strong aria-hidden="true">7.2.</strong> firedragon-runner</a></li><li class="chapter-item expanded "><a href="hosts/stormwing/github-runner.html"><strong aria-hidden="true">7.3.</strong> github-runner</a></li><li class="chapter-item expanded "><a href="hosts/stormwing/iso-runner.html"><strong aria-hidden="true">7.4.</strong> iso-runner</a></li><li class="chapter-item expanded "><a href="hosts/stormwing/web-front.html"><strong aria-hidden="true">7.5.</strong> web-front</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Repository infrastructure</li><li class="chapter-item expanded "><a href="repositories/general.html"><strong aria-hidden="true">8.</strong> General information</a></li><li class="chapter-item expanded "><a href="repositories/pkgbuilds.html"><strong aria-hidden="true">9.</strong> PKGBUILDs</a></li><li class="chapter-item expanded affix "><li class="part-title">Services</li><li class="chapter-item expanded "><a href="services/chaotic-4.0.html"><strong aria-hidden="true">10.</strong> Chaotic 4.0</a></li><li class="chapter-item expanded "><a href="services/discourse.html"><strong aria-hidden="true">11.</strong> Discourse</a></li><li class="chapter-item expanded "><a href="websites/documentation.html"><strong aria-hidden="true">12.</strong> Documentation</a></li><li class="chapter-item expanded "><a href="services/tailscale.html"><strong aria-hidden="true">13.</strong> Tailscale</a></li><li class="chapter-item expanded affix "><li class="part-title">Misc</li><li class="chapter-item expanded "><a href="code-of-conduct.html"><strong aria-hidden="true">14.</strong> Code of Conduct</a></li><li class="chapter-item expanded "><a href="privacy-policy.html"><strong aria-hidden="true">15.</strong> Privacy policy</a></li><li class="chapter-item expanded "><a href="security.html"><strong aria-hidden="true">16.</strong> Security</a></li><li class="chapter-item expanded "><a href="credits.html"><strong aria-hidden="true">17.</strong> Credits</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="latte">Latte</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="frappe">Frappé</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="macchiato">Macchiato</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mocha">Mocha</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Garuda&#x27;s infra documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/garuda-linux/infrastructure-nix" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-code-fork"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="web-front-aerialis"><a class="header" href="#web-front-aerialis">web-front (aerialis)</a></h1>
+<p>This container acts as the main reverse proxy and web frontend for hosted services on aerialis, handling HTTPS termination and routing.</p>
+<h2 id="general"><a class="header" href="#general">General</a></h2>
+<p>This container is used as a reverse proxy for all of our public facing services.
+It also contains a Cloudflared instance,
+which a few services are only being exposed to, instead of being reverse proxied by Nginx itself.</p>
+<h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
+<pre><code class="language-nix">{
+  config,
+  garuda-lib,
+  pkgs,
+  sources,
+  ...
+}:
+let
+  inherit (garuda-lib) allowOnlyCloudflared;
+  inherit (garuda-lib) allowOnlyCloudflareZerotrust;
+  inherit (garuda-lib) generateCloudflaredIngress;
+
+  website =
+    let
+      # Run Nx command with fake TTY to avoid panic
+      # https://github.com/nrwl/nx/issues/22445
+      nx = pkgs.writeScript "nx-wrapper" ''
+        exec ${pkgs.faketty}/bin/faketty nx "$@"
+      '';
+    in
+    pkgs.stdenv.mkDerivation (finalAttrs: {
+      pname = "garuda-website";
+      version = "1.0.0";
+
+      src = sources.garuda-website;
+
+      nativeBuildInputs = with pkgs; [
+        nodejs_22
+        pnpm_10.configHook
+      ];
+      pnpmDeps = pkgs.pnpm_10.fetchDeps {
+        inherit (finalAttrs) pname version src;
+        fetcherVersion = 1;
+        hash = "sha256-tjcD/1Opv5jGeWdFvA4xw4V5L7nj1HBs3WiwNXPjWHk=";
+      };
+      buildPhase = ''
+        export PATH=$(pnpm bin):$PATH
+        ${nx} build &amp;&amp; ${nx} transloco:optimize
+      '';
+      installPhase = ''
+        cp -r ./dist/website/browser $out
+      '';
+    });
+in
+rec {
+  imports = sources.defaultModules ++ [ ../../modules ];
+
+  services.nginx = {
+    enable = true;
+    virtualHosts = {
+      "garudalinux.org" = {
+        addSSL = true;
+        http3 = true;
+        locations = {
+          "/" = {
+            index = "index.html";
+            root = website;
+            extraConfig = ''
+              # First attempt to serve request as file, then
+              # as directory, then redirect to index.html (Angular) if no file found.
+              try_files $uri $uri/ /index.html;
+            '';
+          };
+          "/discord" = {
+            extraConfig = "expires 12h;";
+            return = "307 https://discord.gg/w5jbhq3juh";
+          };
+          "/telegram" = {
+            extraConfig = "expires 12h;";
+            return = "307 https://t.me/+TAZWHgryP6elOyS8";
+          };
+          "/os/garuda-update/backuprepo" = {
+            extraConfig = ''
+              rewrite ^/os/garuda-update/backuprepo/(.*)$ https://geo-mirror.chaotic.cx/chaotic-aur/$1 redirect;
+            '';
+          };
+          "/os/garuda-update/remote-update" = {
+            extraConfig = "expires 12h;";
+            return = "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update";
+          };
+          "/os/garuda-update/garuda-hotfixes-version" = {
+            extraConfig = "expires 5m;";
+            return = "200 '1'";
+          };
+          "/.well-known/webfinger" = {
+            extraConfig = "expires 12h;";
+            return = "301 https://social.garudalinux.org$request_uri";
+          };
+        };
+        quic = true;
+        serverAliases = [ "www.garudalinux.org" ];
+        useACMEHost = "garudalinux.org";
+      };
+      "cloud-aio.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = ''
+              client_body_buffer_size 512k;
+              proxy_read_timeout 86400s;
+              client_max_body_size 0;
+
+              # Allow accessing through trusted domain
+              set_real_ip_from      172.0.0.0/16;
+            '';
+            proxyPass = "http://10.0.5.60:11000";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "cloud-temp.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            extraConfig = ''
+              client_body_buffer_size 512k;
+              proxy_read_timeout 86400s;
+              client_max_body_size 0;
+
+              # Allow accessing through trusted domain
+              set_real_ip_from      172.0.0.0/16;
+            '';
+            proxyPass = "https://10.0.5.60:8080";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "search.garudalinux.org" = allowOnlyCloudflared {
+        addSSL = true;
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.50:5000";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+      };
+      "searx.garudalinux.org" = allowOnlyCloudflared {
+        addSSL = true;
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.50:8080";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+      };
+      "librey.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.50:8081";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "ffsync.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.60:5001";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "irc.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.60:9000";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "bin.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.60:8082";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "bitwarden.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.60:8081";
+          };
+        };
+        quic = true;
+        serverAliases = [ "vault.garudalinux.org" ];
+        useACMEHost = "garudalinux.org";
+      };
+      "forum.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          client_max_body_size 100M;
+          ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.40:80";
+          };
+          "/c/announcements/announcements-maintenance/45.json" = {
+            extraConfig = "expires 2m;";
+            proxyPass = "http://10.0.5.40:80";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "social.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          client_max_body_size 100M;
+          ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.30";
+          };
+          "/.well-known/webfinger" = {
+            proxyPass = "http://10.0.5.30";
+            extraConfig = ''
+              if ($args ~* "resource=acct:(.*)@(chaotic.cx|social.garudalinux.org)$") {
+                set $w1 $1;
+                rewrite .* /.well-known/webfinger?resource=acct:$w1@garudalinux.org? break;
+              }
+            '';
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "social-video.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          client_max_body_size 100M;
+          ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
+          location ~* .(mp4|webm)$ {
+            proxy_pass http://10.0.5.30;
+          }
+        '';
+        locations = {
+          "/" = {
+            return = "301 https://social.garudalinux.org$request_uri";
+          };
+        };
+        http3 = true;
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "element.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        http3 = true;
+        locations = {
+          # Redirect to forum post
+          "/" = {
+            return = "301 https://forum.garudalinux.org/t/39538";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "matrix.garudalinux.org" = {
+        addSSL = true;
+        http3 = true;
+        listen = [
+          {
+            addr = "0.0.0.0";
+            port = 443;
+            ssl = true;
+          }
+        ];
+        locations = {
+          "/" = {
+            # Redirect to forum post
+            return = "301 https://forum.garudalinux.org/t/39538";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "lingva.garudalinux.org" = allowOnlyCloudflared {
+        addSSL = true;
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.60:3002";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+      };
+      "reddit.garudalinux.org" = allowOnlyCloudflared {
+        addSSL = true;
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.50:8082";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+      };
+      "pgadmin.garudalinux.net" = allowOnlyCloudflareZerotrust {
+        locations = {
+          "/" = {
+            extraConfig = ''
+              ${garuda-lib.nginxReverseProxySettings}
+
+              proxy_pass http://10.0.5.20:5050;
+              proxy_set_header X-Forwarded-User $http_cf_access_authenticated_user_email;
+
+              proxy_hide_header Cache-Control;
+              proxy_hide_header Expires;
+              add_header Cache-Control 'no-store';
+            '';
+          };
+        };
+      };
+      "wiki.garudalinux.org" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.setRealIpFromConfig}
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.60:3001";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
+      "chaotic-backend.garudalinux.org" = {
+        addSSL = true;
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.70:3000";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.org";
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+      };
+      "mail.garudalinux.net" = {
+        addSSL = true;
+        extraConfig = ''
+          ${garuda-lib.nginxReverseProxySettings}
+        '';
+        http3 = true;
+        locations = {
+          "/" = {
+            proxyPass = "http://10.0.5.80:80";
+          };
+        };
+        quic = true;
+        useACMEHost = "garudalinux.net";
+      };
+      # Default catch-all for unknown domains
+      "_" = {
+        addSSL = true;
+        extraConfig = ''
+          log_not_found off;
+          return 404;
+        '';
+        http3 = true;
+        quic = true;
+        useACMEHost = "garudalinux.org";
+      };
+    };
+  };
+
+  services.garuda-cloudflared = {
+    enable = true;
+    ingress = {
+      # "example.garudalinux.net" = "http://10.0.5.100:8085";
+    } // (generateCloudflaredIngress services.nginx.virtualHosts);
+    tunnel-credentials = config.sops.secrets."cloudflare/tunnels/aerialis".path;
+  };
+
+  sops.secrets."cloudflare/tunnels/aerialis" = { };
+
+  system.stateVersion = "25.05";
+}
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../hosts/aerialis/postgres.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../hosts/stormwing.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../hosts/aerialis/postgres.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../hosts/stormwing.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>

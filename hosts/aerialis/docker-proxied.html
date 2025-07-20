@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Users - Garuda&#x27;s infra documentation</title>
+        <title>docker-proxied - Garuda&#x27;s infra documentation</title>
 
 
         <!-- Custom HTML head -->
@@ -12,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="./theme/mdbook-admonish.css">
-        <link rel="stylesheet" href="./theme/catppuccin.css">
-        <link rel="stylesheet" href="./theme/catppuccin-admonish.css">
+        <link rel="stylesheet" href="../.././theme/mdbook-admonish.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin-admonish.css">
 
     </head>
     <body class="sidebar-visible no-js">
     <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "";
+            var path_to_root = "../../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "mocha" : "mocha";
         </script>
 
@@ -151,7 +151,7 @@
                     <h1 class="menu-title">Garuda&#x27;s infra documentation</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                         <a href="https://github.com/garuda-linux/infrastructure-nix" title="Git repository" aria-label="Git repository">
@@ -183,39 +183,221 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="users"><a class="header" href="#users">Users</a></h1>
-<p>Multiple kinds of users can make use of our infrastructure. A current list of users is
-available <a href="./users/current_users.html">here</a>.</p>
-<h2 id="adding-new-users"><a class="header" href="#adding-new-users">Adding new users</a></h2>
-<p>New users can be added by supplying a fitting configuration in the <code>users.nix</code> module.
-In case of a password being required, its hash needs to be generated as follows:</p>
-<pre><code class="language-sh">nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt' &gt; /path/to/hashedPasswordFile
-</code></pre>
-<p>The file then needs to be added to our sops file and committed to our <a href="https://gitlab.com/garuda-linux/infra-nix-secrets">secrets</a> repository.
-This one is only available to members of our GitLab org and usually is cloned as git submodule to <code>./secrets</code>.</p>
-<h2 id="onboarding-a-new-admin"><a class="header" href="#onboarding-a-new-admin">Onboarding a new admin</a></h2>
-<p>After confirming the trustworthiness of a new admin, the following actions need to be executed:</p>
+                        <h1 id="docker-proxied"><a class="header" href="#docker-proxied">docker-proxied</a></h1>
+<h2 id="general"><a class="header" href="#general">General</a></h2>
+<p>Here, all the Docker containers that need to have proxied outgoing requests are being deployed. This is mainly for privacy-focused or alternative frontends and search engines that benefit from outgoing proxying.</p>
+<h3 id="container-explanations"><a class="header" href="#container-explanations">Container explanations</a></h3>
 <ul>
-<li>Add them to the <a href="./users/current_users.html#admins">admin users</a></li>
-<li>Add their ssh public key to
-the <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/flake.nix?ref_type=heads#L59">flake inputs</a>
-and <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/flake-module.nix?ref_type=heads#L38">specialArgs</a></li>
-<li>Make them an owner of the <a href="https://gitlab.com/garuda-linux">GitLab organization</a></li>
-<li>Add them to our <a href="https://vault.garudalinux.org">Vaultwarden organization</a> to allow access to passwords and email
-accounts</li>
-<li>Add them to the Cloudflare Account</li>
-<li>Make them an admin of <a href="https://forum.garudalinux.org">Discourse</a></li>
+<li><strong>whoogle</strong>: A self-hosted, ad-free, privacy-respecting metasearch engine that proxies Google Search results.</li>
+<li><strong>searx</strong>: SearxNG, a privacy-respecting metasearch engine aggregating results from various sources.</li>
+<li><strong>librey</strong>: Librey, a metasearch engine with a focus on privacy and alternative search sources.</li>
+<li><strong>lingva</strong>: Lingva Translate, a privacy-friendly alternative frontend for Google Translate.</li>
+<li><strong>redlib</strong>: Redlib, a privacy-respecting alternative frontend for Reddit.</li>
+<li><strong>watchtower</strong>: Automatically updates running containers to the latest image versions.</li>
+<li><strong>autoheal</strong>: Monitors containers and restarts them if they become unhealthy (e.g., Whoogle).</li>
 </ul>
+<h2 id="restarting-containers"><a class="header" href="#restarting-containers">Restarting containers</a></h2>
+<p>This can happen via the following command:</p>
+<pre><code class="language-bash">sudo systemctl restart docker-compose-proxied-root
+</code></pre>
+<h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
+<pre><code class="language-nix">{
+  config,
+  sources,
+  ...
+}:
+{
+  imports = sources.defaultModules ++ [ ../../modules ];
+
+  # This container runs proxied docker containers
+  garuda.services.compose-runner.docker-proxied = {
+    envfile = config.sops.secrets."compose/docker-proxied".path;
+    source = ../../../compose/docker-proxied;
+  };
+
+  # Let Docker use squid as outgoig proxy
+  # Fails to pull images if *.docker.io is not excluded from proxy
+  # systemd.services.docker = {
+  #   environment = {
+  #     HTTPS_PROXY = "http://10.0.5.1:3128";
+  #     HTTP_PROXY = "http://10.0.5.1:3128";
+  #     NO_PROXY = "localhost,127.0.0.1,*.docker.io,ghcr.io";
+  #   };
+  # };
+
+  sops.secrets."compose/docker-proxied" = { };
+
+  system.stateVersion = "25.05";
+}
+</code></pre>
+<h3 id="docker-containers"><a class="header" href="#docker-containers">Docker containers</a></h3>
+<pre><code class="language-yaml">services:
+  # Whoogle search engine
+  whoogle:
+    image: benbusby/whoogle-search:latest # It tends do be important to stay current
+    container_name: whoogle
+    user: whoogle
+    security_opt: [no-new-privileges]
+    cap_drop: [ALL]
+    tmpfs:
+      - /var/lib/tor/:size=10M,uid=927,gid=927,mode=1700
+      - /run/tor/:size=1M,uid=927,gid=927,mode=1700
+    volumes: ['./whoogle:/config']
+    ports: ['5000:5000']
+    environment:
+      WHOOGLE_AUTOCOMPLETE: 1
+      WHOOGLE_CONFIG_LANGUAGE: lang_en
+      WHOOGLE_CONFIG_NEW_TAB: 1
+      WHOOGLE_CONFIG_SEARCH_LANGUAGE: lang_en
+      WHOOGLE_CONFIG_STYLE: |
+        :root {--whoogle-logo: #4c4f69;--whoogle-page-bg: #eff1f5;--whoogle-element-bg: #bcc0cc;--whoogle-text: #4c4f69;--whoogle-contrast-text: #5c5f77;--whoogle-secondary-text: #6c6f85;
+        --whoogle-result-bg: #ccd0da;--whoogle-result-title: #7287fd;--whoogle-result-url: #dc8a78;--whoogle-result-visited: #e64553;--whoogle-dark-logo: #cdd6f4;
+        --whoogle-dark-page-bg: #1e1e2e;--whoogle-dark-element-bg: #45475a;--whoogle-dark-text: #cdd6f4;--whoogle-dark-contrast-text: #bac2de;--whoogle-dark-secondary-text: #a6adc8;
+        --whoogle-dark-result-bg: #313244;--whoogle-dark-result-title: #b4befe;--whoogle-dark-result-url: #f5e0dc;--whoogle-dark-result-visited: #eba0ac;}
+        #whoogle-w {fill: #89b4fa;} #whoogle-h {fill: #f38ba8;}#whoogle-o-1 {fill: #f9e2af;}#whoogle-o-2 {fill: #89b4fa;}#whoogle-g {fill: #a6e3a1;}#whoogle-l {fill: #f38ba8;}
+        #whoogle-e {fill: #f9e2af;}
+      WHOOGLE_CONFIG_THEME: dark
+      WHOOGLE_CONFIG_URL: https://search.garudalinux.org
+      WHOOGLE_CONFIG_VIEW_IMAGE: 1
+      WHOOGLE_RESULTS_PER_PAGE: 15
+    healthcheck:
+      test: [CMD-SHELL, 'wget --spider -q --tries=1 http://127.0.0.1:5000']
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 1
+    restart: always
+  # Searxng search engine
+  searx:
+    image: searxng/searxng:latest # It tends do be important to stay current
+    container_name: searx
+    volumes: ['./searxng:/etc/searxng']
+    ports: ['8080:8080']
+    environment:
+      BASE_URL: https://searx.garudalinux.org/
+      BIND_ADDRESS: 0.0.0.0:8080
+      INSTANCE_NAME: Garuda's SearxNG
+      NO_PROXY: '*.garudalinux.org'
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETGID, SETUID, DAC_OVERRIDE]
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - --no-verbose
+        - --tries=1
+        - --spider
+        - http://127.0.0.1:8080/info/en/about
+      interval: 2m
+      timeout: 5s
+    restart: always
+  # Librey search engine
+  librey:
+    image: ghcr.io/ahwxorg/librey:latest # It tends do be important to stay current
+    container_name: librey
+    ports: ['8081:8080']
+    environment:
+      - CONFIG_CACHE_TIME=20
+      - CONFIG_DISABLE_BITTORRENT_SEARCH=false
+      - CONFIG_GOOGLE_DOMAIN=com
+      - CONFIG_HIDDEN_SERVICE_SEARCH=true
+      - CONFIG_INSTANCE_FALLBACK=true
+      - CONFIG_INVIDIOUS_INSTANCE=https://invidious.snopyta.org
+      - CONFIG_LANGUAGE=en
+      - CONFIG_NUMBER_OF_RESULTS=10
+      - CONFIG_RATE_LIMIT_COOLDOWN=25
+      - CONFIG_TEXT_SEARCH_ENGINE=google
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - --no-verbose
+        - --tries=1
+        - --spider
+        - http://127.0.0.1:8080
+      interval: 2m
+      timeout: 5s
+    restart: always
+  # Lingva
+  lingva:
+    image: thedaviddelta/lingva-translate:latest # Only latest tag is available
+    container_name: lingva
+    environment:
+      DARK_THEME: 'true'
+      DEFAULT_SOURCE_LANG: auto
+      DEFAULT_TARGET_LANG: en
+      SITE_DOMAIN: lingva.garudalinux.org
+    ports: ['3002:3000']
+    restart: always
+  # Reddit frontend
+  redlib:
+    image: quay.io/redlib/redlib:latest
+    container_name: redlib
+    environment:
+      REDLIB_BANNER_: Garuda's Redlib
+      REDLIB_DEFAULT_AUTOPLAY_VIDEOS: true
+      REDLIB_DEFAULT_BLUR_NSFW: true
+      REDLIB_DEFAULT_COMMENT_SORT: confidence
+      REDLIB_DEFAULT_DISABLE_VISIT_REDDIT_CONFIRMATION: false
+      REDLIB_DEFAULT_FIXED_NAVBAR: true
+      REDLIB_DEFAULT_FRONT_PAGE: popular
+      REDLIB_DEFAULT_HIDE_AWARDS: true
+      REDLIB_DEFAULT_HIDE_HLS_NOTIFICATION=: true
+      REDLIB_DEFAULT_HIDE_SCORE: false
+      REDLIB_DEFAULT_LAYOUT: card
+      REDLIB_DEFAULT_POST_SORT: hot
+      REDLIB_DEFAULT_SHOW_NSFW: false
+      REDLIB_DEFAULT_THEME: dracula
+      REDLIB_DEFAULT_USE_HLS: true
+      REDLIB_DEFAULT_WIDE: false
+      REDLIB_PUSHSHIFT_FRONTEND: undelete.pullpush.io
+      REDLIB_ROBOTS_DISABLE_INDEXING: true
+      REDLIB_SFW_ONLY: false
+    ports: ['8082:8080']
+    user: nobody
+    read_only: true
+    security_opt: ['no-new-privileges:true']
+    cap_drop: [ALL]
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - --spider
+        - -q
+        - --tries=1
+        - http://127.0.0.1:8080/settings
+      interval: 5m
+      timeout: 3s
+    restart: always
+  # Automated container updates
+  watchtower:
+    image: containrrr/watchtower:1.7.1
+    container_name: watchtower
+    command: --cleanup searx lingva whoogle librey
+    volumes: ['/var/run/docker.sock:/var/run/docker.sock']
+    restart: always
+  # Auto-restart unhealthy containers (looking at you, Whoogle)
+  autoheal:
+    image: willfarrell/autoheal:latest
+    container_name: autoheal
+    environment:
+      AUTOHEAL_CONTAINER_LABEL: all
+    network_mode: none
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="important-links.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../hosts/aerialis/docker.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="users/current_users.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../hosts/aerialis/forum.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -225,11 +407,11 @@ accounts</li>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="important-links.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../hosts/aerialis/docker.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="users/current_users.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../hosts/aerialis/forum.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -244,13 +426,13 @@ accounts</li>
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

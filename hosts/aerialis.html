@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>PKGBUILDs - Garuda&#x27;s infra documentation</title>
+        <title>aerialis - Garuda&#x27;s infra documentation</title>
 
 
         <!-- Custom HTML head -->
@@ -183,43 +183,439 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="pkgbuilds"><a class="header" href="#pkgbuilds">PKGBUILDs</a></h1>
-<h2 id="types-of-pkgbuilds"><a class="header" href="#types-of-pkgbuilds">Types of PKGBUILDs</a></h2>
-<p>There are two types of repo packaging-wise:</p>
-<ol>
-<li>The ones that have all required files in the new pkgbuilds repo and don't reference any external repo in PKGBUILDs <code>source()</code></li>
-<li>The ones requiring external repositories as a source. These are listed in the SOURCES files below, packages <em>not</em> listed here are automatically packages of the first category:</li>
-</ol>
-<p><a href="https://gitlab.com/garuda-linux/pkgbuilds/-/blob/main/SOURCES">This file</a> provides the needed information to check for the new version with the scheme <code>$repourl $pkgbuildPathInPkgbuildsRepo $GitlabProjectId</code></p>
-<h2 id="releasing-a-new-version"><a class="header" href="#releasing-a-new-version">Releasing a new version</a></h2>
-<p>This means executing the following for doing changes and releasing a new version:</p>
-<ol>
-<li>Would be modified directly in the new pkgbuilds repo, along with their source.
-Versions are bumped in the PKGBUILD itself and deployments need to happen by increasing <code>pkgver</code> + supplying a fitting commit message (append <em>[deploy pkgname ]</em> to it)</li>
-<li>In case of modifying these, one would make the changes to the source files repo (not the new PKGBUILDs one).
-Then, if a new version should be built, one would push the corresponding tag to that repo (omitting "v", adding v breaks the PKGBUILD!).
-That's everything needed in case no packaging changes (adding new dependencies for example) that require changing the PKGBUILD occur.
-The <a href="https://gitlab.com/garuda-linux/pkgbuilds/-/pipeline_schedules">half-hourly pipeline</a> of the <a href="https://gitlab.com/garuda-linux/pkgbuilds">PKGBUILD repo</a> then checks for the existence of a new tag.
-Once a new one gets detected, the PKGBUILD gets updated and deployment occurs via <code>[deploy *]</code> in the commit message.
-<em>If PKGBUILD changes need to be implemented, this would of course indicate doing it as described in 1. This would increase pkgrel only and not the actual version.</em></li>
-</ol>
-<p>There are currently three bash scripts responsible for CI/CD:</p>
+                        <h1 id="aerialis"><a class="header" href="#aerialis">aerialis</a></h1>
+<p>This is one of the two main infrastructure hosts (see also: stormwing). All services and containers for aerialis are defined in <code>nixos/hosts/aerialis.nix</code> and its submodules.</p>
+<h2 id="host-configuration"><a class="header" href="#host-configuration">Host configuration</a></h2>
+<pre><code class="language-nix">{
+  config,
+  pkgs,
+  ...
+}:
+{
+  imports = [
+    ../modules
+    ./../modules/special/hetzner-ex44.nix
+  ];
+
+  fileSystems."/" = {
+    device = "none";
+    fsType = "tmpfs";
+    options = [
+      "defaults"
+      "size=50%"
+      "mode=755"
+    ];
+  };
+
+  fileSystems."/data_1" = {
+    device = "/dev/disk/by-label/NIXROOT";
+    fsType = "ext4";
+    neededForBoot = true;
+    options = [
+      "defaults"
+      "noatime"
+      "nodiratime"
+      "errors=remount-ro"
+    ];
+    depends = [
+      "/"
+    ];
+  };
+
+  fileSystems."/data_2" = {
+    device = "/dev/disk/by-label/NIXDATA";
+    fsType = "btrfs";
+    options = [
+      "defaults"
+      "noatime"
+      "nodiratime"
+      "compress=zstd:1"
+    ];
+  };
+
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-label/NIXBOOT";
+    fsType = "vfat";
+  };
+
+  services.openssh.ports = [ 666 ];
+
+  # Network configuration with a bridge interface
+  networking = {
+    defaultGateway = "157.180.57.65";
+    defaultGateway6 = {
+      address = "fe80::1";
+      interface = "eth0";
+    };
+    hostName = "aerialis";
+    interfaces = {
+      "eth0" = {
+        ipv4.addresses = [
+          {
+            address = "157.180.57.100";
+            prefixLength = 26;
+          }
+        ];
+      };
+    };
+    nat.forwardPorts = [
+      {
+        # web-front (HTTP)
+        destination = "10.0.5.10:80";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "tcp";
+        sourcePort = 80;
+      }
+      {
+        # web-front (HTTPS)
+        destination = "10.0.5.10:443";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "tcp";
+        sourcePort = 443;
+      }
+      {
+        # web-front (HTTPS)
+        destination = "10.0.5.10:443";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "udp";
+        sourcePort = 443;
+      }
+      {
+        # mail (SMTP)
+        destination = "10.0.5.80:587";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "tcp";
+        sourcePort = 587;
+      }
+      {
+        # mail (SMTP over SSL)
+        destination = "10.0.5.80:465";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "tcp";
+        sourcePort = 465;
+      }
+    ];
+    firewall.trustedInterfaces = [ "br0" ];
+  };
+
+  # Can't set this inside the containers
+  boot.kernel.sysctl."vm.overcommit_memory" = "1";
+
+  # Container config
+  services.garuda-nspawn = {
+    bridgeInterface = "br0";
+    hostInterface = "eth0";
+    hostIp = "10.0.5.1";
+    dockerCache = "/data_1/dockercache/";
+
+    defaults = {
+      maxMemorySoft = 48318382080; # 45 GiB
+      maxMemoryHard = 53687091200; # 50 GiB
+      maxCpu = 18;
+    };
+
+    containers = {
+      chaotic-backend = {
+        config = import ./aerialis/chaotic-backend.nix;
+        extraOptions = {
+          bindMounts = {
+            "chaotic" = {
+              hostPath = "/data_2/containers/chaotic-backend/chaotic";
+              isReadOnly = false;
+              mountPoint = "/var/garuda/compose-runner/chaotic-backend";
+            };
+          };
+          enableTun = true;
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 270;
+              protocol = "tcp";
+            }
+          ];
+        };
+        ipAddress = "10.0.5.70";
+        needsDocker = true;
+      };
+      docker = {
+        config = import ./aerialis/docker.nix;
+        extraOptions = {
+          bindMounts = {
+            "compose" = {
+              hostPath = "/data_1/containers/docker/";
+              isReadOnly = false;
+              mountPoint = "/var/garuda/compose-runner/docker";
+            };
+            "nextcloud-local-backup" = {
+              hostPath = "/data_2/backup/nextcloud-aio";
+              isReadOnly = false;
+              mountPoint = "/var/garuda/backups/nextcloud";
+            };
+          };
+        };
+        ipAddress = "10.0.5.60";
+        needsDocker = true;
+      };
+      docker-proxied = {
+        config = import ./aerialis/docker-proxied.nix;
+        extraOptions = {
+          bindMounts = {
+            "compose" = {
+              hostPath = "/data_1/containers/docker-proxied/";
+              isReadOnly = false;
+              mountPoint = "/var/garuda/compose-runner/docker-proxied";
+            };
+          };
+        };
+        ipAddress = "10.0.5.50";
+        needsDocker = true;
+      };
+      forum = {
+        config = import ./aerialis/forum.nix;
+        extraOptions = {
+          bindMounts = {
+            "forum" = {
+              hostPath = "/data_1/containers/forum/";
+              isReadOnly = false;
+              mountPoint = "/var/discourse";
+            };
+          };
+        };
+        ipAddress = "10.0.5.40";
+        needsDocker = true;
+      };
+      mastodon = {
+        config = import ./aerialis/mastodon.nix;
+        needsDocker = true;
+        extraOptions = {
+          bindMounts = {
+            "mastodon" = {
+              hostPath = "/data_2/containers/mastodon/mastodon";
+              isReadOnly = false;
+              mountPoint = "/var/lib/mastodon";
+            };
+            "compose" = {
+              hostPath = "/data_1/containers/mastodon/compose";
+              isReadOnly = false;
+              mountPoint = "/var/garuda/compose-runner/mastodon";
+            };
+          };
+        };
+        ipAddress = "10.0.5.30";
+      };
+      mail = {
+        config = import ./aerialis/mail.nix;
+        extraOptions = {
+          bindMounts = {
+            "acme" = {
+              hostPath = "/data_2/containers/web-front/acme";
+              isReadOnly = false;
+              mountPoint = "/var/lib/acme";
+            };
+            "dkim" = {
+              hostPath = "/data_1/containers/mail/dkim";
+              isReadOnly = false;
+              mountPoint = "/var/dkim";
+            };
+            "rspamd" = {
+              hostPath = "/data_1/containers/mail/rspamd";
+              isReadOnly = false;
+              mountPoint = "/var/lib/redis-rspamd";
+            };
+            "sieve" = {
+              hostPath = "/data_1/containers/mail/sieve";
+              isReadOnly = false;
+              mountPoint = "/var/sieve";
+            };
+            "vmail" = {
+              hostPath = "/data_1/containers/mail/vmail";
+              isReadOnly = false;
+              mountPoint = "/var/vmail";
+            };
+          };
+          forwardPorts = [
+            {
+              containerPort = 993;
+              hostPort = 993;
+              protocol = "tcp";
+            }
+          ];
+        };
+        ipAddress = "10.0.5.80";
+      };
+      postgres = {
+        config = import ./aerialis/postgres.nix;
+        extraOptions = {
+          bindMounts = {
+            "data" = {
+              hostPath = "/data_1/containers/postgres/data";
+              isReadOnly = false;
+              mountPoint = "/var/lib/postgresql";
+            };
+            "postgres_backup" = {
+              hostPath = "/data_2/containers/postgres/backup";
+              isReadOnly = false;
+              mountPoint = "/var/garuda/backups/postgres";
+            };
+          };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 220;
+              protocol = "tcp";
+            }
+            {
+              containerPort = 5432;
+              hostPort = 5432;
+              protocol = "tcp";
+            }
+          ];
+        };
+        ipAddress = "10.0.5.20";
+      };
+      web-front = {
+        config = import ./aerialis/web-front.nix;
+        extraOptions = {
+          bindMounts = {
+            "acme" = {
+              hostPath = "/data_2/containers/web-front/acme";
+              isReadOnly = false;
+              mountPoint = "/var/lib/acme";
+            };
+            "nginx" = {
+              hostPath = "/data_2/containers/web-front/nginx";
+              isReadOnly = false;
+              mountPoint = "/var/log/nginx";
+            };
+          };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 210;
+              protocol = "tcp";
+            }
+          ];
+        };
+        ipAddress = "10.0.5.10";
+      };
+    };
+  };
+
+  # Make sure postgres is started before other containers
+  systemd.services = {
+    "container@docker".requires = [ "container@postgres.service" ];
+    "container@docker-proxied".requires = [ "container@postgres.service" ];
+    "container@mastodon".requires = [ "container@postgres.service" ];
+    "container@chaotic-backend".requires = [ "container@postgres.service" ];
+    "container@postgres" = {
+      before = [
+        "container@docker-proxied.service"
+        "container@docker.service"
+        "container@mastodon.service"
+        "container@chaotic-backend.service"
+      ];
+    };
+  };
+
+  # Monitor a few services of the containers
+  services = {
+    netdata.configDir = {
+      "go.d/postgres.conf" = pkgs.writeText "postgres.conf" ''
+        jobs:
+          - name: postgres
+            dsn: 'postgres://netdata:netdata@10.0.5.20:5432/'
+      '';
+      "go.d/squidlog.conf" = pkgs.writeText "squidlog.conf" ''
+        jobs:
+          - name: squid
+            path: /var/log/squid/access.log
+            log_type: csv
+            csv_config:
+              format: '- resp_time client_address result_code resp_size req_method - - hierarchy mime_type'
+      '';
+      "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
+        jobs:
+          - name: nginx
+            path: /data_2/containers/web-front/nginx/access.log
+      '';
+    };
+  };
+
+  # Fix permissions of nginx log files to allow Netdata to read it (gets reset frequently)
+  system.activationScripts.netdata = "chown 60:netdata -R /data_2/containers/web-front/nginx";
+
+  # Backup configurations to Hetzner storage box
+  programs.ssh.macs = [ "hmac-sha2-512" ];
+  services.borgbackup.jobs = {
+    backupToHetzner = {
+      compression = "auto,zstd";
+      doInit = true;
+      encryption = {
+        mode = "repokey-blake2";
+        passCommand = ''
+          cat "${config.sops.secrets."backup/repo_key".path}"
+        '';
+      };
+      environment = {
+        BORG_RSH = "ssh -i ${config.sops.secrets."backup/ssh_aerialis".path} -p 23";
+      };
+      exclude = [
+        "/data_1/dockercache"
+        "/data_1/dockerdata"
+      ];
+      paths = [
+        "/data_1/containers"
+        "/data_1/persistent/etc/ssh"
+        "/data_2/backup/nextcloud-aio/"
+        "/data_2/containers/chaotic-backend/chaotic/database"
+        "/data_2/containers/mastodon"
+        "/data_2/containers/postgres"
+      ];
+      prune.keep = {
+        within = "1d";
+        daily = 3;
+        weekly = 1;
+        monthly = 1;
+      };
+      repo = "u342919@u342919.your-storagebox.de:./aerialis";
+      startAt = "daily";
+    };
+  };
+
+  sops.secrets = {
+    "backup/repo_key" = { };
+    "backup/ssh_aerialis" = { };
+  };
+
+  deployment = {
+    targetHost = "157.180.57.100";
+    targetPort = 666;
+    targetUser = "ansible";
+  };
+}
+</code></pre>
+<h2 id="containersservices"><a class="header" href="#containersservices">Containers/services</a></h2>
 <ul>
-<li><a href="https://gitlab.com/garuda-linux/pkgbuilds/-/blob/main/.ci/lint.sh?ref_type=heads">Checking PKGBUILDs/code style</a></li>
-<li><a href="https://gitlab.com/garuda-linux/pkgbuilds/-/blob/main/.ci/version-bump.sh?ref_type=heads">Updating the package versions automatically</a></li>
-<li><a href="https://gitlab.com/garuda-linux/pkgbuilds/-/blob/main/.ci/what-to-deploy.sh?ref_type=heads">Triggering automated deployments via commit message</a></li>
+<li><a href="./aerialis/chaotic-backend.html">chaotic-backend</a>: Backend services for Chaotic-AUR, including API and job processing.</li>
+<li><a href="./aerialis/docker.html">docker</a>: General-purpose Docker container runner for services not packaged in Nix.</li>
+<li><a href="./aerialis/docker-proxied.html">docker-proxied</a>: Docker runner for services that require special proxying or network setup.</li>
+<li><a href="./aerialis/forum.html">forum</a>: Hosts the Discourse forum for the Garuda Linux community.</li>
+<li><a href="./aerialis/mail.html">mail</a>: Handles mail-related services and relays for the infrastructure.</li>
+<li><a href="./aerialis/mastodon.html">mastodon</a>: Runs the Mastodon social network instance.</li>
+<li><a href="./aerialis/postgres.html">postgres</a>: Provides PostgreSQL database services for other containers.</li>
+<li><a href="./aerialis/web-front.html">web-front</a>: Acts as the main reverse proxy and web frontend for hosted services.</li>
 </ul>
-<p>Past pipeline runs may be reviewed by visiting the <a href="https://gitlab.com/garuda-linux/pkgbuilds/-/pipelines">pipelines</a> page.</p>
+<p>See the respective documentation pages for up-to-date configuration and details.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../repositories/general.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../users/current_users.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../services/chaotic-4.0.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../hosts/aerialis/chaotic-backend.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -229,11 +625,11 @@ Once a new one gets detected, the PKGBUILD gets updated and deployment occurs vi
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../repositories/general.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../users/current_users.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../services/chaotic-4.0.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../hosts/aerialis/chaotic-backend.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
