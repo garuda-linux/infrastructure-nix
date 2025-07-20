@@ -1,7 +1,8 @@
 {
   sources,
   ...
-}: {
+}:
+{
   imports = sources.defaultModules ++ [ ../../modules ];
 
   garuda.services.compose-runner.firedragon-runner = {

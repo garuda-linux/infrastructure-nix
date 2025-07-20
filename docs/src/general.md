@@ -3,45 +3,51 @@
 A general overview of the folder structure can be found below:
 
 ```shell
+├── ansible
+│   ├── host_vars
+│   │   ├── aerialis
+│   │   └── stormwing
+│   └── playbooks
 ├── assets
+├── compose
+│   ├── chaotic-backend
+│   ├── chaotic-v4
+│   ├── docker
+│   │   └── configs
+│   ├── docker-proxied
+│   ├── firedragon-runner
+│   ├── github-runner
+│   ├── gitlab-runner
+│   └── mastodon
 ├── docs
-│  ├── src
-│  │  ├── hosts
-│  │  ├── nixos-containers
-│  │  ├── repositories
-│  │  ├── services
-│  │  ├── users
-│  │  └── websites
-│  └── theme
-│     ├── css
-│     └── fonts
+│   ├── src
+│   │   ├── hosts
+│   │   │   ├── aerialis
+│   │   │   └── stormwing
+│   │   ├── repositories
+│   │   ├── services
+│   │   ├── users
+│   │   └── websites
 ├── home-manager
-├── host_vars
-│  ├── garuda-mail
-│  └── immortalis
 ├── nixos
-│  ├── hosts
-│  │  ├── chaotic-v4
-│  │  ├── docker
-│  │  │  └── configs
-│  │  ├── docker-proxied
-│  │  ├── garuda-mail
-│  │  ├── github-runner
-│  │  └── immortalis
-│  ├── modules
-│  │  └── static
-│  └── services
-│     ├── chaotic
-│     ├── compose-runner
-│     └── monitoring
-├── playbooks
+│   ├── hosts
+│   │   ├── aerialis
+│   │   └── stormwing
+│   ├── modules
+│   │   ├── special
+│   │   └── static
+│   └── services
+│       ├── compose-runner
+│       └── monitoring
 ├── scripts
 └── secrets
 ```
 
 ## Secrets in this repository
 
-Secrets are managed via a custom Git submodule that contains `ansible-vault` encrypted files as well as a custom NixOS module `garuda-lib` which makes them available to our services.
+Secrets are managed via the sops-nix module, which allows us to encrypt sensitive files and supply them in an encrypted way to our hosts.
+They will then be decrypted at runtime by using the hosts ed25519 SSH host key.
+This is done by using the `sops` tool, which encrypts files using a key stored in the `~/.config/sops/` directory.
 The submodule is available in the `secrets` directory once it has been set up for the first time. It can be initialized by running:
 
 ```sh
@@ -52,12 +58,12 @@ git submodule update
 To view or edit any of these files, one can use the following commands:
 
 ```sh
-ansible-vault decrypt secrets/pathtofile
-ansible-vault edit secrets/pathtofile
-ansible-vault encrypt secrets/pathtofile
+sops secrets/filename.yaml # opens editor for the file
+sops -e secrets/filename.yaml # encrypts the file
+sops -d secrets/filename.yaml # decrypts the file
 ```
 
-Further information on `ansible-vault` can be found in its [documentation](https://docs.ansible.com/ansible/latest/vault_guide/index.html).
+This assumes a fitting sops key is available in the `~/.config/sops/` directory.
 It is important to keep the `secrets` directory in the latest state before deploying a new configuration as misconfigurations might happen otherwise.
 
 ## Passwords in general

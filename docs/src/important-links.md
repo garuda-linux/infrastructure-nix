@@ -15,6 +15,7 @@ This is a collection of important links when working with the infrastructure:
 - [NixOS mailserver documentation](https://nixos-mailserver.readthedocs.io/en/latest/setup-guide.html)
 - [The Nix documentation](https://nixos.org/manual/nixos/stable/)
 - [The Nix package and option search](https://search.nixos.org)
+- [Sops Nix](https://github.com/Mic92/sops-nix)
 
 ## Tools documentation
 
@@ -26,12 +27,10 @@ This is a collection of important links when working with the infrastructure:
 
 - [Chaotic-AUR Syncthing](https://syncthing-build.garudalinux.net/)
 - [Cloudflare Dashboard](https://dash.cloudflare.com)
-- [Freshping](https://garudalinux.freshping.io/)
-- [Freshstatus](https://garudalinux.freshstatus.io/admin/incidents/public)
+- [Status page](https://status.garudalinux.org)
 - [Hetzner Robot](https://accounts.hetzner.com/)
 - [Netdata](https://app.netdata.cloud)
 - [PGAdmin](https://pgadmin.garudalinux.net)
-- [Renovate Dashboard](https://developer.mend.io/github/garuda-linux)
 - [Tailscale](https://login.tailscale.com/)
 
 ## Services to be administrated
@@ -49,13 +48,3 @@ This is a collection of important links when working with the infrastructure:
 - [TheLounge](https://irc.garudalinux.org)
 - [Whoogle](https://search.garudalinux.org)
 - [WikiJs](https://wiki.garudalinux.org)
-
-## Additional pages
-
-- [Startpage](https://start.garudalinux.org)
-  - This one needs to be updated by pulling latest changes from the repository. It lives inside the `docker`
-    nixos-container, `/var/garuda/compose-runner/docker/startpage`.
-- [Website](https://garudalinux.org)
-  - This one is hosted on Cloudflare pages and will automatically update
-    whenever a new commit is pushed to the repository.
-    See commit pipelines for more information.

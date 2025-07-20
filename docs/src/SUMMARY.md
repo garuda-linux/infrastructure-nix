@@ -14,16 +14,21 @@
 
 # Hosts
 
-- [immortalis](./hosts/immortalis.md)
-  - [docker](./nixos-containers/docker.md)
-  - [docker-proxied](./nixos-containers/docker-proxied.md)
-  - [forum](./nixos-containers/forum.md)
-  - [github-runner](./nixos-containers/github-runner.md)
-  - [mastodon](./nixos-containers/mastodon.md)
-  - [mongodb](./nixos-containers/mongodb.md)
-  - [postgres](./nixos-containers/postgres.md)
-  - [web-front](./nixos-containers/web-front.md)
-- [garuda-mail](./hosts/garuda-mail.md)
+- [aerialis](./hosts/aerialis.md)
+  - [chaotic-backend](hosts/aerialis/chaotic-backend.md)
+  - [docker](hosts/aerialis/docker.md)
+  - [docker-proxied](hosts/aerialis/docker-proxied.md)
+  - [forum](hosts/aerialis/forum.md)
+  - [mail](hosts/aerialis/mail.md)
+  - [mastodon](hosts/aerialis/mastodon.md)
+  - [postgres](hosts/aerialis/postgres.md)
+  - [web-front](hosts/aerialis/web-front.md)
+- [stormwing](./hosts/stormwing.md)
+  - [chaotic-v4](hosts/stormwing/chaotic-v4.md)
+  - [firedragon-runner](hosts/stormwing/firedragon-runner.md)
+  - [github-runner](hosts/stormwing/github-runner.md)
+  - [iso-runner](hosts/stormwing/iso-runner.md)
+  - [web-front](hosts/stormwing/web-front.md)
 
 # Repository infrastructure
 

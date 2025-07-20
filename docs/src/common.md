@@ -5,9 +5,10 @@
 Sometimes Discourse needs its container to build rebuild via cli rather than the webinterface. This can be done with:
 
 ```sh
-ssh -p 224 $user@116.202.208.112
+ssh -p 666 $user@aerialis.garudalinux.org
+sudo nixos-container root-login forum
 cd /var/discourse
-sudo ./launcher rebuild app
+./launcher rebuild app
 ```
 
 ### Building ISO files
@@ -16,7 +17,7 @@ To build Garuda ISO, one needs to connect to the `iso-runner` container and exec
 a shell containing the needed environment:
 
 ```sh
-ssh -p 227 $user@116.202.208.112 # if one ran nix develop before, this can be skipped
+ssh -p 220 $user@builds.garudalinux.org # if one ran nix develop before, this can be skipped
 buildiso
 buildiso -i # updates the iso-profiles repo
 buildiso -p dr460nized
@@ -34,7 +35,7 @@ achieve this.
 We are assuming all ISOs have been tested for functionality before executing any of those commands.
 
 ```sh
-ssh -p 227 $user@116.202.208.112
+ssh -p 220 $user@builds.garudalinux.org
 buildall # builds all ISO provided in the buildall command
 deployiso -FS # sync to Cloudflare R2 and Sourceforge
 deployiso -FSR # sync to Cloudflare R2 and Sourceforge while also updating the latest (stable, non-nightly) release
@@ -49,7 +50,7 @@ updating the `flake.lock` file, pushing it to the server & building the configur
 
 ```sh
 nix flake update
-ansible-playbook garuda.yml -l $servername # Eg. immortalis for the Hetzner host
+ansible-playbook garuda.yml -l $servername # Eg. aerialis
 deploy # Skip using the above command and use this one in case nix develop was used
 ```
 
@@ -60,7 +61,7 @@ ansible-playbook apply.yml -l $servername # Ansible
 
 apply # Nix develop shell
 
-ssh -p 666 $user@116.202.208.112 # Manually, exemplary on immortalis
+ssh -p 666 $user@builds.garudalinux.org
 sudo nixos-rebuild switch
 ```
 
@@ -74,7 +75,7 @@ changing anything must not be done manually but by editing the corresponding fil
 afterward.
 
 ```sh
-ansible-playbook garuda.yml -l $servername # Eg. immortalis for the Hetzner host
+ansible-playbook garuda.yml -l $servername # Eg. aerialis
 deploy # In case nix develop is used
 ```
 
@@ -85,7 +86,7 @@ ansible-playbook apply.yml -l $servername # Ansible
 
 apply # Nix develop shell
 
-ssh -p 666 $user@116.202.208.112 # Manually, exemplary on immortalis
+ssh -p 666 $user@builds.garudalinux.org
 sudo nixos-rebuild switch
 ```
 
@@ -104,7 +105,7 @@ Adding users needs to be done in `users.nix`:
 ### Changing Docker configurations
 
 If configurations of services running in Docker containers need to be altered, one needs to edit the
-corresponding `docker-compose.yml` (`./nix/docker-compose/$name`) file or `.env` file in the `secrets` directory (see
+corresponding `compose.yml` (`./compose/$name`) file or `.env` entry of our sops file in the `secrets` directory (see
 the secrets section for details on that topic).
 The deployment is done the same way as with normal system configuration.
 
@@ -113,7 +114,7 @@ The deployment is done the same way as with normal system configuration.
 Docker containers sometimes use the `latest` tag in case no current tag is available or in the case of services like
 Piped and Searx, where it is often crucial to have the latest build to bypass Google's restrictions.
 Containers using the `latest` tag are automatically updated via [watchtower](https://containrrr.dev/watchtower/) daily.
-The remaining ones can be updated by changing their version in the corresponding `docker-compose.yml` and then
+The remaining ones can be updated by changing their version in the corresponding `compose.yml` and then
 running `deploy` & `apply`.
 If containers are to be updated manually, this can be achieved by connecting to the host,
 running `nixos-container root-login $containername`, and executing:
@@ -125,18 +126,6 @@ sudo docker compose up -d
 ```
 
 The updated containers will be pulled and automatically recreated using the new images.
-
-### Rotating IPv6
-
-Sometimes it is needed to rotate the available IPv6 addresses to solve the current ones being rate-limited for outgoing
-requests of Piped, Searx, etc.
-This can be achieved by editing the hosts Nix file `immortalis.nix`, replacing the existing values of
-the `networking.interfaces."eth0".ipv6.addresses` keys
-seen [here](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis.nix?ref_type=heads#L30).
-Then, proceed doing the same with
-the [squid configuration](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/hosts/immortalis.nix?ref_type=heads#L219).
-IPv6 addresses need to be generated from our available /64 subnet space and can't be chosen completely random.
-To ease the process, a command called `ipv6-generator` is available in this git repos' devshell.
 
 ### Checking whether backups were successful
 
@@ -161,16 +150,3 @@ nix flake lock --update-input src-chaotic-toolbox # toolbox
 
 After that deploy as usual by running `deploy` and `apply`. The commit and corresponding hash will be updated and NixOS
 will use it to build the toolbox using the new revision automatically.
-
-### Creating new Docker Compose configs
-
-In case a new service needs to be added to the Docker Compose runner,
-one can either write the needed Nix expressions directly,
-or use [compose2nix](https://github.com/aksiksi/compose2nix)
-to transform an existing `docker-compose.yml` to valid Nix expressions.
-Using native Nix expressions has the advantage of being more flexible and easier to maintain,
-as well as taking advantage of Systemd service management, e.g., by restarting crashed containers.
-This was not working reliably with our `compose-runner` module, which simply started
-existing `docker-compose.yml` files.
-In case secrets are required, one needs to provide them via `.env` files and
-the `virtualisation.oci-containers.containers.environmentFiles` key.

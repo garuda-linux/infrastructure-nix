@@ -37,8 +37,7 @@ Some of the mdBook parts are plugins that need their content to be updated from 
 
 - mdbook-admonish: run `mdbook-admonish` inside the `docs` folder
 - mdbook-emojicodes: works without CSS, so no updates needed
-- mdbook-catppuccin: run `mdbook-catppuccin` inside the `docs` folder (might need to grab binary
-  from [its website](https://github.com/catppuccin/mdBook/releases), no Nix package available yet)
+- mdbook-catppuccin: follow instructions in the [mdbook-catppuccin repository](https://github.com/catppuccin/mdbook)
 
 ## Deployment
 
