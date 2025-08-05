@@ -100,7 +100,7 @@
     };
 
     # Patches
-    nixos-patch-netdata.url = "https://github.com/NixOS/nixpkgs/pull/410815.patch";
+    nixos-patch-netdata.url = "https://github.com/NixOS/nixpkgs/pull/424409.patch";
     nixos-patch-netdata.flake = false;
   };
 

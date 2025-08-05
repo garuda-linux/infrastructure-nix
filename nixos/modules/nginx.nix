@@ -29,7 +29,6 @@
     '';
     commonHttpConfig = ''
       # Recommended configuration
-      ssl_ecdh_curve          X25519:secp521r1:secp384r1:prime256v1;
       resolver_timeout        2s;
 
       # Brotli compression
