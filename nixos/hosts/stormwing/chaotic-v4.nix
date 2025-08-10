@@ -184,6 +184,12 @@ in
           autoindex_format xml;
           xslt_string_param path $uri;
           xslt_string_param hostname "Garuda Linux ISO Builds";
+          # Used by garuda-os-reset
+          location = /iso/latest/garuda/listeditions/ {
+            autoindex_format json;
+            alias "/srv/http/iso/latest/garuda/";
+            break;
+          }
         '';
         locations."/".return = "307 https://builds.garudalinux.org";
         locations."/iso" = {
