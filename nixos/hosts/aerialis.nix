@@ -106,6 +106,13 @@
         proto = "tcp";
         sourcePort = 465;
       }
+      {
+        # mail (inbound)
+        destination = "10.0.5.80:25";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "tcp";
+        sourcePort = 25;
+      }
     ];
     firewall.trustedInterfaces = [ "br0" ];
   };
