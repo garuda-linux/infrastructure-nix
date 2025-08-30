@@ -4,5 +4,5 @@
   gather_facts: false
   tasks:
     - name: Build system
-      ansible.builtin.command: nixos-rebuild switch -j7
+      ansible.builtin.command: nixos-rebuild switch -j1
       changed_when: false

@@ -31,7 +31,7 @@ let
       pnpmDeps = pkgs.pnpm_10.fetchDeps {
         inherit (finalAttrs) pname version src;
         fetcherVersion = 1;
-        hash = "sha256-rXiJLkRjPUTUPkQds0RTbshVHnDH8wQTTE5kyv7tGwc=";
+        hash = "sha256-wCyRSw819hmksyxKHMNUE+7Nm7Ybgf8ZRTp9777HgBc=";
       };
       buildPhase = ''
         export PATH=$(pnpm bin):$PATH

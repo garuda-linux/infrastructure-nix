@@ -1,4 +1,4 @@
-_: {
+{ lib, ... }: {
   # Disable coredumps
   systemd.coredump.enable = false;
 
@@ -112,4 +112,7 @@ _: {
       "umac-128-etm@openssh.com"
     ];
   };
+
+  # FIXME: Remove when fixed upstream
+  environment.memoryAllocator.provider = lib.mkForce "libc";
 }

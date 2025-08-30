@@ -20,5 +20,5 @@
         dest: /etc/nixos/flake.lock
         src: ../../flake.lock
     - name: Update and build system
-      ansible.builtin.shell: systemctl restart nix-daemon && nixos-rebuild boot -j7
+      ansible.builtin.shell: systemctl restart nix-daemon && nixos-rebuild boot -j1
       changed_when: false
