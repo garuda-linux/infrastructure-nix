@@ -59,6 +59,7 @@ rec {
               # First attempt to serve request as file, then
               # as directory, then redirect to index.html (Angular) if no file found.
               try_files $uri $uri/ /index.html;
+              expires 5m;
             '';
           };
           "/discord" = {
