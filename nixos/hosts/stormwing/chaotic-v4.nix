@@ -110,8 +110,6 @@ in
           autoindex on;
           autoindex_exact_size off;
           autoindex_format xml;
-          xslt_string_param path $uri;
-          xslt_string_param hostname "Chaotic-AUR main node - Temeraire";
 
           # Security
           add_header X-XSS-Protection          "1; mode=block" always;
@@ -124,10 +122,10 @@ in
           location ~* ^.+\.log {
               default_type text/plain;
           }
-          location ~* /repos/(chaotic-aur|garuda)/x86_64/(?!.*(chaotic-aur|garuda)\.(db|files)).+\.tar.* {
-              return 301 https://cf-builds.garudalinux.org$request_uri;
-              expires 2d;
-          }
+          #location ~* /repos/(chaotic-aur|garuda)/x86_64/(?!.*(chaotic-aur|garuda)\.(db|files)).+\.tar.* {
+          #    return 301 https://cf-builds.garudalinux.org$request_uri;
+          #    expires 2d;
+          #}
           location /api/ {
               proxy_pass http://127.0.0.1:8080/api/;
           }
@@ -141,7 +139,7 @@ in
           }
           location / {
               xslt_string_param path $uri;
-              xslt_string_param hostname "Chaotic-AUR main node - Temeraire 🐉";
+              xslt_string_param hostname "Chaotic-AUR main node - Stormwing 🐉";
               xslt_stylesheet "${garuda-lib.xslt_style}";
               location /iso {
                   expires 2d;
@@ -153,7 +151,7 @@ in
         root = "/srv/http/";
       };
       "cf-builds.garudalinux.org" = {
-        extraConfig = ''
+        /*extraConfig = ''
           location ~* /repos/(chaotic-aur|garuda)/x86_64/(?!.*(chaotic-aur|garuda)\.(db|files)).+\.tar.* {
               add_header Cache-Control "max-age=150, stale-while-revalidate=150, stale-if-error=86400";
           }
@@ -175,8 +173,14 @@ in
               return 301 https://builds.garudalinux.org$request_uri;
           }
         '';
+        root = "/srv/http/";*/
+        extraConfig = ''
+          location / {
+              return 301 https://builds.garudalinux.org$request_uri;
+              expires 2d;
+          }
+        '';
         http3 = true;
-        root = "/srv/http/";
       };
       "iso.builds.garudalinux.org" = {
         extraConfig = ''
