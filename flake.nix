@@ -24,10 +24,6 @@
     # Impermanence for keeping things clean
     impermanence.url = "github:nix-community/impermanence";
 
-    # Lix-module, because it's awesome
-    lix-module.url = "https://git.lix.systems/lix-project/nixos-module/archive/2.93.2-1.tar.gz";
-    lix-module.inputs.nixpkgs.follows = "nixpkgs";
-
     # The single source of truth
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";

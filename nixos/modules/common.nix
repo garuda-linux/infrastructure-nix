@@ -195,6 +195,15 @@
     package = pkgs.lixPackageSets.latest.lix;
   };
 
+  nixpkgs.overlays = [ (final: prev: {
+    inherit (final.lixPackageSets.latest)
+      nixpkgs-review
+      nix-direnv
+      nix-eval-jobs
+      nix-fast-build
+      colmena;
+  }) ];
+
   # Do daily garbage collection
   programs.nh = {
     enable = true;
