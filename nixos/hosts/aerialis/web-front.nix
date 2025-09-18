@@ -346,7 +346,7 @@ rec {
         http3 = true;
         locations = {
           "/" = {
-            proxyPass = "http://10.0.5.60:3002";
+            proxyPass = "http://10.0.5.50:3002";
           };
         };
         quic = true;
