@@ -79,7 +79,7 @@ rec {
             extraConfig = "expires 12h;";
             return = "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update";
           };
-          "/os/garuda-diag-up/diagnostic" = {
+          "/os/garuda-diag/diagnostic" = {
             extraConfig = "expires 12h;";
             return = "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/4892890/raw/main/diagnostics";
           };
