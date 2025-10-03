@@ -91,6 +91,13 @@
         sourcePort = 210;
       }
       {
+        # iso-runner (SSH)
+        destination = "10.0.5.20:22";
+        loopbackIPs = [ "157.180.57.51" ];
+        proto = "tcp";
+        sourcePort = 220;
+      }
+      {
         # web-front (HTTP)
         destination = "10.0.5.40:80";
         loopbackIPs = [ "157.180.57.51" ];
@@ -268,13 +275,6 @@
               mountPoint = "/var/cache/pacman/pkg";
             };
           };
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 220;
-              protocol = "tcp";
-            }
-          ];
         };
         ipAddress = "10.0.5.20";
         needsDocker = true;
