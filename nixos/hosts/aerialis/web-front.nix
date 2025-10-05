@@ -25,7 +25,7 @@ let
       src = sources.garuda-website;
 
       nativeBuildInputs = with pkgs; [
-        nodejs_22
+        nodejs_24
         pnpm_10.configHook
       ];
       pnpmDeps = pkgs.pnpm_10.fetchDeps {
@@ -39,6 +39,38 @@ let
       '';
       installPhase = ''
         cp -r ./dist/website/browser $out
+      '';
+    });
+
+  startpage =
+    let
+      # Run Nx command with fake TTY to avoid panic
+      # https://github.com/nrwl/nx/issues/22445
+      nx = pkgs.writeScript "nx-wrapper" ''
+        exec ${pkgs.faketty}/bin/faketty nx "$@"
+      '';
+    in
+    pkgs.stdenv.mkDerivation (finalAttrs: {
+      pname = "garuda-startpage";
+      version = "1.0.0";
+
+      src = sources.garuda-startpage;
+
+      nativeBuildInputs = with pkgs; [
+        nodejs_24
+        pnpm_10.configHook
+      ];
+      pnpmDeps = pkgs.pnpm_10.fetchDeps {
+        inherit (finalAttrs) pname version src;
+        fetcherVersion = 1;
+        hash = "sha256-q5Qz/t4VatO/pBGwTmpG5vJCMpMelLYMIoC8tBsOQZc=";
+      };
+      buildPhase = ''
+        export PATH=$(pnpm bin):$PATH
+        ${nx} build
+      '';
+      installPhase = ''
+        cp -r ./dist/startpage-v3/browser $out
       '';
     });
 in
@@ -94,6 +126,24 @@ rec {
         };
         quic = true;
         serverAliases = [ "www.garudalinux.org" ];
+        useACMEHost = "garudalinux.org";
+      };
+      "start.garudalinux.org" = {
+        addSSL = true;
+        http3 = true;
+        locations = {
+          "/" = {
+            index = "index.html";
+            root = startpage;
+            extraConfig = ''
+              # First attempt to serve request as file, then
+              # as directory, then redirect to index.html (Angular) if no file found.
+              try_files $uri $uri/ /index.html;
+              expires 5m;
+            '';
+          };
+        };
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "cloud-aio.garudalinux.org" = {
@@ -450,7 +500,8 @@ rec {
     enable = true;
     ingress = {
       # "example.garudalinux.net" = "http://10.0.5.100:8085";
-    } // (generateCloudflaredIngress services.nginx.virtualHosts);
+    }
+    // (generateCloudflaredIngress services.nginx.virtualHosts);
     tunnel-credentials = config.sops.secrets."cloudflare/tunnels/aerialis".path;
   };
 

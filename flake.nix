@@ -85,6 +85,12 @@
       repo = "website%2Fwebsite-catppuccin";
       flake = false;
     };
+    src-garuda-startpage = {
+      type = "gitlab";
+      owner = "garuda-linux";
+      repo = "website%2Fstartpage-v2";
+      flake = false;
+    };
 
     src-cloudflare-ipv4 = {
       url = "https://www.cloudflare.com/ips-v4";

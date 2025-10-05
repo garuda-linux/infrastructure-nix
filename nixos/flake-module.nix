@@ -25,6 +25,7 @@ let
       cloudflare-ipv4 = inputs.src-cloudflare-ipv4;
       cloudflare-authenticated_origin_pull_ca = inputs.src-cloudflare-authenticated_origin_pull_ca;
       garuda-website = inputs.src-garuda-website;
+      garuda-startpage = inputs.src-garuda-startpage;
       buildiso = inputs.src-buildiso;
       inherit defaultModules;
       inherit nixpkgs;

@@ -424,6 +424,7 @@
         "src-chaotic-portable-builder": "src-chaotic-portable-builder",
         "src-cloudflare-authenticated_origin_pull_ca": "src-cloudflare-authenticated_origin_pull_ca",
         "src-cloudflare-ipv4": "src-cloudflare-ipv4",
+        "src-garuda-startpage": "src-garuda-startpage",
         "src-garuda-website": "src-garuda-website",
         "treefmt-nix": "treefmt-nix"
       }
@@ -502,6 +503,22 @@
       "original": {
         "type": "file",
         "url": "https://www.cloudflare.com/ips-v4"
+      }
+    },
+    "src-garuda-startpage": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1759478262,
+        "narHash": "sha256-1Ly6T9pWLyBWWx6NzGjP6tWF5hvwaFRFywV9Mt33d1g=",
+        "owner": "garuda-linux",
+        "repo": "website%2Fstartpage-v2",
+        "rev": "5b133c57f6222099a8731e9f2d0271703180522e",
+        "type": "gitlab"
+      },
+      "original": {
+        "owner": "garuda-linux",
+        "repo": "website%2Fstartpage-v2",
+        "type": "gitlab"
       }
     },
     "src-garuda-website": {
