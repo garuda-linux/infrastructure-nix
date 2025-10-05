@@ -16,8 +16,8 @@ let
         tangerine-ui = pkgs.fetchFromGitHub {
           owner = "nileane";
           repo = "TangerineUI-for-Mastodon";
-          rev = "v2.4.3";
-          hash = "sha256-OThT3fp676RMfYY3ehzM4DnAlJOqdPoYIHpoBbN/RHQ=";
+          rev = "v2.4.4";
+          hash = "sha256-58xiS2yzv4z24IULJQWpkqV1Op6e+U6SFd1XjpAB6Go=";
         };
       in
       {
