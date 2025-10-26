@@ -29,13 +29,17 @@
         theme_background = false;
       };
     };
+    difftastic = {
+      enable = true;
+      git.enable = true;
+    };
     fish = {
       enable = true;
     };
     git = {
-      difftastic.enable = true;
       enable = true;
-      extraConfig = {
+      settings = {
+
         core = {
           editor = "micro";
         };
@@ -45,9 +49,11 @@
         pull = {
           rebase = true;
         };
+        user = {
+          email = "root@dr460nf1r3.org";
+          name = "Nico Jensch";
+        };
       };
-      userEmail = "root@dr460nf1r3.org";
-      userName = "Nico Jensch";
     };
     tmux = {
       baseIndex = 1;

@@ -22,9 +22,7 @@
     fish.enable = true;
     git = {
       enable = true;
-      userEmail = "programming.hubmaking@slmail.me";
-      userName = "Alex JP";
-      extraConfig = {
+      settings = {
         core = {
           editor = "nvim";
         };
@@ -33,6 +31,10 @@
         };
         pull = {
           rebase = true;
+        };
+        user = {
+          email = "programming.hubmaking@slmail.me";
+          name = "Alex JP";
         };
       };
     };

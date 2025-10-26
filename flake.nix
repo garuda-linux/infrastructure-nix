@@ -102,6 +102,8 @@
     };
 
     # Patches
+    # This PR has been closed in favor of another one (https://github.com/NixOS/nixpkgs/pull/433990),
+    # but applying the necessary patches fails
     nixos-patch-netdata.url = "https://github.com/NixOS/nixpkgs/pull/424409.patch";
     nixos-patch-netdata.flake = false;
   };

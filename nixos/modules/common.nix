@@ -25,8 +25,6 @@
     # Make cloudflared happy (https://github.com/lucas-clemente/quic-go/wiki/UDP-Receive-Buffer-Size)
     "net.core.rmem_max" = 2500000;
   };
-  # Mount /run as shared for systemd-nspawn
-  boot.specialFileSystems."/run".options = lib.mkIf (!config.boot.isContainer) [ "rshared" ];
 
   # Locales & timezone
   time.timeZone = "Europe/Berlin";
