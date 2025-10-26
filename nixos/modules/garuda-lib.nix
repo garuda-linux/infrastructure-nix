@@ -46,12 +46,10 @@ let
             port = 80;
           }
         ];
-        extraConfig =
-          (config.extraConfig or "")
-          + ''
-            real_ip_header CF-Connecting-IP;
-            set_real_ip_from 127.0.0.1;
-          '';
+        extraConfig = (config.extraConfig or "") + ''
+          real_ip_header CF-Connecting-IP;
+          set_real_ip_from 127.0.0.1;
+        '';
       }
     );
   # This is technically unecessary, but safety!
@@ -63,24 +61,21 @@ let
     in
     config
     // {
-      extraConfig =
-        config.extraConfig
-        + ''
-          ssl_verify_client on;
-          underscores_in_headers off;
-          ssl_client_certificate ${sources.cloudflare-authenticated_origin_pull_ca};
-        '';
+      extraConfig = config.extraConfig + ''
+        ssl_verify_client on;
+        underscores_in_headers off;
+        ssl_client_certificate ${sources.cloudflare-authenticated_origin_pull_ca};
+      '';
       locations = lib.mapAttrs (
         _: location:
         location
         // {
-          extraConfig =
-            ''
-              if ($http_cf_access_authenticated_user_email = "") {
-                  return 403;
-              }
-            ''
-            + (location.extraConfig or "");
+          extraConfig = ''
+            if ($http_cf_access_authenticated_user_email = "") {
+                return 403;
+            }
+          ''
+          + (location.extraConfig or "");
         }
       ) config.locations;
     };

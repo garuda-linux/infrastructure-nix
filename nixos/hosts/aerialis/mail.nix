@@ -3,8 +3,6 @@
   lib,
   pkgs,
   sources,
-  garuda-lib,
-  sops,
   ...
 }:
 let

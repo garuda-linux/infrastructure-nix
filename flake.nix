@@ -243,7 +243,8 @@
                     category = "infra-nix";
                     package = colmena.defaultPackage.${system};
                   }
-                ] ++ shared_commands;
+                ]
+                ++ shared_commands;
                 motd = ''
                   {202}🔨 Welcome to Garuda's infra-nix shell{reset} ❄️
                   $(type -p menu &>/dev/null && menu)

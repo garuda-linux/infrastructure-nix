@@ -1,4 +1,5 @@
-{ lib, ... }: {
+{ lib, ... }:
+{
   # Disable coredumps
   systemd.coredump.enable = false;
 

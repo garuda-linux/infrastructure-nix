@@ -96,7 +96,8 @@ in
         nodeNixpkgs = builtins.mapAttrs (_name: value: value.pkgs) conf;
         nodeSpecialArgs = builtins.mapAttrs (_name: value: value._module.specialArgs) conf;
       };
-    } // builtins.mapAttrs (_name: value: { imports = value._module.args.modules; }) conf;
+    }
+    // builtins.mapAttrs (_name: value: { imports = value._module.args.modules; }) conf;
     colmenaHive = inputs.colmena.lib.makeHive self.outputs.colmena;
   };
 }

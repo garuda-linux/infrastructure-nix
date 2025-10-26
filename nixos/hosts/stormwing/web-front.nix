@@ -72,7 +72,8 @@ rec {
     enable = true;
     ingress = {
       # "example.garudalinux.net" = "http://10.0.5.100:8085";
-    } // (generateCloudflaredIngress services.nginx.virtualHosts);
+    }
+    // (generateCloudflaredIngress services.nginx.virtualHosts);
     tunnel-credentials = config.sops.secrets."cloudflare/tunnels/stormwing".path;
   };
 

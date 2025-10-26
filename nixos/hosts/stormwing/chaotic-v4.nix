@@ -151,29 +151,31 @@ in
         root = "/srv/http/";
       };
       "cf-builds.garudalinux.org" = {
-        /*extraConfig = ''
-          location ~* /repos/(chaotic-aur|garuda)/x86_64/(?!.*(chaotic-aur|garuda)\.(db|files)).+\.tar.* {
-              add_header Cache-Control "max-age=150, stale-while-revalidate=150, stale-if-error=86400";
-          }
-          location ~* /repos/(chaotic-aur|garuda)/x86_64/(chaotic-aur|garuda)\.db.* {
-              add_header Cache-Control 'no-cache';
-          }
-          location /repos/chaotic-aur {
-              expires 5m;
-              error_page 403 =301 https://builds.garudalinux.org$request_uri;
-              error_page 404 =301 https://builds.garudalinux.org$request_uri;
-          }
-          location /repos/garuda {
-              expires 5m;
-              error_page 403 =301 https://builds.garudalinux.org$request_uri;
-              error_page 404 =301 https://builds.garudalinux.org$request_uri;
-          }
-          location / {
-              expires 2d;
-              return 301 https://builds.garudalinux.org$request_uri;
-          }
-        '';
-        root = "/srv/http/";*/
+        /*
+          extraConfig = ''
+            location ~* /repos/(chaotic-aur|garuda)/x86_64/(?!.*(chaotic-aur|garuda)\.(db|files)).+\.tar.* {
+                add_header Cache-Control "max-age=150, stale-while-revalidate=150, stale-if-error=86400";
+            }
+            location ~* /repos/(chaotic-aur|garuda)/x86_64/(chaotic-aur|garuda)\.db.* {
+                add_header Cache-Control 'no-cache';
+            }
+            location /repos/chaotic-aur {
+                expires 5m;
+                error_page 403 =301 https://builds.garudalinux.org$request_uri;
+                error_page 404 =301 https://builds.garudalinux.org$request_uri;
+            }
+            location /repos/garuda {
+                expires 5m;
+                error_page 403 =301 https://builds.garudalinux.org$request_uri;
+                error_page 404 =301 https://builds.garudalinux.org$request_uri;
+            }
+            location / {
+                expires 2d;
+                return 301 https://builds.garudalinux.org$request_uri;
+            }
+          '';
+          root = "/srv/http/";
+        */
         extraConfig = ''
           location / {
               return 301 https://builds.garudalinux.org$request_uri;
