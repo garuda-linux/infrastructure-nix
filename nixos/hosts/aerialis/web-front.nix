@@ -458,15 +458,32 @@ rec {
         addSSL = true;
         http3 = true;
         locations = {
+          "/sse" = {
+            proxyPass = "http://10.0.5.70:3000";
+            extraConfig = ''
+              # SSE essential settings
+              proxy_http_version 1.1;
+              proxy_set_header Connection "";
+              proxy_buffering off;
+              # Timeouts
+              proxy_connect_timeout 60s;
+              proxy_read_timeout 3600s;
+              proxy_send_timeout 3600s;
+              # Headers
+              add_header Content-Type text/event-stream;
+              add_header Cache-Control no-cache;
+              add_header X-Accel-Buffering no;
+            '';
+          };
           "/" = {
             proxyPass = "http://10.0.5.70:3000";
+            extraConfig = ''
+              ${garuda-lib.nginxReverseProxySettings}
+            '';
           };
         };
         quic = true;
         useACMEHost = "garudalinux.org";
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
       };
       "mail.garudalinux.net" = {
         addSSL = true;
