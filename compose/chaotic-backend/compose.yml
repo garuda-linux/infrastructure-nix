@@ -30,6 +30,7 @@ services:
     ports: ["3000:3000"]
     volumes: ["${SSH_KEY:-?err}:/app/sshkey"]
     extra_hosts: ["host.docker.internal:host-gateway"]
+
   # TODO: revert to NixOS service once it no longer segfaults
   database:
     image: redis:8.2-m01-alpine
@@ -38,3 +39,12 @@ services:
     ports: ["127.0.0.1:6379:6379"]
     command: redis-server --save 20 1 --loglevel warning --requirepass "${REDIS_PASSWORD:-?err}"
     volumes: ["./database:/data"]
+
+  marge_bot:
+    image: registry.gitlab.com/marge-org/marge-bot:main
+    container_name: chaotic-marge-
+    restart: always
+    environment:
+      MARGE_AUTH_TOKEN: ${TEMERAIRE_BOT_TOKEN:-?err}
+      MARGE_GITLAB_URL: https://gitlab.com
+      MARGE_USE_HTTPS: true
