@@ -65,7 +65,7 @@ services:
     restart: always
   # Secure pastebin
   privatebin:
-    image: privatebin/nginx-fpm-alpine:2.0.1
+    image: privatebin/nginx-fpm-alpine:2.0.2
     container_name: privatebin
     volumes:
       - ./privatebin:/srv/data
