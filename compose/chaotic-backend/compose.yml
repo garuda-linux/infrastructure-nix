@@ -19,6 +19,8 @@ services:
       CAUR_JWT_SECRET: ${CAUR_JWT_SECRET:-?err}
       CAUR_TRUST_PROXY: 172.18.0.1
       CAUR_USERS: ${CAUR_USERS:-?err}
+      CAUR_VAPID_PUBLIC: BFMijCyTcLZu3HRJyMfoB4vtnDcgl7E2SVZgd4uWB3XjO2VvRh_LjYHcY_oJLvMIhdp5Yvuz0gudRpY-PFI9iWA
+      CAUR_VAPID_PRIVATE: ${CAUR_VAPID_PRIVATE:-?err}
       NODE_ENV: production
       PG_DATABASE: chaotic-aur
       PG_HOST: 10.0.5.20
