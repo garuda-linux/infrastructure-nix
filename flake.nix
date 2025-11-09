@@ -4,6 +4,9 @@
   inputs = {
     # Deployment tool
     colmena.url = "github:zhaofengli/colmena";
+    colmena.inputs.flake-compat.follows = "flake-compat";
+    colmena.inputs.nixpkgs.follows = "nixpkgs";
+    colmena.inputs.stable.follows = "nixpkgs-stable";
 
     # Devshell to set up a development environment
     devshell.url = "github:numtide/devshell";
@@ -33,7 +36,6 @@
     nixos-mailserver.inputs.flake-compat.follows = "flake-compat";
     nixos-mailserver.inputs.git-hooks.follows = "";
     nixos-mailserver.inputs.nixpkgs.follows = "nixpkgs";
-    nixos-mailserver.inputs.nixpkgs-25_05.follows = "nixpkgs";
 
     # Pre-commit hooks via nix-shell or nix develop
     pre-commit-hooks.url = "github:cachix/git-hooks.nix";
