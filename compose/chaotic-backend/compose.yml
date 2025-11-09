@@ -30,7 +30,7 @@ services:
       REDIS_SSH_HOST: host.docker.internal
       REDIS_SSH_USER: package-deployer
     ports: ["3000:3000"]
-    volumes: ["${SSH_KEY:-?err}:/app/sshkey"]
+    volumes: ["${SSH_KEY:-?err}:/app/sshkey", "./backend-config:/app/config"]
     extra_hosts: ["host.docker.internal:host-gateway"]
 
   # TODO: revert to NixOS service once it no longer segfaults
@@ -47,6 +47,7 @@ services:
     container_name: chaotic-marge-
     restart: always
     environment:
+      MARGE_BATCH: true
       MARGE_AUTH_TOKEN: ${TEMERAIRE_BOT_TOKEN:-?err}
       MARGE_GITLAB_URL: https://gitlab.com
       MARGE_USE_HTTPS: true
