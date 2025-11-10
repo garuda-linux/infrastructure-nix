@@ -88,8 +88,9 @@ in
       fromAddress = "noreply@garudalinux.org";
       host = "mail.garudalinux.net";
       passwordFile = config.sops.secrets."mastodon/smtp_password".path;
-      port = 587;
+      port = 465;
       user = "noreply@garudalinux.org";
+      createLocally = false;
     };
     streamingProcesses = 16;
     redis = {

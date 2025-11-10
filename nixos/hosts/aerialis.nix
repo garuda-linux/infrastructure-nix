@@ -93,13 +93,6 @@
         sourcePort = 443;
       }
       {
-        # mail (SMTP)
-        destination = "10.0.5.80:587";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "tcp";
-        sourcePort = 587;
-      }
-      {
         # mail (SMTP over SSL)
         destination = "10.0.5.80:465";
         loopbackIPs = [ "157.180.57.100" ];

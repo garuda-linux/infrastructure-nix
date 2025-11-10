@@ -56,8 +56,8 @@ services:
       SMTP_FROM: noreply@garudalinux.org
       SMTP_HOST: mail.garudalinux.org
       SMTP_PASSWORD: ${BW_SMTP_PASSWORD:-?err}
-      SMTP_PORT: 587
-      SMTP_SSL: false
+      SMTP_PORT: 465
+      SMTP_SSL: true
       SMTP_USERNAME: noreply@garudalinux.org
       WEBSOCKET_ENABLED: true
       YUBICO_CLIENT_ID: ${BW_YUBICO_CLIENT_ID:-?err}

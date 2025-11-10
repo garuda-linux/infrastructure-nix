@@ -103,6 +103,9 @@ in
     monitoring.enable = false;
     systemDomain = "garudalinux.org";
     systemName = "Garuda Linux";
+    # SMTP on port 587 is deprecated and disabled by default
+    # Explicitly disable it to discourage misconfiguration
+    enableSubmission = false;
   };
 
   # Fix dovecot errors caused by failed scudo allocations
