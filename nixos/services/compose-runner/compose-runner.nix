@@ -72,7 +72,7 @@ in
               sed -r 's/(^\s+restart:\s*)(unless-stopped|always)(\s*($|#))/\1on-failure\3/g' "$src/compose.yml" > "$out/compose.yml"
               rsync --exclude="/compose.yml" -a "$src/" "$out"
             '';
-            inherit (pkgs.hostPlatform) system;
+            inherit (pkgs.stdenv.hostPlatform) system;
           };
           statepath = "/var/garuda/compose-runner/${name}";
         in
