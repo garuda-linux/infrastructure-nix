@@ -102,22 +102,32 @@ rec {
             extraConfig = "expires 12h;";
             return = "307 https://t.me/+TAZWHgryP6elOyS8";
           };
-          "/os/garuda-update/backuprepo" = {
+          "/os/" = {
             extraConfig = ''
-              rewrite ^/os/garuda-update/backuprepo/(.*)$ https://geo-mirror.chaotic.cx/chaotic-aur/$1 redirect;
+              try_files $uri =404;
+              expires 5m;
+
+              location = /os/garuda-update/remote-update {
+                expires 12h;
+                return 301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update;
+              }
+              location = /os/garuda-diag/diagnostic {
+                expires 12h;
+                return 301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/4892890/raw/main/diagnostics;
+              }
+              location = /os/garuda-update/hotfix {
+                expires 5m;
+                return 307 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/4899885/raw/main/hotfix;
+              }
+              location = /os/garuda-update/hotfix-check {
+                expires 5m;
+                return 200 '7';
+              }
+              location = /os/garuda-update/garuda-hotfixes-version {
+                expires 12h;
+                return 410 'Feature removed in Garuda System Maintenance 3.1.0';
+              }
             '';
-          };
-          "/os/garuda-update/remote-update" = {
-            extraConfig = "expires 12h;";
-            return = "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update";
-          };
-          "/os/garuda-diag/diagnostic" = {
-            extraConfig = "expires 12h;";
-            return = "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/4892890/raw/main/diagnostics";
-          };
-          "/os/garuda-update/garuda-hotfixes-version" = {
-            extraConfig = "expires 5m;";
-            return = "200 '1'";
           };
           "/.well-known/webfinger" = {
             extraConfig = "expires 12h;";
