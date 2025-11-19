@@ -51,3 +51,7 @@ services:
       MARGE_AUTH_TOKEN: ${TEMERAIRE_BOT_TOKEN:-?err}
       MARGE_GITLAB_URL: https://gitlab.com
       MARGE_USE_HTTPS: true
+      # Scheduled (hourly) 30 */3 * * * UTC
+      # Add a 20 minute buffer after each scheduled time to allow time for the pipeline to run
+      # Every 3 hours between HH:30 and HH:50
+      MARGE_EMBARGO: "Mon@00:30-Mon@00:50,Mon@03:30-Mon@03:50,Mon@06:30-Mon@06:50,Mon@09:30-Mon@09:50,Mon@12:30-Mon@12:50,Mon@15:30-Mon@15:50,Mon@18:30-Mon@18:50,Mon@21:30-Mon@21:50,Tue@00:30-Tue@00:50,Tue@03:30-Tue@03:50,Tue@06:30-Tue@06:50,Tue@09:30-Tue@09:50,Tue@12:30-Tue@12:50,Tue@15:30-Tue@15:50,Tue@18:30-Tue@18:50,Tue@21:30-Tue@21:50,Wed@00:30-Wed@00:50,Wed@03:30-Wed@03:50,Wed@06:30-Wed@06:50,Wed@09:30-Wed@09:50,Wed@12:30-Wed@12:50,Wed@15:30-Wed@15:50,Wed@18:30-Wed@18:50,Wed@21:30-Wed@21:50,Thu@00:30-Thu@00:50,Thu@03:30-Thu@03:50,Thu@06:30-Thu@06:50,Thu@09:30-Thu@09:50,Thu@12:30-Thu@12:50,Thu@15:30-Thu@15:50,Thu@18:30-Thu@18:50,Thu@21:30-Thu@21:50,Fri@00:30-Fri@00:50,Fri@03:30-Fri@03:50,Fri@06:30-Fri@06:50,Fri@09:30-Fri@09:50,Fri@12:30-Fri@12:50,Fri@15:30-Fri@15:50,Fri@18:30-Fri@18:50,Fri@21:30-Fri@21:50,Sat@00:30-Sat@00:50,Sat@03:30-Sat@03:50,Sat@06:30-Sat@06:50,Sat@09:30-Sat@09:50,Sat@12:30-Sat@12:50,Sat@15:30-Sat@15:50,Sat@18:30-Sat@18:50,Sat@21:30-Sat@21:50,Sun@00:30-Sun@00:50,Sun@03:30-Sun@03:50,Sun@06:30-Sun@06:50,Sun@09:30-Sun@09:50,Sun@12:30-Sun@12:50,Sun@15:30-Sun@15:50,Sun@18:30-Sun@18:50,Sun@21:30-Sun@21:50"
