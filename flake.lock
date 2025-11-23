@@ -495,11 +495,11 @@
     "src-garuda-website": {
       "flake": false,
       "locked": {
-        "lastModified": 1762977316,
-        "narHash": "sha256-ahGXhIVsytH0qqqv2HIQ+ZGM1MH/vtSHAI4l65QBROI=",
+        "lastModified": 1763802670,
+        "narHash": "sha256-aHSod9RBjPoAmJQHZ+c/G4pDFViLMJX5/g/xbueq1QE=",
         "owner": "garuda-linux",
         "repo": "website%2Fwebsite-catppuccin",
-        "rev": "849273a8d788e7f4ae42743719d31af3376a1524",
+        "rev": "ad9376df03405c2e1fc0d6500550020817d238e0",
         "type": "gitlab"
       },
       "original": {
