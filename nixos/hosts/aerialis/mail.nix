@@ -20,7 +20,7 @@ in
 
   # NixOS Mailserver
   mailserver = {
-    certificateScheme = "acme-nginx";
+    x509.useACMEHost = "garudalinux.net";
     dmarcReporting.enable = true;
     domains = [
       "garudalinux.org"
