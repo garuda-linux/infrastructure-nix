@@ -45,7 +45,7 @@ services:
     restart: always
   # Password vault
   vaultwarden:
-    image: vaultwarden/server:1.34.3-alpine
+    image: vaultwarden/server:1.35.1-alpine
     container_name: vaultwarden
     volumes: ["./bitwarden:/data"]
     ports: ["8081:80"]
