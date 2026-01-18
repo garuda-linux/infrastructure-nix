@@ -36,6 +36,7 @@ let
       frank = inputs.keys_frank;
       nico = inputs.keys_nico;
       pedrohlc = inputs.keys_pedrohlc;
+      stefan = inputs.keys_stefan;
       technetium1 = inputs.keys_technetium1;
       tne = inputs.keys_tne;
       xiota = inputs.keys_xiota;

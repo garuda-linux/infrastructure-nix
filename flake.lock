@@ -219,6 +219,18 @@
         "url": "https://github.com/pedrohlc.keys"
       }
     },
+    "keys_stefan": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-RTik0C/V4B2+VKc0goR+tl/BwI97llQ8jz0mJLXHQdc=",
+        "type": "file",
+        "url": "https://github.com/stefanwimmer128.keys"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/stefanwimmer128.keys"
+      }
+    },
     "keys_technetium1": {
       "flake": false,
       "locked": {
@@ -382,6 +394,7 @@
         "keys_frank": "keys_frank",
         "keys_nico": "keys_nico",
         "keys_pedrohlc": "keys_pedrohlc",
+        "keys_stefan": "keys_stefan",
         "keys_technetium1": "keys_technetium1",
         "keys_tne": "keys_tne",
         "keys_xiota": "keys_xiota",

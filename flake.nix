@@ -65,6 +65,8 @@
     keys_xiota.flake = false;
     keys_pedrohlc.url = "https://github.com/pedrohlc.keys";
     keys_pedrohlc.flake = false;
+    keys_stefan.url = "https://github.com/stefanwimmer128.keys";
+    keys_stefan.flake = false;
 
     # Sources for custom applications and files
     # TODO: https://github.com/NixOS/nix/pull/9163

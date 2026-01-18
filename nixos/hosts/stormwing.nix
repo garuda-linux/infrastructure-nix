@@ -247,6 +247,13 @@
               mountPoint = "/var/garuda/compose-runner/firedragon-runner";
             };
           };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 250;
+              protocol = "tcp";
+            }
+          ];
           ephemeral = lib.mkForce true;
         };
         ipAddress = "10.0.5.50";
