@@ -25,6 +25,7 @@ in
     domains = [
       "garudalinux.org"
       "dr460nf1r3.org"
+      "chaotic.cx"
     ];
     enable = true;
     fqdn = "mail.garudalinux.net";
@@ -96,6 +97,34 @@ in
       "test@dr460nf1r3.org" = {
         hashedPasswordFile = config.sops.secrets."mail/testatdf".path;
       };
+      # chaotic.cx
+      "a0xz@chaotic.cx" = {
+        hashedPasswordFile = config.sops.secrets."mail/a0xzatchaotic".path;
+      };
+      "dr460nf1r3@chaotic.cx" = {
+        aliases = [
+          "actions@chaotic.cx"
+          "admin@chaotic.cx"
+          "root@chaotic.cx"
+          "temeraire@chaotic.cx"
+          "webmaster@chaotic.cx"
+        ];
+        hashedPasswordFile = config.sops.secrets."mail/dr460nf1r3atchaotic".path;
+      };
+      "wilbur@chaotic.cx" = {
+        hashedPasswordFile = config.sops.secrets."mail/wilburatchaotic".path;
+      };
+    };
+    forwards = {
+      "any_@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
+      "coc@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
+      "coffee-machine@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
+      "islandc0der@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.islandc0der ];
+      "no-reply@chaotic.cx" = [];
+      "noreply@chaotic.cx" = [];
+      "pedrohlc@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
+      "pgc@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
+      "xstefen@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.xstefen ];
     };
     indexDir = "/var/lib/dovecot/indices";
     # We do it via UptimeKuma, and since we don't enable NAT reflection in this server, this
@@ -127,12 +156,17 @@ in
     # the mailserver
     hostName = "mail.garudalinux.net";
     extraConfig = ''
-      # starttls needed for authentication, so the fqdn required to match
-      # the certificate
-      $config['smtp_server'] = "tls://${config.mailserver.fqdn}";
-      $config['smtp_user'] = "%u";
-      $config['smtp_pass'] = "%p";
-    '';
+       $config['imap_host'] = "ssl://127.0.0.1";
+       $config['imap_conn_options'] = array(
+         'ssl' => array(
+           'verify_peer' => false,
+           'verify_peer_name' => false,
+         ),
+       );
+       $config['smtp_host'] = "ssl://127.0.0.1";
+       $config['smtp_user'] = "%u";
+       $config['smtp_pass'] = "%p";
+     '';
     package = pkgs.roundcube.withPlugins (plugins: [
       authres_status
       plugins.carddav
@@ -162,13 +196,16 @@ in
   sops.secrets = {
     "backup/repo_key" = { };
     "backup/ssh_aerialis" = { };
+    "mail/a0xzatchaotic" = { };
     "mail/cloudatgl" = { };
     "mail/complaintsatgl" = { };
+    "mail/dr460nf1r3atchaotic" = { };
     "mail/dr460nf1r3atgl" = { };
     "mail/filoatgl" = { };
     "mail/gitlabatgl" = { };
     "mail/mastodonatgl" = { };
     "mail/namanatgl" = { };
+    "mail/noreplyatdf" = { };
     "mail/noreplyatgl" = { };
     "mail/rohitatgl" = { };
     "mail/securityatgl" = { };
@@ -177,8 +214,8 @@ in
     "mail/teamatgl" = { };
     "mail/testatdf" = { };
     "mail/tneatgl" = { };
+    "mail/wilburatchaotic" = { };
     "mail/yorperatgl" = { };
-    "mail/noreplyatdf" = { };
   };
 
   system.stateVersion = "22.05";
