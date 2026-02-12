@@ -310,6 +310,19 @@
         };
         ipAddress = "10.0.5.10";
       };
+      n8n = {
+        config = import ./aerialis/n8n.nix;
+        extraOptions = {
+          bindMounts = {
+            "n8n" = {
+              hostPath = "/data_1/containers/n8n/var-lib";
+              isReadOnly = false;
+              mountPoint = "/var/lib";
+            };
+          };
+        };
+        ipAddress = "10.0.5.90";
+      };
     };
   };
 

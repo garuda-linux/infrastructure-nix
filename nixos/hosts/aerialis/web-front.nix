@@ -31,7 +31,7 @@ let
       pnpmDeps = pkgs.pnpm_10.fetchDeps {
         inherit (finalAttrs) pname version src;
         fetcherVersion = 1;
-        hash = "sha256-suD1xtYoxf7s15vDlKZFGZ/5cTV08ePyGEbFh0z9JCk=";
+        hash = "sha256-EmakOhDH7PldMh74h9UKKY10R+2K8N3u8GqOEEwNyJ8=";
       };
       buildPhase = ''
         export PATH=$(pnpm bin):$PATH
@@ -445,6 +445,33 @@ rec {
               proxy_hide_header Cache-Control;
               proxy_hide_header Expires;
               add_header Cache-Control 'no-store';
+            '';
+          };
+        };
+      };
+      "n8n-webhooks.garudalinux.net" = {
+        addSSL = true;
+        locations = {
+          "/" = {
+            return = "404";
+          };
+          "/webhook" = {
+            extraConfig = ''
+              ${garuda-lib.nginxReverseProxySettings}
+
+              proxy_pass http://10.0.5.90:5678;
+            '';
+          };
+        };
+        useACMEHost = "garudalinux.net";
+      };
+      "n8n.garudalinux.net" = allowOnlyCloudflareZerotrust {
+        locations = {
+          "/" = {
+            extraConfig = ''
+              ${garuda-lib.nginxReverseProxySettings}
+
+              proxy_pass http://10.0.5.90:5678;
             '';
           };
         };
