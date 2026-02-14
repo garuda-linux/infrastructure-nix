@@ -164,6 +164,12 @@ in
          ),
        );
        $config['smtp_host'] = "ssl://127.0.0.1";
+       $config['smtp_conn_options'] = array(
+         'ssl' => array(
+           'verify_peer' => false,
+           'verify_peer_name' => false,
+         ),
+       );
        $config['smtp_user'] = "%u";
        $config['smtp_pass'] = "%p";
      '';
