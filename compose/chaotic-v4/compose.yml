@@ -143,7 +143,7 @@ services:
     ports: ["127.0.0.1:8080:8080", "127.0.0.1:3030:3030"]
   # Automated container updates
   watchtower:
-    image: containrrr/watchtower:latest
+    image: nickfedor/watchtower:latest
     container_name: watchtower
     deploy:
       restart_policy:

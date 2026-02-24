@@ -138,9 +138,9 @@ services:
     restart: always
   # Automated container updates
   watchtower:
-    image: containrrr/watchtower:1.7.1
+    image: nickfedor/watchtower:1.14.2
     container_name: watchtower
-    command: --cleanup searx lingva whoogle librey
+    command: --cleanup searx lingva whoogle librey redlib
     volumes: ['/var/run/docker.sock:/var/run/docker.sock']
     restart: always
   # Auto-restart unhealthy containers (looking at you, Whoogle)
