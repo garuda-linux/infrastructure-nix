@@ -145,6 +145,12 @@ in
                   expires 2d;
                   return 301 https://iso.builds.garudalinux.org$request_uri;
               }
+              location = /repos/.stignore {
+                  return 404;
+              }
+              location /repos/.stfolder {
+                  return 404;
+              }
           }
         '';
         http3 = true;
@@ -227,13 +233,13 @@ in
         chaotic = {
           "read only" = "yes";
           comment = "Chaotic-AUR repository";
-          exclude = "/chaotic-aur/archive/*** /garuda/archive/***";
+          exclude = "/.stignore /.stfolder/*** /chaotic-aur/archive/*** /garuda/archive/***";
           path = "/srv/http/repos/";
         };
         chaotic-minimal = {
           "read only" = "yes";
           comment = "Chaotic-AUR repository minus largest packages";
-          exclude = "/chaotic-aur/archive/*** /garuda/archive/*** /chaotic-aur/x86_64/quartus* /chaotic-aur/x86_64/unrealtournament4* /chaotic-aur/x86_64/urbanterror*";
+          exclude = "/.stignore /.stfolder/*** /chaotic-aur/archive/*** /garuda/archive/*** /chaotic-aur/x86_64/quartus* /chaotic-aur/x86_64/unrealtournament4* /chaotic-aur/x86_64/urbanterror*";
           path = "/srv/http/repos/";
         };
         iso = {
