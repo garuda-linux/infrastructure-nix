@@ -111,6 +111,9 @@ in
         ];
         hashedPasswordFile = config.sops.secrets."mail/dr460nf1r3atchaotic".path;
       };
+      "h@chaotic.cx" = {
+        hashedPasswordFile = config.sops.secrets."mail/hatchaotic".path;
+      };
       "wilbur@chaotic.cx" = {
         hashedPasswordFile = config.sops.secrets."mail/wilburatchaotic".path;
       };
@@ -120,8 +123,8 @@ in
       "coc@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
       "coffee-machine@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
       "islandc0der@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.islandc0der ];
-      "no-reply@chaotic.cx" = [];
-      "noreply@chaotic.cx" = [];
+      "no-reply@chaotic.cx" = [ ];
+      "noreply@chaotic.cx" = [ ];
       "pedrohlc@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
       "pgc@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
       "xstefen@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.xstefen ];
@@ -156,23 +159,23 @@ in
     # the mailserver
     hostName = "mail.garudalinux.net";
     extraConfig = ''
-       $config['imap_host'] = "ssl://127.0.0.1";
-       $config['imap_conn_options'] = array(
-         'ssl' => array(
-           'verify_peer' => false,
-           'verify_peer_name' => false,
-         ),
-       );
-       $config['smtp_host'] = "ssl://127.0.0.1";
-       $config['smtp_conn_options'] = array(
-         'ssl' => array(
-           'verify_peer' => false,
-           'verify_peer_name' => false,
-         ),
-       );
-       $config['smtp_user'] = "%u";
-       $config['smtp_pass'] = "%p";
-     '';
+      $config['imap_host'] = "ssl://127.0.0.1";
+      $config['imap_conn_options'] = array(
+        'ssl' => array(
+          'verify_peer' => false,
+          'verify_peer_name' => false,
+        ),
+      );
+      $config['smtp_host'] = "ssl://127.0.0.1";
+      $config['smtp_conn_options'] = array(
+        'ssl' => array(
+          'verify_peer' => false,
+          'verify_peer_name' => false,
+        ),
+      );
+      $config['smtp_user'] = "%u";
+      $config['smtp_pass'] = "%p";
+    '';
     package = pkgs.roundcube.withPlugins (plugins: [
       authres_status
       plugins.carddav
@@ -209,6 +212,7 @@ in
     "mail/dr460nf1r3atgl" = { };
     "mail/filoatgl" = { };
     "mail/gitlabatgl" = { };
+    "mail/hatchaotic" = { };
     "mail/mastodonatgl" = { };
     "mail/namanatgl" = { };
     "mail/noreplyatdf" = { };
