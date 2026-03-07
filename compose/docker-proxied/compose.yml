@@ -138,7 +138,7 @@ services:
     restart: always
   # Automated container updates
   watchtower:
-    image: nickfedor/watchtower:1.14.2
+    image: nickfedor/watchtower:1.14.3
     container_name: watchtower
     command: --cleanup searx lingva whoogle librey redlib
     volumes: ['/var/run/docker.sock:/var/run/docker.sock']
