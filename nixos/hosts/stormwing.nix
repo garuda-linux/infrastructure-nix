@@ -127,7 +127,7 @@
     bridgeInterface = "br0";
     hostInterface = "eth0";
     hostIp = "10.0.5.1";
-    dockerCache = "/data_1/dockercache/";
+    dockerCache = "/data_2/dockercache/";
 
     defaults = {
       maxMemorySoft = 48318382080; # 45 GiB
@@ -140,30 +140,30 @@
         config = import ./stormwing/chaotic-v4.nix;
         extraOptions = {
           bindMounts = {
-            # Begin data_1
+            # Begin data_2
             "chaotic" = {
-              hostPath = "/data_1/containers/chaotic-v4/chaotic";
+              hostPath = "/data_2/containers/chaotic-v4/chaotic";
               isReadOnly = false;
               mountPoint = "/var/garuda/compose-runner/chaotic-v4";
             };
             "syncthing" = {
-              hostPath = "/data_1/containers/chaotic-v4/syncthing";
+              hostPath = "/data_2/containers/chaotic-v4/syncthing";
               isReadOnly = false;
               mountPoint = "/var/lib/syncthing";
             };
-            # End data_1
-            # Begin data_2
+            # End data_2
+            # Begin data_1
             "chaotic-v4" = {
-              hostPath = "/data_2/chaotic-v4/";
+              hostPath = "/data_1/chaotic-v4/";
               isReadOnly = false;
               mountPoint = "/srv/http/repos";
             };
             "iso-builds" = {
-              hostPath = "/data_2/iso/iso";
+              hostPath = "/data_1/iso/iso";
               isReadOnly = false;
               mountPoint = "/srv/http/iso";
             };
-            # End data_2
+            # End data_1
           };
           forwardPorts = [
             {
@@ -206,17 +206,17 @@
               mountPoint = "/var/.github-runner.env";
             };
             "gitlab-config" = {
-              hostPath = "/data_1/containers/github-runner/gitlab-runner";
+              hostPath = "/data_2/containers/github-runner/gitlab-runner";
               isReadOnly = false;
               mountPoint = "/etc/gitlab-runner";
             };
             "ssh-keys" = {
-              hostPath = "/data_1/containers/github-runner/ssh";
+              hostPath = "/data_2/containers/github-runner/ssh";
               isReadOnly = false;
               mountPoint = "/etc/ssh";
             };
             "github-cache" = {
-              hostPath = "/data_1/cache/github-runner";
+              hostPath = "/data_2/cache/github-runner";
               isReadOnly = false;
               mountPoint = "/var/cache/github-runner";
             };
@@ -242,7 +242,7 @@
         extraOptions = {
           bindMounts = {
             "firedragon-runner" = {
-              hostPath = "/data_1/containers/firedragon-runner";
+              hostPath = "/data_2/containers/firedragon-runner";
               isReadOnly = false;
               mountPoint = "/var/garuda/compose-runner/firedragon-runner";
             };
@@ -267,17 +267,17 @@
         extraOptions = {
           bindMounts = {
             "iso" = {
-              hostPath = "/data_2/iso/";
+              hostPath = "/data_1/iso/";
               isReadOnly = false;
               mountPoint = "/var/garuda/buildiso";
             };
             "cache" = {
-              hostPath = "/data_1/cache/iso-runner";
+              hostPath = "/data_2/cache/iso-runner";
               isReadOnly = false;
               mountPoint = "/var/garuda/buildiso/cache";
             };
             "pacman_cache" = {
-              hostPath = "/data_1/cache/pacman-cache";
+              hostPath = "/data_2/cache/pacman-cache";
               isReadOnly = false;
               mountPoint = "/var/cache/pacman/pkg";
             };
@@ -291,12 +291,12 @@
         extraOptions = {
           bindMounts = {
             "acme" = {
-              hostPath = "/data_2/containers/web-front/acme";
+              hostPath = "/data_1/containers/web-front/acme";
               isReadOnly = false;
               mountPoint = "/var/lib/acme";
             };
             "nginx" = {
-              hostPath = "/data_2/containers/web-front/nginx";
+              hostPath = "/data_1/containers/web-front/nginx";
               isReadOnly = false;
               mountPoint = "/var/log/nginx";
             };
@@ -320,7 +320,7 @@
       "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
         jobs:
           - name: nginx
-            path: /data_2/containers/web-front/nginx/access.log
+            path: /data_1/containers/web-front/nginx/access.log
       '';
     };
   };
