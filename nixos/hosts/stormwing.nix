@@ -272,12 +272,12 @@
               mountPoint = "/var/garuda/buildiso";
             };
             "cache" = {
-              hostPath = "/data_2/cache/iso-runner";
+              hostPath = "/data_1/cache/iso-runner";
               isReadOnly = false;
               mountPoint = "/var/garuda/buildiso/cache";
             };
             "pacman_cache" = {
-              hostPath = "/data_2/cache/pacman-cache";
+              hostPath = "/data_1/cache/pacman-cache";
               isReadOnly = false;
               mountPoint = "/var/cache/pacman/pkg";
             };
