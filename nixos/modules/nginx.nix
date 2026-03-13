@@ -52,9 +52,7 @@
   # Diffie-Hellman parameter for DHE ciphersuites
   security.dhparams = lib.mkIf config.services.nginx.enable {
     enable = true;
-    params.nginx = { };
   };
-  services.nginx.sslDhparam = config.security.dhparams.params.nginx.path;
 
   # Need to explicitly open our web server ports
   networking.firewall = lib.mkIf config.services.nginx.enable {

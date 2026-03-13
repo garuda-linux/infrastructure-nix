@@ -179,10 +179,9 @@ rec {
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "cloud-temp.garudalinux.org" = {
+      "cloud-temp.garudalinux.org" = allowOnlyCloudflareZerotrust {
         addSSL = true;
         extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
           ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
