@@ -451,6 +451,7 @@
         "src-cloudflare-ipv4": "src-cloudflare-ipv4",
         "src-garuda-startpage": "src-garuda-startpage",
         "src-garuda-website": "src-garuda-website",
+        "syncthing-nixpkgs": "syncthing-nixpkgs",
         "treefmt-nix": "treefmt-nix"
       }
     },
@@ -560,6 +561,22 @@
         "owner": "garuda-linux",
         "repo": "website%2Fwebsite-catppuccin",
         "type": "gitlab"
+      }
+    },
+    "syncthing-nixpkgs": {
+      "locked": {
+        "lastModified": 1773821835,
+        "narHash": "sha256-TJ3lSQtW0E2JrznGVm8hOQGVpXjJyXY2guAxku2O9A4=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "b40629efe5d6ec48dd1efba650c797ddbd39ace0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "b40629efe5d6ec48dd1efba650c797ddbd39ace0",
+        "type": "github"
       }
     },
     "treefmt-nix": {
