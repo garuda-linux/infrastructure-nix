@@ -28,14 +28,16 @@ in
       "chaotic.cx"
     ];
     enable = true;
+    enableManageSieve = true;
     fqdn = "mail.garudalinux.net";
     fullTextSearch = {
       enable = true;
       enforced = "body";
       memoryLimit = 512;
     };
+
     # To create the password hashes, use nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt'
-    loginAccounts = {
+    accounts = {
       # garudalinux.org
       "cloud@garudalinux.org" = {
         hashedPasswordFile = config.sops.secrets."mail/cloudatgl".path;
@@ -159,20 +161,9 @@ in
     # the mailserver
     hostName = "mail.garudalinux.net";
     extraConfig = ''
-      $config['imap_host'] = "ssl://127.0.0.1";
-      $config['imap_conn_options'] = array(
-        'ssl' => array(
-          'verify_peer' => false,
-          'verify_peer_name' => false,
-        ),
-      );
-      $config['smtp_host'] = "ssl://127.0.0.1";
-      $config['smtp_conn_options'] = array(
-        'ssl' => array(
-          'verify_peer' => false,
-          'verify_peer_name' => false,
-        ),
-      );
+      $config['default_host'] = "ssl://mail.garudalinux.net";
+      $config['smtp_host'] = "ssl://mail.garudalinux.net";
+      $config['managesieve_host'] = "tls://mail.garudalinux.net:4190";
       $config['smtp_user'] = "%u";
       $config['smtp_pass'] = "%p";
     '';

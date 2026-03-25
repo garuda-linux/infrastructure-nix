@@ -100,11 +100,25 @@
         sourcePort = 465;
       }
       {
+        # mail (IMAP over SSL)
+        destination = "10.0.5.80:993";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "tcp";
+        sourcePort = 993;
+      }
+      {
         # mail (inbound)
         destination = "10.0.5.80:25";
         loopbackIPs = [ "157.180.57.100" ];
         proto = "tcp";
         sourcePort = 25;
+      }
+      {
+        # sieve (ManageSieve)
+        destination = "10.0.5.80:4190";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "tcp";
+        sourcePort = 4190;
       }
     ];
     firewall.trustedInterfaces = [ "br0" ];
@@ -245,13 +259,6 @@
               mountPoint = "/var/vmail";
             };
           };
-          forwardPorts = [
-            {
-              containerPort = 993;
-              hostPort = 993;
-              protocol = "tcp";
-            }
-          ];
         };
         ipAddress = "10.0.5.80";
       };
