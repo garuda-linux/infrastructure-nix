@@ -111,7 +111,7 @@
 
     # Workarounds
     # TODO: Remove this once syncthing no longer crashes with current upstream version (also remove package override)
-    syncthing-nixpkgs.url = "github:NixOS/nixpkgs/b40629efe5d6ec48dd1efba650c797ddbd39ace0";
+    syncthing-nixpkgs.url = "github:NixOS/nixpkgs/45dd7720ce342bfde4544891bc3fee90d88a0db5";
   };
 
   outputs =
