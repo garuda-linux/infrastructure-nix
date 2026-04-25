@@ -351,6 +351,18 @@
         "url": "https://github.com/NixOS/nixpkgs/pull/433990.patch"
       }
     },
+    "nixos-patch-rspamd": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-iWcESd4ndm98jpfavDXEtgt43zad9uDyAMEm77bB6ls=",
+        "type": "file",
+        "url": "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/512834.patch"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/512834.patch"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1768564909,
@@ -441,6 +453,7 @@
         "keys_xiota": "keys_xiota",
         "nixos-mailserver": "nixos-mailserver",
         "nixos-patch-netdata": "nixos-patch-netdata",
+        "nixos-patch-rspamd": "nixos-patch-rspamd",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-stable": "nixpkgs-stable",
         "pre-commit-hooks": "pre-commit-hooks",

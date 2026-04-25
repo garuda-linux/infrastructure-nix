@@ -108,6 +108,10 @@
     # Patches
     nixos-patch-netdata.url = "https://github.com/NixOS/nixpkgs/pull/433990.patch";
     nixos-patch-netdata.flake = false;
+
+    # Not yet in cache
+    nixos-patch-rspamd.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/512834.patch";
+    nixos-patch-rspamd.flake = false;
   };
 
   outputs =
