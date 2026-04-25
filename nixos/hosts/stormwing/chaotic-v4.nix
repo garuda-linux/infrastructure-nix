@@ -82,9 +82,6 @@ in
       };
     };
     guiAddress = "10.0.5.10:8384";
-
-    # TODO: Remove this once syncthing no longer crashes with current upstream version (also remove input from flake.nix)
-    package = inputs.syncthing-nixpkgs.legacyPackages.${pkgs.system}.syncthing;
   };
 
   # Auto reset syncthing stuff

@@ -32,7 +32,6 @@ in
     fqdn = "mail.garudalinux.net";
     fullTextSearch = {
       enable = true;
-      enforced = "body";
       memoryLimit = 512;
     };
 
@@ -146,10 +145,12 @@ in
   environment.memoryAllocator.provider = lib.mkForce "libc";
 
   # Set up push notifications
-  services.dovecot2.mailPlugins.globally.enable = [
-    "notify"
-    "push_notification"
-  ];
+  services.dovecot2.settings = {
+    plugin = {
+      notify = true;
+      push_notification = true;
+    };
+  };
 
   # Postmaster alias
   services.postfix.postmasterAlias = "nico@dr460nf1r3.org";

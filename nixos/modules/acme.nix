@@ -21,7 +21,7 @@ with lib;
           ];
           dnsProvider = "cloudflare";
           dnsPropagationCheck = true;
-          credentialsFile = config.sops.secrets."cloudflare/api_keys".path;
+          environmentFile = config.sops.secrets."cloudflare/api_keys".path;
         };
         "garudalinux.net" = {
           extraDomainNames = [
@@ -29,7 +29,7 @@ with lib;
           ];
           dnsProvider = "cloudflare";
           dnsPropagationCheck = true;
-          credentialsFile = config.sops.secrets."cloudflare/api_keys".path;
+          environmentFile = config.sops.secrets."cloudflare/api_keys".path;
         };
       };
     };

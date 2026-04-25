@@ -4,6 +4,7 @@ _: {
 
   fileSystems."/nix" = {
     device = "/data_1/nix";
+    fsType = "none";
     options = [ "bind" ];
     depends = [
       "/data_1"
