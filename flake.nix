@@ -240,11 +240,7 @@
                 };
                 commands = [
                   { package = "commitizen"; }
-                  { package = "manix"; }
-                  { package = "mdbook"; }
-                  { package = "mdbook-admonish"; }
-                  { package = "mdbook-emojicodes"; }
-                  { package = "pre-commit"; }
+                  { package = "prek"; }
                   {
                     name = "colmena";
                     help = "Runs the Colmena deployment tool";
@@ -277,6 +273,7 @@
             };
 
           checks.pre-commit-check = inputs.pre-commit-hooks.lib.${system}.run {
+            package = pkgs.prek;
             hooks = {
               check-json.enable = true;
               commitizen.enable = true;
