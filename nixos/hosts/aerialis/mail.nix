@@ -146,7 +146,7 @@ in
 
   # Set up push notifications
   services.dovecot2.settings = {
-    plugin = {
+    mail_plugins = {
       notify = true;
       push_notification = true;
     };
