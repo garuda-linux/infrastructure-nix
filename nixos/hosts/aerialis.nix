@@ -243,6 +243,11 @@
               isReadOnly = false;
               mountPoint = "/var/dkim";
             };
+            "index" = {
+              hostPath = "/data_1/containers/mail/index";
+              isReadOnly = false;
+              mountPoint = "/var/lib/dovecot/indices";
+            };
             "rspamd" = {
               hostPath = "/data_1/containers/mail/rspamd";
               isReadOnly = false;
