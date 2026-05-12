@@ -106,12 +106,11 @@
     };
 
     # Patches
-    nixos-patch-netdata.url = "https://github.com/NixOS/nixpkgs/pull/433990.patch";
+    nixos-patch-netdata.url = "https://github.com/NixOS/nixpkgs/pull/507414.patch";
     nixos-patch-netdata.flake = false;
 
-    # Not yet in cache
-    nixos-patch-rspamd.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/512834.patch";
-    nixos-patch-rspamd.flake = false;
+    nixos-patch-dirtyfrag.url = "https://github.com/NixOS/nixpkgs/pull/518947.patch";
+    nixos-patch-dirtyfrag.flake = false;
   };
 
   outputs =
