@@ -38,7 +38,7 @@ services:
     restart: always
   # Web IRC access
   thelounge:
-    image: thelounge/thelounge:4.4.3
+    image: thelounge/thelounge:4.5.0
     container_name: thelounge
     volumes: ["./thelounge:/var/opt/thelounge"]
     ports: ["9000:9000"]
