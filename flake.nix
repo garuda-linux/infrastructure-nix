@@ -102,31 +102,12 @@
     # Patches
     nixos-patch-netdata.url = "https://github.com/NixOS/nixpkgs/pull/507414.patch";
     nixos-patch-netdata.flake = false;
-
-    # Dirtyfrag 2026-05-11
-    nixos-patch-kernel-1-dirtyfrag.url = "https://github.com/NixOS/nixpkgs/pull/518947.patch";
-    nixos-patch-kernel-1-dirtyfrag.flake = false;
-
-    # Fragnesia 2026-05-14
-    nixos-patch-kernel-2-fragnesia.url = "https://github.com/NixOS/nixpkgs/pull/520123.patch";
-    nixos-patch-kernel-2-fragnesia.flake = false;
-
-    # ssh-keysign-pwn 2026-05-15
-    nixos-patch-kernel-3-ssh-keysign-pwn.url = "https://github.com/NixOS/nixpkgs/pull/520443.patch";
-    nixos-patch-kernel-3-ssh-keysign-pwn.flake = false;
-
-    # CVE-2026-42945 Nginx RCE
-    nixos-patch-nginx-cve.url = "https://github.com/NixOS/nixpkgs/pull/519893.patch";
-    nixos-patch-nginx-cve.flake = false;
-
-    # 29.4.3
-    nixos-patch-docker.url = "https://github.com/NixOS/nixpkgs/pull/519200.patch";
-    nixos-patch-docker.flake = false;
+    nixos-patch-vte-failure.url = "https://github.com/NixOS/nixpkgs/pull/522784.patch";
+    nixos-patch-vte-failure.flake = false;
   };
 
   outputs =
     {
-      colmena,
       flake-parts,
       nixpkgs,
       self,
