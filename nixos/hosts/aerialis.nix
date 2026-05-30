@@ -253,11 +253,6 @@
               isReadOnly = false;
               mountPoint = "/var/lib/redis-rspamd";
             };
-            "sieve" = {
-              hostPath = "/data_1/containers/mail/sieve";
-              isReadOnly = false;
-              mountPoint = "/var/sieve";
-            };
             "vmail" = {
               hostPath = "/data_1/containers/mail/vmail";
               isReadOnly = false;
