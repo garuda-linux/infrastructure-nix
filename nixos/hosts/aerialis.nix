@@ -423,10 +423,4 @@
     "backup/repo_key" = { };
     "backup/ssh_aerialis" = { };
   };
-
-  deployment = {
-    targetHost = "157.180.57.100";
-    targetPort = 666;
-    targetUser = "ansible";
-  };
 }

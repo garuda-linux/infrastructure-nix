@@ -325,12 +325,6 @@
     };
   };
 
-  deployment = {
-    targetHost = "157.180.57.51";
-    targetPort = 666;
-    targetUser = "ansible";
-  };
-
   sops.secrets = {
     "compose/github-runner" = { };
   };

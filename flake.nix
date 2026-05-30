@@ -2,12 +2,6 @@
   description = "Garuda Linux infrastructure flake ❄️";
 
   inputs = {
-    # Deployment tool
-    colmena.url = "github:zhaofengli/colmena";
-    colmena.inputs.flake-compat.follows = "flake-compat";
-    colmena.inputs.nixpkgs.follows = "nixpkgs";
-    colmena.inputs.stable.follows = "nixpkgs-stable";
-
     # Devshell to set up a development environment
     devshell.url = "github:numtide/devshell";
     devshell.inputs.nixpkgs.follows = "nixpkgs";
@@ -257,12 +251,6 @@
                 commands = [
                   { package = "commitizen"; }
                   { package = "prek"; }
-                  {
-                    name = "colmena";
-                    help = "Runs the Colmena deployment tool";
-                    category = "infra-nix";
-                    package = colmena.defaultPackage.${system};
-                  }
                 ]
                 ++ shared_commands;
                 motd = ''

@@ -66,4 +66,3 @@ command.
 
   buildiso-local    - Spawns a local buildiso shell to build to ./buildiso (needs Docker)
   buildiso-remote   - Spawns a buildiso shell on the iso-runner builder
-  colmena           - Runs the Colmena deployment tool
