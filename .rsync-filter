@@ -3,6 +3,7 @@
 + /flake.lock
 + /compose/***
 + /home-manager/***
++ /pkgs/***
 - /secrets/.git
 + /secrets/***
 - *
