@@ -57,6 +57,12 @@ services:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-manager
     command: database --web-port 8080
+    # This is to ensure the database gets the shutdown signal first, and can save all jobs before the
+    # builders get killed, which would then potentially end up in an inconsistent state and no saved
+    # jobs (when restarting the entire compose runner service).
+    depends_on:
+      - chaotic-builder-1
+      - chaotic-builder-2
     deploy:
       restart_policy:
         condition: always
