@@ -17,12 +17,13 @@ pkgs.stdenv.mkDerivation (finalAttrs: {
 
   nativeBuildInputs = with pkgs; [
     nodejs_24
-    pnpm_10.configHook
+    pnpm_11
+    pnpmConfigHook
   ];
-  pnpmDeps = pkgs.pnpm_10.fetchDeps {
+  pnpmDeps = pkgs.fetchPnpmDeps {
     inherit (finalAttrs) pname version src;
-    fetcherVersion = 1;
-    hash = "sha256-pmMxZ9Xc389eWrdLu4hShfs+XIuYraks3NCfxXtBSY0=";
+    fetcherVersion = 3;
+    hash = "sha256-V42dIorYwaZOFGwFC+pa6WrDmS2yQ7fhqp6jXSjQT5E=";
   };
   buildPhase = ''
     export PATH=$(pnpm bin):$PATH

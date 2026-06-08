@@ -102,8 +102,8 @@
     # Patches
     nixos-patch-netdata.url = "https://github.com/NixOS/nixpkgs/pull/507414.patch";
     nixos-patch-netdata.flake = false;
-    nixos-patch-vte-failure.url = "https://github.com/NixOS/nixpkgs/pull/522784.patch";
-    nixos-patch-vte-failure.flake = false;
+    nixos-patch-nixos-container.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/499574.patch";
+    nixos-patch-nixos-container.flake = false;
   };
 
   outputs =
