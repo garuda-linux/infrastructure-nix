@@ -24,7 +24,6 @@ in
     dmarcReporting.enable = true;
     domains = [
       "garudalinux.org"
-      "dr460nf1r3.org"
       "chaotic.cx"
     ];
     enable = true;
@@ -91,13 +90,6 @@ in
       "yorper@garudalinux.org" = {
         hashedPasswordFile = config.sops.secrets."mail/yorperatgl".path;
       };
-      # dr460nf1r3.org
-      "noreply@dr460nf1r3.org" = {
-        hashedPasswordFile = config.sops.secrets."mail/noreplyatdf".path;
-      };
-      "test@dr460nf1r3.org" = {
-        hashedPasswordFile = config.sops.secrets."mail/testatdf".path;
-      };
       # chaotic.cx
       "a0xz@chaotic.cx" = {
         hashedPasswordFile = config.sops.secrets."mail/a0xzatchaotic".path;
@@ -152,7 +144,7 @@ in
   };
 
   # Postmaster alias
-  services.postfix.postmasterAlias = "nico@dr460nf1r3.org";
+  services.postfix.postmasterAlias = "root@garudalinux.org";
 
   # Web UI
   services.roundcube = {
@@ -206,14 +198,12 @@ in
     "mail/hatchaotic" = { };
     "mail/mastodonatgl" = { };
     "mail/namanatgl" = { };
-    "mail/noreplyatdf" = { };
     "mail/noreplyatgl" = { };
     "mail/rohitatgl" = { };
     "mail/securityatgl" = { };
     "mail/sgsatgl" = { };
     "mail/spam-reportsatgl" = { };
     "mail/teamatgl" = { };
-    "mail/testatdf" = { };
     "mail/tneatgl" = { };
     "mail/wilburatchaotic" = { };
     "mail/yorperatgl" = { };
