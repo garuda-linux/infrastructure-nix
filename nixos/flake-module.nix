@@ -7,7 +7,7 @@ let
   defaultModules = [
     "${inputs.nixpkgs}/nixos/modules/profiles/hardened.nix"
     inputs.home-manager.nixosModules.home-manager
-    inputs.nixos-mailserver.nixosModule
+    inputs.nixos-mailserver.nixosModules.default
     inputs.sops-nix.nixosModules.sops
     ../pkgs
   ];
