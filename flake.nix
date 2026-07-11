@@ -230,7 +230,6 @@
                   };
                 };
                 commands = [
-                  { package = "commitizen"; }
                   { package = "prek"; }
                 ]
                 ++ shared_commands;
@@ -261,7 +260,7 @@
             package = pkgs.prek;
             hooks = {
               check-json.enable = true;
-              commitizen.enable = true;
+              # commitizen.enable = true; tests fail currently
               detect-private-keys.enable = true;
               check-yaml.enable = true;
               ripsecrets.enable = true;
