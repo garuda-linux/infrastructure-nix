@@ -45,6 +45,5 @@ This is a collection of important links when working with the infrastructure:
 - [PrivateBin](https://bin.garudalinux.org)
 - [Redlib](https://reddit.garudalinux.org)
 - [SearxNG](https://searx.garudalinux.org)
-- [TheLounge](https://irc.garudalinux.org)
 - [Whoogle](https://search.garudalinux.org)
 - [WikiJs](https://wiki.garudalinux.org)

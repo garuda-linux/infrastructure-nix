@@ -36,13 +36,6 @@ services:
       FF_SYNCSERVER_SQLURI: sqlite:////data/syncserver.db
       TZ: Europe/Berlin
     restart: always
-  # Web IRC access
-  thelounge:
-    image: thelounge/thelounge:4.5.2
-    container_name: thelounge
-    volumes: ["./thelounge:/var/opt/thelounge"]
-    ports: ["9000:9000"]
-    restart: always
   # Password vault
   vaultwarden:
     image: vaultwarden/server:1.36.0-alpine

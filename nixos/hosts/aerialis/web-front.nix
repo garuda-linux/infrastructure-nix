@@ -198,21 +198,6 @@ rec {
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "irc.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.60:9000";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
       "bin.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
