@@ -4,7 +4,7 @@
 }:
 {
   config.nixpkgs.overlays = [
-    (final: prev: {
+    (final: _prev: {
       garuda-website = final.callPackage ./garuda-website {
         pkgs = final;
         src = inputs.src-garuda-website;

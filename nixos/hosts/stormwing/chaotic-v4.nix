@@ -1,7 +1,6 @@
 {
   config,
   garuda-lib,
-  inputs,
   sources,
   pkgs,
   ...

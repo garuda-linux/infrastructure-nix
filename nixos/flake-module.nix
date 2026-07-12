@@ -1,6 +1,5 @@
 { inputs, self, ... }:
 let
-  conf = self.nixosConfigurations;
 
   system = "x86_64-linux";
 

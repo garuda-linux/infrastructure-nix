@@ -1,6 +1,5 @@
 {
   keys,
-  sources,
   ...
 }:
 {
