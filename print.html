@@ -13,26 +13,23 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="highlight-css" href="highlight.css">
-        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
-        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="./theme/mdbook-admonish.css">
         <link rel="stylesheet" href="./theme/catppuccin.css">
-        <link rel="stylesheet" href="./theme/catppuccin-admonish.css">
 
 
         <!-- Provide site root and default themes to javascript -->
@@ -40,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex.js";
+            window.path_to_searchindex_js = "searchindex-6e7af055.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc.js"></script>
+        <script src="toc-1306c1d0.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -57,7 +54,7 @@
             </div>
         </div>
     </div>
-    <div id="body-container">
+    <div id="mdbook-body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
@@ -86,12 +83,12 @@
             html.classList.add("js");
         </script>
 
-        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
             let sidebar = null;
-            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
@@ -106,43 +103,39 @@
             }
         </script>
 
-        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
                 <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
             </noscript>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
             </div>
         </nav>
 
-        <div id="page-wrapper" class="page-wrapper">
+        <div id="mdbook-page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
-                            <i class="fa fa-bars"></i>
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
                         </label>
-                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
-                            <i class="fa fa-paint-brush"></i>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
                         </button>
-                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
-                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="latte">Latte</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="frappe">Frappé</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="macchiato">Macchiato</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="mocha">Mocha</button></li>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
                         </ul>
-                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
-                            <i class="fa fa-search"></i>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
                         </button>
                     </div>
 
@@ -150,44 +143,44 @@
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
-                            <i id="print-button" class="fa fa-print"></i>
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
                         <a href="https://github.com/garuda-linux/infrastructure-nix" title="Git repository" aria-label="Git repository">
-                            <i id="git-repository-button" class="fa fa-code-fork"></i>
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
                         </a>
 
                     </div>
                 </div>
 
-                <div id="search-wrapper" class="hidden">
-                    <form id="searchbar-outer" class="searchbar-outer">
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
                         <div class="search-wrapper">
-                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
                             <div class="spinner-wrapper">
-                                <i class="fa fa-spinner fa-spin"></i>
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
                             </div>
                         </div>
                     </form>
-                    <div id="searchresults-outer" class="searchresults-outer hidden">
-                        <div id="searchresults-header" class="searchresults-header"></div>
-                        <ul id="searchresults">
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
                         </ul>
                     </div>
                 </div>
 
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script>
-                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
-                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
-                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
                         link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
                     });
                 </script>
 
-                <div id="content" class="content">
+                <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="garuda-linux-server-configurations"><a class="header" href="#garuda-linux-server-configurations">Garuda Linux server configurations</a></h1>
-<p><a href="https://builtwithnix.org"><img src="https://img.shields.io/static/v1?logo=nixos&amp;logoColor=white&amp;label=&amp;message=Built%20with%20Nix&amp;color=41439a" alt="built with nix" /></a> <a href="https://github.com/garuda-linux/infrastructure-nix/actions/workflows/pages.yml"><img src="https://github.com/garuda-linux/infrastructure-nix/actions/workflows/pages.yml/badge.svg" alt="deploy docs" /></a></p>
+<p><a href="https://builtwithnix.org"><img src="https://img.shields.io/static/v1?logo=nixos&amp;logoColor=white&amp;label=&amp;message=Built%20with%20Nix&amp;color=41439a" alt="built with nix"></a> <a href="https://github.com/garuda-linux/infrastructure-nix/actions/workflows/pages.yml"><img src="https://github.com/garuda-linux/infrastructure-nix/actions/workflows/pages.yml/badge.svg" alt="deploy docs"></a></p>
 <h2 id="general-information"><a class="header" href="#general-information">General information</a></h2>
 <ul>
 <li>Our current infrastructure is hosted in two of <a href="https://www.hetzner.com/dedicated-rootserver/ex44">these</a>.</li>
@@ -243,8 +236,9 @@ command.</p>
 
   buildiso-local    - Spawns a local buildiso shell to build to ./buildiso (needs Docker)
   buildiso-remote   - Spawns a buildiso shell on the iso-runner builder
-  colmena           - Runs the Colmena deployment tool</code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="general-structure"><a class="header" href="#general-structure">General structure</a></h1>
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="general-structure"><a class="header" href="#general-structure">General structure</a></h1>
 <p>A general overview of the folder structure can be found below:</p>
 <pre><code class="language-shell">├── ansible
 │   ├── host_vars
@@ -330,16 +324,18 @@ pre-commit run --all-files # only runs the pre-commit tools on all files
 <li>Deployment of our <a href="https://github.com/rust-lang/mdBook">mdBook-based</a> documentation to Cloudflare pages.</li>
 <li>Deployment of our Website to Cloudflare pages.</li>
 </ul>
-<p>Workflows will generally only be executed if a relevant file has been changed, eg. <code>nix flake check</code> won't run if only the README was changed.</p>
+<p>Workflows will generally only be executed if a relevant file has been changed, eg. <code>nix flake check</code> won’t run if only the README was changed.</p>
 <h2 id="monitoring"><a class="header" href="#monitoring">Monitoring</a></h2>
 <p>Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends.
 The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations.
-Might switch to the Prometheus/Grafana/Loki stack in the future. We used to set up children -&gt; parent streaming in the past, though after transitioning to one big host this didn't make sense anymore.
+Might switch to the Prometheus/Grafana/Loki stack in the future. We used to set up children -&gt; parent streaming in the past, though after transitioning to one big host this didn’t make sense anymore.
 Instead, up to 10GB of data gets stored on individual hosts.
 While Netdata agents do have their dashboard, the <a href="https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes">Dashboard provided by Netdata</a> is far superior and allows a better insight, eg. by offering the functions feature.
 Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its <a href="https://learn.netdata.cloud/">documentation</a>.
 To access the previously linked dashboard, use <code>team@garudalinux.org</code> as login, the login will be completed after opening the link sent here.</p>
-<div style="break-before: page; page-break-before: always;"></div><h2 id="common-maintenance-tasks"><a class="header" href="#common-maintenance-tasks">Common maintenance tasks</a></h2>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="common-tasks"><a href="#common-tasks" class="header">Common tasks</a></h1>
+<h2 id="common-maintenance-tasks"><a class="header" href="#common-maintenance-tasks">Common maintenance tasks</a></h2>
 <h3 id="rebuilding--updating-the-forum-container"><a class="header" href="#rebuilding--updating-the-forum-container">Rebuilding / updating the forum container</a></h3>
 <p>Sometimes Discourse needs its container to build rebuild via cli rather than the webinterface. This can be done with:</p>
 <pre><code class="language-sh">ssh -p 666 $user@aerialis.garudalinux.org
@@ -420,7 +416,7 @@ the secrets section for details on that topic).
 The deployment is done the same way as with normal system configuration.</p>
 <h3 id="updating-docker-containers"><a class="header" href="#updating-docker-containers">Updating Docker containers</a></h3>
 <p>Docker containers sometimes use the <code>latest</code> tag in case no current tag is available or in the case of services like
-Piped and Searx, where it is often crucial to have the latest build to bypass Google's restrictions.
+Piped and Searx, where it is often crucial to have the latest build to bypass Google’s restrictions.
 Containers using the <code>latest</code> tag are automatically updated via <a href="https://containrrr.dev/watchtower/">watchtower</a> daily.
 The remaining ones can be updated by changing their version in the corresponding <code>compose.yml</code> and then
 running <code>deploy</code> &amp; <code>apply</code>.
@@ -445,7 +441,8 @@ nix flake lock --update-input src-chaotic-toolbox # toolbox
 </code></pre>
 <p>After that deploy as usual by running <code>deploy</code> and <code>apply</code>. The commit and corresponding hash will be updated and NixOS
 will use it to build the toolbox using the new revision automatically.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="important-links"><a class="header" href="#important-links">Important links</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="important-links"><a class="header" href="#important-links">Important links</a></h1>
 <p>This is a collection of important links when working with the infrastructure:</p>
 <h2 id="most-important"><a class="header" href="#most-important">Most important</a></h2>
 <ul>
@@ -468,7 +465,7 @@ will use it to build the toolbox using the new revision automatically.</p>
 <h2 id="tools-documentation"><a class="header" href="#tools-documentation">Tools documentation</a></h2>
 <ul>
 <li><a href="https://github.com/chaotic-aur/toolbox">Chaotic toolbox</a></li>
-<li><a href="./services/chaotic-4.0.html">Chaotic infra 4.0</a></li>
+<li><a href="#chaotic-aur-infra-40">Chaotic infra 4.0</a></li>
 <li><a href="https://github.com/rust-lang/mdBook">mdBook</a></li>
 </ul>
 <h2 id="web-interfaces"><a class="header" href="#web-interfaces">Web interfaces</a></h2>
@@ -493,13 +490,13 @@ will use it to build the toolbox using the new revision automatically.</p>
 <li><a href="https://bin.garudalinux.org">PrivateBin</a></li>
 <li><a href="https://reddit.garudalinux.org">Redlib</a></li>
 <li><a href="https://searx.garudalinux.org">SearxNG</a></li>
-<li><a href="https://irc.garudalinux.org">TheLounge</a></li>
 <li><a href="https://search.garudalinux.org">Whoogle</a></li>
 <li><a href="https://wiki.garudalinux.org">WikiJs</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="users"><a class="header" href="#users">Users</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="users"><a class="header" href="#users">Users</a></h1>
 <p>Multiple kinds of users can make use of our infrastructure. A current list of users is
-available <a href="./users/current_users.html">here</a>.</p>
+available <a href="#users-1">here</a>.</p>
 <h2 id="adding-new-users"><a class="header" href="#adding-new-users">Adding new users</a></h2>
 <p>New users can be added by supplying a fitting configuration in the <code>users.nix</code> module.
 In case of a password being required, its hash needs to be generated as follows:</p>
@@ -510,7 +507,7 @@ This one is only available to members of our GitLab org and usually is cloned as
 <h2 id="onboarding-a-new-admin"><a class="header" href="#onboarding-a-new-admin">Onboarding a new admin</a></h2>
 <p>After confirming the trustworthiness of a new admin, the following actions need to be executed:</p>
 <ul>
-<li>Add them to the <a href="./users/current_users.html#admins">admin users</a></li>
+<li>Add them to the <a href="#admins">admin users</a></li>
 <li>Add their ssh public key to
 the <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/flake.nix?ref_type=heads#L59">flake inputs</a>
 and <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nixos/flake-module.nix?ref_type=heads#L38">specialArgs</a></li>
@@ -520,7 +517,8 @@ accounts</li>
 <li>Add them to the Cloudflare Account</li>
 <li>Make them an admin of <a href="https://forum.garudalinux.org">Discourse</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="users-1"><a class="header" href="#users-1">Users</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="users-1"><a class="header" href="#users-1">Users</a></h1>
 <p>These are the people who are currently allowed to use our servers.</p>
 <h2 id="admins"><a class="header" href="#admins">Admins</a></h2>
 <p>Admins have root access to all servers and may therefore change everything.
@@ -599,7 +597,8 @@ They may operate the repository by doing all kinds of packaging-related tasks su
       uid = lib.mkIf garuda-lib.unifiedUID 1006;
     };
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="aerialis"><a class="header" href="#aerialis">aerialis</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="aerialis"><a class="header" href="#aerialis">aerialis</a></h1>
 <p>This is one of the two main infrastructure hosts (see also: stormwing). All services and containers for aerialis are defined in <code>nixos/hosts/aerialis.nix</code> and its submodules.</p>
 <h2 id="host-configuration"><a class="header" href="#host-configuration">Host configuration</a></h2>
 <pre><code class="language-nix">{
@@ -697,18 +696,32 @@ They may operate the repository by doing all kinds of packaging-related tasks su
         sourcePort = 443;
       }
       {
-        # mail (SMTP)
-        destination = "10.0.5.80:587";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "tcp";
-        sourcePort = 587;
-      }
-      {
         # mail (SMTP over SSL)
         destination = "10.0.5.80:465";
         loopbackIPs = [ "157.180.57.100" ];
         proto = "tcp";
         sourcePort = 465;
+      }
+      {
+        # mail (IMAP over SSL)
+        destination = "10.0.5.80:993";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "tcp";
+        sourcePort = 993;
+      }
+      {
+        # mail (inbound)
+        destination = "10.0.5.80:25";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "tcp";
+        sourcePort = 25;
+      }
+      {
+        # sieve (ManageSieve)
+        destination = "10.0.5.80:4190";
+        loopbackIPs = [ "157.180.57.100" ];
+        proto = "tcp";
+        sourcePort = 4190;
       }
     ];
     firewall.trustedInterfaces = [ "br0" ];
@@ -833,15 +846,15 @@ They may operate the repository by doing all kinds of packaging-related tasks su
               isReadOnly = false;
               mountPoint = "/var/dkim";
             };
+            "index" = {
+              hostPath = "/data_1/containers/mail/index";
+              isReadOnly = false;
+              mountPoint = "/var/lib/dovecot/indices";
+            };
             "rspamd" = {
               hostPath = "/data_1/containers/mail/rspamd";
               isReadOnly = false;
               mountPoint = "/var/lib/redis-rspamd";
-            };
-            "sieve" = {
-              hostPath = "/data_1/containers/mail/sieve";
-              isReadOnly = false;
-              mountPoint = "/var/sieve";
             };
             "vmail" = {
               hostPath = "/data_1/containers/mail/vmail";
@@ -849,13 +862,6 @@ They may operate the repository by doing all kinds of packaging-related tasks su
               mountPoint = "/var/vmail";
             };
           };
-          forwardPorts = [
-            {
-              containerPort = 993;
-              hostPort = 993;
-              protocol = "tcp";
-            }
-          ];
         };
         ipAddress = "10.0.5.80";
       };
@@ -913,6 +919,19 @@ They may operate the repository by doing all kinds of packaging-related tasks su
           ];
         };
         ipAddress = "10.0.5.10";
+      };
+      n8n = {
+        config = import ./aerialis/n8n.nix;
+        extraOptions = {
+          bindMounts = {
+            "n8n" = {
+              hostPath = "/data_1/containers/n8n/var-lib";
+              isReadOnly = false;
+              mountPoint = "/var/lib";
+            };
+          };
+        };
+        ipAddress = "10.0.5.90";
       };
     };
   };
@@ -1002,27 +1021,22 @@ They may operate the repository by doing all kinds of packaging-related tasks su
     "backup/repo_key" = { };
     "backup/ssh_aerialis" = { };
   };
-
-  deployment = {
-    targetHost = "157.180.57.100";
-    targetPort = 666;
-    targetUser = "ansible";
-  };
 }
 </code></pre>
 <h2 id="containersservices"><a class="header" href="#containersservices">Containers/services</a></h2>
 <ul>
-<li><a href="hosts/./aerialis/chaotic-backend.html">chaotic-backend</a>: Backend services for Chaotic-AUR, including API and job processing.</li>
-<li><a href="hosts/./aerialis/docker.html">docker</a>: General-purpose Docker container runner for services not packaged in Nix.</li>
-<li><a href="hosts/./aerialis/docker-proxied.html">docker-proxied</a>: Docker runner for services that require special proxying or network setup.</li>
-<li><a href="hosts/./aerialis/forum.html">forum</a>: Hosts the Discourse forum for the Garuda Linux community.</li>
-<li><a href="hosts/./aerialis/mail.html">mail</a>: Handles mail-related services and relays for the infrastructure.</li>
-<li><a href="hosts/./aerialis/mastodon.html">mastodon</a>: Runs the Mastodon social network instance.</li>
-<li><a href="hosts/./aerialis/postgres.html">postgres</a>: Provides PostgreSQL database services for other containers.</li>
-<li><a href="hosts/./aerialis/web-front.html">web-front</a>: Acts as the main reverse proxy and web frontend for hosted services.</li>
+<li><a href="#chaotic-backend-aerialis">chaotic-backend</a>: Backend services for Chaotic-AUR, including API and job processing.</li>
+<li><a href="#docker-aerialis">docker</a>: General-purpose Docker container runner for services not packaged in Nix.</li>
+<li><a href="#docker-proxied">docker-proxied</a>: Docker runner for services that require special proxying or network setup.</li>
+<li><a href="#forum-aerialis">forum</a>: Hosts the Discourse forum for the Garuda Linux community.</li>
+<li><a href="#mail-aerialis">mail</a>: Handles mail-related services and relays for the infrastructure.</li>
+<li><a href="#mastodon-aerialis">mastodon</a>: Runs the Mastodon social network instance.</li>
+<li><a href="#postgres-aerialis">postgres</a>: Provides PostgreSQL database services for other containers.</li>
+<li><a href="#web-front-aerialis">web-front</a>: Acts as the main reverse proxy and web frontend for hosted services.</li>
 </ul>
 <p>See the respective documentation pages for up-to-date configuration and details.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="chaotic-backend-aerialis"><a class="header" href="#chaotic-backend-aerialis">chaotic-backend (aerialis)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="chaotic-backend-aerialis"><a class="header" href="#chaotic-backend-aerialis">chaotic-backend (aerialis)</a></h1>
 <p>This container provides backend services for Chaotic-AUR, including API endpoints and job processing for the repository.</p>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <pre><code class="language-nix">{
@@ -1075,6 +1089,8 @@ They may operate the repository by doing all kinds of packaging-related tasks su
       CAUR_JWT_SECRET: ${CAUR_JWT_SECRET:-?err}
       CAUR_TRUST_PROXY: 172.18.0.1
       CAUR_USERS: ${CAUR_USERS:-?err}
+      CAUR_VAPID_PUBLIC: BFMijCyTcLZu3HRJyMfoB4vtnDcgl7E2SVZgd4uWB3XjO2VvRh_LjYHcY_oJLvMIhdp5Yvuz0gudRpY-PFI9iWA
+      CAUR_VAPID_PRIVATE: ${CAUR_VAPID_PRIVATE:-?err}
       NODE_ENV: production
       PG_DATABASE: chaotic-aur
       PG_HOST: 10.0.5.20
@@ -1084,8 +1100,9 @@ They may operate the repository by doing all kinds of packaging-related tasks su
       REDIS_SSH_HOST: host.docker.internal
       REDIS_SSH_USER: package-deployer
     ports: ["3000:3000"]
-    volumes: ["${SSH_KEY:-?err}:/app/sshkey"]
+    volumes: ["${SSH_KEY:-?err}:/app/sshkey", "./backend-config:/app/config"]
     extra_hosts: ["host.docker.internal:host-gateway"]
+
   # TODO: revert to NixOS service once it no longer segfaults
   database:
     image: redis:8.2-m01-alpine
@@ -1094,8 +1111,22 @@ They may operate the repository by doing all kinds of packaging-related tasks su
     ports: ["127.0.0.1:6379:6379"]
     command: redis-server --save 20 1 --loglevel warning --requirepass "${REDIS_PASSWORD:-?err}"
     volumes: ["./database:/data"]
+
+  marge_bot:
+    image: registry.gitlab.com/marge-org/marge-bot:main
+    container_name: chaotic-marge-
+    restart: always
+    environment:
+      MARGE_AUTH_TOKEN: ${TEMERAIRE_BOT_TOKEN:-?err}
+      MARGE_GITLAB_URL: https://gitlab.com
+      MARGE_USE_HTTPS: true
+      # Scheduled (hourly) 30 */3 * * * UTC
+      # Add a 20 minute buffer after each scheduled time to allow time for the pipeline to run
+      # Every 3 hours between HH:30 and HH:50
+      MARGE_EMBARGO: "Mon@00:30-Mon@00:50,Mon@03:30-Mon@03:50,Mon@06:30-Mon@06:50,Mon@09:30-Mon@09:50,Mon@12:30-Mon@12:50,Mon@15:30-Mon@15:50,Mon@18:30-Mon@18:50,Mon@21:30-Mon@21:50,Tue@00:30-Tue@00:50,Tue@03:30-Tue@03:50,Tue@06:30-Tue@06:50,Tue@09:30-Tue@09:50,Tue@12:30-Tue@12:50,Tue@15:30-Tue@15:50,Tue@18:30-Tue@18:50,Tue@21:30-Tue@21:50,Wed@00:30-Wed@00:50,Wed@03:30-Wed@03:50,Wed@06:30-Wed@06:50,Wed@09:30-Wed@09:50,Wed@12:30-Wed@12:50,Wed@15:30-Wed@15:50,Wed@18:30-Wed@18:50,Wed@21:30-Wed@21:50,Thu@00:30-Thu@00:50,Thu@03:30-Thu@03:50,Thu@06:30-Thu@06:50,Thu@09:30-Thu@09:50,Thu@12:30-Thu@12:50,Thu@15:30-Thu@15:50,Thu@18:30-Thu@18:50,Thu@21:30-Thu@21:50,Fri@00:30-Fri@00:50,Fri@03:30-Fri@03:50,Fri@06:30-Fri@06:50,Fri@09:30-Fri@09:50,Fri@12:30-Fri@12:50,Fri@15:30-Fri@15:50,Fri@18:30-Fri@18:50,Fri@21:30-Fri@21:50,Sat@00:30-Sat@00:50,Sat@03:30-Sat@03:50,Sat@06:30-Sat@06:50,Sat@09:30-Sat@09:50,Sat@12:30-Sat@12:50,Sat@15:30-Sat@15:50,Sat@18:30-Sat@18:50,Sat@21:30-Sat@21:50,Sun@00:30-Sun@00:50,Sun@03:30-Sun@03:50,Sun@06:30-Sun@06:50,Sun@09:30-Sun@09:50,Sun@12:30-Sun@12:50,Sun@15:30-Sun@15:50,Sun@18:30-Sun@18:50,Sun@21:30-Sun@21:50"
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="docker-aerialis"><a class="header" href="#docker-aerialis">docker (aerialis)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="docker-aerialis"><a class="header" href="#docker-aerialis">docker (aerialis)</a></h1>
 <p>This container runs general-purpose Docker workloads for services that are not packaged natively in NixOS.</p>
 <h2 id="general"><a class="header" href="#general">General</a></h2>
 <p>This container is used to run regular Docker containers.
@@ -1177,16 +1208,9 @@ and are included in the offsite system backups.</p>
       FF_SYNCSERVER_SQLURI: sqlite:////data/syncserver.db
       TZ: Europe/Berlin
     restart: always
-  # Web IRC access
-  thelounge:
-    image: thelounge/thelounge:4.4.3
-    container_name: thelounge
-    volumes: ["./thelounge:/var/opt/thelounge"]
-    ports: ["9000:9000"]
-    restart: always
   # Password vault
   vaultwarden:
-    image: vaultwarden/server:1.34.1-alpine
+    image: vaultwarden/server:1.36.0-alpine
     container_name: vaultwarden
     volumes: ["./bitwarden:/data"]
     ports: ["8081:80"]
@@ -1197,8 +1221,8 @@ and are included in the offsite system backups.</p>
       SMTP_FROM: noreply@garudalinux.org
       SMTP_HOST: mail.garudalinux.org
       SMTP_PASSWORD: ${BW_SMTP_PASSWORD:-?err}
-      SMTP_PORT: 587
-      SMTP_SSL: false
+      SMTP_PORT: 465
+      SMTP_SSL: true
       SMTP_USERNAME: noreply@garudalinux.org
       WEBSOCKET_ENABLED: true
       YUBICO_CLIENT_ID: ${BW_YUBICO_CLIENT_ID:-?err}
@@ -1206,7 +1230,7 @@ and are included in the offsite system backups.</p>
     restart: always
   # Secure pastebin
   privatebin:
-    image: privatebin/nginx-fpm-alpine:1.7.6
+    image: privatebin/nginx-fpm-alpine:2.0.5
     container_name: privatebin
     volumes:
       - ./privatebin:/srv/data
@@ -1239,7 +1263,7 @@ and are included in the offsite system backups.</p>
         delay: 120s
   # Automated container updates
   watchtower:
-    image: containrrr/watchtower:1.7.1
+    image: nickfedor/watchtower:1.19.0
     container_name: watchtower
     command: --cleanup matterbridge wikijs privatebin vaultwarden thelounge syncserver
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
@@ -1282,7 +1306,8 @@ volumes:
       device: /var/garuda/compose-runner/docker/nextcloud-aio/redis
       o: bind
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="docker-proxied"><a class="header" href="#docker-proxied">docker-proxied</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="docker-proxied"><a class="header" href="#docker-proxied">docker-proxied</a></h1>
 <h2 id="general-1"><a class="header" href="#general-1">General</a></h2>
 <p>Here, all the Docker containers that need to have proxied outgoing requests are being deployed. This is mainly for privacy-focused or alternative frontends and search engines that benefit from outgoing proxying.</p>
 <h3 id="container-explanations"><a class="header" href="#container-explanations">Container explanations</a></h3>
@@ -1470,9 +1495,9 @@ volumes:
     restart: always
   # Automated container updates
   watchtower:
-    image: containrrr/watchtower:1.7.1
+    image: nickfedor/watchtower:1.19.0
     container_name: watchtower
-    command: --cleanup searx lingva whoogle librey
+    command: --cleanup searx lingva whoogle librey redlib
     volumes: ['/var/run/docker.sock:/var/run/docker.sock']
     restart: always
   # Auto-restart unhealthy containers (looking at you, Whoogle)
@@ -1487,7 +1512,8 @@ volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="forum-aerialis"><a class="header" href="#forum-aerialis">forum (aerialis)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="forum-aerialis"><a class="header" href="#forum-aerialis">forum (aerialis)</a></h1>
 <p>This container hosts the Discourse forum for the Garuda Linux community, providing discussion and support.</p>
 <h2 id="links"><a class="header" href="#links">Links</a></h2>
 <ul>
@@ -1507,7 +1533,8 @@ volumes:
   system.stateVersion = "25.05";
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="mail-aerialis"><a class="header" href="#mail-aerialis">mail (aerialis)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="mail-aerialis"><a class="header" href="#mail-aerialis">mail (aerialis)</a></h1>
 <p>This container handles mail-related services and relays for the infrastructure, such as SMTP/IMAP relaying or filtering.</p>
 <h2 id="nix-expression-4"><a class="header" href="#nix-expression-4">Nix expression</a></h2>
 <p>Configuration for the <code>mail</code> container on aerialis.</p>
@@ -1516,8 +1543,6 @@ volumes:
   lib,
   pkgs,
   sources,
-  garuda-lib,
-  sops,
   ...
 }:
 let
@@ -1535,21 +1560,22 @@ in
 
   # NixOS Mailserver
   mailserver = {
-    certificateScheme = "acme-nginx";
+    x509.useACMEHost = "garudalinux.net";
     dmarcReporting.enable = true;
     domains = [
       "garudalinux.org"
-      "dr460nf1r3.org"
+      "chaotic.cx"
     ];
     enable = true;
+    enableManageSieve = true;
     fqdn = "mail.garudalinux.net";
     fullTextSearch = {
       enable = true;
-      enforced = "body";
       memoryLimit = 512;
     };
+
     # To create the password hashes, use nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt'
-    loginAccounts = {
+    accounts = {
       # garudalinux.org
       "cloud@garudalinux.org" = {
         hashedPasswordFile = config.sops.secrets."mail/cloudatgl".path;
@@ -1604,33 +1630,61 @@ in
       "yorper@garudalinux.org" = {
         hashedPasswordFile = config.sops.secrets."mail/yorperatgl".path;
       };
-      # dr460nf1r3.org
-      "noreply@dr460nf1r3.org" = {
-        hashedPasswordFile = config.sops.secrets."mail/noreplyatdf".path;
+      # chaotic.cx
+      "a0xz@chaotic.cx" = {
+        hashedPasswordFile = config.sops.secrets."mail/a0xzatchaotic".path;
       };
-      "test@dr460nf1r3.org" = {
-        hashedPasswordFile = config.sops.secrets."mail/testatdf".path;
+      "dr460nf1r3@chaotic.cx" = {
+        aliases = [
+          "actions@chaotic.cx"
+          "admin@chaotic.cx"
+          "root@chaotic.cx"
+          "temeraire@chaotic.cx"
+          "webmaster@chaotic.cx"
+        ];
+        hashedPasswordFile = config.sops.secrets."mail/dr460nf1r3atchaotic".path;
       };
+      "h@chaotic.cx" = {
+        hashedPasswordFile = config.sops.secrets."mail/hatchaotic".path;
+      };
+      "wilbur@chaotic.cx" = {
+        hashedPasswordFile = config.sops.secrets."mail/wilburatchaotic".path;
+      };
+    };
+    forwards = {
+      "any_@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
+      "coc@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
+      "coffee-machine@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
+      "islandc0der@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.islandc0der ];
+      "no-reply@chaotic.cx" = [ ];
+      "noreply@chaotic.cx" = [ ];
+      "pedrohlc@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
+      "pgc@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
+      "xstefen@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.xstefen ];
     };
     indexDir = "/var/lib/dovecot/indices";
     # We do it via UptimeKuma, and since we don't enable NAT reflection in this server, this
     # shuts down the services.
-    monitoring.enable = false;
     systemDomain = "garudalinux.org";
     systemName = "Garuda Linux";
+    # SMTP on port 587 is deprecated and disabled by default
+    # Explicitly disable it to discourage misconfiguration
+    enableSubmission = false;
   };
 
   # Fix dovecot errors caused by failed scudo allocations
   environment.memoryAllocator.provider = lib.mkForce "libc";
 
   # Set up push notifications
-  services.dovecot2.mailPlugins.globally.enable = [
-    "notify"
-    "push_notification"
-  ];
+  services.dovecot2.settings = {
+    mail_plugins = {
+      notify = true;
+      push_notification = true;
+    };
+  };
 
   # Postmaster alias
-  services.postfix.postmasterAlias = "nico@dr460nf1r3.org";
+  services.postfix.postmasterAlias = "root@garudalinux.org";
 
   # Web UI
   services.roundcube = {
@@ -1639,9 +1693,9 @@ in
     # the mailserver
     hostName = "mail.garudalinux.net";
     extraConfig = ''
-      # starttls needed for authentication, so the fqdn required to match
-      # the certificate
-      $config['smtp_server'] = "tls://${config.mailserver.fqdn}";
+      $config['default_host'] = "ssl://mail.garudalinux.net";
+      $config['smtp_host'] = "ssl://mail.garudalinux.net";
+      $config['managesieve_host'] = "tls://mail.garudalinux.net:4190";
       $config['smtp_user'] = "%u";
       $config['smtp_pass'] = "%p";
     '';
@@ -1674,11 +1728,14 @@ in
   sops.secrets = {
     "backup/repo_key" = { };
     "backup/ssh_aerialis" = { };
+    "mail/a0xzatchaotic" = { };
     "mail/cloudatgl" = { };
     "mail/complaintsatgl" = { };
+    "mail/dr460nf1r3atchaotic" = { };
     "mail/dr460nf1r3atgl" = { };
     "mail/filoatgl" = { };
     "mail/gitlabatgl" = { };
+    "mail/hatchaotic" = { };
     "mail/mastodonatgl" = { };
     "mail/namanatgl" = { };
     "mail/noreplyatgl" = { };
@@ -1687,25 +1744,24 @@ in
     "mail/sgsatgl" = { };
     "mail/spam-reportsatgl" = { };
     "mail/teamatgl" = { };
-    "mail/testatdf" = { };
     "mail/tneatgl" = { };
+    "mail/wilburatchaotic" = { };
     "mail/yorperatgl" = { };
-    "mail/noreplyatdf" = { };
   };
 
   system.stateVersion = "22.05";
 
   # https://nixos-mailserver.readthedocs.io/en/latest/migrations.html
-  mailserver.stateVersion = 3;
+  mailserver.stateVersion = 5;
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="mastodon-aerialis"><a class="header" href="#mastodon-aerialis">mastodon (aerialis)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="mastodon-aerialis"><a class="header" href="#mastodon-aerialis">mastodon (aerialis)</a></h1>
 <p>This container runs the Mastodon social network instance for Garuda Linux, providing decentralized microblogging.</p>
 <h2 id="nix-expression-5"><a class="header" href="#nix-expression-5">Nix expression</a></h2>
 <p>Configuration for the <code>mastodon</code> container on aerialis.</p>
 <pre><code class="language-nix">{
   config,
-  garuda-lib,
   lib,
   pkgs,
   sources,
@@ -1721,8 +1777,8 @@ let
         tangerine-ui = pkgs.fetchFromGitHub {
           owner = "nileane";
           repo = "TangerineUI-for-Mastodon";
-          rev = "v2.4.3";
-          hash = "sha256-OThT3fp676RMfYY3ehzM4DnAlJOqdPoYIHpoBbN/RHQ=";
+          rev = "v2.5.3";
+          hash = "sha256-fs/pwIwXZvSNVmlSG304CMT/hSW/RtrzraMsrhg/TbE=";
         };
       in
       {
@@ -1794,8 +1850,9 @@ in
       fromAddress = "noreply@garudalinux.org";
       host = "mail.garudalinux.net";
       passwordFile = config.sops.secrets."mastodon/smtp_password".path;
-      port = 587;
+      port = 465;
       user = "noreply@garudalinux.org";
+      createLocally = false;
     };
     streamingProcesses = 16;
     redis = {
@@ -1879,7 +1936,8 @@ in
   system.stateVersion = "25.05";
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="postgres-aerialis"><a class="header" href="#postgres-aerialis">postgres (aerialis)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="postgres-aerialis"><a class="header" href="#postgres-aerialis">postgres (aerialis)</a></h1>
 <p>This container provides PostgreSQL database services for other containers and applications on aerialis.</p>
 <h2 id="general-2"><a class="header" href="#general-2">General</a></h2>
 <p>This container houses our Postgres database. Multiple services access it:</p>
@@ -2013,7 +2071,8 @@ in
   system.stateVersion = "23.05";
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="web-front-aerialis"><a class="header" href="#web-front-aerialis">web-front (aerialis)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="web-front-aerialis"><a class="header" href="#web-front-aerialis">web-front (aerialis)</a></h1>
 <p>This container acts as the main reverse proxy and web frontend for hosted services on aerialis, handling HTTPS termination and routing.</p>
 <h2 id="general-3"><a class="header" href="#general-3">General</a></h2>
 <p>This container is used as a reverse proxy for all of our public facing services.
@@ -2032,37 +2091,8 @@ let
   inherit (garuda-lib) allowOnlyCloudflareZerotrust;
   inherit (garuda-lib) generateCloudflaredIngress;
 
-  website =
-    let
-      # Run Nx command with fake TTY to avoid panic
-      # https://github.com/nrwl/nx/issues/22445
-      nx = pkgs.writeScript "nx-wrapper" ''
-        exec ${pkgs.faketty}/bin/faketty nx "$@"
-      '';
-    in
-    pkgs.stdenv.mkDerivation (finalAttrs: {
-      pname = "garuda-website";
-      version = "1.0.0";
-
-      src = sources.garuda-website;
-
-      nativeBuildInputs = with pkgs; [
-        nodejs_22
-        pnpm_10.configHook
-      ];
-      pnpmDeps = pkgs.pnpm_10.fetchDeps {
-        inherit (finalAttrs) pname version src;
-        fetcherVersion = 1;
-        hash = "sha256-tjcD/1Opv5jGeWdFvA4xw4V5L7nj1HBs3WiwNXPjWHk=";
-      };
-      buildPhase = ''
-        export PATH=$(pnpm bin):$PATH
-        ${nx} build &amp;&amp; ${nx} transloco:optimize
-      '';
-      installPhase = ''
-        cp -r ./dist/website/browser $out
-      '';
-    });
+  website = pkgs.garuda-website;
+  startpage = pkgs.garuda-startpage;
 in
 rec {
   imports = sources.defaultModules ++ [ ../../modules ];
@@ -2081,6 +2111,7 @@ rec {
               # First attempt to serve request as file, then
               # as directory, then redirect to index.html (Angular) if no file found.
               try_files $uri $uri/ /index.html;
+              expires 5m;
             '';
           };
           "/discord" = {
@@ -2091,18 +2122,32 @@ rec {
             extraConfig = "expires 12h;";
             return = "307 https://t.me/+TAZWHgryP6elOyS8";
           };
-          "/os/garuda-update/backuprepo" = {
+          "/os/" = {
             extraConfig = ''
-              rewrite ^/os/garuda-update/backuprepo/(.*)$ https://geo-mirror.chaotic.cx/chaotic-aur/$1 redirect;
+              try_files $uri =404;
+              expires 5m;
+
+              location = /os/garuda-update/remote-update {
+                expires 12h;
+                return 301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update;
+              }
+              location = /os/garuda-diag/diagnostic {
+                expires 12h;
+                return 301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/4892890/raw/main/diagnostics;
+              }
+              location = /os/garuda-update/hotfix {
+                expires 5m;
+                return 307 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/4899885/raw/main/hotfix;
+              }
+              location = /os/garuda-update/hotfix-check {
+                expires 5m;
+                return 200 '7';
+              }
+              location = /os/garuda-update/garuda-hotfixes-version {
+                expires 12h;
+                return 410 'Feature removed in Garuda System Maintenance 3.1.0';
+              }
             '';
-          };
-          "/os/garuda-update/remote-update" = {
-            extraConfig = "expires 12h;";
-            return = "301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update";
-          };
-          "/os/garuda-update/garuda-hotfixes-version" = {
-            extraConfig = "expires 5m;";
-            return = "200 '1'";
           };
           "/.well-known/webfinger" = {
             extraConfig = "expires 12h;";
@@ -2111,6 +2156,24 @@ rec {
         };
         quic = true;
         serverAliases = [ "www.garudalinux.org" ];
+        useACMEHost = "garudalinux.org";
+      };
+      "start.garudalinux.org" = {
+        addSSL = true;
+        http3 = true;
+        locations = {
+          "/" = {
+            index = "index.html";
+            root = startpage;
+            extraConfig = ''
+              # First attempt to serve request as file, then
+              # as directory, then redirect to index.html (Angular) if no file found.
+              try_files $uri $uri/ /index.html;
+              expires 5m;
+            '';
+          };
+        };
+        quic = true;
         useACMEHost = "garudalinux.org";
       };
       "cloud-aio.garudalinux.org" = {
@@ -2136,10 +2199,9 @@ rec {
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "cloud-temp.garudalinux.org" = {
+      "cloud-temp.garudalinux.org" = allowOnlyCloudflareZerotrust {
         addSSL = true;
         extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
           ${garuda-lib.nginxReverseProxySettings}
         '';
         http3 = true;
@@ -2212,21 +2274,6 @@ rec {
         locations = {
           "/" = {
             proxyPass = "http://10.0.5.60:5001";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "irc.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.60:9000";
           };
         };
         quic = true;
@@ -2367,7 +2414,7 @@ rec {
         http3 = true;
         locations = {
           "/" = {
-            proxyPass = "http://10.0.5.60:3002";
+            proxyPass = "http://10.0.5.50:3002";
           };
         };
         quic = true;
@@ -2406,6 +2453,33 @@ rec {
           };
         };
       };
+      "n8n-webhooks.garudalinux.net" = {
+        addSSL = true;
+        locations = {
+          "/" = {
+            return = "404";
+          };
+          "/webhook" = {
+            extraConfig = ''
+              ${garuda-lib.nginxReverseProxySettings}
+
+              proxy_pass http://10.0.5.90:5678;
+            '';
+          };
+        };
+        useACMEHost = "garudalinux.net";
+      };
+      "n8n.garudalinux.net" = allowOnlyCloudflareZerotrust {
+        locations = {
+          "/" = {
+            extraConfig = ''
+              ${garuda-lib.nginxReverseProxySettings}
+
+              proxy_pass http://10.0.5.90:5678;
+            '';
+          };
+        };
+      };
       "wiki.garudalinux.org" = {
         addSSL = true;
         extraConfig = ''
@@ -2425,15 +2499,32 @@ rec {
         addSSL = true;
         http3 = true;
         locations = {
+          "/sse" = {
+            proxyPass = "http://10.0.5.70:3000";
+            extraConfig = ''
+              # SSE essential settings
+              proxy_http_version 1.1;
+              proxy_set_header Connection "";
+              proxy_buffering off;
+              # Timeouts
+              proxy_connect_timeout 60s;
+              proxy_read_timeout 3600s;
+              proxy_send_timeout 3600s;
+              # Headers
+              add_header Content-Type text/event-stream;
+              add_header Cache-Control no-cache;
+              add_header X-Accel-Buffering no;
+            '';
+          };
           "/" = {
             proxyPass = "http://10.0.5.70:3000";
+            extraConfig = ''
+              ${garuda-lib.nginxReverseProxySettings}
+            '';
           };
         };
         quic = true;
         useACMEHost = "garudalinux.org";
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
       };
       "mail.garudalinux.net" = {
         addSSL = true;
@@ -2467,7 +2558,8 @@ rec {
     enable = true;
     ingress = {
       # "example.garudalinux.net" = "http://10.0.5.100:8085";
-    } // (generateCloudflaredIngress services.nginx.virtualHosts);
+    }
+    // (generateCloudflaredIngress services.nginx.virtualHosts);
     tunnel-credentials = config.sops.secrets."cloudflare/tunnels/aerialis".path;
   };
 
@@ -2476,7 +2568,8 @@ rec {
   system.stateVersion = "25.05";
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="stormwing"><a class="header" href="#stormwing">stormwing</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="stormwing"><a class="header" href="#stormwing">stormwing</a></h1>
 <p>This is one of the two main infrastructure hosts (see also: aerialis). All services and containers for stormwing are defined in <code>nixos/hosts/stormwing.nix</code> and its submodules.</p>
 <h2 id="host-configuration-1"><a class="header" href="#host-configuration-1">Host configuration</a></h2>
 <pre><code class="language-nix">{
@@ -2572,6 +2665,13 @@ rec {
         sourcePort = 210;
       }
       {
+        # iso-runner (SSH)
+        destination = "10.0.5.20:22";
+        loopbackIPs = [ "157.180.57.51" ];
+        proto = "tcp";
+        sourcePort = 220;
+      }
+      {
         # web-front (HTTP)
         destination = "10.0.5.40:80";
         loopbackIPs = [ "157.180.57.51" ];
@@ -2601,7 +2701,7 @@ rec {
     bridgeInterface = "br0";
     hostInterface = "eth0";
     hostIp = "10.0.5.1";
-    dockerCache = "/data_1/dockercache/";
+    dockerCache = "/data_2/dockercache/";
 
     defaults = {
       maxMemorySoft = 48318382080; # 45 GiB
@@ -2614,30 +2714,30 @@ rec {
         config = import ./stormwing/chaotic-v4.nix;
         extraOptions = {
           bindMounts = {
-            # Begin data_1
+            # Begin data_2
             "chaotic" = {
-              hostPath = "/data_1/containers/chaotic-v4/chaotic";
+              hostPath = "/data_2/containers/chaotic-v4/chaotic";
               isReadOnly = false;
               mountPoint = "/var/garuda/compose-runner/chaotic-v4";
             };
             "syncthing" = {
-              hostPath = "/data_1/containers/chaotic-v4/syncthing";
+              hostPath = "/data_2/containers/chaotic-v4/syncthing";
               isReadOnly = false;
               mountPoint = "/var/lib/syncthing";
             };
-            # End data_1
-            # Begin data_2
+            # End data_2
+            # Begin data_1
             "chaotic-v4" = {
-              hostPath = "/data_2/chaotic-v4/";
+              hostPath = "/data_1/chaotic-v4/";
               isReadOnly = false;
               mountPoint = "/srv/http/repos";
             };
             "iso-builds" = {
-              hostPath = "/data_2/iso/iso";
+              hostPath = "/data_1/iso/iso";
               isReadOnly = false;
               mountPoint = "/srv/http/iso";
             };
-            # End data_2
+            # End data_1
           };
           forwardPorts = [
             {
@@ -2680,17 +2780,17 @@ rec {
               mountPoint = "/var/.github-runner.env";
             };
             "gitlab-config" = {
-              hostPath = "/data_1/containers/github-runner/gitlab-runner";
+              hostPath = "/data_2/containers/github-runner/gitlab-runner";
               isReadOnly = false;
               mountPoint = "/etc/gitlab-runner";
             };
             "ssh-keys" = {
-              hostPath = "/data_1/containers/github-runner/ssh";
+              hostPath = "/data_2/containers/github-runner/ssh";
               isReadOnly = false;
               mountPoint = "/etc/ssh";
             };
             "github-cache" = {
-              hostPath = "/data_1/cache/github-runner";
+              hostPath = "/data_2/cache/github-runner";
               isReadOnly = false;
               mountPoint = "/var/cache/github-runner";
             };
@@ -2716,11 +2816,18 @@ rec {
         extraOptions = {
           bindMounts = {
             "firedragon-runner" = {
-              hostPath = "/data_1/containers/firedragon-runner";
+              hostPath = "/data_2/containers/firedragon-runner";
               isReadOnly = false;
               mountPoint = "/var/garuda/compose-runner/firedragon-runner";
             };
           };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 250;
+              protocol = "tcp";
+            }
+          ];
           ephemeral = lib.mkForce true;
         };
         ipAddress = "10.0.5.50";
@@ -2734,7 +2841,7 @@ rec {
         extraOptions = {
           bindMounts = {
             "iso" = {
-              hostPath = "/data_2/iso/";
+              hostPath = "/data_1/iso/";
               isReadOnly = false;
               mountPoint = "/var/garuda/buildiso";
             };
@@ -2749,13 +2856,6 @@ rec {
               mountPoint = "/var/cache/pacman/pkg";
             };
           };
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 220;
-              protocol = "tcp";
-            }
-          ];
         };
         ipAddress = "10.0.5.20";
         needsDocker = true;
@@ -2765,12 +2865,12 @@ rec {
         extraOptions = {
           bindMounts = {
             "acme" = {
-              hostPath = "/data_2/containers/web-front/acme";
+              hostPath = "/data_1/containers/web-front/acme";
               isReadOnly = false;
               mountPoint = "/var/lib/acme";
             };
             "nginx" = {
-              hostPath = "/data_2/containers/web-front/nginx";
+              hostPath = "/data_1/containers/web-front/nginx";
               isReadOnly = false;
               mountPoint = "/var/log/nginx";
             };
@@ -2794,15 +2894,9 @@ rec {
       "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
         jobs:
           - name: nginx
-            path: /data_2/containers/web-front/nginx/access.log
+            path: /data_1/containers/web-front/nginx/access.log
       '';
     };
-  };
-
-  deployment = {
-    targetHost = "157.180.57.51";
-    targetPort = 666;
-    targetUser = "ansible";
   };
 
   sops.secrets = {
@@ -2819,12 +2913,13 @@ rec {
 <li><a href="hosts/web-front.html">web-front</a>: Reverse proxy and web frontend for services running on stormwing.</li>
 </ul>
 <p>See the respective documentation pages for up-to-date configuration and details.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="chaotic-v4-stormwing"><a class="header" href="#chaotic-v4-stormwing">chaotic-v4 (stormwing)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="chaotic-v4-stormwing"><a class="header" href="#chaotic-v4-stormwing">chaotic-v4 (stormwing)</a></h1>
 <p>This container is the main Chaotic-AUR builder and repository sync node, responsible for building and distributing packages.</p>
 <h2 id="general-4"><a class="header" href="#general-4">General</a></h2>
-<p>This is the nspawn container used to run Chaotic-AUR's new build system, <code>infra 4.0</code>.</p>
+<p>This is the nspawn container used to run Chaotic-AUR’s new build system, <code>infra 4.0</code>.</p>
 <p>Restarting the Docker stack, in case it is needed, can happen via <code>sudo chaotic-restart</code>.
-For information on how to use the new build system, please refer to the <a href="hosts/stormwing/../services/chaotic-4.0.html">documentation</a>.</p>
+For information on how to use the new build system, please refer to the <a href="hosts/services/chaotic-4.0.html">documentation</a>.</p>
 <p>In general, manual intervention should not be needed,
 as the system is designed to be fully automated via GitLab CI or GitHub actions.</p>
 <h2 id="nix-expression-8"><a class="header" href="#nix-expression-8">Nix expression</a></h2>
@@ -2940,8 +3035,6 @@ in
           autoindex on;
           autoindex_exact_size off;
           autoindex_format xml;
-          xslt_string_param path $uri;
-          xslt_string_param hostname "Chaotic-AUR main node - Temeraire";
 
           # Security
           add_header X-XSS-Protection          "1; mode=block" always;
@@ -2954,10 +3047,10 @@ in
           location ~* ^.+\.log {
               default_type text/plain;
           }
-          location ~* /repos/(chaotic-aur|garuda)/x86_64/(?!.*(chaotic-aur|garuda)\.(db|files)).+\.tar.* {
-              return 301 https://cf-builds.garudalinux.org$request_uri;
-              expires 2d;
-          }
+          #location ~* /repos/(chaotic-aur|garuda)/x86_64/(?!.*(chaotic-aur|garuda)\.(db|files)).+\.tar.* {
+          #    return 301 https://cf-builds.garudalinux.org$request_uri;
+          #    expires 2d;
+          #}
           location /api/ {
               proxy_pass http://127.0.0.1:8080/api/;
           }
@@ -2971,11 +3064,17 @@ in
           }
           location / {
               xslt_string_param path $uri;
-              xslt_string_param hostname "Chaotic-AUR main node - Temeraire 🐉";
+              xslt_string_param hostname "Chaotic-AUR main node - Stormwing 🐉";
               xslt_stylesheet "${garuda-lib.xslt_style}";
               location /iso {
                   expires 2d;
                   return 301 https://iso.builds.garudalinux.org$request_uri;
+              }
+              location = /repos/.stignore {
+                  return 404;
+              }
+              location /repos/.stfolder {
+                  return 404;
               }
           }
         '';
@@ -2983,30 +3082,38 @@ in
         root = "/srv/http/";
       };
       "cf-builds.garudalinux.org" = {
+        /*
+          extraConfig = ''
+            location ~* /repos/(chaotic-aur|garuda)/x86_64/(?!.*(chaotic-aur|garuda)\.(db|files)).+\.tar.* {
+                add_header Cache-Control "max-age=150, stale-while-revalidate=150, stale-if-error=86400";
+            }
+            location ~* /repos/(chaotic-aur|garuda)/x86_64/(chaotic-aur|garuda)\.db.* {
+                add_header Cache-Control 'no-cache';
+            }
+            location /repos/chaotic-aur {
+                expires 5m;
+                error_page 403 =301 https://builds.garudalinux.org$request_uri;
+                error_page 404 =301 https://builds.garudalinux.org$request_uri;
+            }
+            location /repos/garuda {
+                expires 5m;
+                error_page 403 =301 https://builds.garudalinux.org$request_uri;
+                error_page 404 =301 https://builds.garudalinux.org$request_uri;
+            }
+            location / {
+                expires 2d;
+                return 301 https://builds.garudalinux.org$request_uri;
+            }
+          '';
+          root = "/srv/http/";
+        */
         extraConfig = ''
-          location ~* /repos/(chaotic-aur|garuda)/x86_64/(?!.*(chaotic-aur|garuda)\.(db|files)).+\.tar.* {
-              add_header Cache-Control "max-age=150, stale-while-revalidate=150, stale-if-error=86400";
-          }
-          location ~* /repos/(chaotic-aur|garuda)/x86_64/(chaotic-aur|garuda)\.db.* {
-              add_header Cache-Control 'no-cache';
-          }
-          location /repos/chaotic-aur {
-              expires 5m;
-              error_page 403 =301 https://builds.garudalinux.org$request_uri;
-              error_page 404 =301 https://builds.garudalinux.org$request_uri;
-          }
-          location /repos/garuda {
-              expires 5m;
-              error_page 403 =301 https://builds.garudalinux.org$request_uri;
-              error_page 404 =301 https://builds.garudalinux.org$request_uri;
-          }
           location / {
-              expires 2d;
               return 301 https://builds.garudalinux.org$request_uri;
+              expires 2d;
           }
         '';
         http3 = true;
-        root = "/srv/http/";
       };
       "iso.builds.garudalinux.org" = {
         extraConfig = ''
@@ -3014,6 +3121,12 @@ in
           autoindex_format xml;
           xslt_string_param path $uri;
           xslt_string_param hostname "Garuda Linux ISO Builds";
+          # Used by garuda-os-reset
+          location = /iso/latest/garuda/listeditions/ {
+            autoindex_format json;
+            alias "/srv/http/iso/latest/garuda/";
+            break;
+          }
         '';
         locations."/".return = "307 https://builds.garudalinux.org";
         locations."/iso" = {
@@ -3045,13 +3158,13 @@ in
         chaotic = {
           "read only" = "yes";
           comment = "Chaotic-AUR repository";
-          exclude = "/chaotic-aur/archive/*** /garuda/archive/***";
+          exclude = "/.stignore /.stfolder/*** /chaotic-aur/archive/*** /garuda/archive/***";
           path = "/srv/http/repos/";
         };
         chaotic-minimal = {
           "read only" = "yes";
           comment = "Chaotic-AUR repository minus largest packages";
-          exclude = "/chaotic-aur/archive/*** /garuda/archive/*** /chaotic-aur/x86_64/quartus* /chaotic-aur/x86_64/unrealtournament4* /chaotic-aur/x86_64/urbanterror*";
+          exclude = "/.stignore /.stfolder/*** /chaotic-aur/archive/*** /garuda/archive/*** /chaotic-aur/x86_64/quartus* /chaotic-aur/x86_64/unrealtournament4* /chaotic-aur/x86_64/urbanterror*";
           path = "/srv/http/repos/";
         };
         iso = {
@@ -3191,6 +3304,12 @@ in
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-manager
     command: database --web-port 8080
+    # This is to ensure the database gets the shutdown signal first, and can save all jobs before the
+    # builders get killed, which would then potentially end up in an inconsistent state and no saved
+    # jobs (when restarting the entire compose runner service).
+    depends_on:
+      - chaotic-builder-1
+      - chaotic-builder-2
     deploy:
       restart_policy:
         condition: always
@@ -3277,7 +3396,7 @@ in
     ports: ["127.0.0.1:8080:8080", "127.0.0.1:3030:3030"]
   # Automated container updates
   watchtower:
-    image: containrrr/watchtower:latest
+    image: nickfedor/watchtower:latest
     container_name: watchtower
     deploy:
       restart_policy:
@@ -3286,19 +3405,69 @@ in
     command: --cleanup chaotic-builder chaotic-builder-2 chaotic-manager watchtower --interval 3600
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="firedragon-runner-stormwing"><a class="header" href="#firedragon-runner-stormwing">firedragon-runner (stormwing)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="firedragon-runner-stormwing"><a class="header" href="#firedragon-runner-stormwing">firedragon-runner (stormwing)</a></h1>
 <p>This container is a CI runner for building and testing the Firedragon browser in an isolated environment.
 It is separate from the other GitLab runner to ensure only one build runs at a time, while the others can run in parallel.</p>
 <h2 id="nix-expression-9"><a class="header" href="#nix-expression-9">Nix expression</a></h2>
 <pre><code class="language-nix">{
-  sources,
+  keys,
   ...
 }:
 {
-  imports = sources.defaultModules ++ [ ../../modules ];
+  # No default modules, untrusted container!
+  # imports = sources.defaultModules ++ [
+  #   ./garuda/garuda.nix
+  # ];
 
+  imports = [
+    ../../modules/hardening.nix
+    ../../modules/motd.nix
+    ../../services/compose-runner/compose-runner.nix
+  ];
+
+  # Common Docker configurations
+  virtualisation.docker = {
+    autoPrune.enable = true;
+    autoPrune.flags = [ "-a" ];
+  };
+
+  # GitLab runners
   garuda.services.compose-runner.firedragon-runner = {
     source = ../../../compose/firedragon-runner;
+  };
+
+  # Enable SSH
+  services.openssh.enable = true;
+
+  # No custom users - only Stefan and root via nixos-container root-login
+  users = {
+    allowNoPasswordLogin = true;
+    mutableUsers = false;
+    users.stefan = {
+      home = "/home/stefan";
+      isNormalUser = true;
+      openssh.authorizedKeys.keyFiles = [ keys.stefan ];
+    };
+  };
+
+  nix.settings.trusted-users = [ "stefan" ];
+  security.sudo.extraRules = [
+    {
+      users = [ "stefan" ];
+      commands = [
+        {
+          command = "ALL";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
+
+  systemd.oomd = {
+    enable = true;
+    enableSystemSlice = true;
+    enableUserSlices = true;
   };
 
   system.stateVersion = "25.05";
@@ -3321,7 +3490,8 @@ It is separate from the other GitLab runner to ensure only one build runs at a t
       - /var/run/docker.sock:/var/run/docker.sock
     restart: 'no'
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="github-runner-stormwing"><a class="header" href="#github-runner-stormwing">github-runner (stormwing)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="github-runner-stormwing"><a class="header" href="#github-runner-stormwing">github-runner (stormwing)</a></h1>
 <p>This container is a GitHub Actions runner for CI/CD tasks related to Garuda Linux projects.</p>
 <h2 id="general-5"><a class="header" href="#general-5">General</a></h2>
 <p>With this container, we provide a GitHub runner as well as (more recently), a GitLab runner. This container does <strong>not</strong>
@@ -3437,12 +3607,13 @@ on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortali
     volumes: ['/var/cache/github-runner/work:/var/cache/github-runner/work']
     restart: 'no'
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="iso-runner-stormwing"><a class="header" href="#iso-runner-stormwing">iso-runner (stormwing)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="iso-runner-stormwing"><a class="header" href="#iso-runner-stormwing">iso-runner (stormwing)</a></h1>
 <p>This container is a dedicated builder for Garuda Linux ISO images, providing a reproducible build environment.</p>
 <h2 id="general-6"><a class="header" href="#general-6">General</a></h2>
 <p>This container is used to build our ISO via a Docker container.
 It has been used to provide a GitHub runner as well,
-though this one got moved to its <a href="hosts/stormwing/github-runner.html">own container</a> recently.</p>
+though this one got moved to its <a href="#github-runner-stormwing">own container</a> recently.</p>
 <h2 id="nix-expression-11"><a class="header" href="#nix-expression-11">Nix expression</a></h2>
 <pre><code class="language-nix">{
   lib,
@@ -3516,7 +3687,8 @@ in
   system.stateVersion = "25.05";
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="web-front-stormwing"><a class="header" href="#web-front-stormwing">web-front (stormwing)</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="web-front-stormwing"><a class="header" href="#web-front-stormwing">web-front (stormwing)</a></h1>
 <p>This container acts as the reverse proxy and web frontend for services running on stormwing, handling HTTPS and routing.</p>
 <h2 id="nix-expression-12"><a class="header" href="#nix-expression-12">Nix expression</a></h2>
 <p>Configuration for the <code>web-front</code> container on stormwing.</p>
@@ -3594,7 +3766,8 @@ rec {
     enable = true;
     ingress = {
       # "example.garudalinux.net" = "http://10.0.5.100:8085";
-    } // (generateCloudflaredIngress services.nginx.virtualHosts);
+    }
+    // (generateCloudflaredIngress services.nginx.virtualHosts);
     tunnel-credentials = config.sops.secrets."cloudflare/tunnels/stormwing".path;
   };
 
@@ -3603,7 +3776,8 @@ rec {
   system.stateVersion = "25.05";
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="repositories"><a class="header" href="#repositories">Repositories</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="repositories"><a class="header" href="#repositories">Repositories</a></h1>
 <h2 id="notifications-for-new-events-at-gitlab"><a class="header" href="#notifications-for-new-events-at-gitlab">Notifications for new events at GitLab</a></h2>
 <p>Since GitLab has an inbuilt Telegram integration, we can leverage this feature to send notifications to our
 dedicated <a href="https://t.me/garuda_updates">Telegram development updates channel</a>.
@@ -3621,11 +3795,12 @@ nix run nixpkgs#ghorg -- clone --scm gitlab --token "glpat-1234567890" garuda-li
 our current operations.
 It contains old PKGBUILDs and settings packages, eg. The state of the ones before we moved to a unified PKGBUILD
 repository.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="pkgbuilds"><a class="header" href="#pkgbuilds">PKGBUILDs</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="pkgbuilds"><a class="header" href="#pkgbuilds">PKGBUILDs</a></h1>
 <h2 id="types-of-pkgbuilds"><a class="header" href="#types-of-pkgbuilds">Types of PKGBUILDs</a></h2>
 <p>There are two types of repo packaging-wise:</p>
 <ol>
-<li>The ones that have all required files in the new pkgbuilds repo and don't reference any external repo in PKGBUILDs <code>source()</code></li>
+<li>The ones that have all required files in the new pkgbuilds repo and don’t reference any external repo in PKGBUILDs <code>source()</code></li>
 <li>The ones requiring external repositories as a source. These are listed in the SOURCES files below, packages <em>not</em> listed here are automatically packages of the first category:</li>
 </ol>
 <p><a href="https://gitlab.com/garuda-linux/pkgbuilds/-/blob/main/SOURCES">This file</a> provides the needed information to check for the new version with the scheme <code>$repourl $pkgbuildPathInPkgbuildsRepo $GitlabProjectId</code></p>
@@ -3635,8 +3810,8 @@ repository.</p>
 <li>Would be modified directly in the new pkgbuilds repo, along with their source.
 Versions are bumped in the PKGBUILD itself and deployments need to happen by increasing <code>pkgver</code> + supplying a fitting commit message (append <em>[deploy pkgname ]</em> to it)</li>
 <li>In case of modifying these, one would make the changes to the source files repo (not the new PKGBUILDs one).
-Then, if a new version should be built, one would push the corresponding tag to that repo (omitting "v", adding v breaks the PKGBUILD!).
-That's everything needed in case no packaging changes (adding new dependencies for example) that require changing the PKGBUILD occur.
+Then, if a new version should be built, one would push the corresponding tag to that repo (omitting “v”, adding v breaks the PKGBUILD!).
+That’s everything needed in case no packaging changes (adding new dependencies for example) that require changing the PKGBUILD occur.
 The <a href="https://gitlab.com/garuda-linux/pkgbuilds/-/pipeline_schedules">half-hourly pipeline</a> of the <a href="https://gitlab.com/garuda-linux/pkgbuilds">PKGBUILD repo</a> then checks for the existence of a new tag.
 Once a new one gets detected, the PKGBUILD gets updated and deployment occurs via <code>[deploy *]</code> in the commit message.
 <em>If PKGBUILD changes need to be implemented, this would of course indicate doing it as described in 1. This would increase pkgrel only and not the actual version.</em></li>
@@ -3648,7 +3823,8 @@ Once a new one gets detected, the PKGBUILD gets updated and deployment occurs vi
 <li><a href="https://gitlab.com/garuda-linux/pkgbuilds/-/blob/main/.ci/what-to-deploy.sh?ref_type=heads">Triggering automated deployments via commit message</a></li>
 </ul>
 <p>Past pipeline runs may be reviewed by visiting the <a href="https://gitlab.com/garuda-linux/pkgbuilds/-/pipelines">pipelines</a> page.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="chaotic-aur-infra-40"><a class="header" href="#chaotic-aur-infra-40">Chaotic-AUR infra 4.0</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="chaotic-aur-infra-40"><a class="header" href="#chaotic-aur-infra-40">Chaotic-AUR infra 4.0</a></h1>
 <p>This is a manual for handling our new Chaotic-AUR infrastructure, which is based on GitLab CI and GitHub Actions.
 It is powering the <code>garuda</code> repository, which contains all PKGBUILDs and other necessary files to build packages for
 Garuda Linux.
@@ -3686,7 +3862,7 @@ enabling the build containers to grab new builds whenever they enter the queue.<
 <li>We no longer have package lists but a repository full of PKGBUILD folders. These PKGBUILDs are getting pulled either
 from AUR once a package has been updated or updated manually in case a Git repository and its tags serve as a source.</li>
 <li>No more dedicated builders (might change in the future, eg. for heavy builds?) but a common build queue.</li>
-<li>Routines are no longer necessary - CI determines and adds packages to the schedule as needed. The only "routine-like"
+<li>Routines are no longer necessary - CI determines and adds packages to the schedule as needed. The only “routine-like”
 thing we have is the CI schedule, executing tasks like PKGBUILD or version updates.</li>
 <li>The actual logic behind the build process (like <code>interfere.sh</code> or database management) was moved to
 the <a href="https://gitlab.com/garuda-linux/tools/chaotic-manager/-/tree/main/builder-container?ref_type=heads">builder container of Chaotic Manager</a> -
@@ -3695,7 +3871,7 @@ this one updates daily/on-commit and gets pulled regularly by the Manager instan
 <li>The interfere repo is no longer needed, instead, package builds can be configured via the <code>.CI</code> folder in their
 respective PKGBUILD folders. All known interfere types can be put here (eg. <code>PKGBUILD.append</code> or <code>prepare.sh</code>),
 keeping existing interferes working.</li>
-<li>The CI's behavior concerning each package can be configured via a <code>config</code> file in the <code>.CI</code> folder: this file stores
+<li>The CI’s behavior concerning each package can be configured via a <code>config</code> file in the <code>.CI</code> folder: this file stores
 information like PKGBUILD source (it can be AUR or something different), PKGBUILD timestamp on AUR, most recent Git
 commit as well as settings like whether to push a PKGBUILD change back to AUR.</li>
 <li>PKGBUILD changes can now be reviewed in case of major (all changes other than pkgver, hashes, pkgrel) updates - CI
@@ -3711,7 +3887,7 @@ Adding AUR packages is therefore as simple as cloning its repo and removing the 
 CI relies on <code>.SRCINFO</code> files to parse most information, therefore, it is important to have them in place and up-to-date
 in case of self-managed packages.
 Finally, add a <code>.CI</code> folder containing the basic config (<code>CI_PKGBUILD_SOURCE</code> is required in case its external package,
-self-managed PKBUILDs don't need it), commit any changes, and push the changes back to the main branch.
+self-managed PKBUILDs don’t need it), commit any changes, and push the changes back to the main branch.
 Please follow the <a href="https://www.conventionalcommits.org/en/v1.0.0/">conventional commit convention</a> while doing
 so (<a href="https://github.com/commitizen/cz-cli">cz-cli</a> can help with that!). This means commits like:</p>
 <ul>
@@ -3722,7 +3898,7 @@ so (<a href="https://github.com/commitizen/cz-cli">cz-cli</a> can help with that
 </ul>
 <p>This not only helps with having a uniform commit history, it also allows automatic changelog generation.</p>
 <h3 id="removing-packages"><a class="header" href="#removing-packages">Removing packages</a></h3>
-<p>This can be done by removing the folder containing a package's PKGBUILD. A cleanup job will then automatically remove
+<p>This can be done by removing the folder containing a package’s PKGBUILD. A cleanup job will then automatically remove
 any obsolete package via the <code>on-commit</code> pipeline run. This will also consider any split packages that a package might
 produce.
 Renaming folders does also count as removing packages.</p>
@@ -3747,7 +3923,7 @@ all obsolete packages in case an earlier step is detected.</li>
 <li>Check if the scheduled tag does not exist or scheduled does not point to HEAD (in this case abort mission!)</li>
 <li>Check whether the .state worktree containing the state of the packages exists, if it does, it sets it up. Otherwise,
 it re-creates it from scratch (e.g., on force push)</li>
-<li>Check whether the last commit is automated (containing "chore(packages): update packages [skip ci]"), if yes, the
+<li>Check whether the last commit is automated (containing “chore(packages): update packages [skip ci]”), if yes, the
 commit resulting from the schedule will overwrite it to keep the commit history clean.</li>
 <li>Collect AUR timestamps of packages to determine whether a PKGBUILD changed</li>
 <li>Loop through each valid package and carry out the following actions:
@@ -3793,14 +3969,14 @@ To make use of it, set <code>CI_ON_TRIGGER=daily</code> inside the <code>.CI/con
 <h3 id="manual-scheduling"><a class="header" href="#manual-scheduling">Manual scheduling</a></h3>
 <h4 id="scheduling-packages-without-git-commits"><a class="header" href="#scheduling-packages-without-git-commits">Scheduling packages without git commits</a></h4>
 <p>Packages can be added to the schedule manually by going to
-the <a href="https://gitlab.com/chaotic-aur/pkgbuilds/-/pipelines">pipeline runs</a> page, selecting "Run pipeline" and
+the <a href="https://gitlab.com/chaotic-aur/pkgbuilds/-/pipelines">pipeline runs</a> page, selecting “Run pipeline” and
 adding <code>PACKAGES</code> as a variable with the package names as its value. The pipeline will then pick up the packages and
 schedule them.
 <code>PACKAGES</code> can also be set to <code>all</code> to schedule all packages. In case one or many packages are getting scheduled, it
 needs to follow the format <code>pkgname1:pkgname2:pkgname3</code>.</p>
 <h4 id="running-scheduled-pipelines-on-demand"><a class="header" href="#running-scheduled-pipelines-on-demand">Running scheduled pipelines on-demand</a></h4>
 <p>This can be done by going to the <a href="https://gitlab.com/chaotic-aur/pkgbuilds/-/pipeline_schedules">pipeline runs</a> page,
-selecting "Run pipeline" (the play symbol). A link to the pipeline page will be provided, where the pipeline logs can be
+selecting “Run pipeline” (the play symbol). A link to the pipeline page will be provided, where the pipeline logs can be
 obtained.</p>
 <h3 id="adding-interfere"><a class="header" href="#adding-interfere">Adding interfere</a></h3>
 <p>Put the required interfere file in the <code>.CI</code> folder of a PKGBUILD folder:</p>
@@ -3813,7 +3989,7 @@ environment variables or modify other things before compilation starts.</p>
 eg. <code>$CAUR_PUSH 'source /etc/profile'</code>. Likewise, package conflicts can be solved, eg. as
 follows: <code>$CAUR_PUSH 'yes | pacman -S nftables'</code> (single quotes are important because we want the variables/pipes
 to
-evaluate in the guest's runtime and not while interfering)</li>
+evaluate in the guest’s runtime and not while interfering)</li>
 </ul>
 </li>
 <li>
@@ -3853,7 +4029,7 @@ processes with.</p>
 <li><code>CI_MANAGE_AUR</code>: By setting this variable to <code>true</code>, the CI will update the corresponding AUR repository at the end of
 a
 pipeline run if changes occur (omitting CI-related files)</li>
-<li><code>CI_PACKAGE_BUMP</code>: Controls package bumps for all packages which don't have <code>CI_MANAGE_AUR</code> set to <code>true</code>. The format
+<li><code>CI_PACKAGE_BUMP</code>: Controls package bumps for all packages which don’t have <code>CI_MANAGE_AUR</code> set to <code>true</code>. The format
 this needs
 to follow is either <code>1:1.2.3-1/1</code> (full current version and bump count after the slash) or <code>1.2.3</code> (full current
 package version,
@@ -3871,14 +4047,14 @@ new ones.</li>
 </li>
 <li><code>CI_ON_TRIGGER</code>: Can be provided in case a special schedule trigger should schedule the corresponding package. This
 can be used to schedule packages daily, by setting the value to <code>daily</code>.
-Since this checks whether "$TRIGGER == $CI_ON_TRIGGER", any custom schedule can be created using pipeline schedules
+Since this checks whether “$TRIGGER == $CI_ON_TRIGGER”, any custom schedule can be created using pipeline schedules
 and setting <code>TRIGGER</code> to <code>midnight</code>, adding a fitting schedule and setting <code>CI_ON_TRIGGER</code> for any affected package
 to <code>midnight</code>.
 Packages having this variable set will <strong>not</strong> be scheduled via the regular on-schedule pipeline, hence this one can
 also be used to prevent wasting builder resources, e.g. useful for huge <code>-git</code> packages with a lot of commit activity,
 like <code>llvm-git</code>.</li>
 <li><code>CI_REBUILD_TRIGGERS</code>: Add packages known to be causing rebuilds to this variable. A list of repositories to track
-package versions for is provided via the repositories' <code>CI_LIB_DB</code> parameter. Each package version is hashed and
+package versions for is provided via the repositories’ <code>CI_LIB_DB</code> parameter. Each package version is hashed and
 dumped to <code>.ci/lib.state</code>. Each scheduled pipeline run compares versions by checking hash mismatches and will bump
 each each affected package via <code>CI_PACKAGE_BUMP</code>.</li>
 <li><code>BUILDER_CACHE_SOURCES</code>: Can be set to <code>true</code> in case the sources should be cached between builds. This can be useful
@@ -3896,7 +4072,7 @@ build. -<code>CI_PKGBUILD_TIMESTAMP</code>: The last modified date of the PKGBUI
 PKGBUILD has changed. If it differs, schedule a build. Will be maintained automatically.</li>
 </ul>
 <h3 id="ci-pipeline-variables"><a class="header" href="#ci-pipeline-variables">CI pipeline variables</a></h3>
-<p>These variables can be set in in the repo root's<code>.ci/config</code> to configure the pipeline behavior globally as follows:</p>
+<p>These variables can be set in in the repo root’s<code>.ci/config</code> to configure the pipeline behavior globally as follows:</p>
 <ul>
 <li><code>BUILD_REPO</code>: The target repository that will be the deploy target</li>
 <li><code>GIT_AUTHOR_EMAIL</code>: The email of the user that will be used to commit</li>
@@ -3905,7 +4081,7 @@ PKGBUILD has changed. If it differs, schedule a build. Will be maintained automa
 <li><code>REDIS_SSH_PORT</code>: The Redis SSH port for the target repository (for SSH tunneling)</li>
 <li><code>REDIS_SSH_USER</code>: The Redis SSH user for the target repository (for SSH tunneling)</li>
 <li><code>REDIS_PORT</code>: The redis port for the target repository (inside the SSH tunnel)</li>
-<li><code>REPO_NAME</code>: The name that this repository is referred to in Chaotic Manager's config</li>
+<li><code>REPO_NAME</code>: The name that this repository is referred to in Chaotic Manager’s config</li>
 <li><code>CI_HUMAN_REVIEW</code>: If merge/pull requests should be created for non pkgver changes</li>
 <li><code>CI_MANAGE_AUR</code>: This should be set to true in case select AUR repositories should be managed by CI</li>
 <li><code>CI_OVERWRITE_COMMITS</code>: If we should overwrite existing automated commits to reduce the size of the git history</li>
@@ -3915,11 +4091,11 @@ PKGBUILD has changed. If it differs, schedule a build. Will be maintained automa
 <h3 id="managing-aur-packages"><a class="header" href="#managing-aur-packages">Managing AUR packages</a></h3>
 <p>AUR packages can also be managed via this repository in an automated way using <code>.CI_CONFIG</code>.
 This means that after each scheduled and on-commit pipeline, the AUR repository will be updated to reflect the changes
-done to the PKGBUILD folder's files.
+done to the PKGBUILD folder’s files.
 Files not relevant to AUR maintenance (e.g. <code>.CI</code> folders) will be omitted.
 The commit message reflects the fact that the commit was created by a CI pipeline
-and contains the link to the source repository's commit history and the pipeline run which triggered the update commit.</p>
-<h3 id="updating-the-cis-scripts"><a class="header" href="#updating-the-cis-scripts">Updating the CI's scripts</a></h3>
+and contains the link to the source repository’s commit history and the pipeline run which triggered the update commit.</p>
+<h3 id="updating-the-cis-scripts"><a class="header" href="#updating-the-cis-scripts">Updating the CI’s scripts</a></h3>
 <p>This is done automatically via the CI pipeline. Once changes have been detected on the template repository, all files
 will be updated to the current version.</p>
 <h3 id="issues-and-pipeline-failures"><a class="header" href="#issues-and-pipeline-failures">Issues and pipeline failures</a></h3>
@@ -3976,7 +4152,7 @@ The following variables can be set in Docker environment:</p>
 <li><code>GPG_PATH</code>: where the <code>.gnupg</code> folder resides (holding the key for signing packages)</li>
 <li><code>LANDING_ZONE_PATH</code>: where the landing zone is (here packages get deployed and later picked up by the database job
 before getting into the final repository)</li>
-<li><code>LOGS_URL</code>: the URL that serves the logfiles (we get sent here when clicking CI's external stages)</li>
+<li><code>LOGS_URL</code>: the URL that serves the logfiles (we get sent here when clicking CI’s external stages)</li>
 <li><code>PACKAGE_REPOS_NOTIFIERS</code>: needed configs to provide external CI stages for GitLab CI/GitHub Actions</li>
 <li><code>PACKAGE_REPOS</code>: the source repositories containing PKGBUILD folders</li>
 <li><code>PACKAGE_TARGET_REPOS</code>: the repository a package is getting deployed to (including its URL and extra keyrings/repos
@@ -4018,7 +4194,7 @@ in our following examples.</p>
 replace any occurances of <code>host.docker.internal</code> with <code>chaotic-redis</code>.</p>
 </li>
 <li>
-<p>A reverse proxy like Nginx to expose the Chaotic Manager's logs to the public in a secure way should be available.
+<p>A reverse proxy like Nginx to expose the Chaotic Manager’s logs to the public in a secure way should be available.
 E.g., using Nginx it is sufficient to <code>proxy_pass</code> the specified <code>--web-port</code> value to the Manager instance container.
 Additionally, the following settings might be usedful:</p>
 <pre><code class="language-ǹginx">proxy_buffering off;
@@ -4029,7 +4205,7 @@ proxy_read_timeout 330s;
 <h4 id="repository-setup"><a class="header" href="#repository-setup">Repository setup</a></h4>
 <p>The repository needs to be derived from
 the <a href="https://github.com/chaotic-cx/chaotic-repository-template">repository template</a>. On GitHub,
-the <a href="https://github.com/new?template_name=chaotic-repository-template&amp;template_owner=chaotic-cx">"Use this template"</a>
+the <a href="https://github.com/new?template_name=chaotic-repository-template&amp;template_owner=chaotic-cx">“Use this template”</a>
 feature may be used.
 Afterward, customize the <code>.ci/config</code> file according to your needs. This file contains global configuration for pipeline
 runs and CI behaviour.
@@ -4042,7 +4218,7 @@ The following options exist as of today:</p>
 <li><code>REDIS_SSH_PORT</code>: The redis port for the target repository</li>
 <li><code>REDIS_SSH_USER</code>: The redis user for the target repository</li>
 <li><code>REDIS_PORT</code>: The redis port for the target repository</li>
-<li><code>REPO_NAME</code>: The name that this repository is referred to in chaotic-manager's config</li>
+<li><code>REPO_NAME</code>: The name that this repository is referred to in chaotic-manager’s config</li>
 <li><code>CI_HUMAN_REVIEW</code>: Whether merge/pull requests should be created for non pkgver changes (false/true)</li>
 <li><code>CI_MANAGE_AUR</code>: This should be set to true in case select AUR repositories should be managed by CI. A fitting SSH key
 needs to be deployed as AUR_KEY via secret CI variable.</li>
@@ -4118,7 +4294,7 @@ order to be processed.</li>
 <li><code>REPO_PATH</code> is the path of the repository <em>on the Docker host</em>. The same path must be mapped to <code>/repo_root</code> inside
 the container via volumes.</li>
 <li><code>/app/sshkey</code> is assumed to be the private SSH key</li>
-<li>Ports don't have to explicitly exposed if using an Nginx Docker container, in this setup however, our Nginx and Redis
+<li>Ports don’t have to explicitly exposed if using an Nginx Docker container, in this setup however, our Nginx and Redis
 instance are present on the host system.</li>
 <li><code>PACKAGE_REPOS_NOTIFIERS</code> and <code>TELEGRAM_*</code> variables are optional but provide additional functionality of they are
 set.</li>
@@ -4154,7 +4330,7 @@ services:
 <li><code>DATABASE_HOST</code> can in theory be any other host, but can be set to <code>host.docker.internal</code> in case the Redis instance
 runs on the Docker host.</li>
 <li>The Docker socket needs to be mounted as the builder instance will use it to spin up build container instances.</li>
-<li><code>/app/sshkey</code> is assumed to be the private SSH key used for pushing finished package builds to the manager instance's
+<li><code>/app/sshkey</code> is assumed to be the private SSH key used for pushing finished package builds to the manager instance’s
 landing zone.</li>
 <li><code>BUILDER_TIMEOUT</code> only needs to be set in case it is a slower build machine which does not finish heaver tasks in one
 hour.</li>
@@ -4193,9 +4369,9 @@ server.</li>
 <h4 id="web-server"><a class="header" href="#web-server">Web server</a></h4>
 <p>Available routes on the port set up be the <code>--web-port</code> parameter are as follows:</p>
 <ul>
-<li><code>/api/logs/:id/:timestamp</code>: Returns the log file of a package build. The <code>id</code> is the package's ID, the <code>timestamp</code> is
+<li><code>/api/logs/:id/:timestamp</code>: Returns the log file of a package build. The <code>id</code> is the package’s ID, the <code>timestamp</code> is
 the timestamp of the build.</li>
-<li><code>/api/logs/:id</code>: Returns the latest log file of a package build. The <code>id</code> is the package's ID.</li>
+<li><code>/api/logs/:id</code>: Returns the latest log file of a package build. The <code>id</code> is the package’s ID.</li>
 <li><code>/api/queue/stats</code>: Returns a JSON object containing the current queue stats.</li>
 <li><code>/api/queue/packages</code>: Returns a JSON object containing information the currently scheduled packages.</li>
 <li><code>/metrics</code>: Returns collected Prometheus metrics.</li>
@@ -4247,9 +4423,11 @@ an external CI stage will be created for every package scheduled during the CI r
 Currently, we collect default <code>prom-client</code> metrics as well as statistics about total event count of each build status
 (failed, successful, already-built, timed out) as well as metrics about overall build times.
 These can be collected via a Prometheus instance and then be visualized using Grafana.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="discourse"><a class="header" href="#discourse">Discourse</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="discourse"><a class="header" href="#discourse">Discourse</a></h1>
 <p>Discourse is the application we use to host our forum.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="documentation"><a class="header" href="#documentation">Documentation</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="documentation"><a class="header" href="#documentation">Documentation</a></h1>
 <h2 id="building-it"><a class="header" href="#building-it">Building it</a></h2>
 <p>The documentation is created by using <a href="https://rust-lang.github.io/mdBook/index.html">mdBook</a>, which generates Markdown
 files and generates HTML pages for them. The documentation can be build by running:</p>
@@ -4286,7 +4464,7 @@ version from.</p>
 <pre><code class="language-yaml">{ {#include ../../../.github/workflows/pages.yml}}
 </code></pre>
 <h2 id="issues-and-their-solution"><a class="header" href="#issues-and-their-solution">Issues and their solution</a></h2>
-<h3 id="sidebar-or-something-else-on-the-documentation-doesnt-work-as-expected"><a class="header" href="#sidebar-or-something-else-on-the-documentation-doesnt-work-as-expected">Sidebar or something else on the documentation doesn't work as expected</a></h3>
+<h3 id="sidebar-or-something-else-on-the-documentation-doesnt-work-as-expected"><a class="header" href="#sidebar-or-something-else-on-the-documentation-doesnt-work-as-expected">Sidebar or something else on the documentation doesn’t work as expected</a></h3>
 <p>Chances are that the custom CSS parts need to be rebased to a newer version.
 They can be found in <code>./docs/theme/css</code> and the only addition we made here is to use the Fira Sans font instead of the
 default one.
@@ -4297,7 +4475,8 @@ folder.
 Copy those to the <code>./docs/theme/css</code> folder and alter the occurrences of font settings to include Fira Sans (or run a
 diff to find out where).
 After uncommenting <code>additional-css</code> in <code>book.toml</code>, run <code>mdbook build</code> again to verify nothing got broken along the way.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="tailscale"><a class="header" href="#tailscale">Tailscale</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="tailscale"><a class="header" href="#tailscale">Tailscale</a></h1>
 <p>Our current access policies look as follows:</p>
 <pre><code class="language-json">// This tailnet's ACLs are maintained in https://gitlab.com/garuda-linux/infra-nix
 {
@@ -4341,7 +4520,8 @@ After uncommenting <code>additional-css</code> in <code>book.toml</code>, run <c
 	},
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="garuda-linux-code-of-conduct"><a class="header" href="#garuda-linux-code-of-conduct">Garuda Linux Code of Conduct</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="garuda-linux-code-of-conduct"><a class="header" href="#garuda-linux-code-of-conduct">Garuda Linux Code of Conduct</a></h1>
 <p>Thank you for being a part of the Garuda Linux community. We value your participation and want everyone to have an
 enjoyable and fulfilling experience. Accordingly, all participants are expected to follow this Code of Conduct, and to
 show respect, understanding, and consideration to one another. Thank you for helping make this a welcoming, friendly
@@ -4350,14 +4530,14 @@ community for everyone.</p>
 <p>This Code of Conduct applies to all Garuda Linux community spaces, including, but not limited to:</p>
 <ul>
 <li>Code repositories - <code>gitlab.com/garuda-linux</code> and <code>github.com/garuda-linux</code></li>
-<li>Garuda Linux's Telegram channels and groups (including bridges to Matrix)</li>
+<li>Garuda Linux’s Telegram channels and groups (including bridges to Matrix)</li>
 <li>Mailing <code>*@garudalinux.org</code></li>
 <li>Community spaces hosted on <code>garudalinux.org</code> infrastructure</li>
 </ul>
 <p>Communication channels and private conversations that are normally out of scope may be considered in scope if a Garuda
 Linux participant is being stalked or harassed. Social media conversations may be considered in-scope if the incident
 occurred under a Garuda Linux related hashtag, or when an official Garuda Linux account on social media is tagged, or
-within any other discussion about Garuda Linux. The Garuda Linux's staff reserves the right to take actions against
+within any other discussion about Garuda Linux. The Garuda Linux’s staff reserves the right to take actions against
 behaviors that happen in any context, if they are deemed to be relevant to the Garuda Linux project and its
 participants.</p>
 <p>All participants in Garuda Linux community spaces are subject to the Code of Conduct. This includes founding members,
@@ -4399,7 +4579,7 @@ contact <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
 <p>Behaviors that contribute to creating a positive environment include:</p>
 <ul>
 <li><strong>Be friendly.</strong> Use welcoming and inclusive language.</li>
-<li><strong>Be empathetic.</strong> Be respectful of others' viewpoints and experiences.</li>
+<li><strong>Be empathetic.</strong> Be respectful of others’ viewpoints and experiences.</li>
 <li><strong>Be respectful.</strong> Express disagreements in a polite and constructive manner.</li>
 <li><strong>Be considerate.</strong> Focus on what is best for the community. Keep discussions around technology choices constructive
 and respectful. Remember that decisions are often a difficult choice between competing priorities.</li>
@@ -4415,15 +4595,15 @@ asked to stop any inappropriate behavior are expected to comply immediately.</p>
 <ul>
 <li><strong>Deliberate intimidation, stalking, or following.</strong></li>
 <li><strong>Sustained disruption of online discussion, talks, or other events.</strong> Sustained disruption of events, online
-discussions, or meetings, including talks and presentations, will not be tolerated. This includes 'Talking over' or '
-heckling' event speakers or influencing crowd actions that cause hostility in event sessions. Sustained disruption
+discussions, or meetings, including talks and presentations, will not be tolerated. This includes ‘Talking over’ or ’
+heckling’ event speakers or influencing crowd actions that cause hostility in event sessions. Sustained disruption
 also includes drinking alcohol to excess or using recreational drugs to excess, or pushing others to do so.</li>
-<li><strong>Harassment of people who don't drink alcohol or other legal substances.</strong> We do not tolerate derogatory comments
+<li><strong>Harassment of people who don’t drink alcohol or other legal substances.</strong> We do not tolerate derogatory comments
 about those who abstain from alcohol or other legal substances. We do not tolerate pushing people to drink, talking
 about their abstinence or preferences to others, or pressuring them to drink - physically or through jeering.</li>
 <li><strong>Sexist, racist, homophobic, transphobic, ableist language or otherwise exclusionary language.</strong> This includes
 deliberately referring to someone by a gender that they do not identify with, and/or questioning the legitimacy of an
-individual's gender identity. If you're unsure if a word is derogatory, don't use it. This also includes repeated
+individual’s gender identity. If you’re unsure if a word is derogatory, don’t use it. This also includes repeated
 subtle and/or indirect discrimination.</li>
 <li><strong>Unwelcome sexual attention or behavior that contributes to a sexualized environment.</strong> This includes sexualized
 comments, jokes or imagery in interactions, communications or presentation materials, as well as inappropriate
@@ -4436,28 +4616,28 @@ blocking or intimidating another person. Physical contact without affirmative co
 sharing or distribution of sexualized images or text.</li>
 <li><strong>Violence or threats of violence.</strong> Violence and threats of violence are not acceptable - online or offline. This
 includes incitement of violence toward any individual, including encouraging a person to commit self-harm. This also
-includes posting or threatening to post other people's personally identifying information ("doxxing") online.</li>
+includes posting or threatening to post other people’s personally identifying information (“doxxing”) online.</li>
 <li><strong>Influencing or encouraging inappropriate behavior.</strong> If you influence or encourage another person to violate the
 Code of Conduct, you may face the same consequences as if you had violated the Code of Conduct.</li>
 </ul>
 <h3 id="safety-versus-comfort"><a class="header" href="#safety-versus-comfort">Safety versus Comfort</a></h3>
-<p>The Garuda Linux community prioritizes marginalized people's safety over privileged people's comfort. The following are
+<p>The Garuda Linux community prioritizes marginalized people’s safety over privileged people’s comfort. The following are
 not against the Code of Conduct.</p>
 <ul>
-<li>"Reverse"-isms, including "reverse racism," "reverse sexism," and "cisphobia"</li>
-<li>Reasonable communication of boundaries, such as "leave me alone," "go away," or "I'm not discussing this with you."</li>
+<li>“Reverse”-isms, including “reverse racism,” “reverse sexism,” and “cisphobia”</li>
+<li>Reasonable communication of boundaries, such as “leave me alone,” “go away,” or “I’m not discussing this with you.”</li>
 <li>Criticizing racist, sexist, cissexist, or otherwise oppressive behavior or assumptions</li>
-<li>Communicating boundaries or criticizing oppressive behavior in a "tone" you don't find congenial</li>
+<li>Communicating boundaries or criticizing oppressive behavior in a “tone” you don’t find congenial</li>
 </ul>
 <p>If you have questions about the above statements, please
-read <a href="https://wiki.gnome.org/Foundation/CodeOfConduct/SupportingDiversity">GNOME Foundation's document on Supporting Diversity</a>.</p>
+read <a href="https://wiki.gnome.org/Foundation/CodeOfConduct/SupportingDiversity">GNOME Foundation’s document on Supporting Diversity</a>.</p>
 <p>Outreach and diversity efforts directed at under-represented groups are permitted under the code of conduct. For
 example, a social event for women would not be classified as being outside the Code of Conduct under this provision.</p>
-<p>Basic expectations for conduct are not covered by the "reverse-ism clause" and would be enforced irrespective of the
+<p>Basic expectations for conduct are not covered by the “reverse-ism clause” and would be enforced irrespective of the
 demographics of those involved. For example, racial discrimination will not be tolerated, irrespective of the race of
-those involved. Nor would unwanted sexual attention be tolerated, whatever someone's gender or sexual orientation.
+those involved. Nor would unwanted sexual attention be tolerated, whatever someone’s gender or sexual orientation.
 Members of our community have the right to expect that participants in the project will uphold these standards.</p>
-<p>If a participant engages in behavior that violates this code of conduct, the Garuda Linux's staff may take any action
+<p>If a participant engages in behavior that violates this code of conduct, the Garuda Linux’s staff may take any action
 they deem appropriate. In cases involving the staff or founding members the immediate action is expelishment.</p>
 <h2 id="procedure-for-handling-incidents"><a class="header" href="#procedure-for-handling-incidents">Procedure for Handling Incidents</a></h2>
 <p>You can make a report by emailing <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
@@ -4485,7 +4665,7 @@ Thank you for helping make this a welcoming, friendly community for everyone.</p
 <p>This Code of Conduct applies to all Garuda Linux community spaces, including, but not limited to:</p>
 <ul>
 <li>Code repositories - <code>gitlab.com/garuda-linux</code> and <code>github.com/garuda-linux</code></li>
-<li>Garuda Linux's Telegram channels and groups (including bridges to Matrix)</li>
+<li>Garuda Linux’s Telegram channels and groups (including bridges to Matrix)</li>
 <li>Mailing <code>*@garudalinux.org</code></li>
 <li>Community spaces hosted on <code>garudalinux.org</code> infrastructure</li>
 </ul>
@@ -4493,7 +4673,7 @@ Thank you for helping make this a welcoming, friendly community for everyone.</p
 Linux participant is being stalked or harassed.
 Social media conversations may be considered in-scope if the incident occurred under a Garuda Linux related hashtag, or
 when an official Garuda Linux account on social media is tagged, or within any other discussion about Garuda Linux.
-The Garuda Linux's staff reserves the right to take actions against behaviors that happen in any context, if they are
+The Garuda Linux’s staff reserves the right to take actions against behaviors that happen in any context, if they are
 deemed to be relevant to the Garuda Linux project and its participants.</p>
 <p>All participants in Garuda Linux community spaces are subject to the Code of Conduct. This includes founding members,
 staff members, corporate sponsors, and paid employees.
@@ -4534,11 +4714,10 @@ contact <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
 <p>Behaviors that contribute to creating a positive environment include:</p>
 <ul>
 <li><strong>Be friendly.</strong> Use welcoming and inclusive language.</li>
-<li><strong>Be empathetic.</strong> Be respectful of others' viewpoints and experiences.</li>
+<li><strong>Be empathetic.</strong> Be respectful of others’ viewpoints and experiences.</li>
 <li><strong>Be respectful.</strong> Express disagreements in a polite and constructive manner.</li>
 <li><strong>Be considerate.</strong> Focus on what is best for the community. Keep discussions around technology choices constructive
-and respectful.<br />
-Remember that decisions are often a difficult choice between competing priorities.</li>
+and respectful.<br>Remember that decisions are often a difficult choice between competing priorities.</li>
 <li><strong>Be patient and generous.</strong> If someone asks for help, it is because they need it.
 When documentation is available that answers the question, politely point them to it. If the question is off-topic,
 suggest a more appropriate online space to seek help.</li>
@@ -4552,18 +4731,18 @@ asked to stop any inappropriate behavior are expected to comply immediately.</p>
 <li><strong>Deliberate intimidation, stalking, or following.</strong></li>
 <li><strong>Sustained disruption of online discussion, talks, or other events.</strong> Sustained disruption of events, online
 discussions, or meetings, including talks and presentations, will not be tolerated.
-This includes 'Talking over' or 'heckling' event speakers or influencing crowd actions that cause hostility in event
+This includes ‘Talking over’ or ‘heckling’ event speakers or influencing crowd actions that cause hostility in event
 sessions.
 Sustained disruption also includes drinking alcohol to excess or using recreational drugs to excess, or pushing others
 to do so.</li>
-<li><strong>Harassment of people who don't drink alcohol or other legal substances.</strong> We do not tolerate derogatory comments
+<li><strong>Harassment of people who don’t drink alcohol or other legal substances.</strong> We do not tolerate derogatory comments
 about those who abstain from alcohol or other legal substances.
 We do not tolerate pushing people to drink, talking about their abstinence or preferences to others, or pressuring
 them to drink - physically or through jeering.</li>
 <li><strong>Sexist, racist, homophobic, transphobic, ableist language or otherwise exclusionary language.</strong> This includes
 deliberately referring to someone by a gender that they do not identify with, and/or
-questioning the legitimacy of an individual's gender identity.
-If you're unsure if a word is derogatory, don't use it. This also includes repeated subtle and/or indirect
+questioning the legitimacy of an individual’s gender identity.
+If you’re unsure if a word is derogatory, don’t use it. This also includes repeated subtle and/or indirect
 discrimination.</li>
 <li><strong>Unwelcome sexual attention or behavior that contributes to a sexualized environment.</strong> This includes sexualized
 comments, jokes or imagery in interactions, communications or presentation materials, as well as inappropriate
@@ -4576,28 +4755,28 @@ blocking or intimidating another person. Physical contact without affirmative co
 sharing or distribution of sexualized images or text.</li>
 <li><strong>Violence or threats of violence.</strong> Violence and threats of violence are not acceptable - online or offline. This
 includes incitement of violence toward any individual, including encouraging a person to commit self-harm. This also
-includes posting or threatening to post other people's personally identifying information ("doxxing") online.</li>
+includes posting or threatening to post other people’s personally identifying information (“doxxing”) online.</li>
 <li><strong>Influencing or encouraging inappropriate behavior.</strong> If you influence or encourage another person to violate the
 Code of Conduct, you may face the same consequences as if you had violated the Code of Conduct.</li>
 </ul>
 <h3 id="safety-versus-comfort-1"><a class="header" href="#safety-versus-comfort-1">Safety versus Comfort</a></h3>
-<p>The Garuda Linux community prioritizes marginalized people's safety over privileged people's comfort. The following are
+<p>The Garuda Linux community prioritizes marginalized people’s safety over privileged people’s comfort. The following are
 not against the Code of Conduct.</p>
 <ul>
-<li>"Reverse"-isms, including "reverse racism," "reverse sexism," and "cisphobia"</li>
-<li>Reasonable communication of boundaries, such as "leave me alone," "go away," or "I'm not discussing this with you."</li>
+<li>“Reverse”-isms, including “reverse racism,” “reverse sexism,” and “cisphobia”</li>
+<li>Reasonable communication of boundaries, such as “leave me alone,” “go away,” or “I’m not discussing this with you.”</li>
 <li>Criticizing racist, sexist, cissexist, or otherwise oppressive behavior or assumptions</li>
-<li>Communicating boundaries or criticizing oppressive behavior in a "tone" you don't find congenial</li>
+<li>Communicating boundaries or criticizing oppressive behavior in a “tone” you don’t find congenial</li>
 </ul>
 <p>If you have questions about the above statements, please
-read <a href="https://wiki.gnome.org/Foundation/CodeOfConduct/SupportingDiversity">GNOME Foundation's document on Supporting Diversity</a>.</p>
+read <a href="https://wiki.gnome.org/Foundation/CodeOfConduct/SupportingDiversity">GNOME Foundation’s document on Supporting Diversity</a>.</p>
 <p>Outreach and diversity efforts directed at under-represented groups are permitted under the code of conduct. For
 example, a social event for women would not be classified as being outside the Code of Conduct under this provision.</p>
-<p>Basic expectations for conduct are not covered by the "reverse-ism clause" and would be enforced irrespective of the
+<p>Basic expectations for conduct are not covered by the “reverse-ism clause” and would be enforced irrespective of the
 demographics of those involved. For example, racial discrimination will not be tolerated, irrespective of the race of
-those involved. Nor would unwanted sexual attention be tolerated, whatever someone's gender or sexual orientation.
+those involved. Nor would unwanted sexual attention be tolerated, whatever someone’s gender or sexual orientation.
 Members of our community have the right to expect that participants in the project will uphold these standards.</p>
-<p>If a participant engages in behavior that violates this code of conduct, the Garuda Linux's staff may take any action
+<p>If a participant engages in behavior that violates this code of conduct, the Garuda Linux’s staff may take any action
 they deem appropriate. In cases involving the staff or founding members the immediate action is expelishment.</p>
 <h2 id="procedure-for-handling-incidents-1"><a class="header" href="#procedure-for-handling-incidents-1">Procedure for Handling Incidents</a></h2>
 <p>You can make a report by emailing <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
@@ -4619,14 +4798,15 @@ person. If you don’t remember all the details, we still encourage you to make 
 <h2 id="license"><a class="header" href="#license">License</a></h2>
 <p>The Garuda Linux Code of Conduct is licensed under
 a <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution Share-Alike 3.0 Unported License</a>.</p>
-<p><img src="https://licensebuttons.net/l/by-sa/3.0/88x31.png" alt="Creative Commons License" /></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="https://licensebuttons.net/l/by-sa/3.0/88x31.png" alt="Creative Commons License"><span class="img-wrapper"><img src="https://licensebuttons.net/l/by-sa/3.0/88x31.png" alt="Creative Commons License"></span></label></p>
 <h2 id="attribution"><a class="header" href="#attribution">Attribution</a></h2>
-<p>The Garuda Linux Code of Conduct was forked from GNOME Foundation's Code of Conduct (last modified 2020-10-01), which is
+<p>The Garuda Linux Code of Conduct was forked from GNOME Foundation’s Code of Conduct (last modified 2020-10-01), which is
 under a Creative Commons license. See
 the <a href="https://web.archive.org/web/20210813233606/https://wiki.gnome.org/Foundation/CodeOfConduct">original page</a> for the
 original attributions.
 description</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="privacy-policy-for-garuda-linux"><a class="header" href="#privacy-policy-for-garuda-linux">Privacy policy for Garuda Linux</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="privacy-policy-for-garuda-linux"><a class="header" href="#privacy-policy-for-garuda-linux">Privacy policy for Garuda Linux</a></h1>
 <h2 id="about-this-document"><a class="header" href="#about-this-document">About this document</a></h2>
 <p>This Privacy Policy governs the manner in which Garuda Linux collects, uses, maintains and discloses information
 collected from users (each, a “User”) of our website and web services..</p>
@@ -4661,12 +4841,12 @@ or access your personal information.</p>
 <li>Retain the IP addresses associated with registered users and their posts no more than 5 years.</li>
 </ul>
 <h2 id="third-party-privacy-policies"><a class="header" href="#third-party-privacy-policies">Third Party Privacy Policies</a></h2>
-<p>Garuda Linux's Privacy Policy does not apply to some of the services we utilize in our infrastructure. Thus, we are
+<p>Garuda Linux’s Privacy Policy does not apply to some of the services we utilize in our infrastructure. Thus, we are
 advising you to consult the respective Privacy Policies of these third-party services for more detailed information.</p>
 <p>This includes, but may not be limited to:</p>
 <ul>
 <li><a href="https://www.cloudflare.com/">Cloudflare</a> to protect against common threats and enhance our infrastructure</li>
-<li><a href="www.hetzner.com/">Hetzner</a> as server and backup storage provider (located in Germany)</li>
+<li><a href="www.hetzner.com">Hetzner</a> as server and backup storage provider (located in Germany)</li>
 <li><a href="https://translate.google.com/">Google Translate</a> to offer translations on our website</li>
 <li><a href="https://opencollective.org/">OpenCollective</a>, <a href="https://liberapay.com/">Liberapay</a>
 and <a href="https://www.paypal.com/">Paypal</a> to allow the collection of donations that sustain our infrastructure</li>
@@ -4700,7 +4880,7 @@ license can be viewed here.</p>
 data we hold about you, including any data you have provided to us. You can also request that we erase any personal data
 we hold about you. This does not include any data we are obliged to keep for administrative, legal, or security
 purposes.</p>
-<h2 id="childrens-information"><a class="header" href="#childrens-information">Children's Information</a></h2>
+<h2 id="childrens-information"><a class="header" href="#childrens-information">Children’s Information</a></h2>
 <p>Another part of our priority is adding protection for children while using the internet. We encourage parents and
 guardians to observe, participate in, and/or monitor and guide their online activity.</p>
 <p>Garuda Linux does not knowingly collect any personal identifiable information from children under the age of 13. If you
@@ -4719,11 +4899,13 @@ of those changes.</p>
 <p>If you have any questions about this Privacy Policy, the practices of this site, or your dealings with this site, please
 contact us via <a href="mailto:team@garudalinux.org">email</a>.</p>
 <p><strong>This privacy policy has been updated in September 2023.</strong></p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="security-policy"><a class="header" href="#security-policy">Security Policy</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="security-policy"><a class="header" href="#security-policy">Security Policy</a></h1>
 <p>If any vulnerability or security flaw is discovered, please contact us directly
 via <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
 <p>We will try to respond within 24–48 hours on a best-effort basis.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="credits"><a class="header" href="#credits">Credits</a></h1>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="credits"><a class="header" href="#credits">Credits</a></h1>
 <ul>
 <li><a href="https://github.com/mozilla">https://github.com/mozilla</a></li>
 <li><a href="https://github.com/JetBrains/JetBrainsMono">https://github.com/JetBrains/JetBrainsMono</a></li>
@@ -4748,6 +4930,11 @@ via <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
 
         </div>
 
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
 
 
 
@@ -4756,13 +4943,13 @@ via <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 
