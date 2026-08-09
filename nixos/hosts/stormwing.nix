@@ -141,6 +141,11 @@
         extraOptions = {
           bindMounts = {
             # Begin data_2
+            "arch-mirror" = {
+              hostPath = "/data_2/containers/arch-mirror/mirror";
+              isReadOnly = false;
+              mountPoint = "/srv/http/arch-mirror";
+            };
             "chaotic" = {
               hostPath = "/data_2/containers/chaotic-v4/chaotic";
               isReadOnly = false;
@@ -194,6 +199,19 @@
         # Only entitled to 1/5 of the CPU resources in case of contention
         cpuWeight = 20;
         ioWeight = 20;
+      };
+      arch-mirror = {
+        config = import ./stormwing/arch-mirror.nix;
+        extraOptions = {
+          bindMounts = {
+            "arch-mirror" = {
+              hostPath = "/data_2/containers/arch-mirror/mirror";
+              isReadOnly = false;
+              mountPoint = "/srv/http/arch-mirror";
+            };
+          };
+        };
+        ipAddress = "10.0.5.60";
       };
       github-runner = {
         config = import ./stormwing/github-runner.nix;

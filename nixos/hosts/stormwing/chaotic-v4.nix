@@ -247,6 +247,11 @@ in
           comment = "ISO downloads";
           "read only" = "yes";
         };
+        arch-mirror = {
+          path = "/srv/http/arch-mirror/";
+          comment = "Arch Linux mirror";
+          "read only" = "yes";
+        };
       };
       globalSection = {
         "max connections" = 80;
