@@ -80,7 +80,7 @@ in
         rsync_cmd() {
           local cmd
           cmd=(${if cfg.tls then ''"${pkgs.rsync}/bin/rsync-ssl" --type=openssl'' else ''"${pkgs.rsync}/bin/rsync"''})
-          cmd+=(-rlptH --safe-links --delete-delay --delay-updates --timeout=600 --no-motd)
+          cmd+=(-rlptH --copy-links --delete-delay --delay-updates --timeout=600 --no-motd)
           if stty &>/dev/null; then
             cmd+=(-h -v --progress)
           else

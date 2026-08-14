@@ -18,6 +18,13 @@ let
         echo "Building all ISO Garuda currently offers.."
         docker exec buildiso buildall || exit 1
         ;;
+      "ci-trigger release "*)
+        echo "Ensuring container and garuda-tools are up-to-date.."
+        docker exec buildiso pacman -Syu --noconfirm || exit 1
+        echo "Building and deploying release ISOs.."
+        docker exec buildiso bash -c "buildall; deployiso -SCv" || exit 1
+        echo "Deployed all ISOs to the mirror, to push it as latest run 'deployiso -R' on the server after testing!"
+        ;;
       "ci-trigger "* )
         echo "Ensuring container and garuda-tools are up-to-date.."
         docker exec buildiso pacman -Syu --noconfirm || exit 2
