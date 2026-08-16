@@ -93,7 +93,7 @@ in
         }
         export -f rsync_cmd
 
-        # Only run when there are changes (non-interactive / cronjob case)
+        # Only run when there are changes
         if ! tty -s && [[ -f "$target/lastupdate" ]] && diff -b <(curl -Ls "${cfg.lastupdateUrl}") "$target/lastupdate" >/dev/null; then
           echo "No changes, updating lastsync timestamp only."
           rsync_cmd "${cfg.upstreamUrl}/lastsync" "$target/lastsync"
@@ -105,6 +105,11 @@ in
           --exclude='*.links.tar.gz*' \
           --exclude='/other' \
           --exclude='/sources' \
+          --exclude='/iso' \
+          --exclude='/images' \
+          --exclude='/wsl' \
+          --exclude='/latest' \
+          --delete-excluded \
           "${cfg.upstreamUrl}" \
           "$target"
 
