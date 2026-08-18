@@ -1,26 +1,24 @@
 services:
   chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:main
+    image: ghcr.io/chaotic-cx/chaotic-next:1.0.0-rc3
     container_name: chaotic-backend
     deploy:
       restart_policy:
         condition: always
         delay: 30s
     environment:
-      AUTH0_AUDIENCE: http://localhost:3000/auth/auth0
-      AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID:-?err}
-      AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET:-?err}
-      AUTH0_DOMAIN: ${AUTH0_DOMAIN:-?err}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-?err}
+      BETTER_AUTH_TRUSTED_ORIGINS: https://aur.chaotic.cx
+      BETTER_AUTH_URL: https://aur.chaotic.cx/backend
       CAUR_DB_KEY: ${CAUR_DB_KEY:-?err}
-      CAUR_GITLAB_ID_CAUR: 54867625
-      CAUR_GITLAB_ID_GARUDA: 48461689
-      CAUR_GITLAB_TOKEN: ${GITLAB_TOKEN_CX:-?err}
       CAUR_GITLAB_WEBHOOK_TOKEN: ${CAUR_GITLAB_WEBHOOK_TOKEN:-?err}
-      CAUR_JWT_SECRET: ${CAUR_JWT_SECRET:-?err}
       CAUR_TRUST_PROXY: 172.18.0.1
-      CAUR_USERS: ${CAUR_USERS:-?err}
-      CAUR_VAPID_PUBLIC: BFMijCyTcLZu3HRJyMfoB4vtnDcgl7E2SVZgd4uWB3XjO2VvRh_LjYHcY_oJLvMIhdp5Yvuz0gudRpY-PFI9iWA
       CAUR_VAPID_PRIVATE: ${CAUR_VAPID_PRIVATE:-?err}
+      CAUR_VAPID_PUBLIC: BFMijCyTcLZu3HRJyMfoB4vtnDcgl7E2SVZgd4uWB3XjO2VvRh_LjYHcY_oJLvMIhdp5Yvuz0gudRpY-PFI9iWA
+      GITLAB_CLIENT_ID: ${GITLAB_CLIENT_ID:-?err}
+      GITLAB_CLIENT_SECRET: ${GITLAB_CLIENT_SECRET:-?err}
+      GITLAB_REDIRECT_URI: https://aur.chaotic.cx/backend/api/auth/oauth2/callback/gitlab
+      LOG_LEVEL: debug
       NODE_ENV: production
       PG_DATABASE: chaotic-aur
       PG_HOST: 10.0.5.20
@@ -29,6 +27,10 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
       REDIS_SSH_HOST: host.docker.internal
       REDIS_SSH_USER: package-deployer
+      REPOMANAGER_ABI_DRY_RUN: true
+      REPOMANAGER_MIRROR_URL: https://builds.garudalinux.org/arch-mirror
+      REPOMANAGER_SIGNAL_SCAN_ENABLED: true
+      VIRUSTOTAL_API_KEY: ${VIRUSTOTAL_API_KEY:-?err}
     ports: ["3000:3000"]
     volumes: ["${SSH_KEY:-?err}:/app/sshkey", "./backend-config:/app/config"]
     extra_hosts: ["host.docker.internal:host-gateway"]
@@ -44,7 +46,7 @@ services:
 
   marge_bot:
     image: registry.gitlab.com/marge-org/marge-bot:main
-    container_name: chaotic-marge-
+    container_name: chaotic-marge
     restart: always
     environment:
       MARGE_AUTH_TOKEN: ${TEMERAIRE_BOT_TOKEN:-?err}
