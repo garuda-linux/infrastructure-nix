@@ -91,7 +91,7 @@ services:
         delay: 120s
   # Automated container updates
   watchtower:
-    image: nickfedor/watchtower:1.20.3
+    image: nickfedor/watchtower:1.21.0
     container_name: watchtower
     command: --cleanup matterbridge wikijs privatebin vaultwarden thelounge syncserver
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
