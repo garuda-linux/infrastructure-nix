@@ -1,6 +1,6 @@
 services:
   chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:1.0.0-rc4
+    image: ghcr.io/chaotic-cx/chaotic-next:1.0.0
     container_name: chaotic-backend
     deploy:
       restart_policy:
@@ -11,6 +11,7 @@ services:
       BETTER_AUTH_TRUSTED_ORIGINS: https://aur.chaotic.cx
       BETTER_AUTH_URL: https://aur.chaotic.cx/backend
       CAUR_DB_KEY: ${CAUR_DB_KEY:-?err}
+      CAUR_GITLAB_TOKEN: ${TEMERAIRE_BOT_TOKEN:-?err}
       CAUR_GITLAB_WEBHOOK_TOKEN: ${CAUR_GITLAB_WEBHOOK_TOKEN:-?err}
       CAUR_TRUST_PROXY: 172.18.0.1
       CAUR_VAPID_PRIVATE: ${CAUR_VAPID_PRIVATE:-?err}
