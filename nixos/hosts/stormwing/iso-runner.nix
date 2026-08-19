@@ -16,22 +16,22 @@ let
         echo "Ensuring container and garuda-tools are up-to-date.."
         docker exec buildiso pacman -Syu --noconfirm || exit 1
         echo "Building all ISO Garuda currently offers.."
-        docker exec buildiso buildall || exit 1
+        docker exec buildiso bash -c "umask 0022; buildall" || exit 1
         ;;
       "ci-trigger release "*)
         echo "Ensuring container and garuda-tools are up-to-date.."
         docker exec buildiso pacman -Syu --noconfirm || exit 1
         echo "Building and deploying release ISOs.."
-        docker exec buildiso bash -c "buildall; deployiso -SCv" || exit 1
+        docker exec buildiso bash -c "umask 0022; buildall; deployiso -SCv" || exit 1
         echo "Deployed all ISOs to the mirror, to push it as latest run 'deployiso -R' on the server after testing!"
         ;;
       "ci-trigger "* )
         echo "Ensuring container and garuda-tools are up-to-date.."
         docker exec buildiso pacman -Syu --noconfirm || exit 2
         echo "Building $_FLAVOUR.."
-        docker exec buildiso buildiso -i || exit 2
-        [[ $_KERNEL != "" ]] && (docker exec buildiso buildiso -p "$_FLAVOUR" -k "$_KERNEL" || exit 3)
-        docker exec buildiso buildiso -p "$_FLAVOUR" || exit 3
+        docker exec buildiso bash -c "umask 0022; buildiso -i" || exit 2
+        [[ $_KERNEL != "" ]] && (docker exec buildiso bash -c "umask 0022; buildiso -p "$_FLAVOUR" -k "$_KERNEL"" || exit 3)
+        docker exec buildiso bash -c "umask 0022; buildiso -p "$_FLAVOUR"" || exit 3
         ;;
       *)
         echo "Access only allowed for building purposes!"

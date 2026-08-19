@@ -257,7 +257,7 @@
     "nixos-patch-netdata": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-fa3UgdbGP4AOuOkB3966kmyGq66Y8eeDtUZoY/SKKts=",
+        "narHash": "sha256-/90kC4sCeREpMZQv9M2E2WF1L0gp1ahA1OJwaDsyEu0=",
         "type": "file",
         "url": "https://github.com/NixOS/nixpkgs/pull/507414.patch"
       },
