@@ -28,7 +28,7 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
       REDIS_SSH_HOST: host.docker.internal
       REDIS_SSH_USER: package-deployer
-      REPOMANAGER_ABI_DRY_RUN: true
+      REPOMANAGER_ABI_DRY_RUN: false
       REPOMANAGER_MIRROR_URL: https://builds.garudalinux.org/arch-mirror
       REPOMANAGER_SIGNAL_SCAN_ENABLED: true
       VIRUSTOTAL_API_KEY: ${VIRUSTOTAL_API_KEY:-?err}
