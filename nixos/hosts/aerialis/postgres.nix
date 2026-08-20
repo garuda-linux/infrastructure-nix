@@ -58,6 +58,7 @@ in
         ensureDBOwnership = true;
       }
     ];
+    extraPlugins = with pkgs.postgresql_14.pkgs; [ pg_hll ];
     initialScript = pkgs.writeText "backend-initScript" ''
       CREATE USER netdata;
       GRANT pg_monitor TO netdata;
@@ -76,6 +77,7 @@ in
     '';
     # This is publically accesible now through port 5432, however only the chaotic-router user can access the database through the internet
     enableTCPIP = true;
+    package = pkgs.postgresql_14;
   };
 
   # Regular backups for our database (every 6h)
