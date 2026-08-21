@@ -69,6 +69,7 @@ services:
         delay: 60s
     tty: true
     environment:
+      API_TOKEN: ${API_TOKEN:-?err}
       # Address published to outside world
       DATABASE_HOST: builds.garudalinux.org
       DATABASE_PORT: 210
