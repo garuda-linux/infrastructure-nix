@@ -1,6 +1,6 @@
 services:
   chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:1.5.0
+    image: ghcr.io/chaotic-cx/chaotic-next:1.8.0
     container_name: chaotic-backend
     deploy:
       restart_policy:
