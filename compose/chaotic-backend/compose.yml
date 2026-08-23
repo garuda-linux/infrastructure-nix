@@ -7,6 +7,8 @@ services:
         condition: always
         delay: 30s
     environment:
+      AUR_USERNAME: ${AUR_USERNAME:-?err}
+      AUR_PASSWORD: ${AUR_PASSWORD:-?err}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-?err}
       BETTER_AUTH_TRUSTED_ORIGINS: https://aur.chaotic.cx
       BETTER_AUTH_URL: https://aur.chaotic.cx/backend
