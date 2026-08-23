@@ -19,6 +19,8 @@ in
     ../../modules/special/ssh-allow-chaotic.nix
   ];
 
+  networking.extraHosts = "10.0.5.40 builds.garudalinux.org";
+
   # This container is just for compose stuff
   garuda.services.compose-runner.chaotic-v4 = {
     envfile = config.sops.secrets."compose/chaotic-v4".path;

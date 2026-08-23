@@ -20,10 +20,12 @@
 
     # Impermanence for keeping things clean
     impermanence.url = "github:nix-community/impermanence";
+    impermanence.inputs.home-manager.follows = "home-manager";
+    impermanence.inputs.nixpkgs.follows = "nixpkgs";
 
     # The single source of truth
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
 
     # Our mailserver
     nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/main";
