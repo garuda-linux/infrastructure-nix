@@ -106,7 +106,7 @@ services:
                     }
                 ],
                 "extra_keyrings": [
-                    "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
+                    "https://builds.garudalinux.org/repos/chaotic-aur/chaotic-keyring.pkg.tar.zst"
                 ]
             },
             "garuda": {
@@ -125,7 +125,7 @@ services:
                     }
                 ],
                 "extra_keyrings": [
-                    "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
+                    "https://builds.garudalinux.org/repos/chaotic-aur/chaotic-keyring.pkg.tar.zst"
                 ]
             }
         }
