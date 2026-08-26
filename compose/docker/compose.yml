@@ -81,7 +81,7 @@ services:
     restart: always
   # IRC/Discord/Telegram relay
   matterbridge:
-    image: 42wim/matterbridge:latest
+    image: registry.gitlab.com/garuda-linux/tools/matterbridge:latest
     container_name: matterbridge
     volumes:
       - ${MATTERBRIDGE_CONFIG:-?err}:/etc/matterbridge/matterbridge.toml:ro
