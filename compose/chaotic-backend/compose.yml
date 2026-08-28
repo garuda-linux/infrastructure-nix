@@ -1,6 +1,6 @@
 services:
   chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:1.13.0
+    image: ghcr.io/chaotic-cx/chaotic-next:2.0.0
     container_name: chaotic-backend
     deploy:
       restart_policy:
@@ -21,7 +21,7 @@ services:
       CAUR_VAPID_PUBLIC: BFMijCyTcLZu3HRJyMfoB4vtnDcgl7E2SVZgd4uWB3XjO2VvRh_LjYHcY_oJLvMIhdp5Yvuz0gudRpY-PFI9iWA
       GITLAB_CLIENT_ID: ${GITLAB_CLIENT_ID:-?err}
       GITLAB_CLIENT_SECRET: ${GITLAB_CLIENT_SECRET:-?err}
-      GITLAB_REDIRECT_URI: https://aur.chaotic.cx/backend/api/auth/oauth2/callback/gitlab
+      GITLAB_REDIRECT_URI: https://aur.chaotic.cx/backend/api/auth/callback/gitlab
       LOG_LEVEL: debug
       NODE_ENV: production
       PG_DATABASE: chaotic-aur
