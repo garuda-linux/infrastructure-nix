@@ -64,7 +64,11 @@ in
   config = mkIf cfg.enable {
     systemd.services.garuda-arch-mirror = {
       description = "Sync Arch Linux mirror from tier 1 and push changes to R2";
-      path = [ pkgs.rsync pkgs.openssl pkgs.curl ];
+      path = [
+        pkgs.rsync
+        pkgs.openssl
+        pkgs.curl
+      ];
       serviceConfig.Type = "oneshot";
       script = ''
         set -euo pipefail
@@ -79,7 +83,9 @@ in
 
         rsync_cmd() {
           local cmd
-          cmd=(${if cfg.tls then ''"${pkgs.rsync}/bin/rsync-ssl" --type=openssl'' else ''"${pkgs.rsync}/bin/rsync"''})
+          cmd=(${
+            if cfg.tls then ''"${pkgs.rsync}/bin/rsync-ssl" --type=openssl'' else ''"${pkgs.rsync}/bin/rsync"''
+          })
           cmd+=(-rlptH --copy-links --delete-delay --delay-updates --timeout=600 --no-motd)
           if stty &>/dev/null; then
             cmd+=(-h -v --progress)

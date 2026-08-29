@@ -1,6 +1,6 @@
 services:
   chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:2.0.0
+    image: ghcr.io/chaotic-cx/chaotic-next:2.0.1-pre
     container_name: chaotic-backend
     deploy:
       restart_policy:
@@ -24,6 +24,9 @@ services:
       GITLAB_REDIRECT_URI: https://aur.chaotic.cx/backend/api/auth/callback/gitlab
       LOG_LEVEL: debug
       NODE_ENV: production
+      OBSERVE_APP_KEY: ${OBSERVE_APP_KEY:-?err}
+      OBSERVE_APP_SECRET: ${OBSERVE_APP_SECRET:-?err}
+      OBSERVE_SERVICE_ID: chaotic-prod
       PG_DATABASE: chaotic-aur
       PG_HOST: 10.0.5.20
       PG_PASSWORD: ${PG_PASSWORD:-?err}
@@ -38,12 +41,3 @@ services:
     ports: ["3000:3000"]
     volumes: ["${SSH_KEY:-?err}:/app/sshkey", "./backend-config:/app/config"]
     extra_hosts: ["host.docker.internal:host-gateway"]
-
-  # TODO: revert to NixOS service once it no longer segfaults
-  database:
-    image: redis:8.2-m01-alpine
-    container_name: chaotic-database
-    restart: always
-    ports: ["127.0.0.1:6379:6379"]
-    command: redis-server --save 20 1 --loglevel warning --requirepass "${REDIS_PASSWORD:-?err}"
-    volumes: ["./database:/data"]

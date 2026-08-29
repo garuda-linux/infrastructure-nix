@@ -150,6 +150,11 @@
               isReadOnly = false;
               mountPoint = "/var/garuda/compose-runner/chaotic-backend";
             };
+            "chaotic-redis" = {
+              hostPath = "/data_2/containers/chaotic-backend/redis";
+              isReadOnly = false;
+              mountPoint = "/var/lib/redis-chaotic";
+            };
           };
           enableTun = true;
           forwardPorts = [

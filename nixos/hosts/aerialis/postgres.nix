@@ -58,7 +58,10 @@ in
         ensureDBOwnership = true;
       }
     ];
-    extensions = with pkgs.postgresql_14.pkgs; [ pg_hll pg_repack ];
+    extensions = with pkgs.postgresql_14.pkgs; [
+      pg_hll
+      pg_repack
+    ];
     initialScript = pkgs.writeText "backend-initScript" ''
       CREATE USER netdata;
       GRANT pg_monitor TO netdata;
