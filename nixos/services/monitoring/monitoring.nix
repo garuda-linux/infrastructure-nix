@@ -42,7 +42,6 @@ in
             enabled: yes
             modules:
               nginx: yes
-              postgres: yes
               squidlog: yes
               web_log: yes
           '';
@@ -55,13 +54,6 @@ in
               jobs:
                 - name: local
                   url: http://localhost/nginx_status
-            ''
-          );
-          "go.d/postgres.conf" = mkIf config.services.postgresql.enable (
-            pkgs.writeText "postgres.conf" ''
-              jobs:
-                - name: web-two
-                  dsn: 'postgres://netdata:netdata@localhost:5432/'
             ''
           );
         };

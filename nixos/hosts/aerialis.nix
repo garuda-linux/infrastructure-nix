@@ -281,6 +281,11 @@
               isReadOnly = false;
               mountPoint = "/var/garuda/backups/postgres";
             };
+            "acme" = {
+              hostPath = "/data_2/containers/web-front/acme";
+              isReadOnly = true;
+              mountPoint = "/var/lib/acme";
+            };
           };
           forwardPorts = [
             {
@@ -357,11 +362,6 @@
   # Monitor a few services of the containers
   services = {
     netdata.configDir = {
-      "go.d/postgres.conf" = pkgs.writeText "postgres.conf" ''
-        jobs:
-          - name: postgres
-            dsn: 'postgres://netdata:netdata@10.0.5.20:5432/'
-      '';
       "go.d/squidlog.conf" = pkgs.writeText "squidlog.conf" ''
         jobs:
           - name: squid

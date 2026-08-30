@@ -64,19 +64,24 @@ in
     ];
     authentication = lib.mkForce ''
       local all all peer
-      host chaotic-aur chaotic-router 0.0.0.0/0 scram-sha-256
+      hostssl chaotic-aur chaotic-router 0.0.0.0/0 scram-sha-256
       # Reject anything else coming from the outside world somehow someway
       host all all 10.0.5.1/32 reject
       # Allow connections from the internal network
-      host all all 10.0.5.0/24 md5
+      host all all 10.0.5.0/24 scram-sha-256
       # Allow localhost connections
-      host all all 127.0.0.1/32 md5
+      host all all 127.0.0.1/32 scram-sha-256
       # Block the rest of the internet
       host all all 0.0.0.0/0 reject
     '';
-    # This is publically accessible now through port 5432, however only the chaotic-router user can access the database through the internet
+    # This is publically accessible now through port 5432, however only the chaotic-router user can access the database through the internet, and only over TLS
     enableTCPIP = true;
     package = pkgs.postgresql_18;
+    settings = {
+      ssl = true;
+      ssl_cert_file = "${config.services.postgresql.dataDir}/server.crt";
+      ssl_key_file = "${config.services.postgresql.dataDir}/server.key";
+    };
   };
 
   # Regular backups for our database (every 6h)
@@ -92,6 +97,7 @@ in
     initialPasswordFile = config.sops.secrets."postgres/pg_admin".path;
     openFirewall = true;
     settings = {
+      DEFAULT_SERVER = "10.0.5.20";
       FIXED_BINARY_PATHS = {
         "pg" = "${config.services.postgresql.package}/bin";
       };
@@ -100,7 +106,6 @@ in
       WEBSERVER_REMOTE_USER = "X-Forwarded-User";
       MASTER_PASSWORD_REQUIRED = false;
     };
-    package = inputs.nixpkgs-stable.legacyPackages."${pkgs.system}".pgadmin4;
   };
 
   systemd.services.pgadmin = {
@@ -110,6 +115,16 @@ in
       ${config.services.pgadmin.package}/bin/pgadmin4-cli load-servers "$FILE" --user "$EMAIL"
     '';
   };
+
+  # Serve the live ACME wildcard cert to Postgres for external TLS
+  system.activationScripts.postgresServerCert = ''
+    install -o postgres -g postgres -m 0600 \
+      /var/lib/acme/garudalinux.org/key.pem \
+      ${config.services.postgresql.dataDir}/server.key
+    install -o postgres -g postgres -m 0644 \
+      /var/lib/acme/garudalinux.org/fullchain.pem \
+      ${config.services.postgresql.dataDir}/server.crt
+  '';
 
   # Open up ports for Postgres
   networking.firewall.allowedTCPPorts = [ 5432 ];
