@@ -58,14 +58,10 @@ in
         ensureDBOwnership = true;
       }
     ];
-    extensions = with pkgs.postgresql_14.pkgs; [
+    extensions = with pkgs.postgresql_18.pkgs; [
       pg_hll
       pg_repack
     ];
-    initialScript = pkgs.writeText "backend-initScript" ''
-      CREATE USER netdata;
-      GRANT pg_monitor TO netdata;
-    '';
     authentication = lib.mkForce ''
       local all all peer
       host chaotic-aur chaotic-router 0.0.0.0/0 scram-sha-256
@@ -78,9 +74,9 @@ in
       # Block the rest of the internet
       host all all 0.0.0.0/0 reject
     '';
-    # This is publically accesible now through port 5432, however only the chaotic-router user can access the database through the internet
+    # This is publically accessible now through port 5432, however only the chaotic-router user can access the database through the internet
     enableTCPIP = true;
-    package = pkgs.postgresql_14;
+    package = pkgs.postgresql_18;
   };
 
   # Regular backups for our database (every 6h)
