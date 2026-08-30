@@ -53,6 +53,33 @@ services:
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
     extra_hosts: ["host.docker.internal:host-gateway"]
+  chaotic-builder-3:
+    image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
+    container_name: chaotic-builder-3
+    command: builder
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 60s
+    tty: true
+    environment:
+      BUILDER_CLASS: 2
+      BUILDER_HOSTNAME: stormwing-3
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
+      REDIS_SSH_HOST: ${REDIS_SSH_HOST:-?err}
+      REDIS_SSH_PORT: ${REDIS_SSH_PORT:-270}
+      REDIS_SSH_USER: package-deployer
+      SHARED_PATH: /var/garuda/compose-runner/chaotic-v4/shared-3
+      BUILDER_SRCDEST_CACHE_OVERRIDE: /var/garuda/compose-runner/chaotic-v4/shared/srcdest_cache
+      # Override the default database host
+      DATABASE_HOST: host.docker.internal
+      DATABASE_PORT: 22
+    volumes:
+      - ./shared-3:/shared
+      - ./shared/srcdest_cache:/shared/srcdest_cache
+      - ./sshkey:/app/sshkey
+      - /var/run/docker.sock:/var/run/docker.sock
+    extra_hosts: ["host.docker.internal:host-gateway"]
   chaotic-manager:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-manager
@@ -63,6 +90,7 @@ services:
     depends_on:
       - chaotic-builder-1
       - chaotic-builder-2
+      - chaotic-builder-3
     deploy:
       restart_policy:
         condition: always
@@ -156,5 +184,5 @@ services:
       restart_policy:
         condition: always
         delay: 60s
-    command: --cleanup chaotic-builder chaotic-builder-2 chaotic-manager watchtower --interval 3600
+    command: --cleanup chaotic-builder chaotic-builder-2 chaotic-builder-3 chaotic-manager watchtower --interval 3600
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
