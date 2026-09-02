@@ -31,6 +31,14 @@ with lib;
           dnsPropagationCheck = true;
           environmentFile = config.sops.secrets."cloudflare/api_keys".path;
         };
+        "chaotic.cx" = {
+          extraDomainNames = [
+            "*.chaotic.cx"
+          ];
+          dnsProvider = "cloudflare";
+          dnsPropagationCheck = true;
+          environmentFile = config.sops.secrets."cloudflare/api_keys".path;
+        };
       };
     };
 

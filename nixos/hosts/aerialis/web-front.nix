@@ -414,36 +414,54 @@ rec {
         quic = true;
         useACMEHost = "garudalinux.org";
       };
-      "chaotic-backend.garudalinux.org" = {
+      "backend.chaotic.cx" = {
         addSSL = true;
         http3 = true;
         locations = {
-          "/sse" = {
+          "~ ^/(sse|metrics/live/traffic|logs/[^/]+/[^/]+|api/manager/logs|gitlab/(aur-scan|pipelines)/)" = {
             proxyPass = "http://10.0.5.70:3000";
+            recommendedProxySettings = false;
             extraConfig = ''
-              # SSE essential settings
-              proxy_http_version 1.1;
-              proxy_set_header Connection "";
-              proxy_buffering off;
-              # Timeouts
-              proxy_connect_timeout 60s;
-              proxy_read_timeout 3600s;
-              proxy_send_timeout 3600s;
-              # Headers
-              add_header Content-Type text/event-stream;
-              add_header Cache-Control no-cache;
-              add_header X-Accel-Buffering no;
+              proxy_http_version      1.1;
+              proxy_set_header        Host $host;
+              proxy_set_header        X-Real-IP $remote_addr;
+              proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header        X-Forwarded-Proto $scheme;
+              proxy_set_header        X-Forwarded-Host $host;
+              proxy_set_header        X-Forwarded-Server $host;
+              proxy_set_header        Connection "";
+              proxy_set_header        Upgrade $http_upgrade;
+
+              proxy_redirect          off;
+              proxy_connect_timeout   60s;
+              proxy_read_timeout      3600s;
+              proxy_send_timeout      3600s;
             '';
           };
           "/" = {
             proxyPass = "http://10.0.5.70:3000";
+            recommendedProxySettings = false;
             extraConfig = ''
-              ${garuda-lib.nginxReverseProxySettings}
+              proxy_http_version      1.1;
+              proxy_set_header        Host $host;
+              proxy_set_header        X-Real-IP $remote_addr;
+              proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header        X-Forwarded-Proto $scheme;
+              proxy_set_header        X-Forwarded-Host $host;
+              proxy_set_header        X-Forwarded-Server $host;
+              proxy_set_header        Upgrade $http_upgrade;
+              proxy_set_header        Connection $connection_upgrade;
+
+              proxy_redirect          off;
+              proxy_buffering         off;
+              proxy_connect_timeout   60s;
+              proxy_read_timeout      60s;
+              proxy_send_timeout      60s;
             '';
           };
         };
         quic = true;
-        useACMEHost = "garudalinux.org";
+        useACMEHost = "chaotic.cx";
       };
       "mail.garudalinux.net" = {
         addSSL = true;
