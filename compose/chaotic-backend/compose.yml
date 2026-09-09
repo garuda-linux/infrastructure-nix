@@ -1,6 +1,6 @@
 services:
   chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:2.4.0
+    image: ghcr.io/chaotic-cx/chaotic-next:2.7.2
     container_name: chaotic-backend
     deploy:
       restart_policy:
@@ -42,12 +42,8 @@ services:
       GITLAB_CLIENT_ID: ${GITLAB_CLIENT_ID:-?err}
       GITLAB_CLIENT_SECRET: ${GITLAB_CLIENT_SECRET:-?err}
       GITLAB_REDIRECT_URI: https://backend.chaotic.cx/api/auth/callback/gitlab
-      HTTP_LOGGING: true
       LOG_LEVEL: debug
       NODE_ENV: production
-      OBSERVE_APP_KEY: ${OBSERVE_APP_KEY:-?err}
-      OBSERVE_APP_SECRET: ${OBSERVE_APP_SECRET:-?err}
-      OBSERVE_SERVICE_ID: chaotic-prod
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-?err}
       PG_DATABASE: chaotic-aur
       PG_HOST: 10.0.5.20
