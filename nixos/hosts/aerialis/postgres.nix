@@ -57,6 +57,10 @@ in
         name = "chaotic-aur";
         ensureDBOwnership = true;
       }
+      {
+        name = "netdata";
+        ensureClauses.login = true;
+      }
     ];
     extensions = with pkgs.postgresql_18.pkgs; [
       pg_hll
@@ -65,6 +69,7 @@ in
     authentication = lib.mkForce ''
       local all all peer
       hostssl chaotic-aur chaotic-router 0.0.0.0/0 scram-sha-256
+      host all netdata 10.0.5.1/32 scram-sha-256
       # Reject anything else coming from the outside world somehow someway
       host all all 10.0.5.1/32 reject
       # Allow connections from the internal network
@@ -130,6 +135,17 @@ in
   networking.firewall.allowedTCPPorts = [ 5432 ];
 
   sops.secrets."postgres/pg_admin" = { };
+  sops.secrets."postgres/netdata" = {
+    owner = "postgres";
+    group = "postgres";
+    mode = "0400";
+  };
+
+  systemd.services.postgresql.postStart = lib.mkAfter ''
+    PASS=$(cat ${config.sops.secrets."postgres/netdata".path})
+    ${config.services.postgresql.package}/bin/psql -U postgres -c "ALTER USER netdata WITH LOGIN PASSWORD '$PASS'"
+    ${config.services.postgresql.package}/bin/psql -U postgres -c "GRANT pg_monitor TO netdata"
+  '';
 
   system.stateVersion = "23.05";
 }

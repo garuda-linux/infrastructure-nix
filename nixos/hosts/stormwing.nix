@@ -340,6 +340,36 @@
           - name: nginx
             path: /data_1/containers/web-front/nginx/access.log
       '';
+      "go.d/filecheck.conf" = pkgs.writeText "filecheck.conf" ''
+        jobs:
+          - name: nginx_logs
+            path: /data_1/containers/web-front/nginx
+          - name: iso_builds
+            path: /data_1/iso/iso
+      '';
+      # silence noisy 404 alerts: 404 is expected on this host
+      "health.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
+        template: web_log_1m_bad_requests
+          on: web_log.type_requests
+         lookup: sum -1m unaligned of bad
+           calc: $this * 100 / $web_log_1m_requests
+          units: %
+          every: 10s
+           warn: 0
+           crit: 0
+             to: silent
+           info: disabled on stormwing - 404s are expected
+        template: web_log_1m_successful
+          on: web_log.type_requests
+         lookup: sum -1m unaligned of success
+           calc: $this * 100 / $web_log_1m_requests
+          units: %
+          every: 10s
+           warn: 0
+           crit: 0
+             to: silent
+           info: disabled on stormwing - 404s are expected
+      '';
     };
   };
 

@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }:
@@ -375,6 +376,19 @@
           - name: nginx
             path: /data_2/containers/web-front/nginx/access.log
       '';
+      # passwordless DSN: auth comes from PGPASSWORD env
+      "go.d/postgres.conf" = pkgs.writeText "postgres.conf" ''
+        jobs:
+          - name: postgres
+            dsn: postgres://netdata@10.0.5.20:5432/postgres
+      '';
+      "go.d/filecheck.conf" = pkgs.writeText "filecheck.conf" ''
+        jobs:
+          - name: borg_repo
+            path: /data_2/containers/postgres/backup
+          - name: nginx_logs
+            path: /data_2/containers/web-front/nginx
+      '';
     };
   };
 
@@ -422,5 +436,21 @@
   sops.secrets = {
     "backup/repo_key" = { };
     "backup/ssh_aerialis" = { };
+    "postgres/netdata" = {
+      owner = "netdata";
+      group = "netdata";
+      mode = "0400";
+    };
   };
+
+  sops.templates."netdata-postgres-env" = {
+    path = "/run/secrets/netdata-postgres.env";
+    owner = "netdata";
+    group = "netdata";
+    mode = "0440";
+    content = ''PGPASSWORD=${config.sops.placeholder."postgres/netdata"}'';
+  };
+
+  systemd.services.netdata.serviceConfig.EnvironmentFile =
+    [ config.sops.templates."netdata-postgres-env".path ];
 }

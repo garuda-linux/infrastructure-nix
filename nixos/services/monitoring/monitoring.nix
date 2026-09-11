@@ -36,18 +36,42 @@ in
           web = {
             "mode" = "none";
           };
+          "plugin:cgroups" = {
+            "enable by default cgroups matching" = "!*payload* !*user.slice* *";
+          };
+          "plugin:perf" = {
+            "update every" = "0";
+          };
+          "plugin:proc:diskspace" = {
+            "exclude space metrics on paths" = "/run/nixos-containers/* /run/user/*";
+          };
         };
         configDir = {
           "go.d.conf" = pkgs.writeText "go.d.conf" ''
             enabled: yes
+            default_run: yes
             modules:
               nginx: yes
               squidlog: yes
               web_log: yes
+              postgres: yes
+              redis: yes
+              docker: no
+              docker_engine: no
+              systemdunits: yes
+              postfix: yes
+              dovecot: yes
+              rspamd: yes
+              filecheck: yes
+              smartctl: yes
+              sensors: yes
+              hddtemp: yes
           '';
           "python.d.conf" = pkgs.writeText "python.d.conf" ''
             postgres: no
             web_log: no
+            sensors: yes
+            hddtemp: yes
           '';
           "go.d/nginx.conf" = mkIf config.services.nginx.enable (
             pkgs.writeText "nginx.conf" ''
