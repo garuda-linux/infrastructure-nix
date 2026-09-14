@@ -280,6 +280,36 @@
         cpuWeight = 10;
         ioWeight = 10;
       };
+      gitlab-runner = {
+        config = import ./stormwing/gitlab-runner.nix;
+        extraOptions = {
+          bindMounts = {
+            # This serves as the local Nix cache for the GitLab runner
+            "nix-cache" = {
+              hostPath = "/data_2/containers/gitlab-runner/nix";
+              isReadOnly = false;
+              mountPoint = "/nix";
+            };
+            "gitlab-runner" = {
+              hostPath = "/data_2/containers/gitlab-runner/gitlab-runner";
+              isReadOnly = false;
+              mountPoint = "/var/lib/private/gitlab-runner";
+            };
+          };
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 260;
+              protocol = "tcp";
+            }
+          ];
+        };
+        ipAddress = "10.0.5.70";
+        needsDocker = true;
+        needsKvm = true;
+        cpuWeight = 20;
+        ioWeight = 20;
+      };
       iso-runner = {
         config = import ./stormwing/iso-runner.nix;
         extraOptions = {

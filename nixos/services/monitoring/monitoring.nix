@@ -60,7 +60,7 @@ in
               docker_engine: no
               systemdunits: yes
               postfix: yes
-              dovecot: yes
+              dovecot: no
               rspamd: yes
               filecheck: yes
               smartctl: yes

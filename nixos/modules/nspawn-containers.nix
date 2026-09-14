@@ -46,6 +46,10 @@ let
       type = lib.types.bool;
       default = false;
     };
+    needsKvm = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
     defaults = lib.mkOption {
       type = lib.types.bool;
       default = true;
@@ -115,6 +119,12 @@ in
                 modifier = "rwm";
               }
             ])
+            ++ (lib.lists.optionals cont.needsKvm [
+              {
+                node = "/dev/kvm";
+                modifier = "rwm";
+              }
+            ])
             ++ (lib.lists.optionals cont.defaults [
               {
                 node = "/dev/loop-control";
@@ -143,6 +153,12 @@ in
                 hostPath = "/home";
                 isReadOnly = false;
                 mountPoint = "/home";
+              };
+            })
+            ++ (lib.lists.optional cont.needsKvm {
+              "dev-kvm" = {
+                hostPath = "/dev/kvm";
+                mountPoint = "/dev/kvm";
               };
             })
             ++ (lib.lists.optional cont.needsDocker {
