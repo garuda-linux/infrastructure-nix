@@ -16,6 +16,7 @@ in
   imports = sources.defaultModules ++ [
     ../../modules
     "${sources.chaotic-portable-builder}/nix/nixos.nix"
+    ../../modules/special/iso-upload.nix
     ../../modules/special/ssh-allow-chaotic.nix
   ];
 

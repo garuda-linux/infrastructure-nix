@@ -168,6 +168,11 @@
               isReadOnly = false;
               mountPoint = "/srv/http/iso";
             };
+            "garuda-nix-builds" = {
+              hostPath = "/data_1/iso/garuda-nix";
+              isReadOnly = false;
+              mountPoint = "/srv/http/garuda-nix";
+            };
             # End data_1
           };
           forwardPorts = [
