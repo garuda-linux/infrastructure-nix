@@ -1,4 +1,5 @@
 {
+  garuda-lib,
   sources,
   ...
 }:
@@ -6,6 +7,11 @@
   imports = sources.defaultModules ++ [
     ../../modules
   ];
+
+  garuda = garuda-lib.mkMonitoring {
+    host = "aerialis";
+    units = [ "n8n.service" ];
+  };
 
   services.n8n = {
     enable = true;

@@ -102,7 +102,6 @@
 
   # Services
   services = {
-    garuda-monitoring.enable = lib.mkIf (!garuda-lib.minimalContainer) true;
     garuda-tailscale.enable = lib.mkIf (!garuda-lib.minimalContainer) true;
     locate = {
       enable = true;

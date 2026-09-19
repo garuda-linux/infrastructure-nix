@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, self, ... }:
 let
 
   system = "x86_64-linux";
@@ -19,7 +19,7 @@ let
   inherit (inputs) nixpkgs;
 
   specialArgs = {
-    inherit inputs;
+    inherit inputs self;
     sources = {
       chaotic-portable-builder = inputs.src-chaotic-portable-builder;
       cloudflare-ipv4 = inputs.src-cloudflare-ipv4;

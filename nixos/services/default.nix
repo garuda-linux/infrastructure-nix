@@ -2,11 +2,13 @@
 {
   imports = [
     ./arch-mirror.nix
+    ./backup.nix
     ./cloudflared.nix
     ./compose-runner/compose-runner.nix
     ./gitlab-runner.nix
     ./iso.nix
-    ./monitoring/monitoring.nix
+    ./mk.nix
+    ./monitoring
     ./rclone.nix
   ];
 }

@@ -1,0 +1,116 @@
+# Source: https://github.com/samber/awesome-prometheus-alerts
+[
+  {
+    name = "SmartctlExporter";
+    rules = [
+      {
+        alert = "SMARTDeviceTemperatureWarning";
+        expr = "(avg_over_time(smartctl_device_temperature{temperature_type=\"current\"} [5m]) unless on (instance, device) smartctl_device_temperature{temperature_type=\"drive_trip\"}) > 60";
+        for = "0m";
+        labels = {
+          severity = "warning";
+        };
+        annotations = {
+          summary = "SMART device temperature warning (instance {{ $labels.instance }})";
+          description = "Device temperature warning on {{ $labels.instance }} drive {{ $labels.device }} over 60°C\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
+        };
+      }
+      {
+        alert = "SMARTDeviceTemperatureCritical";
+        expr = "(max_over_time(smartctl_device_temperature{temperature_type=\"current\"} [5m]) unless on (instance, device) smartctl_device_temperature{temperature_type=\"drive_trip\"}) > 70";
+        for = "0m";
+        labels = {
+          severity = "critical";
+        };
+        annotations = {
+          summary = "SMART device temperature critical (instance {{ $labels.instance }})";
+          description = "Device temperature critical on {{ $labels.instance }} drive {{ $labels.device }} over 70°C\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
+        };
+      }
+      {
+        alert = "SMARTDeviceTemperatureOverTripValue";
+        expr = "max_over_time(smartctl_device_temperature{temperature_type=\"current\"} [10m]) >= on(device, instance) smartctl_device_temperature{temperature_type=\"drive_trip\"}";
+        for = "0m";
+        labels = {
+          severity = "critical";
+        };
+        annotations = {
+          summary = "SMART device temperature over trip value (instance {{ $labels.instance }})";
+          description = "Device temperature over trip value on {{ $labels.instance }} drive {{ $labels.device }}\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
+        };
+      }
+      {
+        alert = "SMARTDeviceTemperatureNearingTripValue";
+        expr = "max_over_time(smartctl_device_temperature{temperature_type=\"current\"} [10m]) >= on(device, instance) (smartctl_device_temperature{temperature_type=\"drive_trip\"} * .80)";
+        for = "0m";
+        labels = {
+          severity = "warning";
+        };
+        annotations = {
+          summary = "SMART device temperature nearing trip value (instance {{ $labels.instance }})";
+          description = "Device temperature at 80% of trip value on {{ $labels.instance }} drive {{ $labels.device }}\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
+        };
+      }
+      {
+        alert = "SMARTStatus";
+        expr = "smartctl_device_smart_status != 1";
+        for = "0m";
+        labels = {
+          severity = "critical";
+        };
+        annotations = {
+          summary = "SMART status (instance {{ $labels.instance }})";
+          description = "Device has a SMART status failure on {{ $labels.instance }} drive {{ $labels.device }}\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
+        };
+      }
+      {
+        alert = "SMARTCriticalWarning";
+        expr = "smartctl_device_critical_warning > 0";
+        for = "0m";
+        labels = {
+          severity = "critical";
+        };
+        annotations = {
+          summary = "SMART critical warning (instance {{ $labels.instance }})";
+          description = "Disk controller has critical warning on {{ $labels.instance }} drive {{ $labels.device }}\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
+        };
+      }
+      {
+        alert = "SMARTMediaErrors";
+        expr = "smartctl_device_media_errors > 0";
+        for = "0m";
+        labels = {
+          severity = "critical";
+        };
+        annotations = {
+          summary = "SMART media errors (instance {{ $labels.instance }})";
+          description = "Disk controller detected media errors on {{ $labels.instance }} drive {{ $labels.device }}\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
+        };
+      }
+      {
+        alert = "SMARTWearoutIndicator";
+        expr = "smartctl_device_available_spare < smartctl_device_available_spare_threshold";
+        for = "0m";
+        labels = {
+          severity = "critical";
+        };
+        annotations = {
+          summary = "SMART Wearout Indicator (instance {{ $labels.instance }})";
+          description = "Device is wearing out on {{ $labels.instance }} drive {{ $labels.device }}\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
+        };
+      }
+      {
+        alert = "SMARTDeviceInterfaceSpeedBelowMaximum";
+        expr = "smartctl_device_interface_speed{speed_type=\"current\"} != on(device, instance) smartctl_device_interface_speed{speed_type=\"max\"}";
+        for = "0m";
+        labels = {
+          severity = "warning";
+        };
+        annotations = {
+          summary = "SMART device interface speed below maximum (instance {{ $labels.instance }})";
+          description = "Device interface on {{ $labels.instance }} drive {{ $labels.device }} is linked below its negotiated max speed, which may indicate a failing cable, connector, or backplane.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
+        };
+      }
+    ];
+  }
+]

@@ -79,19 +79,6 @@
       repo = "tools%2Fbuildiso-docker";
       flake = false;
     };
-    src-garuda-website = {
-      type = "gitlab";
-      owner = "garuda-linux";
-      repo = "website%2Fwebsite-catppuccin";
-      flake = false;
-    };
-    src-garuda-startpage = {
-      type = "gitlab";
-      owner = "garuda-linux";
-      repo = "website%2Fstartpage-v2";
-      flake = false;
-    };
-
     src-cloudflare-ipv4 = {
       url = "https://www.cloudflare.com/ips-v4";
       flake = false;
@@ -102,8 +89,6 @@
     };
 
     # Patches
-    nixos-patch-netdata.url = "https://github.com/NixOS/nixpkgs/pull/507414.patch";
-    nixos-patch-netdata.flake = false;
     nixos-patch-nixos-container.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/499574.patch";
     nixos-patch-nixos-container.flake = false;
   };
@@ -123,6 +108,14 @@
           ...
         }:
         {
+          packages =
+            let
+              pkgs' = pkgs.extend (import ./pkgs/overlay.nix);
+            in
+            {
+              inherit (pkgs') garuda-startpage garuda-website;
+            };
+
           apps.default = self.outputs.devShells.${system}.default.flakeApp;
           devShells =
             let

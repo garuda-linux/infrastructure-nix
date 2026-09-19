@@ -20,17 +20,28 @@ in
     ../../modules/special/ssh-allow-chaotic.nix
   ];
 
-  networking.extraHosts = "10.0.5.40 builds.garudalinux.org";
-
-  # This container is just for compose stuff
-  garuda.services.compose-runner.chaotic-v4 = {
-    envfile = config.sops.secrets."compose/chaotic-v4".path;
-    source = ../../../compose/chaotic-v4;
-    extraEnv = {
-      "REDIS_SSH_HOST" = garuda-lib.dns.aerialis;
-      "REDIS_SSH_PORT" = "270";
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "stormwing";
+      units = [
+        "compose-runner-chaotic-v4.service"
+        "nginx.service"
+        "rsyncd.service"
+        "syncthing.service"
+      ];
+    }
+    // {
+      services.compose-runner.chaotic-v4 = {
+        envfile = config.sops.secrets."compose/chaotic-v4".path;
+        source = ../../../compose/chaotic-v4;
+        extraEnv = {
+          "REDIS_SSH_HOST" = garuda-lib.dns.aerialis;
+          "REDIS_SSH_PORT" = "270";
+        };
+      };
     };
-  };
+
+  networking.extraHosts = "10.0.5.40 builds.garudalinux.org";
 
   # Allow controlling infra 4.0's containers without root
   environment.systemPackages = [ wrapperScript ];
@@ -316,13 +327,13 @@ in
     };
   };
 
-  sops.secrets = {
-    "cloudflare/api_keys" = { };
-    "cloudflare/r2_rclone" = { };
-    "compose/chaotic-v4" = { };
-    "keypairs/syncthing/cert" = { };
-    "keypairs/syncthing/private" = { };
-  };
+  sops.secrets = garuda-lib.mkSecrets [
+    "cloudflare/api_keys"
+    "cloudflare/r2_rclone"
+    "compose/chaotic-v4"
+    "keypairs/syncthing/cert"
+    "keypairs/syncthing/private"
+  ];
 
   system.stateVersion = "25.05";
 }

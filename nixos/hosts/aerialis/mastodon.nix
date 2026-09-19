@@ -1,7 +1,7 @@
 {
   config,
+  garuda-lib,
   lib,
-  pkgs,
   sources,
   ...
 }:
@@ -54,10 +54,22 @@ in
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
-  # This container is just for compose stuff
-  garuda.services.compose-runner.mastodon = {
-    source = ../../../compose/mastodon;
-  };
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "aerialis";
+      units = [
+        "compose-runner-mastodon.service"
+        "mastodon-sidekiq.service"
+        "mastodon-streaming.service"
+        "mastodon-web.service"
+        "nginx.service"
+      ];
+    }
+    // {
+      services.compose-runner.mastodon = {
+        source = ../../../compose/mastodon;
+      };
+    };
 
   # Our Mastodon
   services.mastodon = {

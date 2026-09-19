@@ -189,7 +189,7 @@ in
                     "/cache"
                   ]
                 else
-                  [ ] ++ lib.optionals r.kvm.enable [ "/dev/kvm:/dev/kvm" ];
+                  lib.optionals r.kvm.enable [ "/dev/kvm:/dev/kvm" ];
               tagList = if r.authenticationTokenConfigFile == null then r.tagList else [ ];
             }
         )

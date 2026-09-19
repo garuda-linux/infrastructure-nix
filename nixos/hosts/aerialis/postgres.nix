@@ -1,5 +1,5 @@
 {
-  inputs,
+  garuda-lib,
   pkgs,
   sources,
   config,
@@ -29,7 +29,11 @@ in
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
-  # Our Postgres database
+  garuda = garuda-lib.mkMonitoring {
+    host = "aerialis";
+    units = [ "postgresql.service" ];
+  };
+
   services.postgresql = {
     enable = true;
     ensureDatabases = [
@@ -63,8 +67,8 @@ in
       }
     ];
     extensions = with pkgs.postgresql_18.pkgs; [
-      pg_hll
-      pg_repack
+      pg_hll # chaotic-aur uses this for the useragent/ip statistics
+      pg_repack # this lets us run the vacuum online
     ];
     authentication = lib.mkForce ''
       local all all peer
@@ -79,7 +83,8 @@ in
       # Block the rest of the internet
       host all all 0.0.0.0/0 reject
     '';
-    # This is publically accessible now through port 5432, however only the chaotic-router user can access the database through the internet, and only over TLS
+    # This is publically accessible now through port 5432, however only the chaotic-router user can access
+    # the database through the internet, and only over TLS
     enableTCPIP = true;
     package = pkgs.postgresql_18;
     settings = {

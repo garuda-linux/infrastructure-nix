@@ -1,59 +1,70 @@
 {
-  config,
-  lib,
-  pkgs,
+  garuda-lib,
   ...
 }:
+let
+  mon = garuda-lib.monitoring;
+in
 {
   imports = [
     ../modules
     ./../modules/special/hetzner-ex44.nix
   ];
 
-  fileSystems."/" = {
-    device = "none";
-    fsType = "tmpfs";
-    options = [
-      "defaults"
-      "size=50%"
-      "mode=755"
-    ];
-  };
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "aerialis";
+      hostInfo = true;
+      motd = false;
+      units = [
+        "borgmatic.service"
+        "borgmatic.timer"
+        "sshd.service"
+        "tailscaled.service"
+      ];
+      exporters = [
+        "smartctlExporter"
+        "borgmaticExporter"
+      ];
+    }
+    // {
+      backup.borgmatic = {
+        enable = true;
+        name = "aerialis";
+        user = "u342919";
+        host = "u342919.your-storagebox.de";
+        port = 23;
+        label = "hetzner";
+        sshKeySecret = "backup/ssh_aerialis";
+        knownHosts = [
+          {
+            name = "storagebox-ed25519";
+            publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs";
+          }
+          {
+            name = "storagebox-rsa";
+            publicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5EB5p/5Hp3hGW1oHok+PIOH9Pbn7cnUiGmUEBrCVjnAw+HrKyN8bYVV0dIGllswYXwkG/+bgiBlE6IVIBAq+JwVWu1Sss3KarHY3OvFJUXZoZyRRg/Gc/+LRCE7lyKpwWQ70dbelGRyyJFH36eNv6ySXoUYtGkwlU5IVaHPApOxe4LHPZa/qhSRbPo2hwoh0orCtgejRebNtW5nlx00DNFgsvn8Svz2cIYLxsPVzKgUxs8Zxsxgn+Q/UvR7uq4AbAhyBMLxv7DjJ1pc7PJocuTno2Rw9uMZi1gkjbnmiOh6TTXIEWbnroyIhwc8555uto9melEUmWNQ+C+PwAK+MPw==";
+          }
+          {
+            name = "storagebox-ecdsa";
+            publicKey = "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAGK0po6usux4Qv2d8zKZN1dDvbWjxKkGsx7XwFdSUCnF19Q8psHEUWR7C/LtSQ5crU/g+tQVRBtSgoUcE8T+FWp5wBxKvWG2X9gD+s9/4zRmDeSJR77W6gSA/+hpOZoSE+4KgNdnbYSNtbZH/dN74EG7GLb/gcIpbUUzPNXpfKl7mQitw==";
+          }
+        ];
+        sourceDirectories = [
+          "/data_1/containers"
+          "/data_1/persistent/etc/ssh"
+          "/data_2/backup/nextcloud-aio/"
+          "/data_2/containers/chaotic-backend/chaotic/database"
+          "/data_2/containers/mastodon"
+          "/data_2/containers/postgres"
+        ];
+        excludePatterns = [
+          "/data_1/dockercache"
+          "/data_1/dockerdata"
+        ];
+      };
+    };
 
-  fileSystems."/data_1" = {
-    device = "/dev/disk/by-label/NIXROOT";
-    fsType = "ext4";
-    neededForBoot = true;
-    options = [
-      "defaults"
-      "noatime"
-      "nodiratime"
-      "errors=remount-ro"
-    ];
-    depends = [
-      "/"
-    ];
-  };
-
-  fileSystems."/data_2" = {
-    device = "/dev/disk/by-label/NIXDATA";
-    fsType = "btrfs";
-    options = [
-      "defaults"
-      "noatime"
-      "nodiratime"
-      "compress=zstd:1"
-    ];
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-label/NIXBOOT";
-    fsType = "vfat";
-  };
-
-  services.openssh.ports = [ 666 ];
-
-  # Network configuration with a bridge interface
   networking = {
     defaultGateway = "157.180.57.65";
     defaultGateway6 = {
@@ -61,396 +72,286 @@
       interface = "eth0";
     };
     hostName = "aerialis";
-    interfaces = {
-      "eth0" = {
-        ipv4.addresses = [
-          {
-            address = "157.180.57.100";
-            prefixLength = 26;
-          }
-        ];
-      };
-    };
-    nat.forwardPorts = [
+    interfaces."eth0".ipv4.addresses = [
       {
-        # web-front (HTTP)
-        destination = "10.0.5.10:80";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "tcp";
-        sourcePort = 80;
-      }
-      {
-        # web-front (HTTPS)
-        destination = "10.0.5.10:443";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "tcp";
-        sourcePort = 443;
-      }
-      {
-        # web-front (HTTPS)
-        destination = "10.0.5.10:443";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "udp";
-        sourcePort = 443;
-      }
-      {
-        # mail (SMTP over SSL)
-        destination = "10.0.5.80:465";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "tcp";
-        sourcePort = 465;
-      }
-      {
-        # mail (IMAP over SSL)
-        destination = "10.0.5.80:993";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "tcp";
-        sourcePort = 993;
-      }
-      {
-        # mail (inbound)
-        destination = "10.0.5.80:25";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "tcp";
-        sourcePort = 25;
-      }
-      {
-        # sieve (ManageSieve)
-        destination = "10.0.5.80:4190";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "tcp";
-        sourcePort = 4190;
+        address = "157.180.57.100";
+        prefixLength = 26;
       }
     ];
-    firewall.trustedInterfaces = [ "br0" ];
+    nat.forwardPorts = [
+      (garuda-lib.mkNatForward {
+        sourcePort = 80;
+        destination = "10.0.5.10:80";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 443;
+        destination = "10.0.5.10:443";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 443;
+        destination = "10.0.5.10:443";
+        proto = "udp";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 465;
+        destination = "10.0.5.80:465";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 993;
+        destination = "10.0.5.80:993";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 25;
+        destination = "10.0.5.80:25";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 4190;
+        destination = "10.0.5.80:4190";
+      })
+    ];
   };
 
   # Can't set this inside the containers
   boot.kernel.sysctl."vm.overcommit_memory" = "1";
 
-  # Container config
   services.garuda-nspawn = {
-    bridgeInterface = "br0";
-    hostInterface = "eth0";
-    hostIp = "10.0.5.1";
     dockerCache = "/data_1/dockercache/";
 
-    defaults = {
-      maxMemorySoft = 48318382080; # 45 GiB
-      maxMemoryHard = 53687091200; # 50 GiB
-      maxCpu = 18;
-    };
-
-    containers = {
-      chaotic-backend = {
-        config = import ./aerialis/chaotic-backend.nix;
-        extraOptions = {
-          bindMounts = {
-            "chaotic" = {
+    containers = garuda-lib.mkContainers {
+      dir = ./aerialis;
+      ips = mon.aerialisContainers;
+      containers = {
+        chaotic-backend = {
+          mounts = [
+            {
+              name = "chaotic";
               hostPath = "/data_2/containers/chaotic-backend/chaotic";
-              isReadOnly = false;
               mountPoint = "/var/garuda/compose-runner/chaotic-backend";
-            };
-            "chaotic-redis" = {
+            }
+            {
+              name = "chaotic-redis";
               hostPath = "/data_2/containers/chaotic-backend/redis";
-              isReadOnly = false;
               mountPoint = "/var/lib/redis-chaotic";
-            };
-          };
-          enableTun = true;
+            }
+          ];
           forwardPorts = [
             {
               containerPort = 22;
               hostPort = 270;
-              protocol = "tcp";
+            }
+          ];
+          nspawn = {
+            enableTun = true;
+          };
+          needsDocker = true;
+        };
+
+        docker = {
+          mounts = [
+            {
+              name = "compose";
+              hostPath = "/data_1/containers/docker/";
+              mountPoint = "/var/garuda/compose-runner/docker";
+            }
+            {
+              name = "nextcloud-local-backup";
+              hostPath = "/data_2/backup/nextcloud-aio";
+              mountPoint = "/var/garuda/backups/nextcloud";
+            }
+          ];
+          needsDocker = true;
+        };
+
+        docker-proxied = {
+          mounts = [
+            {
+              name = "compose";
+              hostPath = "/data_1/containers/docker-proxied/";
+              mountPoint = "/var/garuda/compose-runner/docker-proxied";
+            }
+          ];
+          needsDocker = true;
+        };
+
+        forum = {
+          mounts = [
+            {
+              name = "forum";
+              hostPath = "/data_1/containers/forum/";
+              mountPoint = "/var/discourse";
+            }
+          ];
+          needsDocker = true;
+        };
+
+        mastodon = {
+          mounts = [
+            {
+              name = "mastodon";
+              hostPath = "/data_2/containers/mastodon/mastodon";
+              mountPoint = "/var/lib/mastodon";
+            }
+            {
+              name = "compose";
+              hostPath = "/data_1/containers/mastodon/compose";
+              mountPoint = "/var/garuda/compose-runner/mastodon";
+            }
+          ];
+          needsDocker = true;
+        };
+
+        mail = {
+          mounts = [
+            {
+              name = "acme";
+              hostPath = "/data_2/containers/web-front/acme";
+              mountPoint = "/var/lib/acme";
+            }
+            {
+              name = "dkim";
+              hostPath = "/data_1/containers/mail/dkim";
+              mountPoint = "/var/dkim";
+            }
+            {
+              name = "index";
+              hostPath = "/data_1/containers/mail/index";
+              mountPoint = "/var/lib/dovecot/indices";
+            }
+            {
+              name = "rspamd";
+              hostPath = "/data_1/containers/mail/rspamd";
+              mountPoint = "/var/lib/redis-rspamd";
+            }
+            {
+              name = "vmail";
+              hostPath = "/data_1/containers/mail/vmail";
+              mountPoint = "/var/vmail";
             }
           ];
         };
-        ipAddress = "10.0.5.70";
-        needsDocker = true;
-      };
-      docker = {
-        config = import ./aerialis/docker.nix;
-        extraOptions = {
-          bindMounts = {
-            "compose" = {
-              hostPath = "/data_1/containers/docker/";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/compose-runner/docker";
-            };
-            "nextcloud-local-backup" = {
-              hostPath = "/data_2/backup/nextcloud-aio";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/backups/nextcloud";
-            };
-          };
-        };
-        ipAddress = "10.0.5.60";
-        needsDocker = true;
-      };
-      docker-proxied = {
-        config = import ./aerialis/docker-proxied.nix;
-        extraOptions = {
-          bindMounts = {
-            "compose" = {
-              hostPath = "/data_1/containers/docker-proxied/";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/compose-runner/docker-proxied";
-            };
-          };
-        };
-        ipAddress = "10.0.5.50";
-        needsDocker = true;
-      };
-      forum = {
-        config = import ./aerialis/forum.nix;
-        extraOptions = {
-          bindMounts = {
-            "forum" = {
-              hostPath = "/data_1/containers/forum/";
-              isReadOnly = false;
-              mountPoint = "/var/discourse";
-            };
-          };
-        };
-        ipAddress = "10.0.5.40";
-        needsDocker = true;
-      };
-      mastodon = {
-        config = import ./aerialis/mastodon.nix;
-        needsDocker = true;
-        extraOptions = {
-          bindMounts = {
-            "mastodon" = {
-              hostPath = "/data_2/containers/mastodon/mastodon";
-              isReadOnly = false;
-              mountPoint = "/var/lib/mastodon";
-            };
-            "compose" = {
-              hostPath = "/data_1/containers/mastodon/compose";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/compose-runner/mastodon";
-            };
-          };
-        };
-        ipAddress = "10.0.5.30";
-      };
-      mail = {
-        config = import ./aerialis/mail.nix;
-        extraOptions = {
-          bindMounts = {
-            "acme" = {
-              hostPath = "/data_2/containers/web-front/acme";
-              isReadOnly = false;
-              mountPoint = "/var/lib/acme";
-            };
-            "dkim" = {
-              hostPath = "/data_1/containers/mail/dkim";
-              isReadOnly = false;
-              mountPoint = "/var/dkim";
-            };
-            "index" = {
-              hostPath = "/data_1/containers/mail/index";
-              isReadOnly = false;
-              mountPoint = "/var/lib/dovecot/indices";
-            };
-            "rspamd" = {
-              hostPath = "/data_1/containers/mail/rspamd";
-              isReadOnly = false;
-              mountPoint = "/var/lib/redis-rspamd";
-            };
-            "vmail" = {
-              hostPath = "/data_1/containers/mail/vmail";
-              isReadOnly = false;
-              mountPoint = "/var/vmail";
-            };
-          };
-        };
-        ipAddress = "10.0.5.80";
-      };
-      postgres = {
-        config = import ./aerialis/postgres.nix;
-        extraOptions = {
-          bindMounts = {
-            "data" = {
+
+        postgres = {
+          mounts = [
+            {
+              name = "data";
               hostPath = "/data_1/containers/postgres/data";
-              isReadOnly = false;
               mountPoint = "/var/lib/postgresql";
-            };
-            "postgres_backup" = {
+            }
+            {
+              name = "postgres_backup";
               hostPath = "/data_2/containers/postgres/backup";
-              isReadOnly = false;
               mountPoint = "/var/garuda/backups/postgres";
-            };
-            "acme" = {
+            }
+            {
+              name = "acme";
               hostPath = "/data_2/containers/web-front/acme";
-              isReadOnly = true;
               mountPoint = "/var/lib/acme";
-            };
-          };
+              readOnly = true;
+            }
+          ];
           forwardPorts = [
             {
               containerPort = 22;
               hostPort = 220;
-              protocol = "tcp";
             }
-            {
-              containerPort = 5432;
-              hostPort = 5432;
-              protocol = "tcp";
-            }
+            { containerPort = 5432; }
           ];
         };
-        ipAddress = "10.0.5.20";
-      };
-      web-front = {
-        config = import ./aerialis/web-front.nix;
-        extraOptions = {
-          bindMounts = {
-            "acme" = {
+
+        web-front = {
+          mounts = [
+            {
+              name = "acme";
               hostPath = "/data_2/containers/web-front/acme";
-              isReadOnly = false;
               mountPoint = "/var/lib/acme";
-            };
-            "nginx" = {
+            }
+            {
+              name = "nginx";
               hostPath = "/data_2/containers/web-front/nginx";
-              isReadOnly = false;
               mountPoint = "/var/log/nginx";
-            };
-          };
+            }
+          ];
           forwardPorts = [
             {
               containerPort = 22;
               hostPort = 210;
-              protocol = "tcp";
             }
           ];
         };
-        ipAddress = "10.0.5.10";
-      };
-      n8n = {
-        config = import ./aerialis/n8n.nix;
-        extraOptions = {
-          bindMounts = {
-            "n8n" = {
+
+        n8n = {
+          mounts = [
+            {
+              name = "n8n";
               hostPath = "/data_1/containers/n8n/var-lib";
-              isReadOnly = false;
               mountPoint = "/var/lib";
-            };
+            }
+          ];
+        };
+
+        monitoring = {
+          mounts = [
+            {
+              name = "alertmanager";
+              hostPath = "/data_1/containers/monitoring/alertmanager";
+              mountPoint = "/var/lib/private/alertmanager";
+            }
+            {
+              name = "prometheus";
+              hostPath = "/data_1/containers/monitoring/prometheus";
+              mountPoint = "/var/lib/prometheus2";
+            }
+            {
+              name = "grafana";
+              hostPath = "/data_1/containers/monitoring/grafana";
+              mountPoint = "/var/lib/grafana";
+            }
+            {
+              name = "loki";
+              hostPath = "/data_1/containers/monitoring/loki";
+              mountPoint = "/var/lib/loki";
+            }
+            {
+              name = "tailscale";
+              hostPath = "/data_1/containers/monitoring/tailscale";
+              mountPoint = "/var/lib/tailscale";
+            }
+          ];
+          nspawn = {
+            enableTun = true;
           };
         };
-        ipAddress = "10.0.5.90";
       };
     };
   };
 
-  # Make sure postgres is started before other containers
-  systemd.services = {
-    "container@docker".requires = [ "container@postgres.service" ];
-    "container@docker-proxied".requires = [ "container@postgres.service" ];
-    "container@mastodon".requires = [ "container@postgres.service" ];
-    "container@chaotic-backend".requires = [ "container@postgres.service" ];
-    "container@postgres" = {
-      before = [
-        "container@docker-proxied.service"
-        "container@docker.service"
-        "container@mastodon.service"
-        "container@chaotic-backend.service"
+  systemd.services =
+    garuda-lib.mkContainerOrdering {
+      root = "postgres";
+      containers = [
+        "docker-proxied"
+        "docker"
+        "mastodon"
+        "chaotic-backend"
       ];
-    };
-  };
-
-  # Monitor a few services of the containers
-  services = {
-    netdata.configDir = {
-      "go.d/squidlog.conf" = pkgs.writeText "squidlog.conf" ''
-        jobs:
-          - name: squid
-            path: /var/log/squid/access.log
-            log_type: csv
-            csv_config:
-              format: '- resp_time client_address result_code resp_size req_method - - hierarchy mime_type'
-      '';
-      "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
-        jobs:
-          - name: nginx
-            path: /data_2/containers/web-front/nginx/access.log
-      '';
-      # passwordless DSN: auth comes from PGPASSWORD env
-      "go.d/postgres.conf" = pkgs.writeText "postgres.conf" ''
-        jobs:
-          - name: postgres
-            dsn: postgres://netdata@10.0.5.20:5432/postgres
-      '';
-      "go.d/filecheck.conf" = pkgs.writeText "filecheck.conf" ''
-        jobs:
-          - name: borg_repo
-            path: /data_2/containers/postgres/backup
-          - name: nginx_logs
-            path: /data_2/containers/web-front/nginx
-      '';
-    };
-  };
-
-  # Fix permissions of nginx log files to allow Netdata to read it (gets reset frequently)
-  system.activationScripts.netdata = "chown 60:netdata -R /data_2/containers/web-front/nginx";
-
-  # Backup configurations to Hetzner storage box
-  programs.ssh.macs = [ "hmac-sha2-512" ];
-  services.borgbackup.jobs = {
-    backupToHetzner = {
-      compression = "auto,zstd";
-      doInit = true;
-      encryption = {
-        mode = "repokey-blake2";
-        passCommand = ''
-          cat "${config.sops.secrets."backup/repo_key".path}"
-        '';
+    }
+    // {
+      loki-tailnet-proxy = garuda-lib.mkTunnel {
+        bind = mon.tailnetIPs.aerialis;
+        listen = mon.ports.loki;
+        target = "${mon.loki.containerAddress}:${toString mon.ports.loki}";
+        after = [
+          "tailscaled.service"
+          "container@monitoring.service"
+        ];
+        wants = [ "container@monitoring.service" ];
+        description = "Expose Loki to Tailnet only";
       };
-      environment = {
-        BORG_RSH = "ssh -i ${config.sops.secrets."backup/ssh_aerialis".path} -p 23";
-      };
-      exclude = [
-        "/data_1/dockercache"
-        "/data_1/dockerdata"
-      ];
-      paths = [
-        "/data_1/containers"
-        "/data_1/persistent/etc/ssh"
-        "/data_2/backup/nextcloud-aio/"
-        "/data_2/containers/chaotic-backend/chaotic/database"
-        "/data_2/containers/mastodon"
-        "/data_2/containers/postgres"
-      ];
-      prune.keep = {
-        within = "1d";
-        daily = 3;
-        weekly = 1;
-        monthly = 1;
-      };
-      repo = "u342919@u342919.your-storagebox.de:./aerialis";
-      startAt = "daily";
     };
-  };
 
-  sops.secrets = {
-    "backup/repo_key" = { };
-    "backup/ssh_aerialis" = { };
-    "postgres/netdata" = {
-      owner = "netdata";
-      group = "netdata";
-      mode = "0400";
-    };
-  };
-
-  sops.templates."netdata-postgres-env" = {
-    path = "/run/secrets/netdata-postgres.env";
-    owner = "netdata";
-    group = "netdata";
-    mode = "0440";
-    content = ''PGPASSWORD=${config.sops.placeholder."postgres/netdata"}'';
-  };
-
-  systemd.services.netdata.serviceConfig.EnvironmentFile =
-    [ config.sops.templates."netdata-postgres-env".path ];
+  networking.firewall.interfaces."${mon.bridge.interface}".allowedTCPPorts = [
+    mon.ports.nodeExporter
+    mon.ports.smartctlExporter
+    mon.ports.borgmaticExporter
+  ];
 }

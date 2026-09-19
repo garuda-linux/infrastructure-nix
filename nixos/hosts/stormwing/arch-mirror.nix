@@ -1,10 +1,19 @@
 {
   config,
+  garuda-lib,
   sources,
   ...
 }:
 {
   imports = sources.defaultModules ++ [ ../../modules ];
+
+  garuda = garuda-lib.mkMonitoring {
+    host = "stormwing";
+    units = [
+      "garuda-arch-mirror.service"
+      "nginx.service"
+    ];
+  };
 
   services.garuda-arch-mirror = {
     enable = true;
@@ -15,9 +24,7 @@
     rcloneDest = "r2:/mirror/arch";
   };
 
-  sops.secrets = {
-    "cloudflare/r2_rclone" = { };
-  };
+  sops.secrets = garuda-lib.mkSecrets [ "cloudflare/r2_rclone" ];
 
   system.stateVersion = "25.05";
 }

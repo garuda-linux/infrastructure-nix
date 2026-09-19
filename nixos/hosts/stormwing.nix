@@ -1,54 +1,49 @@
 {
   config,
+  garuda-lib,
   lib,
-  pkgs,
   ...
 }:
+let
+  mon = garuda-lib.monitoring;
+
+  mkTailnetProxy =
+    {
+      name,
+      container,
+      port,
+      targetPort ? port,
+      description,
+    }:
+    {
+      inherit name;
+      bind = mon.tailnetIPs.stormwing;
+      listen = port;
+      target = "${mon.stormwingContainers.${container}}:${toString targetPort}";
+      after = [
+        "tailscaled.service"
+        "container@${container}.service"
+      ];
+      wants = [ "container@${container}.service" ];
+      inherit description;
+    };
+in
 {
   imports = [
     ../modules
     ./../modules/special/hetzner-ex44.nix
   ];
 
-  fileSystems."/" = {
-    device = "none";
-    fsType = "tmpfs";
-    options = [
-      "defaults"
-      "size=50%"
-      "mode=755"
+  garuda = garuda-lib.mkMonitoring {
+    host = "stormwing";
+    lokiAddress = mon.loki.tailnetAddress;
+    hostInfo = true;
+    motd = false;
+    units = [
+      "sshd.service"
+      "tailscaled.service"
     ];
-  };
-
-  fileSystems."/data_1" = {
-    device = "/dev/disk/by-label/NIXROOT";
-    fsType = "ext4";
-    neededForBoot = true;
-    options = [
-      "defaults"
-      "noatime"
-      "nodiratime"
-      "errors=remount-ro"
-    ];
-    depends = [
-      "/"
-    ];
-  };
-
-  fileSystems."/data_2" = {
-    device = "/dev/disk/by-label/NIXDATA";
-    fsType = "btrfs";
-    options = [
-      "defaults"
-      "noatime"
-      "nodiratime"
-      "compress=zstd:1"
-    ];
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-label/NIXBOOT";
-    fsType = "vfat";
+    exporters = [ "smartctlExporter" ];
   };
 
   swapDevices = [
@@ -58,9 +53,6 @@
     }
   ];
 
-  services.openssh.ports = [ 666 ];
-
-  # Network configuration with a bridge interface
   networking = {
     defaultGateway = "157.180.57.1";
     defaultGateway6 = {
@@ -68,347 +60,284 @@
       interface = "eth0";
     };
     hostName = "stormwing";
-    interfaces = {
-      "eth0" = {
-        ipv4.addresses = [
-          {
-            address = "157.180.57.51";
-            prefixLength = 26;
-          }
-        ];
-      };
-    };
-    # Specify these here to allow containers to access
-    # our services from the internal network via NAT reflection
-    nat.forwardPorts = [
-      # Here because we need to take advantage of NAT reflection.
-      # In general, SSH ports should not be here.
+    interfaces."eth0".ipv4.addresses = [
       {
-        # chaotic-v4 (SSH)
-        destination = "10.0.5.10:22";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "tcp";
-        sourcePort = 210;
-      }
-      {
-        # iso-runner (SSH)
-        destination = "10.0.5.20:22";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "tcp";
-        sourcePort = 220;
-      }
-      {
-        # web-front (HTTP)
-        destination = "10.0.5.40:80";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "tcp";
-        sourcePort = 80;
-      }
-      {
-        # web-front (HTTPS)
-        destination = "10.0.5.40:443";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "tcp";
-        sourcePort = 443;
-      }
-      {
-        # web-front (HTTPS)
-        destination = "10.0.5.40:443";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "udp";
-        sourcePort = 443;
+        address = "157.180.57.51";
+        prefixLength = 26;
       }
     ];
-    firewall.trustedInterfaces = [ "br0" ];
+    nat.forwardPorts = [
+      (garuda-lib.mkNatForward {
+        sourcePort = 210;
+        destination = "10.0.5.10:22";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 220;
+        destination = "10.0.5.20:22";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 80;
+        destination = "10.0.5.40:80";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 443;
+        destination = "10.0.5.40:443";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 443;
+        destination = "10.0.5.40:443";
+        proto = "udp";
+      })
+    ];
   };
 
-  # Container config
   services.garuda-nspawn = {
-    bridgeInterface = "br0";
-    hostInterface = "eth0";
-    hostIp = "10.0.5.1";
     dockerCache = "/data_2/dockercache/";
 
-    defaults = {
-      maxMemorySoft = 48318382080; # 45 GiB
-      maxMemoryHard = 53687091200; # 50 GiB
-      maxCpu = 18;
-    };
-
-    containers = {
-      chaotic-v4 = {
-        config = import ./stormwing/chaotic-v4.nix;
-        extraOptions = {
-          bindMounts = {
-            # Begin data_2
-            "arch-mirror" = {
-              hostPath = "/data_2/containers/arch-mirror/mirror";
-              isReadOnly = false;
-              mountPoint = "/srv/http/arch-mirror";
-            };
-            "chaotic" = {
-              hostPath = "/data_2/containers/chaotic-v4/chaotic";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/compose-runner/chaotic-v4";
-            };
-            "syncthing" = {
-              hostPath = "/data_2/containers/chaotic-v4/syncthing";
-              isReadOnly = false;
-              mountPoint = "/var/lib/syncthing";
-            };
-            # End data_2
-            # Begin data_1
-            "chaotic-v4" = {
-              hostPath = "/data_1/chaotic-v4/";
-              isReadOnly = false;
-              mountPoint = "/srv/http/repos";
-            };
-            "iso-builds" = {
-              hostPath = "/data_1/iso/iso";
-              isReadOnly = false;
-              mountPoint = "/srv/http/iso";
-            };
-            "garuda-nix-builds" = {
-              hostPath = "/data_1/iso/garuda-nix";
-              isReadOnly = false;
-              mountPoint = "/srv/http/garuda-nix";
-            };
-            # End data_1
-          };
-          forwardPorts = [
+    containers = garuda-lib.mkContainers {
+      dir = ./stormwing;
+      ips = mon.stormwingContainers;
+      containers = {
+        chaotic-v4 = {
+          mounts = [
             {
-              containerPort = 873;
-              hostPort = 873;
-              protocol = "tcp";
+              name = "arch-mirror";
+              hostPath = "/data_2/containers/arch-mirror/mirror";
+              mountPoint = "/srv/http/arch-mirror";
             }
+            {
+              name = "chaotic";
+              hostPath = "/data_2/containers/chaotic-v4/chaotic";
+              mountPoint = "/var/garuda/compose-runner/chaotic-v4";
+            }
+            {
+              name = "syncthing";
+              hostPath = "/data_2/containers/chaotic-v4/syncthing";
+              mountPoint = "/var/lib/syncthing";
+            }
+            {
+              name = "chaotic-v4";
+              hostPath = "/data_1/chaotic-v4/";
+              mountPoint = "/srv/http/repos";
+            }
+            {
+              name = "iso-builds";
+              hostPath = "/data_1/iso/iso";
+              mountPoint = "/srv/http/iso";
+            }
+            {
+              name = "garuda-nix-builds";
+              hostPath = "/data_1/iso/garuda-nix";
+              mountPoint = "/srv/http/garuda-nix";
+            }
+          ];
+          forwardPorts = [
+            { containerPort = 873; }
             {
               containerPort = 21027;
-              hostPort = 21027;
               protocol = "udp";
             }
+            { containerPort = 22000; }
             {
               containerPort = 22000;
-              hostPort = 22000;
-              protocol = "tcp";
-            }
-            {
-              containerPort = 22000;
-              hostPort = 22000;
               protocol = "udp";
             }
           ];
-          enableTun = true;
+          nspawn = {
+            enableTun = true;
+          };
+          needsDocker = true;
+          # Only entitled to 1/5 of the CPU resources in case of contention
+          cpuWeight = 20;
+          ioWeight = 20;
         };
-        ipAddress = "10.0.5.10";
-        needsDocker = true;
-        # Only entitled to 1/5 of the CPU resources in case of contention
-        cpuWeight = 20;
-        ioWeight = 20;
-      };
-      arch-mirror = {
-        config = import ./stormwing/arch-mirror.nix;
-        extraOptions = {
-          bindMounts = {
-            "arch-mirror" = {
+
+        arch-mirror = {
+          mounts = [
+            {
+              name = "arch-mirror";
               hostPath = "/data_2/containers/arch-mirror/mirror";
-              isReadOnly = false;
               mountPoint = "/srv/http/arch-mirror";
-            };
-          };
+            }
+          ];
         };
-        ipAddress = "10.0.5.60";
-      };
-      github-runner = {
-        config = import ./stormwing/github-runner.nix;
-        defaults = false;
-        extraOptions = {
-          bindMounts = {
-            "token" = {
+
+        github-runner = {
+          mounts = [
+            {
+              name = "token";
               hostPath = config.sops.secrets."compose/github-runner".path;
-              isReadOnly = true;
               mountPoint = "/var/.github-runner.env";
-            };
-            "gitlab-config" = {
+              readOnly = true;
+            }
+            {
+              name = "gitlab-config";
               hostPath = "/data_2/containers/github-runner/gitlab-runner";
-              isReadOnly = false;
               mountPoint = "/etc/gitlab-runner";
-            };
-            "ssh-keys" = {
+            }
+            {
+              name = "ssh-keys";
               hostPath = "/data_2/containers/github-runner/ssh";
-              isReadOnly = false;
               mountPoint = "/etc/ssh";
-            };
-            "github-cache" = {
+            }
+            {
+              name = "github-cache";
               hostPath = "/data_2/cache/github-runner";
-              isReadOnly = false;
               mountPoint = "/var/cache/github-runner";
-            };
-          };
+            }
+          ];
           forwardPorts = [
             {
               containerPort = 22;
               hostPort = 230;
-              protocol = "tcp";
             }
           ];
-          ephemeral = lib.mkForce true;
-        };
-        ipAddress = "10.0.5.30";
-        needsDocker = true;
-        # Only entitled to 1/5 of the CPU resources in case of contention
-        cpuWeight = 20;
-        ioWeight = 20;
-      };
-      firedragon-runner = {
-        config = import ./stormwing/firedragon-runner.nix;
-        defaults = false;
-        extraOptions = {
-          bindMounts = {
-            "firedragon-runner" = {
-              hostPath = "/data_2/containers/firedragon-runner";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/compose-runner/firedragon-runner";
-            };
+          nspawn = {
+            ephemeral = lib.mkForce true;
           };
+          defaults = false;
+          needsDocker = true;
+          cpuWeight = 20;
+          ioWeight = 20;
+        };
+
+        firedragon-runner = {
+          mounts = [
+            {
+              name = "firedragon-runner";
+              hostPath = "/data_2/containers/firedragon-runner";
+              mountPoint = "/var/garuda/compose-runner/firedragon-runner";
+            }
+          ];
           forwardPorts = [
             {
               containerPort = 22;
               hostPort = 250;
-              protocol = "tcp";
             }
           ];
-          ephemeral = lib.mkForce true;
-        };
-        ipAddress = "10.0.5.50";
-        needsDocker = true;
-        # Only entitled to 10% of the CPU resources in case of contention
-        cpuWeight = 10;
-        ioWeight = 10;
-      };
-      gitlab-runner = {
-        config = import ./stormwing/gitlab-runner.nix;
-        extraOptions = {
-          bindMounts = {
-            # This serves as the local Nix cache for the GitLab runner
-            "nix-cache" = {
-              hostPath = "/data_2/containers/gitlab-runner/nix";
-              isReadOnly = false;
-              mountPoint = "/nix";
-            };
-            "gitlab-runner" = {
-              hostPath = "/data_2/containers/gitlab-runner/gitlab-runner";
-              isReadOnly = false;
-              mountPoint = "/var/lib/private/gitlab-runner";
-            };
+          nspawn = {
+            ephemeral = lib.mkForce true;
           };
+          defaults = false;
+          needsDocker = true;
+          cpuWeight = 10;
+          ioWeight = 10;
+        };
+
+        gitlab-runner = {
+          mounts = [
+            {
+              name = "nix-cache";
+              hostPath = "/data_2/containers/gitlab-runner/nix";
+              mountPoint = "/nix";
+            }
+            {
+              name = "gitlab-runner";
+              hostPath = "/data_2/containers/gitlab-runner/gitlab-runner";
+              mountPoint = "/var/lib/private/gitlab-runner";
+            }
+          ];
           forwardPorts = [
             {
               containerPort = 22;
               hostPort = 260;
-              protocol = "tcp";
             }
           ];
+          needsDocker = true;
+          needsKvm = true;
+          cpuWeight = 20;
+          ioWeight = 20;
         };
-        ipAddress = "10.0.5.70";
-        needsDocker = true;
-        needsKvm = true;
-        cpuWeight = 20;
-        ioWeight = 20;
-      };
-      iso-runner = {
-        config = import ./stormwing/iso-runner.nix;
-        extraOptions = {
-          bindMounts = {
-            "iso" = {
+
+        iso-runner = {
+          mounts = [
+            {
+              name = "iso";
               hostPath = "/data_1/iso/";
-              isReadOnly = false;
               mountPoint = "/var/garuda/buildiso";
-            };
-            "cache" = {
+            }
+            {
+              name = "cache";
               hostPath = "/data_1/cache/iso-runner";
-              isReadOnly = false;
               mountPoint = "/var/garuda/buildiso/cache";
-            };
-            "pacman_cache" = {
+            }
+            {
+              name = "pacman_cache";
               hostPath = "/data_1/cache/pacman-cache";
-              isReadOnly = false;
               mountPoint = "/var/cache/pacman/pkg";
-            };
-          };
+            }
+          ];
+          needsDocker = true;
         };
-        ipAddress = "10.0.5.20";
-        needsDocker = true;
-      };
-      web-front = {
-        config = import ./stormwing/web-front.nix;
-        extraOptions = {
-          bindMounts = {
-            "acme" = {
+
+        web-front = {
+          mounts = [
+            {
+              name = "acme";
               hostPath = "/data_1/containers/web-front/acme";
-              isReadOnly = false;
               mountPoint = "/var/lib/acme";
-            };
-            "nginx" = {
+            }
+            {
+              name = "nginx";
               hostPath = "/data_1/containers/web-front/nginx";
-              isReadOnly = false;
               mountPoint = "/var/log/nginx";
-            };
-          };
+            }
+          ];
           forwardPorts = [
             {
               containerPort = 22;
               hostPort = 240;
-              protocol = "tcp";
             }
           ];
         };
-        ipAddress = "10.0.5.40";
       };
     };
   };
 
-  # Monitor a few services of the containers
-  services = {
-    netdata.configDir = {
-      "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
-        jobs:
-          - name: nginx
-            path: /data_1/containers/web-front/nginx/access.log
-      '';
-      "go.d/filecheck.conf" = pkgs.writeText "filecheck.conf" ''
-        jobs:
-          - name: nginx_logs
-            path: /data_1/containers/web-front/nginx
-          - name: iso_builds
-            path: /data_1/iso/iso
-      '';
-      # silence noisy 404 alerts: 404 is expected on this host
-      "health.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
-        template: web_log_1m_bad_requests
-          on: web_log.type_requests
-         lookup: sum -1m unaligned of bad
-           calc: $this * 100 / $web_log_1m_requests
-          units: %
-          every: 10s
-           warn: 0
-           crit: 0
-             to: silent
-           info: disabled on stormwing - 404s are expected
-        template: web_log_1m_successful
-          on: web_log.type_requests
-         lookup: sum -1m unaligned of success
-           calc: $this * 100 / $web_log_1m_requests
-          units: %
-          every: 10s
-           warn: 0
-           crit: 0
-             to: silent
-           info: disabled on stormwing - 404s are expected
-      '';
-    };
-  };
+  systemd.services = garuda-lib.mkTunnels (
+    [
+      (mkTailnetProxy {
+        name = "nginx-tailnet-proxy";
+        container = "web-front";
+        port = mon.ports.nginxExporter;
+        description = "Expose web-front nginx exporter to Tailnet only";
+      })
+      {
+        name = "loki-relay";
+        bind = mon.bridge.address;
+        listen = mon.stormwingLokiRelay.listenPort;
+        target = mon.stormwingLokiRelay.target;
+        after = [ "tailscaled.service" ];
+        description = "Relay stormwing container logs to Loki on aerialis";
+      }
+    ]
+    ++ map (
+      p:
+      mkTailnetProxy {
+        name = "node-exporter-${p.name}-tailnet-proxy";
+        container = p.name;
+        inherit (p) port;
+        targetPort = mon.ports.nodeExporter;
+        description = "Expose ${p.name} node exporter to Tailnet only";
+      }
+    ) mon.stormwingNodeProxies
+    ++ map (
+      p:
+      mkTailnetProxy {
+        name = "service-${p.name}-tailnet-proxy";
+        inherit (p) container;
+        inherit (p) port;
+        inherit (p) targetPort;
+        description = "Expose ${p.container} ${toString p.targetPort} to Tailnet only";
+      }
+    ) mon.stormwingServiceProxies
+  );
 
-  sops.secrets = {
-    "compose/github-runner" = { };
-  };
+  networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
+    mon.ports.nginxExporter
+    32041
+    39252
+  ];
+
+  sops.secrets."compose/github-runner" = { };
 }

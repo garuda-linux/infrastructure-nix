@@ -1,16 +1,26 @@
 {
   config,
+  garuda-lib,
   sources,
   ...
 }:
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
-  # This container runs proxied docker containers
-  garuda.services.compose-runner.docker-proxied = {
-    envfile = config.sops.secrets."compose/docker-proxied".path;
-    source = ../../../compose/docker-proxied;
-  };
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "aerialis";
+      units = [
+        "compose-runner-docker-proxied.service"
+        "docker.service"
+      ];
+    }
+    // {
+      services.compose-runner.docker-proxied = {
+        envfile = config.sops.secrets."compose/docker-proxied".path;
+        source = ../../../compose/docker-proxied;
+      };
+    };
 
   # Let Docker use squid as outgoig proxy
   # Fails to pull images if *.docker.io is not excluded from proxy

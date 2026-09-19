@@ -237,18 +237,6 @@
         "type": "gitlab"
       }
     },
-    "nixos-patch-netdata": {
-      "flake": false,
-      "locked": {
-        "narHash": "sha256-/90kC4sCeREpMZQv9M2E2WF1L0gp1ahA1OJwaDsyEu0=",
-        "type": "file",
-        "url": "https://github.com/NixOS/nixpkgs/pull/507414.patch"
-      },
-      "original": {
-        "type": "file",
-        "url": "https://github.com/NixOS/nixpkgs/pull/507414.patch"
-      }
-    },
     "nixos-patch-nixos-container": {
       "flake": false,
       "locked": {
@@ -332,7 +320,6 @@
         "keys_tne": "keys_tne",
         "keys_xiota": "keys_xiota",
         "nixos-mailserver": "nixos-mailserver",
-        "nixos-patch-netdata": "nixos-patch-netdata",
         "nixos-patch-nixos-container": "nixos-patch-nixos-container",
         "nixpkgs": "nixpkgs",
         "nixpkgs-stable": "nixpkgs-stable",
@@ -342,8 +329,6 @@
         "src-chaotic-portable-builder": "src-chaotic-portable-builder",
         "src-cloudflare-authenticated_origin_pull_ca": "src-cloudflare-authenticated_origin_pull_ca",
         "src-cloudflare-ipv4": "src-cloudflare-ipv4",
-        "src-garuda-startpage": "src-garuda-startpage",
-        "src-garuda-website": "src-garuda-website",
         "treefmt-nix": "treefmt-nix"
       }
     },
@@ -421,38 +406,6 @@
       "original": {
         "type": "file",
         "url": "https://www.cloudflare.com/ips-v4"
-      }
-    },
-    "src-garuda-startpage": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1786204435,
-        "narHash": "sha256-NoPqja2ljWnUNiYgOgmTcS9hf1u1Ie7zEYh0GIkdFaQ=",
-        "owner": "garuda-linux",
-        "repo": "website%2Fstartpage-v2",
-        "rev": "e4192e76e4914f4a8259dcfe8694dcb7e0e15107",
-        "type": "gitlab"
-      },
-      "original": {
-        "owner": "garuda-linux",
-        "repo": "website%2Fstartpage-v2",
-        "type": "gitlab"
-      }
-    },
-    "src-garuda-website": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1786423551,
-        "narHash": "sha256-nCH46nTSRm++a5zcSS2R6zyVdrO5N77OZaweDlNTeVE=",
-        "owner": "garuda-linux",
-        "repo": "website%2Fwebsite-catppuccin",
-        "rev": "0748dd565e9e4d015b24d108887ae15459c4d2e6",
-        "type": "gitlab"
-      },
-      "original": {
-        "owner": "garuda-linux",
-        "repo": "website%2Fwebsite-catppuccin",
-        "type": "gitlab"
       }
     },
     "treefmt-nix": {

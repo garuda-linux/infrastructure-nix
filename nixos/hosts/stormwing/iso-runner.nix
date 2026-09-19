@@ -1,4 +1,5 @@
 {
+  garuda-lib,
   lib,
   pkgs,
   sources,
@@ -41,6 +42,14 @@ let
 in
 {
   imports = sources.defaultModules ++ [ ../../modules ];
+
+  garuda = garuda-lib.mkMonitoring {
+    host = "stormwing";
+    units = [
+      "buildiso.service"
+      "docker.service"
+    ];
+  };
 
   # Lets build Garuda ISO here, serving is done via
   # Temeraire already

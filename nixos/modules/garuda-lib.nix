@@ -99,6 +99,334 @@ let
         ) virtualHosts
       )
     );
+
+  # Central monitoring endpoints for reuse across hosts and containers
+  monitoring = rec {
+    ports = {
+      grafana = 3010;
+      prometheus = 9090;
+      alertmanager = 9093;
+      loki = 3030;
+      nodeExporter = 3021;
+      nginxExporter = 9113;
+      smartctlExporter = 9633;
+      borgmaticExporter = 9996;
+      redisExporter = 9121;
+      postfixExporter = 9154;
+      gitlabRunnerMetrics = 9252;
+      cloudflaredMetrics = 20241;
+    };
+
+    # MagicDNS names on the Tailnet
+    tailnetHosts = {
+      aerialis = "aerialis";
+      stormwing = "stormwing";
+    };
+
+    # Literal Tailnet IPs for socat bind=. MagicDNS names must NOT be
+    # used there: on the host itself the own hostname resolves to
+    # 127.0.0.2 via /etc/hosts, so the proxy would listen on loopback
+    # and refuse Tailnet traffic.
+    tailnetIPs = {
+      aerialis = "100.100.1.20";
+      stormwing = "100.100.1.10";
+    };
+
+    tailnetDNS = "100.100.100.100";
+    tailnetDomain = "kanyu-bushi.ts.net";
+
+    loki = {
+      tailnetAddress = tailnetHosts.aerialis;
+      containerAddress = aerialisContainers.monitoring;
+    };
+
+    aerialisContainers = {
+      web-front = "10.0.5.10";
+      postgres = "10.0.5.20";
+      mastodon = "10.0.5.30";
+      forum = "10.0.5.40";
+      docker-proxied = "10.0.5.50";
+      docker = "10.0.5.60";
+      chaotic-backend = "10.0.5.70";
+      mail = "10.0.5.80";
+      n8n = "10.0.5.90";
+      monitoring = "10.0.5.100";
+    };
+    stormwingContainers = {
+      chaotic-v4 = "10.0.5.10";
+      iso-runner = "10.0.5.20";
+      github-runner = "10.0.5.30";
+      web-front = "10.0.5.40";
+      firedragon-runner = "10.0.5.50";
+      arch-mirror = "10.0.5.60";
+      gitlab-runner = "10.0.5.70";
+    };
+
+    # Non-node metrics of stormwing containers, exposed on stormwing's
+    # Tailnet IP for the same reason as above.
+    stormwingServiceProxies = [
+      {
+        name = "gitlab-runner-metrics";
+        container = "gitlab-runner";
+        port = 39252;
+        targetPort = ports.gitlabRunnerMetrics;
+      }
+      {
+        name = "web-front-cloudflared";
+        container = "web-front";
+        port = 32041;
+        targetPort = ports.cloudflaredMetrics;
+      }
+    ];
+
+    # Stormwing containers ship logs via fluent-bit to the bridge address;
+    # the stormwing host relays it to the aerialis Tailnet IP. This then
+    # forwards into the monitoring container via loki-tailnet-proxy.
+    stormwingLokiRelay = {
+      listenPort = ports.loki;
+      target = "${tailnetIPs.aerialis}:${toString ports.loki}";
+    };
+
+    # Node exporter of each stormwing container, exposed on stormwing's
+    # Tailnet IP. The monitoring container can't reach stormwing's
+    # bridge directly, so we need to relay it.
+    stormwingNodeProxies = [
+      {
+        name = "chaotic-v4";
+        port = 31010;
+      }
+      {
+        name = "iso-runner";
+        port = 31020;
+      }
+      {
+        name = "github-runner";
+        port = 31030;
+      }
+      {
+        name = "web-front";
+        port = 31040;
+      }
+      {
+        name = "firedragon-runner";
+        port = 31050;
+      }
+      {
+        name = "arch-mirror";
+        port = 31060;
+      }
+      {
+        name = "gitlab-runner";
+        port = 31070;
+      }
+    ];
+
+    bridge = {
+      interface = "br0";
+      address = "10.0.5.1";
+    };
+
+    # Chaotic mirrors on the Tailnet.
+    chaoticMirrors = [
+      {
+        name = "amsterdam-nl";
+        ip = "100.100.125.21";
+      }
+      {
+        name = "apodaca-mx";
+        ip = "100.64.184.35";
+      }
+      {
+        name = "cardiff-gb";
+        ip = "100.97.49.121";
+      }
+      {
+        name = "chuncheon-kr";
+        ip = "100.81.226.85";
+      }
+      {
+        name = "dubai-ae";
+        ip = "100.67.143.31";
+      }
+      {
+        name = "frankfurt-de";
+        ip = "100.120.106.99";
+      }
+      {
+        name = "guarulhos-br";
+        ip = "100.65.64.13";
+      }
+      {
+        name = "hyderabad-in";
+        ip = "100.65.165.120";
+      }
+      {
+        name = "jeddah-sa";
+        ip = "100.102.195.64";
+      }
+      {
+        name = "jerusalem-il";
+        ip = "100.126.217.88";
+      }
+      {
+        name = "johannesburg-za";
+        ip = "100.74.19.73";
+      }
+      {
+        name = "la-canada-mx";
+        ip = "100.92.190.86";
+      }
+      {
+        name = "london-gb";
+        ip = "100.65.135.124";
+      }
+      {
+        name = "madrid-es";
+        ip = "100.116.82.81";
+      }
+      {
+        name = "marseille-fr";
+        ip = "100.119.174.74";
+      }
+      {
+        name = "masdar-city-ae";
+        ip = "100.106.185.24";
+      }
+      {
+        name = "melbourne-au";
+        ip = "100.114.165.109";
+      }
+      {
+        name = "montreal-ca";
+        ip = "100.85.139.124";
+      }
+      {
+        name = "mumbai-in";
+        ip = "100.70.130.65";
+      }
+      {
+        name = "osaka-jp";
+        ip = "100.81.176.55";
+      }
+      {
+        name = "paris-fr";
+        ip = "100.123.14.23";
+      }
+      {
+        name = "phoenix-us";
+        ip = "100.66.202.108";
+      }
+      {
+        name = "san-jose-us";
+        ip = "100.100.26.46";
+      }
+      {
+        name = "santiago-cl";
+        ip = "100.108.0.38";
+      }
+      {
+        name = "sao-paulo-br";
+        ip = "100.86.182.87";
+      }
+      {
+        name = "seoul-kr";
+        ip = "100.96.112.21";
+      }
+      {
+        name = "siziano-it";
+        ip = "100.90.61.39";
+      }
+      {
+        name = "stockholm-se";
+        ip = "100.117.198.121";
+      }
+      {
+        name = "sydney-au";
+        ip = "100.99.21.110";
+      }
+      {
+        name = "tokyo-jp";
+        ip = "100.85.247.52";
+      }
+      {
+        name = "toronto-ca";
+        ip = "100.117.164.61";
+      }
+      {
+        name = "vinhedo-br";
+        ip = "100.113.84.25";
+      }
+      {
+        name = "zurich-ch";
+        ip = "100.118.191.84";
+      }
+    ];
+
+    chaoticMirrorTargets = map (m: {
+      inherit (m) name;
+      target = "${m.name}:${toString ports.nodeExporter}";
+    }) chaoticMirrors;
+
+    nodeHostTargets = [
+      {
+        name = "aerialis";
+        target = "${bridge.address}:${toString ports.nodeExporter}";
+      }
+      {
+        name = "stormwing";
+        target = "${tailnetHosts.stormwing}:${toString ports.nodeExporter}";
+      }
+    ];
+
+    nodeContainerTargets = map (ip: "${ip}:${toString ports.nodeExporter}") (
+      lib.attrValues aerialisContainers
+    );
+
+    stormwingNodeContainerTargets = map (p: {
+      target = "${tailnetHosts.stormwing}:${toString p.port}";
+      inherit (p) name;
+    }) stormwingNodeProxies;
+
+    nginxTargets = [
+      "${aerialisContainers.web-front}:${toString ports.nginxExporter}"
+      "${tailnetHosts.stormwing}:${toString ports.nginxExporter}"
+    ];
+
+    cloudflaredTargets = [
+      "${aerialisContainers.web-front}:${toString ports.cloudflaredMetrics}"
+      "${tailnetHosts.stormwing}:32041"
+    ];
+
+    gitlabRunnerTargets = [
+      "${tailnetHosts.stormwing}:39252"
+    ];
+
+    redisTargets = [
+      "${aerialisContainers.chaotic-backend}:${toString ports.redisExporter}"
+    ];
+
+    postfixTargets = [
+      "${aerialisContainers.mail}:${toString ports.postfixExporter}"
+    ];
+
+    smartctlTargets = [
+      {
+        name = "aerialis";
+        inherit (bridge) address;
+      }
+      {
+        name = "stormwing";
+        address = tailnetHosts.stormwing;
+      }
+    ];
+
+    borgmaticTargets = [
+      {
+        name = "aerialis";
+        inherit (bridge) address;
+      }
+    ];
+  };
 in
 {
   options.garuda-lib = mkOption {
@@ -116,6 +444,7 @@ in
         allowOnlyCloudflared
         allowOnlyCloudflareZerotrust
         generateCloudflaredIngress
+        monitoring
         ;
       minimalContainer = false;
       chaoticUsers = false;
