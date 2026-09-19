@@ -7,6 +7,8 @@
   ...
 }:
 let
+  mon = garuda-lib.monitoring;
+
   authres_status = pkgs.roundcubePlugins.roundcubePlugin rec {
     pname = "authres_status";
     version = "0.7.1";
@@ -145,7 +147,32 @@ in
       notify = true;
       push_notification = true;
     };
+
+    "service stats" = {
+      "inet_listener http" = {
+        port = mon.ports.dovecotMetrics;
+      };
+    };
+    "metric auth_success" = {
+      filter = "event=auth_request_finished AND success=yes";
+    };
+    "metric auth_failure" = {
+      filter = "event=auth_request_finished AND success=no";
+    };
+    "metric imap_command" = {
+      filter = "event=imap_command_finished";
+      "group_by cmd_name" = { };
+      "group_by tagged_reply_state" = { };
+    };
+    "metric mail_delivery" = {
+      filter = "event=mail_delivery_finished";
+    };
+    "metric push_notification" = {
+      filter = "event=push_notification_finished";
+    };
   };
+
+  networking.firewall.interfaces."eth0".allowedTCPPorts = [ mon.ports.dovecotMetrics ];
 
   # Postmaster alias
   services.postfix.postmasterAlias = "root@garudalinux.org";

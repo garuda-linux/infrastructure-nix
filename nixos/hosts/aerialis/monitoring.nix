@@ -70,6 +70,24 @@ in
         environmentFile = config.sops.templates."tailscale-exporter-env".path;
       };
 
+      applicationTargets = [
+        {
+          name = "dovecot";
+          address = mon.aerialisContainers.mail;
+          port = mon.ports.dovecotMetrics;
+        }
+        {
+          name = "postfix";
+          address = mon.aerialisContainers.mail;
+          port = mon.ports.postfixExporter;
+        }
+        {
+          name = "redis";
+          address = mon.aerialisContainers.chaotic-backend;
+          port = mon.ports.redisExporter;
+        }
+      ];
+
       scrapeConfigs = [
         {
           job_name = "node-hosts";
@@ -121,22 +139,6 @@ in
             }
           ];
           scrape_interval = "30s";
-        }
-        {
-          job_name = "redis";
-          static_configs = [
-            {
-              targets = mon.redisTargets;
-            }
-          ];
-        }
-        {
-          job_name = "postfix";
-          static_configs = [
-            {
-              targets = mon.postfixTargets;
-            }
-          ];
         }
         {
           job_name = "node-chaotic-mirrors";

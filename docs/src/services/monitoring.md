@@ -18,11 +18,16 @@ which kept only a few GB per host and offered no central alerting.
 | nginx_exporter        | Web frontend metrics                | 9113  |
 | redis_exporter        | Chaotic-AUR Redis                   | 9121  |
 | postfix_exporter      | Mail queue and delivery             | 9154  |
+| dovecot (OpenMetrics) | Mail auth/IMAP/delivery metrics     | 9900  |
 | GitLab runner metrics | CI runner                           | 9252  |
 | cloudflared metrics   | Tunnel metrics                      | 20241 |
 
 Everything runs in the `monitoring` container on aerialis (`10.0.5.100`). Hosts and containers opt in with
 `garuda.monitoring`; the port numbers above are all defined once in `garuda-lib.monitoring.ports`.
+
+Not every endpoint belongs to a dedicated exporter: Dovecot is scraped through its built-in stats listener, which
+serves OpenMetrics on port 9900. Endpoints like this are declared with
+`garuda.monitoring.prometheus.applicationTargets`, which also covers the postfix and redis exporters.
 
 Prometheus retention is bounded by `garuda.monitoring.prometheus.retentionTime` and `retentionSize`.
 Loki is bounded by `garuda.monitoring.loki.retentionPeriod`.
