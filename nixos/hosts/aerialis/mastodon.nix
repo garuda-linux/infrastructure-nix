@@ -5,52 +5,6 @@
   sources,
   ...
 }:
-let
-  # https://git.kempkens.io/daniel/dotfiles/src/branch/master/system/nixos/mastodon.nix
-  pkg-base = pkgs.mastodon;
-  pkg-mastodon = pkg-base.overrideAttrs (_: {
-    mastodonModules = pkg-base.mastodonModules.overrideAttrs (
-      oldMods:
-      let
-        tangerine-ui = pkgs.fetchFromGitHub {
-          owner = "nileane";
-          repo = "TangerineUI-for-Mastodon";
-          rev = "v2.5.3";
-          hash = "sha256-fs/pwIwXZvSNVmlSG304CMT/hSW/RtrzraMsrhg/TbE=";
-        };
-      in
-      {
-        pname = "${oldMods.pname}+themes";
-
-        postPatch = ''
-          styleDir=$PWD/app/javascript/styles
-
-          cp -r ${tangerine-ui}/mastodon/app/javascript/styles/* $styleDir
-
-          echo "tangerineui: styles/tangerineui.scss" >>$PWD/config/themes.yml
-          echo "tangerineui-purple: styles/tangerineui-purple.scss" >>$PWD/config/themes.yml
-          echo "tangerineui-cherry: styles/tangerineui-cherry.scss" >>$PWD/config/themes.yml
-          echo "tangerineui-lagoon: styles/tangerineui-lagoon.scss" >>$PWD/config/themes.yml
-        '';
-      }
-    );
-
-    nativeBuildInputs = [ pkgs.yq-go ];
-
-    postBuild = ''
-      # Make theme available
-      echo "tangerineui: styles/tangerineui.scss" >>$PWD/config/themes.yml
-      echo "tangerineui-purple: styles/tangerineui-purple.scss" >>$PWD/config/themes.yml
-      echo "tangerineui-cherry: styles/tangerineui-cherry.scss" >>$PWD/config/themes.yml
-      echo "tangerineui-lagoon: styles/tangerineui-lagoon.scss" >>$PWD/config/themes.yml
-
-      yq -i '.en.themes.tangerineui = "Tangerine UI"' $PWD/config/locales/en.yml
-      yq -i '.en.themes.tangerineui-purple = "Tangerine UI (Purple)"' $PWD/config/locales/en.yml
-      yq -i '.en.themes.tangerineui-cherry = "Tangerine UI (Cherry)"' $PWD/config/locales/en.yml
-      yq -i '.en.themes.tangerineui-lagoon = "Tangerine UI (Lagoon)"' $PWD/config/locales/en.yml
-    '';
-  });
-in
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
@@ -94,7 +48,6 @@ in
       startAt = "daily";
       olderThanDays = 7;
     };
-    package = pkg-mastodon;
     smtp = {
       authenticate = true;
       fromAddress = "noreply@garudalinux.org";
