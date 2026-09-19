@@ -192,6 +192,9 @@ in
                   ];
                 };
                 config.networking.useHostResolvConf = false;
+
+                # MOTD inside the container shows the parent host name.
+                config.garuda.motd.parentHost = config.networking.hostName;
               }
             ]
             ++ lib.lists.optional cont.defaults {
@@ -299,6 +302,8 @@ in
     # Expose the host's systemd-resolved stub on the bridge address so
     # containers can use it for DNS + MagicDNS. Inert on hosts without
     # resolved enabled.
-    services.resolved.settings.Resolve.DNSStubListenerExtra = lib.mkIf (cfg.containers != { }) [ cfg.hostIp ];
+    services.resolved.settings.Resolve.DNSStubListenerExtra = lib.mkIf (cfg.containers != { }) [
+      cfg.hostIp
+    ];
   };
 }

@@ -150,7 +150,6 @@
     systemPackages = with pkgs; [
       btop
       eza
-      fancy-motd
       fishPlugins.autopair
       fishPlugins.puffer
       git
