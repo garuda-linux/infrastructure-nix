@@ -29,15 +29,18 @@ This is a collection of important links when working with the infrastructure:
 - [Cloudflare Dashboard](https://dash.cloudflare.com)
 - [Status page](https://status.garudalinux.org)
 - [Hetzner Robot](https://accounts.hetzner.com/)
-- [Netdata](https://app.netdata.cloud)
 - [PGAdmin](https://pgadmin.garudalinux.net)
-- [Tailscale](https://login.tailscale.com/)
+- [Tailscale](https://login.tailscale.com)
+- [Grafana](https://grafana.garudalinux.net)
+- [Prometheus](https://prometheus.garudalinux.net)
+- [Alertmanager](https://alertmanager.garudalinux.net)
 
 ## Services to be administrated
 
 - [Vaultwarden](https://vault.garudalinux.org)
 - [Discourse](https://forum.garudalinux.org)
 - [Chaotic-AUR](https://aur.chaotic.cx)
+- [Chaotic-AUR Backend](https://backend.chaotic.cx)
 - [Firefox syncserver](https://ffsync.garudalinux.org)
 - [Lingva](https://lingva.garudalinux.org)
 - [Mastodon](https://social.garudalinux.org)

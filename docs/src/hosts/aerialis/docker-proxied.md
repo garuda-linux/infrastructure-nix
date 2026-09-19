@@ -19,7 +19,7 @@ Here, all the Docker containers that need to have proxied outgoing requests are 
 This can happen via the following command:
 
 ```bash
-sudo systemctl restart docker-compose-proxied-root
+sudo systemctl restart compose-runner-docker-proxied
 ```
 
 ## Nix expression

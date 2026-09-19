@@ -5,12 +5,15 @@
 ## General information
 
 - Our current infrastructure is hosted in two of [these](https://www.hetzner.com/dedicated-rootserver/ex44).
-- The servers are being backed up to Hetzner storage boxes via [Borg](https://www.borgbackup.org/).
+- The servers are being backed up to Hetzner storage boxes via [Borg](https://www.borgbackup.org/), driven by
+  [borgmatic](https://torsion.org/borgmatic/).
 - After multiple different setups, we settled on [NixOS](https://nixos.org/) as our main OS as it provides reproducible
   and atomically updated system states
 - Cloudflare protects most (sub)domains while also making use of its caching feature.
   Exemptions are services such as our mail server and parts violating Cloudflares rules such as proxying Mastodon video content.
 - Cloudflare Access in combination with Cloudflared is used to secure access to high-risk services such as admin panels.
+- Monitoring and alerting are self-hosted, based on Prometheus, Grafana, Loki and Alertmanager (see
+  [Monitoring](./services/monitoring.md)).
 
 ## Quick links
 
@@ -46,23 +49,19 @@ command.
 
 [[general commands]]
 
-  ansible-core      - Radically simple IT automation
-  apply             - Applies the infra-nix configuration pushed to the servers
-  clean             - Runs the garbage collection on the servers
-  commitizen        - Tool to create committing rules for projects, auto bump versions, and generate changelogs
-  deploy            - Deploys the local NixOS configuration to the servers
-  manix             - Fast CLI documentation searcher for Nix
-  mdbook            - Create books from MarkDown
-  mdbook-admonish   - Preprocessor for mdbook to add Material Design admonishments
-  mdbook-emojicodes - MDBook preprocessor for converting emojicodes (e.g. `: cat :`) into emojis 🐱
-  menu              - prints this menu
-  pre-commit        - Framework for managing and maintaining multi-language pre-commit hooks
-  restart           - Restarts all physical servers
-  rsync             - Fast incremental file transfer utility
-  sops              - Simple and flexible tool for managing secrets
-  update            - Performs a full system update on the servers bumping flake lock
+  ansible-core    - Radically simple IT automation
+  apply           - Applies the infra-nix configuration pushed to the servers
+  clean           - Runs the garbage collection on the servers
+  deploy          - Deploys the local NixOS configuration to the servers
+  menu            - prints this menu
+  prek            - Better `pre-commit`, re-engineered in Rust
+  restart         - Restarts all physical servers
+  rsync           - Fast incremental file transfer utility
+  sops            - Simple and flexible tool for managing secrets
+  update          - Performs a full system update on the servers bumping flake lock
 
 [infra-nix]
 
-  buildiso-local    - Spawns a local buildiso shell to build to ./buildiso (needs Docker)
-  buildiso-remote   - Spawns a buildiso shell on the iso-runner builder
+  buildiso-local  - Spawns a local buildiso shell to build to ./buildiso (needs Docker)
+  buildiso-remote - Spawns a buildiso shell on the iso-runner builder
+```

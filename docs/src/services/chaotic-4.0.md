@@ -90,11 +90,8 @@ Renaming folders does also count as removing packages.
 Whenever pushing a new commit, the CI pipeline will carry out the following actions:
 
 - Checking when the last `scheduled` tag was created. This is used to determine which packages need to be scheduled.
-- It parses each commit for a `[deploy $foldername]` string, only accepting valid values derived from the existing
-  PKGBUILD folders. `[deploy all]` is a valid parameter as well. Misspelling `$pkgname` is a fatal error here. Any
-  issues must be fixed and force-pushed.
-- Then, the changed files are parsed. This also includes removed packages. Any changed relevant folder content will
-  cause a package deployment of the corresponding package.
+- The changed files are parsed, which also includes removed packages. Any changed relevant folder content causes a
+  deployment of the corresponding package.
 - The final action is to build the schedule parameters (handing it over to the scheduled job via artifacts) and remove
   all obsolete packages in case an earlier step is detected.
 - In case all of these actions succeed, the `scheduled` tag gets updated, so we can refer to it on a later pipeline run.

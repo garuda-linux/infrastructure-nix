@@ -36,9 +36,11 @@ A general overview of the folder structure can be found below:
 │   ├── modules
 │   │   ├── special
 │   │   └── static
-│   └── services
-│       ├── compose-runner
-│       └── monitoring
+│   └── services
+│       ├── compose-runner
+│       ├── monitoring
+│       └── mk.nix # garuda-lib construction helpers
+├── pkgs
 ├── scripts
 └── secrets
 ```
@@ -81,17 +83,23 @@ nix flake check # checks flake outputs and runs pre-commit at the end
 pre-commit run --all-files # only runs the pre-commit tools on all files
 ```
 
-Its configuration can be found in the `flake.nix` file. ([click me](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/flake.nix)). At the time of writing, the following tools are being run:
+Its configuration can be found in the `flake.nix` file. ([click me](https://gitlab.com/garuda-linux/infra-nix/-/blob/main/flake.nix)). At the time of writing, the following is being run:
+
+The pre-commit hooks generated into `.pre-commit-config.yaml`:
+
+- check-json
+- check-yaml
+- detect-private-keys
+- [ripsecrets](https://github.com/sirwart/ripsecrets)
+
+Formatting is handled by [treefmt](https://github.com/numtide/treefmt-nix), which runs:
 
 - [actionlint](https://github.com/rhysd/actionlint)
-- [ansible-lint](https://github.com/ansible/ansible-lint)
-- [commitizen](https://github.com/commitizen-tools/commitizen)
 - [deadnix](https://github.com/astro/deadnix)
-- [nil](https://github.com/oxalica/nil)
-- [nixpkgs-fmt](https://github.com/nix-community/nixpkgs-fmt)
-- [prettier](https://prettier.io/)
+- [nixfmt](https://github.com/NixOS/nixfmt)
+- [shellcheck](https://www.shellcheck.net/)
+- [shfmt](https://github.com/mvdan/sh)
 - [statix](https://github.com/nerdypepper/statix)
-- [yamllint](https://github.com/adrienverge/yamllint)
 
 It is recommended to run `pre-commit run --all-files` before trying to commit changes. Then use `cz commit` to generate a `commitizen` complying commit message.
 
@@ -108,10 +116,17 @@ Workflows will generally only be executed if a relevant file has been changed, e
 
 ## Monitoring
 
-Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends.
-The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations.
-Might switch to the Prometheus/Grafana/Loki stack in the future. We used to set up children -> parent streaming in the past, though after transitioning to one big host this didn't make sense anymore.
-Instead, up to 10GB of data gets stored on individual hosts.
-While Netdata agents do have their dashboard, the [Dashboard provided by Netdata](https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes) is far superior and allows a better insight, eg. by offering the functions feature.
-Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its [documentation](https://learn.netdata.cloud/).
-To access the previously linked dashboard, use `team@garudalinux.org` as login, the login will be completed after opening the link sent here.
+Our monitoring stack is self-hosted and defined in `nixos/services/monitoring`, replacing the previous Netdata setup.
+It consists of Prometheus for metrics, Loki for logs, Grafana for dashboards and Alertmanager for alerting, plus
+Fluent Bit and node_exporter agents that hosts and containers opt into via `garuda.monitoring`.
+
+Because both hosts run their own `10.0.5.0/24` container bridge, the monitoring container cannot reach stormwing's
+containers directly - stormwing proxies their exporters and relays their logs over the Tailnet instead. See
+[Monitoring](./services/monitoring.md) for details.
+
+## Where configuration lives
+
+- `nixos/hosts/<host>.nix` - host-specific networking, NAT forwards, the container list and host-level tunnels.
+- `nixos/hosts/<host>/<container>.nix` - one file per container.
+- `nixos/services/` - shared service modules, plus `mk.nix` which holds the `garuda-lib` helpers used to build
+  repetitive structures.

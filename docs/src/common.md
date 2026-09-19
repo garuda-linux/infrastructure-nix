@@ -129,14 +129,31 @@ The updated containers will be pulled and automatically recreated using the new 
 
 ### Checking whether backups were successful
 
-To check whether backups to Hetzner are still working as expected, connect to the server and execute the following:
+Backups run through `borgmatic`, which is configured per host with `garuda.backup.borgmatic` (see
+`nixos/services/backup.nix`). To check whether backups to Hetzner are still working as expected, connect to the server
+and execute the following:
 
 ```sh
-systemctl status borgbackup-job-backupToHetzner
+systemctl status borgmatic.service
+journalctl -u borgmatic
 ```
 
 This should yield a successful unit state. The only exception is having an exit code != `0` due to files having changed
-during the run.
+during the run. The "Borg backup age" and "Borg backup count" panels in Grafana are a quicker way to spot a stalled
+backup.
+
+### Checking monitoring and alerts
+
+The monitoring stack can be reached at:
+
+- [grafana.garudalinux.net](https://grafana.garudalinux.net) for dashboards
+- [prometheus.garudalinux.net](https://prometheus.garudalinux.net) for queries and scrape targets
+- [alertmanager.garudalinux.net](https://alertmanager.garudalinux.net) to review and silence alerts
+
+These are all secured by Cloudflare Zerotrust.
+
+Alerts are additionally delivered to any configured Target. Alert rules live in `nixos/services/monitoring/prometheus-rules/` 
+and dashboards are committed as JSON in `nixos/services/monitoring/dashboards/`. See [Monitoring](./services/monitoring.md) for details.
 
 ### Updating Chaotic-AUR toolbox
 

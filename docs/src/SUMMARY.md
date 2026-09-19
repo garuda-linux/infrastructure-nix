@@ -21,12 +21,16 @@
   - [forum](hosts/aerialis/forum.md)
   - [mail](hosts/aerialis/mail.md)
   - [mastodon](hosts/aerialis/mastodon.md)
+  - [monitoring](hosts/aerialis/monitoring.md)
+  - [n8n](hosts/aerialis/n8n.md)
   - [postgres](hosts/aerialis/postgres.md)
   - [web-front](hosts/aerialis/web-front.md)
 - [stormwing](./hosts/stormwing.md)
+  - [arch-mirror](hosts/stormwing/arch-mirror.md)
   - [chaotic-v4](hosts/stormwing/chaotic-v4.md)
   - [firedragon-runner](hosts/stormwing/firedragon-runner.md)
   - [github-runner](hosts/stormwing/github-runner.md)
+  - [gitlab-runner](hosts/stormwing/gitlab-runner.md)
   - [iso-runner](hosts/stormwing/iso-runner.md)
   - [web-front](hosts/stormwing/web-front.md)
 
@@ -40,6 +44,7 @@
 - [Chaotic 4.0](./services/chaotic-4.0.md)
 - [Discourse](./services/discourse.md)
 - [Documentation](./websites/documentation.md)
+- [Monitoring](./services/monitoring.md)
 - [Tailscale](./services/tailscale.md)
 
 # Misc

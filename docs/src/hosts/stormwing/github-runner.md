@@ -7,14 +7,15 @@ This container is a GitHub Actions runner for CI/CD tasks related to Garuda Linu
 With this container, we provide a GitHub runner as well as (more recently), a GitLab runner. This container does **not**
 have the regular Garuda configurations because it is considered untrusted.
 Access needs to happen by running `nixos-container root-login`
-on `immortalis` ([click me](http://docs.garudalinux.net/hosts/immortalis.html#connecting-to-the-server)).
+on [stormwing](../stormwing.md).
 
 ## Restarting containers
 
-This can happen via the following command:
+This can happen via the following commands:
 
 ```bash
-sudo systemctl restart docker-compose-gitlab-runner-root
+sudo systemctl restart compose-runner-github-runner
+sudo systemctl restart compose-runner-gitlab-runner
 ```
 
 Watchtower additionally keeps the containers up to date.
@@ -34,5 +35,5 @@ Watchtower additionally keeps the containers up to date.
 ### Docker containers (GitLab)
 
 ```yaml
-{{#include ../../../../compose/github-runner/compose.yml}}
+{{#include ../../../../compose/gitlab-runner/compose.yml}}
 ```
