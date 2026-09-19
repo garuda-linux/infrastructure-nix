@@ -9,10 +9,10 @@
 let
   authres_status = pkgs.roundcubePlugins.roundcubePlugin rec {
     pname = "authres_status";
-    version = "0.7.0";
+    version = "0.7.1";
     src = pkgs.fetchzip {
       url = "https://github.com/pimlie/authres_status/archive/refs/tags/${version}.zip";
-      hash = "sha256-+rnHc2vJC4ozRdcHAYg1J5rIWe4k/yTgD5xYr9NA/Hg=";
+      hash = "sha256-vQGllx3NzVkjQdnIosvQtI3iQ02HrGIF7sSL7G2E5c4=";
     };
   };
 in
