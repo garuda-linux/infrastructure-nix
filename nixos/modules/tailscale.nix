@@ -16,6 +16,16 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # Let Tailscale manage MagicDNS via systemd-resolved DBus.
+    services.resolved = {
+      enable = true;
+      settings.Resolve.FallbackDNS = [
+        "1.1.1.1"
+        "1.0.0.1"
+      ];
+    };
+    networking.useHostResolvConf = false;
+
     # Enable the Tailscale service
     services.tailscale = {
       authKeyFile = config.sops.secrets."tailscale/authkey".path;

@@ -175,6 +175,25 @@ in
           );
           config = lib.mkMerge (
             [ cont.config ]
+            ++ [
+              {
+                # The host runs systemd-resolved, so the inherited
+                # /etc/resolv.conf points at the 127.0.0.53 stub.
+                # Without resolved in the container that stub is dead
+                # and all DNS breaks. Resolve via the host's stub on the
+                # container bridge address instead.
+                config.services.resolved = {
+                  enable = true;
+                  settings.Resolve.DNS = [ cfg.hostIp ];
+                  settings.Resolve.Domains = [ garuda-lib.monitoring.tailnetDomain ];
+                  settings.Resolve.FallbackDNS = [
+                    "1.1.1.1"
+                    "1.0.0.1"
+                  ];
+                };
+                config.networking.useHostResolvConf = false;
+              }
+            ]
             ++ lib.lists.optional cont.defaults {
               config.garuda-lib.minimalContainer = true;
               config.garuda-lib.sshkeys = {
@@ -257,6 +276,11 @@ in
       bridges."${cfg.bridgeInterface}" = {
         interfaces = [ ];
       };
+      # Let containers reach the host's resolved stub (DNS + MagicDNS).
+      firewall.interfaces."${cfg.bridgeInterface}" = {
+        allowedTCPPorts = [ 53 ];
+        allowedUDPPorts = [ 53 ];
+      };
       interfaces."${cfg.bridgeInterface}".ipv4.addresses = [
         {
           address = cfg.hostIp;
@@ -271,5 +295,10 @@ in
         internalInterfaces = [ cfg.bridgeInterface ];
       };
     };
+
+    # Expose the host's systemd-resolved stub on the bridge address so
+    # containers can use it for DNS + MagicDNS. Inert on hosts without
+    # resolved enabled.
+    services.resolved.settings.Resolve.DNSStubListenerExtra = lib.mkIf (cfg.containers != { }) [ cfg.hostIp ];
   };
 }
