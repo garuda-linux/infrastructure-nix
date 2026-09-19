@@ -1,35 +1,26 @@
 {
   pkgs,
-  src,
+  lib,
+  ...
 }:
 let
-  # Run Nx command with fake TTY to avoid panic
-  # https://github.com/nrwl/nx/issues/22445
-  nx = pkgs.writeScript "nx-wrapper" ''
-    exec ${pkgs.faketty}/bin/faketty nx "$@"
-  '';
-in
-pkgs.stdenv.mkDerivation (finalAttrs: {
-  pname = "garuda-website";
-  version = "1.0.0";
-
-  inherit src;
-
-  nativeBuildInputs = with pkgs; [
-    nodejs_24
-    pnpm_11
-    pnpmConfigHook
-  ];
-  pnpmDeps = pkgs.fetchPnpmDeps {
-    inherit (finalAttrs) pname version src;
-    fetcherVersion = 4;
-    hash = "sha256-Ihyz6ODZ0Fh3qdnYMUJRLBE6cy5xXYG55VyIIU3+yAc=";
+  rev = "0748dd565e9e4d015b24d108887ae15459c4d2e6"; # main
+  srcHash = "sha256-nCH46nTSRm++a5zcSS2R6zyVdrO5N77OZaweDlNTeVE=";
+  src = pkgs.fetchFromGitLab {
+    owner = "garuda-linux/website";
+    repo = "website-catppuccin";
+    inherit rev;
+    hash = srcHash;
   };
-  buildPhase = ''
-    export PATH=$(pnpm bin):$PATH
-    ${nx} build && ${nx} transloco:optimize
-  '';
-  installPhase = ''
-    cp -r ./dist/website/browser $out
-  '';
-})
+in
+pkgs.callPackage ../mk-pnpm-site.nix {
+  inherit pkgs src;
+  pname = "garuda-website";
+  version = "0-unstable-${lib.substring 0 7 rev}";
+  pnpmDepsHash = "sha256-Ihyz6ODZ0Fh3qdnYMUJRLBE6cy5xXYG55VyIIU3+yAc=";
+  installPath = "./dist/website/browser";
+  nxCommands = [
+    "build"
+    "transloco:optimize"
+  ];
+}

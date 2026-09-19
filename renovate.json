@@ -19,5 +19,49 @@
   "nix": {
     "enabled": true
   },
-  "reviewersFromCodeOwners": true
+  "reviewersFromCodeOwners": true,
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^pkgs/garuda-website/default\\.nix$/"
+      ],
+      "matchStrings": [
+        "rev = \"(?<currentDigest>[0-9a-f]{40})\";"
+      ],
+      "currentValueTemplate": "main",
+      "depNameTemplate": "garuda-website",
+      "packageNameTemplate": "https://gitlab.com/garuda-linux/website/website-catppuccin",
+      "datasourceTemplate": "git-refs"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^pkgs/garuda-startpage/default\\.nix$/"
+      ],
+      "matchStrings": [
+        "rev = \"(?<currentDigest>[0-9a-f]{40})\";"
+      ],
+      "currentValueTemplate": "main",
+      "depNameTemplate": "garuda-startpage",
+      "packageNameTemplate": "https://gitlab.com/garuda-linux/website/startpage-v2",
+      "datasourceTemplate": "git-refs"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "postUpgradeTasks": {
+        "commands": [
+          "./scripts/update-website-hashes.sh"
+        ],
+        "fileFilters": [
+          "pkgs/**"
+        ],
+        "executionMode": "update"
+      }
+    }
+  ]
 }
