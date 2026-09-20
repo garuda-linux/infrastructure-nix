@@ -44,7 +44,7 @@ in
   };
 
   config = lib.mkIf (cfg.hostInfo.enable && cfg.prometheus.nodeExporter.enable) {
-    system.configurationRevision = lib.mkDefault (self.rev or self.dirtyRev or null);
+    system.configurationRevision = lib.mkDefault (self.rev or self.dirtyRev or "dirty");
 
     system.activationScripts.nixos-info = {
       text = writer.outPath;

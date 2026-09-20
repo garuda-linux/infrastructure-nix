@@ -38,7 +38,6 @@ in
     host = "stormwing";
     lokiAddress = mon.loki.tailnetAddress;
     hostInfo = true;
-    motd = false;
     units = [
       "sshd.service"
       "tailscaled.service"

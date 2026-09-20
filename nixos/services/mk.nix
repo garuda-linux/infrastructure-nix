@@ -141,10 +141,8 @@ let
         exporters ? [ ],
         extraPrometheus ? { },
         hostInfo ? false,
-        motd ? true,
       }:
       {
-        motd = optionalAttrs motd { relevantUnits = units; };
         monitoring = {
           enable = true;
           prometheus = recursiveUpdate (genAttrs ([ "nodeExporter" ] ++ exporters) (_: {

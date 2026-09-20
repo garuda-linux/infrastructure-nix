@@ -15,7 +15,6 @@ in
     garuda-lib.mkMonitoring {
       host = "aerialis";
       hostInfo = true;
-      motd = false;
       units = [
         "borgmatic.service"
         "borgmatic.timer"

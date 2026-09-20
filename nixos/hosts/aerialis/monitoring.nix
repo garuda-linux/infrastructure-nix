@@ -24,8 +24,6 @@ in
   # via MagicDNS instead of socat hairpins on the host.
   services.garuda-tailscale.enable = true;
 
-  garuda.motd.relevantUnits = units;
-
   garuda.monitoring = {
     enable = true;
 

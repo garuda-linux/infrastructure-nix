@@ -7,80 +7,103 @@
 let
   cfg = config.garuda.motd;
 
-  units = lib.concatMapStringsSep " " lib.escapeShellArg cfg.relevantUnits;
-
-  servicesSection =
-    if cfg.relevantUnits == [ ] then
-      ''
-        state="$(systemctl is-system-running 2>/dev/null || echo unknown)"
-        echo "  System state:     $state"''
-    else
-      ''
-        for unit in ${units}; do
-          ustate="$(systemctl is-active "$unit" 2>/dev/null || true)"
-          case "''${ustate:-unknown}" in
-            active) echo "  $unit (active)" ;;
-            failed) echo "  $unit (failed)" ;;
-            *) echo "  -- $unit (''${ustate:-unknown})" ;;
-          esac
-        done'';
-
-  initscript = pkgs.writeShellScript "motdscript" ''
-    if [ "$USER" != nico ] && [ "$USER" != "package-deployer" ]; then
-      echo "Logged as:          ''${USER:-$(whoami)}@$(hostname)"
-      ${lib.optionalString (cfg.parentHost != null) ''echo "Host:               ${cfg.parentHost}"''}
-      
-      virt="baremetal"
-      if [ -f /run/systemd/container ]; then
-        virt="container ($(cat /run/systemd/container))"
-      elif v="$(systemd-detect-virt 2>/dev/null)" && [ -n "$v" ] && [ "$v" != "none" ]; then
-        virt="container ($v)"
-      fi
-      echo "Type:               $virt"
-      
-      ips="$(hostname -I 2>/dev/null | tr -s ' ' | sed 's/ *$//')"
-      echo "IP addresses:       ''${ips:-unknown}"
-      pub="$(curl -fs --max-time 2 https://ifconfig.me 2>/dev/null || true)"
-      [ -n "$pub" ] && echo "Public IP address:  $pub"
-      echo ""
-      
-      echo "Services:"
-      ${servicesSection}
-      
-      ${lib.optionalString cfg.listDocker "
-      echo \"\"
-      echo \"Docker containers:\"
-      timeout 3 docker ps --format '{{.Names}}|{{.Status}}' 2>/dev/null | while IFS='|' read -r dname dstatus; do
-        echo \"  $dname ($dstatus)\"
-      done
-      stopped=\"$(timeout 3 docker ps -a -f status=exited -f status=created -f status=dead --format '{{.Names}}' 2>/dev/null | wc -l)\"
-      [ \"$stopped\" -gt 0 ] && echo \"  ($stopped stopped)\""}
-
-      echo -e ""
-      echo -e "Please behave well and have fun! 🦅"
-      echo -e "In case of issues or questions contact Nico or TNE."
-    fi
-    HISTCONTROL=ignoreboth
-  '';
-in
-{
-  options.garuda.motd = {
-    parentHost = lib.mkOption {
-      type = lib.types.nullOr lib.types.str;
-      default = null;
-      description = "Parent host name, shown on logins inside containers.";
-    };
-    relevantUnits = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [ ];
-      description = "Systemd units listed with their status on login.";
-    };
-    listDocker = lib.mkOption {
-      type = lib.types.bool;
-      default = config.virtualisation.docker.enable;
-      description = "List docker containers and their status on login (defaults to whether docker is enabled).";
+  fastfetchConfig = (pkgs.formats.json { }).generate "fastfetch-motd.json" {
+    "$schema" = "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json";
+    display.separator = ": ";
+    modules = [
+      "title"
+      "separator"
+      "os"
+      {
+        type = "kernel";
+        format = "{sysname} {release}";
+      }
+      "uptime"
+      {
+        type = "packages";
+        combined = true;
+      }
+      "cpu"
+      {
+        type = "gpu";
+        format = "{name}";
+      }
+      {
+        type = "memory";
+        format = "{used} / {total} ({percentage})";
+      }
+      {
+        type = "disk";
+        folders = [
+          "/"
+          "/data_1"
+          "/data_2"
+        ];
+        format = "{size-used} / {size-total} ({size-percentage}) - {filesystem}";
+      }
+      {
+        type = "localip";
+        showIpv6 = false;
+        showLoopback = false;
+        defaultRouteOnly = false;
+      }
+      {
+        type = "publicip";
+        timeout = 2000;
+      }
+      "break"
+      {
+        type = "command";
+        key = "System state";
+        text = "systemctl is-system-running 2>/dev/null || echo unknown";
+      }
+      {
+        type = "command";
+        key = "Failed units";
+        text = "failed=$(systemctl list-units --state=failed --no-legend --plain 2>/dev/null | awk 'NF{print $1}' | paste -sd' ' -); echo \${failed:-none}";
+      }
+      {
+        type = "command";
+        key = "System type";
+        text = ''
+          if [ -f /run/systemd/container ]; then echo "container ($(cat /run/systemd/container))"; else v=$(systemd-detect-virt 2>/dev/null); if [ -n "$v" ] && [ "$v" != "none" ]; then echo "container ($v)"; else echo baremetal; fi; fi'';
+      }
+      {
+        type = "command";
+        key = "Last update";
+        text = ''
+          if [ -f /run/systemd/container ]; then exit 0; fi; date -d @$(stat -c %Y /run/current-system 2>/dev/null || date +%s) '+%Y-%m-%d %H:%M%'';
+      }
+    ]
+    ++ lib.optional (cfg.parentHost != null) {
+      type = "command";
+      key = "Parent host";
+      text = "echo ${cfg.parentHost}";
+    }
+    ++ lib.optional config.virtualisation.docker.enable {
+      type = "command";
+      key = "Docker";
+      text = ''run=$(timeout 3 docker ps -q 2>/dev/null | wc -l); all=$(timeout 3 docker ps -aq 2>/dev/null | wc -l); bad=$(timeout 3 docker ps -f status=exited -f status=dead -f status=created --format '{{.Names}}' 2>/dev/null | paste -sd',' -); unh=$(timeout 3 docker ps --filter health=unhealthy --format '{{.Names}}' 2>/dev/null | paste -sd',' -); msg="$run running, $((all - run)) stopped"; extra="$bad,$unh"; extra=$(echo "$extra" | tr ',' '\n' | awk 'NF' | paste -sd',' -); if [ -n "$extra" ]; then echo "$msg | $extra"; else echo "$msg"; fi'';
     };
   };
+in
+{
+  options.garuda.motd.parentHost = lib.mkOption {
+    type = lib.types.nullOr lib.types.str;
+    default = null;
+    description = "Parent host name, shown on logins inside containers.";
+  };
 
-  config.environment.interactiveShellInit = "${initscript}";
+  config = {
+    environment.systemPackages = [ pkgs.fastfetch ];
+
+    environment.etc."fastfetch-motd.json".source = fastfetchConfig;
+
+    environment.interactiveShellInit = "${pkgs.writeShellScript "motdscript" ''
+      ${lib.getExe pkgs.fastfetch} --config /etc/fastfetch-motd.json
+      echo ""
+      echo "        Please behave well and have fun! In case of issues contact Nico or TNE 🦅"
+      HISTCONTROL=ignoreboth
+    ''}";
+  };
 }
