@@ -1,4 +1,9 @@
 # Source: https://github.com/samber/awesome-prometheus-alerts
+#
+# Rules carrying scope = "host" are backed by kernel-global metrics
+# (meminfo, vmstat, /proc/stat, /sys, timex, ...) that nspawn containers
+# see identically to their host. Alertmanager inhibits the container-job
+# duplicates of these while the host's own alert keeps firing.
 [
   {
     name = "NodeExporter";
@@ -9,6 +14,7 @@
         for = "2m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host out of memory (instance {{ $labels.instance }})";
@@ -21,6 +27,7 @@
         for = "0m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host memory under memory pressure (instance {{ $labels.instance }})";
@@ -33,6 +40,7 @@
         for = "0m";
         labels = {
           severity = "info";
+          scope = "host";
         };
         annotations = {
           summary = "Host Memory is underutilized (instance {{ $labels.instance }})";
@@ -69,6 +77,7 @@
         for = "0m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host disk IO utilization high (instance {{ $labels.instance }})";
@@ -141,6 +150,7 @@
         for = "2m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host unusual disk read latency (instance {{ $labels.instance }})";
@@ -153,6 +163,7 @@
         for = "2m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host unusual disk write latency (instance {{ $labels.instance }})";
@@ -165,6 +176,7 @@
         for = "10m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host high CPU load (instance {{ $labels.instance }})";
@@ -189,6 +201,7 @@
         for = "0m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host CPU steal noisy neighbor (instance {{ $labels.instance }})";
@@ -201,6 +214,7 @@
         for = "0m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host CPU high iowait (instance {{ $labels.instance }})";
@@ -213,6 +227,7 @@
         for = "5m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host unusual disk IO (instance {{ $labels.instance }})";
@@ -238,6 +253,7 @@
         for = "2m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host swap is filling up (instance {{ $labels.instance }})";
@@ -262,6 +278,7 @@
         for = "5m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host physical component too hot (instance {{ $labels.instance }})";
@@ -274,6 +291,7 @@
         for = "0m";
         labels = {
           severity = "critical";
+          scope = "host";
         };
         annotations = {
           summary = "Host node overtemperature alarm (instance {{ $labels.instance }})";
@@ -286,6 +304,7 @@
         for = "0m";
         labels = {
           severity = "critical";
+          scope = "host";
         };
         annotations = {
           summary = "Host software RAID insufficient drives (instance {{ $labels.instance }})";
@@ -298,6 +317,7 @@
         for = "2m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host software RAID disk failure (instance {{ $labels.instance }})";
@@ -310,6 +330,7 @@
         for = "0m";
         labels = {
           severity = "info";
+          scope = "host";
         };
         annotations = {
           summary = "Host kernel version deviations (instance {{ $labels.instance }})";
@@ -322,6 +343,7 @@
         for = "0m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host OOM kill detected (instance {{ $labels.instance }})";
@@ -334,6 +356,7 @@
         for = "0m";
         labels = {
           severity = "info";
+          scope = "host";
         };
         annotations = {
           summary = "Host EDAC Correctable Errors detected (instance {{ $labels.instance }})";
@@ -346,6 +369,7 @@
         for = "0m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host EDAC Uncorrectable Errors detected (instance {{ $labels.instance }})";
@@ -406,6 +430,7 @@
         for = "10m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host clock skew (instance {{ $labels.instance }})";
@@ -418,6 +443,7 @@
         for = "2m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host clock not synchronising (instance {{ $labels.instance }})";

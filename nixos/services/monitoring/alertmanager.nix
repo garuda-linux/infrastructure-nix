@@ -125,6 +125,22 @@ in
           group_interval = "5m";
           repeat_interval = "4h";
         };
+        # nspawn containers share the host kernel, so host-global metrics
+        # (meminfo, vmstat, /proc/stat, /sys, ...) read identically inside
+        # every container. Container-local rules are not inhibited.
+        inhibit_rules = [
+          {
+            source_matchers = [
+              ''scope="host"''
+              ''job="node-hosts"''
+            ];
+            target_matchers = [
+              ''scope="host"''
+              ''job=~"node-.+-containers"''
+            ];
+            equal = [ "alertname" ];
+          }
+        ];
         receivers = [
           {
             name = "garuda";
