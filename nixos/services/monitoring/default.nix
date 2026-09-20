@@ -11,6 +11,7 @@
     ./loki.nix
     ./fluent-bit.nix
     ./nixos-info.nix
+    ./rspamd.nix
   ];
 
   options.garuda.monitoring = with lib; {

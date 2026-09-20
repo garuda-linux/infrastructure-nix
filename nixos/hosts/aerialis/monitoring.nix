@@ -148,6 +148,22 @@ in
             };
           }) mon.chaoticMirrorTargets;
         }
+        {
+          job_name = "loki";
+          static_configs = [
+            {
+              targets = [ "127.0.0.1:${toString mon.ports.loki}" ];
+            }
+          ];
+        }
+        {
+          job_name = "alertmanager";
+          static_configs = [
+            {
+              targets = [ "127.0.0.1:${toString mon.ports.alertmanager}" ];
+            }
+          ];
+        }
       ];
     };
 

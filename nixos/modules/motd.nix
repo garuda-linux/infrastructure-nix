@@ -55,7 +55,7 @@ let
       {
         type = "command";
         key = "System state";
-        text = "systemctl is-system-running 2>/dev/null || echo unknown";
+        text = "state=$(systemctl is-system-running 2>/dev/null); echo \${state:-unknown}";
       }
       {
         type = "command";
@@ -72,7 +72,7 @@ let
         type = "command";
         key = "Last update";
         text = ''
-          if [ -f /run/systemd/container ]; then exit 0; fi; date -d @$(stat -c %Y /run/current-system 2>/dev/null || date +%s) '+%Y-%m-%d %H:%M%'';
+          if [ -f /run/systemd/container ]; then exit 0; fi; date -d @$(stat -c %Y /run/current-system 2>/dev/null || date +%s) '+%Y-%m-%d %H:%M'';
       }
     ]
     ++ lib.optional (cfg.parentHost != null) {

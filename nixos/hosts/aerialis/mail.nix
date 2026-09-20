@@ -21,7 +21,7 @@ in
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
-  garuda = garuda-lib.mkMonitoring {
+  garuda = lib.recursiveUpdate (garuda-lib.mkMonitoring {
     host = "aerialis";
     units = [
       "dovecot2.service"
@@ -30,7 +30,7 @@ in
       "rspamd.service"
     ];
     exporters = [ "postfixExporter" ];
-  };
+  }) { monitoring.rspamd.enable = true; };
 
   # NixOS Mailserver
   mailserver = {
@@ -218,6 +218,7 @@ in
   sops.secrets = garuda-lib.mkSecrets [
     "backup/repo_key"
     "backup/ssh_aerialis"
+    "mail/rspamd_controller"
     "mail/a0xzatchaotic"
     "mail/cloudatgl"
     "mail/complaintsatgl"
