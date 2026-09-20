@@ -41,6 +41,7 @@ in
       defaults = {
         group = "nginx";
         email = "team@garudalinux.org";
+        dnsResolver = "1.1.1.1:53,1.0.0.1:53";
       };
       certs = lib.genAttrs referencedCerts (
         name:

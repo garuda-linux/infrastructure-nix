@@ -317,7 +317,7 @@ let
       acmeHost = "garudalinux.net";
       realIp = false;
     };
-    "grafana.garudalinux.net" = mkZerotrustVhost {
+    "grafana.garudalinux.net" = mkCloudflaredVhost {
       upstream = "http://10.0.5.100:3010";
       acmeHost = "garudalinux.net";
     };
