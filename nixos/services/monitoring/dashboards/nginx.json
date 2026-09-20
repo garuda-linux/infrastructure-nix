@@ -1476,7 +1476,36 @@
         ]
       }
     },
-    "links": [],
+    "links": [
+      {
+        "title": "Loki",
+        "type": "dashboards",
+        "icon": "external link",
+        "tooltip": "",
+        "url": "",
+        "tags": [
+          "loki"
+        ],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "Garuda",
+        "type": "dashboards",
+        "icon": "external link",
+        "tooltip": "",
+        "url": "",
+        "tags": [
+          "garuda"
+        ],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      }
+    ],
     "liveNow": false,
     "preload": false,
     "tags": [

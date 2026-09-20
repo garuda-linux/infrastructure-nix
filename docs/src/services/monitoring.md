@@ -21,6 +21,7 @@ which kept only a few GB per host and offered no central alerting.
 | dovecot (OpenMetrics) | Mail auth/IMAP/delivery metrics     | 9900  |
 | GitLab runner metrics | CI runner                           | 9252  |
 | cloudflared metrics   | Tunnel metrics                      | 20241 |
+| cloudflare_exporter   | Cloudflare zone/worker analytics   | 9333  |
 
 Everything runs in the `monitoring` container on aerialis (`10.0.5.100`). Hosts and containers opt in with
 `garuda.monitoring`; the port numbers above are all defined once in `garuda-lib.monitoring.ports`.
@@ -51,6 +52,9 @@ container runs its own tailscaled instead of going through a proxy on the host.
 
 Dashboards live in `nixos/services/monitoring/dashboards` and are provisioned into the main organization.
 Datasource uids are pinned, because the dashboards reference them by uid.
+
+Fly.io's managed Prometheus is provisioned as an extra datasource in the main organization, authenticated with
+the `grafana/fly_token` sops secret.
 
 Grafana has no provisioning support for organizations, and it refuses to start when provisioning targets one
 that does not exist yet. The `grafana-organizations` unit therefore creates any missing organization listed

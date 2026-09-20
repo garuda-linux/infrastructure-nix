@@ -2301,6 +2301,34 @@
         "targetBlank": false,
         "includeVars": false,
         "keepTime": false
+      },
+      {
+        "title": "Borgmatic",
+        "type": "dashboards",
+        "icon": "external link",
+        "tooltip": "",
+        "url": "",
+        "tags": [
+          "borgmatic"
+        ],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "Garuda",
+        "type": "dashboards",
+        "icon": "external link",
+        "tooltip": "",
+        "url": "",
+        "tags": [
+          "garuda"
+        ],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
       }
     ],
     "liveNow": false,

@@ -2178,7 +2178,22 @@
         ]
       }
     },
-    "links": [],
+    "links": [
+      {
+        "title": "Garuda",
+        "type": "dashboards",
+        "icon": "external link",
+        "tooltip": "",
+        "url": "",
+        "tags": [
+          "garuda"
+        ],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      }
+    ],
     "liveNow": false,
     "preload": false,
     "tags": [

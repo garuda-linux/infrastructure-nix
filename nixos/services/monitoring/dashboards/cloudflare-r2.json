@@ -2,7 +2,7 @@
   "apiVersion": "dashboard.grafana.app/v2",
   "kind": "Dashboard",
   "metadata": {
-    "name": "garuda-rspamd",
+    "name": "cloudflare-r2",
     "namespace": "default"
   },
   "spec": {
@@ -30,14 +30,14 @@
         }
       }
     ],
-    "cursorSync": "Off",
+    "cursorSync": "Crosshair",
     "editable": true,
     "elements": {
       "panel-1": {
         "kind": "Panel",
         "spec": {
           "id": 1,
-          "title": "Scanned / min",
+          "title": "Total Storage",
           "description": "",
           "links": [],
           "data": {
@@ -52,10 +52,10 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${datasource}"
+                        "name": "prometheus"
                       },
                       "spec": {
-                        "expr": "sum(rate(rspamd_stats_scanned[5m])) * 60"
+                        "expr": "sum(cloudflare_r2_storage_bytes{bucket=~\"$bucket\"})"
                       }
                     },
                     "refId": "A",
@@ -72,9 +72,24 @@
             "group": "stat",
             "version": "",
             "spec": {
-              "options": {},
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
               "fieldConfig": {
-                "defaults": {},
+                "defaults": {
+                  "unit": "bytes"
+                },
                 "overrides": []
               }
             }
@@ -85,7 +100,7 @@
         "kind": "Panel",
         "spec": {
           "id": 2,
-          "title": "Spam %",
+          "title": "Operations / s",
           "description": "",
           "links": [],
           "data": {
@@ -100,10 +115,10 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${datasource}"
+                        "name": "prometheus"
                       },
                       "spec": {
-                        "expr": "(100 * sum(rate(rspamd_stats_spam_count[5m])) / sum(rate(rspamd_stats_scanned[5m]))) or vector(0)"
+                        "expr": "sum(rate(cloudflare_r2_operation_count{bucket=~\"$bucket\"}[$__rate_interval]))"
                       }
                     },
                     "refId": "A",
@@ -112,7 +127,9 @@
                 }
               ],
               "transformations": [],
-              "queryOptions": {}
+              "queryOptions": {
+                "interval": "2m"
+              }
             }
           },
           "vizConfig": {
@@ -120,28 +137,23 @@
             "group": "stat",
             "version": "",
             "spec": {
-              "options": {},
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
               "fieldConfig": {
                 "defaults": {
-                  "unit": "percent",
-                  "decimals": 2,
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": null,
-                        "color": "green"
-                      },
-                      {
-                        "value": 5,
-                        "color": "yellow"
-                      },
-                      {
-                        "value": 15,
-                        "color": "red"
-                      }
-                    ]
-                  }
+                  "unit": "ops"
                 },
                 "overrides": []
               }
@@ -153,7 +165,7 @@
         "kind": "Panel",
         "spec": {
           "id": 3,
-          "title": "Rejected / min",
+          "title": "Reads / s",
           "description": "",
           "links": [],
           "data": {
@@ -168,10 +180,10 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${datasource}"
+                        "name": "prometheus"
                       },
                       "spec": {
-                        "expr": "sum(rate(rspamd_actions_reject[5m])) * 60"
+                        "expr": "sum(rate(cloudflare_r2_operation_count{bucket=~\"$bucket\",operation=~\"GetObject|HeadObject\"}[$__rate_interval]))"
                       }
                     },
                     "refId": "A",
@@ -180,7 +192,9 @@
                 }
               ],
               "transformations": [],
-              "queryOptions": {}
+              "queryOptions": {
+                "interval": "2m"
+              }
             }
           },
           "vizConfig": {
@@ -188,9 +202,24 @@
             "group": "stat",
             "version": "",
             "spec": {
-              "options": {},
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
               "fieldConfig": {
-                "defaults": {},
+                "defaults": {
+                  "unit": "ops"
+                },
                 "overrides": []
               }
             }
@@ -201,7 +230,7 @@
         "kind": "Panel",
         "spec": {
           "id": 4,
-          "title": "Greylisted / min",
+          "title": "Writes / s",
           "description": "",
           "links": [],
           "data": {
@@ -216,10 +245,10 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${datasource}"
+                        "name": "prometheus"
                       },
                       "spec": {
-                        "expr": "sum(rate(rspamd_actions_greylist[5m])) * 60"
+                        "expr": "sum(rate(cloudflare_r2_operation_count{bucket=~\"$bucket\",operation=~\"PutObject|DeleteObject|DeleteObjects|CompleteMultipartUpload|UploadPart\"}[$__rate_interval]))"
                       }
                     },
                     "refId": "A",
@@ -228,7 +257,9 @@
                 }
               ],
               "transformations": [],
-              "queryOptions": {}
+              "queryOptions": {
+                "interval": "2m"
+              }
             }
           },
           "vizConfig": {
@@ -236,9 +267,24 @@
             "group": "stat",
             "version": "",
             "spec": {
-              "options": {},
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "textMode": "auto"
+              },
               "fieldConfig": {
-                "defaults": {},
+                "defaults": {
+                  "unit": "ops"
+                },
                 "overrides": []
               }
             }
@@ -249,7 +295,7 @@
         "kind": "Panel",
         "spec": {
           "id": 5,
-          "title": "Actions / min",
+          "title": "Storage by Bucket",
           "description": "",
           "links": [],
           "data": {
@@ -264,109 +310,14 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${datasource}"
+                        "name": "prometheus"
                       },
                       "spec": {
-                        "expr": "sum(rate(rspamd_actions_reject[5m])) * 60",
-                        "legendFormat": "reject"
+                        "expr": "cloudflare_r2_storage_bytes{bucket=~\"$bucket\"}",
+                        "legendFormat": "{{bucket}}"
                       }
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "${datasource}"
-                      },
-                      "spec": {
-                        "expr": "sum(rate(rspamd_actions_soft_reject[5m])) * 60",
-                        "legendFormat": "soft reject"
-                      }
-                    },
-                    "refId": "B",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "${datasource}"
-                      },
-                      "spec": {
-                        "expr": "sum(rate(rspamd_actions_rewrite_subject[5m])) * 60",
-                        "legendFormat": "rewrite subject"
-                      }
-                    },
-                    "refId": "C",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "${datasource}"
-                      },
-                      "spec": {
-                        "expr": "sum(rate(rspamd_actions_add_header[5m])) * 60",
-                        "legendFormat": "add header"
-                      }
-                    },
-                    "refId": "D",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "${datasource}"
-                      },
-                      "spec": {
-                        "expr": "sum(rate(rspamd_actions_greylist[5m])) * 60",
-                        "legendFormat": "greylist"
-                      }
-                    },
-                    "refId": "E",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "${datasource}"
-                      },
-                      "spec": {
-                        "expr": "sum(rate(rspamd_actions_no_action[5m])) * 60",
-                        "legendFormat": "no action"
-                      }
-                    },
-                    "refId": "F",
                     "hidden": false
                   }
                 }
@@ -380,14 +331,20 @@
             "group": "timeseries",
             "version": "",
             "spec": {
-              "options": {},
+              "options": {
+                "legend": {
+                  "displayMode": "table",
+                  "placement": "right",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "desc"
+                }
+              },
               "fieldConfig": {
                 "defaults": {
-                  "custom": {
-                    "stacking": {
-                      "mode": "normal"
-                    }
-                  }
+                  "unit": "bytes"
                 },
                 "overrides": []
               }
@@ -399,7 +356,7 @@
         "kind": "Panel",
         "spec": {
           "id": 6,
-          "title": "Scanned vs spam vs ham",
+          "title": "Operations / s by Type",
           "description": "",
           "links": [],
           "data": {
@@ -414,17 +371,60 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${datasource}"
+                        "name": "prometheus"
                       },
                       "spec": {
-                        "expr": "sum(rate(rspamd_stats_scanned[5m])) * 60",
-                        "legendFormat": "scanned"
+                        "expr": "sum by (operation) (rate(cloudflare_r2_operation_count{bucket=~\"$bucket\"}[$__rate_interval]))"
                       }
                     },
                     "refId": "A",
                     "hidden": false
                   }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "interval": "2m"
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "",
+            "spec": {
+              "options": {
+                "legend": {
+                  "displayMode": "table",
+                  "placement": "right",
+                  "showLegend": true
                 },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "desc"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "ops"
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-7": {
+        "kind": "Panel",
+        "spec": {
+          "id": 7,
+          "title": "Total Operations in Range by Type",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
                 {
                   "kind": "PanelQuery",
                   "spec": {
@@ -433,33 +433,13 @@
                       "group": "prometheus",
                       "version": "v0",
                       "datasource": {
-                        "name": "${datasource}"
+                        "name": "prometheus"
                       },
                       "spec": {
-                        "expr": "sum(rate(rspamd_stats_spam_count[5m])) * 60",
-                        "legendFormat": "spam"
+                        "expr": "topk(10, sum by (operation) (increase(cloudflare_r2_operation_count{bucket=~\"$bucket\"}[$__range])))"
                       }
                     },
-                    "refId": "B",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "${datasource}"
-                      },
-                      "spec": {
-                        "expr": "sum(rate(rspamd_stats_ham_count[5m])) * 60",
-                        "legendFormat": "ham"
-                      }
-                    },
-                    "refId": "C",
+                    "refId": "A",
                     "hidden": false
                   }
                 }
@@ -470,12 +450,24 @@
           },
           "vizConfig": {
             "kind": "VizConfig",
-            "group": "timeseries",
+            "group": "barchart",
             "version": "",
             "spec": {
-              "options": {},
+              "options": {
+                "legend": {
+                  "displayMode": "table",
+                  "placement": "right",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "desc"
+                }
+              },
               "fieldConfig": {
-                "defaults": {},
+                "defaults": {
+                  "unit": "ops"
+                },
                 "overrides": []
               }
             }
@@ -493,7 +485,7 @@
               "x": 0,
               "y": 0,
               "width": 6,
-              "height": 3,
+              "height": 4,
               "element": {
                 "kind": "ElementReference",
                 "name": "panel-1"
@@ -506,7 +498,7 @@
               "x": 6,
               "y": 0,
               "width": 6,
-              "height": 3,
+              "height": 4,
               "element": {
                 "kind": "ElementReference",
                 "name": "panel-2"
@@ -519,7 +511,7 @@
               "x": 12,
               "y": 0,
               "width": 6,
-              "height": 3,
+              "height": 4,
               "element": {
                 "kind": "ElementReference",
                 "name": "panel-3"
@@ -532,7 +524,7 @@
               "x": 18,
               "y": 0,
               "width": 6,
-              "height": 3,
+              "height": 4,
               "element": {
                 "kind": "ElementReference",
                 "name": "panel-4"
@@ -543,7 +535,7 @@
             "kind": "GridLayoutItem",
             "spec": {
               "x": 0,
-              "y": 3,
+              "y": 4,
               "width": 24,
               "height": 8,
               "element": {
@@ -556,12 +548,25 @@
             "kind": "GridLayoutItem",
             "spec": {
               "x": 0,
-              "y": 11,
-              "width": 24,
+              "y": 12,
+              "width": 12,
               "height": 8,
               "element": {
                 "kind": "ElementReference",
                 "name": "panel-6"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 12,
+              "y": 12,
+              "width": 12,
+              "height": 8,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-7"
               }
             }
           }
@@ -570,27 +575,13 @@
     },
     "links": [
       {
-        "title": "Mail",
+        "title": "Cloudflare",
         "type": "dashboards",
         "icon": "external link",
         "tooltip": "",
         "url": "",
         "tags": [
-          "mail"
-        ],
-        "asDropdown": false,
-        "targetBlank": false,
-        "includeVars": true,
-        "keepTime": true
-      },
-      {
-        "title": "Garuda",
-        "type": "dashboards",
-        "icon": "external link",
-        "tooltip": "",
-        "url": "",
-        "tags": [
-          "garuda"
+          "cloudflare"
         ],
         "asDropdown": false,
         "targetBlank": false,
@@ -601,12 +592,9 @@
     "liveNow": false,
     "preload": false,
     "tags": [
-      "rspamd",
-      "mail",
-      "garuda"
+      "cloudflare"
     ],
     "timeSettings": {
-      "timezone": "browser",
       "from": "now-6h",
       "to": "now",
       "autoRefresh": "1m",
@@ -625,24 +613,38 @@
       "hideTimepicker": false,
       "fiscalYearStartMonth": 0
     },
-    "title": "Garuda Rspamd",
+    "title": "Cloudflare R2",
     "variables": [
       {
-        "kind": "DatasourceVariable",
+        "kind": "QueryVariable",
         "spec": {
-          "name": "datasource",
-          "pluginId": "prometheus",
-          "refresh": "never",
-          "regex": "",
+          "name": "bucket",
           "current": {
-            "text": "Prometheus",
-            "value": "prometheus"
+            "text": "All",
+            "value": "$__all"
           },
-          "options": [],
-          "multi": false,
-          "includeAll": false,
           "hide": "dontHide",
+          "refresh": "onDashboardLoad",
           "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "prometheus",
+            "version": "v0",
+            "datasource": {
+              "name": "prometheus"
+            },
+            "spec": {
+              "qryType": 1,
+              "query": "label_values(cloudflare_r2_storage_bytes, bucket)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            }
+          },
+          "regex": "",
+          "sort": "alphabeticalAsc",
+          "definition": "label_values(cloudflare_r2_storage_bytes, bucket)",
+          "options": [],
+          "multi": true,
+          "includeAll": true,
           "allowCustomValue": true
         }
       }

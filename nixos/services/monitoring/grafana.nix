@@ -12,15 +12,28 @@ let
 
   # The provisioned dashboards reference datasources by uid, so these are shared between
   # the datasource provisioning and the derived Chaotic dashboard copies.
+  # The provisioned dashboards reference datasources by uid, so these are shared between
+  # the datasource provisioning and the derived Chaotic dashboard copies.
   prometheusUid = "prometheus";
   chaoticPrometheusUid = "prometheus-chaotic";
+  chaoticFlyUid = "fly-prometheus-chaotic";
   lokiUid = "P8E80F9AEF21F6940";
+
+  # Fly.io's managed Prometheus, reached through its HTTP API with a token.
+  flyPrometheusUrl = "https://api.fly.io/prometheus/dr460nf1r3/";
+  flyPrometheusUid = "fly-prometheus";
 
   # The Chaotic organization and the dashboards it additionally gets a copy of.
   chaoticOrgId = 2;
   organizations = [ "Chaotic" ];
   chaoticDashboardNames = [
     "build-queue.json"
+    "cloudflare-analytics.json"
+    "cloudflare-threats.json"
+    "cloudflare-r2.json"
+    "fly-app.json"
+    "fly-edge.json"
+    "fly-instance.json"
     "mirrors.json"
   ];
 
@@ -35,10 +48,44 @@ let
   # Dashboards are authored as resources of the main organization. Grafana encodes the
   # owning organization in the resource namespace and picks datasources by uid, so the
   # Chaotic copies differ in exactly those two places
+  chaoticDatasourceUid =
+    name:
+    if name == prometheusUid then
+      chaoticPrometheusUid
+    else if name == flyPrometheusUid then
+      chaoticFlyUid
+    else
+      name;
+
+  # Rewrite every datasource reference (panel queries, variables, annotations
+  # use {"name": ...} refs) to the Chaotic org's datasource copies. References
+  # that do not point at a main-org datasource (built-ins, ${...} variables)
+  # pass through untouched. This is only to lock down the Viewers view on purpose.
+  rewriteChaoticDatasources =
+    value:
+    if lib.isAttrs value then
+      lib.mapAttrs (
+        attrName: attrValue:
+        if
+          attrName == "datasource" && lib.isAttrs attrValue && (attrValue.name or "") != ""
+        then
+          let
+            uid = chaoticDatasourceUid attrValue.name;
+          in
+          if uid == attrValue.name then attrValue else { name = uid; uid = uid; }
+        else
+          rewriteChaoticDatasources attrValue
+      ) value
+    else if lib.isList value then
+      map rewriteChaoticDatasources value
+    else
+      value;
+
   chaoticDashboard =
     name:
     let
       dashboard = lib.importJSON ./dashboards/${name};
+      rewritten = rewriteChaoticDatasources dashboard;
       toChaotic =
         variable:
         if
@@ -50,14 +97,28 @@ let
               value = chaoticPrometheusUid;
             };
           }
+        # The Chaotic org only gets its own zone: lock the zone variable down to
+        # chaotic.cx so no other zone can be selected.
+        else if (variable.kind or "") == "QueryVariable" && (variable.spec.name or "") == "zone" then
+          lib.recursiveUpdate variable {
+            spec = {
+              regex = "^chaotic\\.cx$";
+              multi = false;
+              includeAll = false;
+              current = {
+                text = "chaotic.cx";
+                value = "chaotic.cx";
+              };
+            };
+          }
         else
           variable;
     in
     pkgs.writeText name (
       builtins.toJSON (
-        lib.recursiveUpdate dashboard {
+        lib.recursiveUpdate rewritten {
           metadata.namespace = "org-${toString chaoticOrgId}";
-          spec.variables = map toChaotic dashboard.spec.variables;
+          spec.variables = map toChaotic rewritten.spec.variables;
         }
       )
     );
@@ -95,13 +156,13 @@ let
   '';
 
   # Maps sadly need the token to not render an overlay.
-  # NOTE: This runs under Grafana's hardened systemd unit (syscall filter), so
-  # only bash builtins + mkdir are used here. No sed/cat/cp/chmod.
+  # NOTE: This runs under Grafana's hardened systemd unit (syscall filter)
   renderDashboardsScript = pkgs.writeShellScript "grafana-render-dashboards" ''
     set -euo pipefail
     dest=${config.services.grafana.dataDir}/dashboards-rendered
     key=$(<${config.sops.secrets."grafana/carto_key".path})
     mkdir -p "$dest/garuda" "$dest/chaotic"
+    rm -f "$dest/garuda"/* "$dest/chaotic"/* || true
     render() {
       local src=$1 dst=$2 f content
       for f in "$src"/*.json; do
@@ -154,7 +215,38 @@ in
               name = "Alertmanager";
               type = "alertmanager";
               url = "http://127.0.0.1:${toString cfg.prometheus.alertmanager.port}";
-            };
+            }
+            # https://fly.io/docs/monitoring/metrics/#external-or-self-hosted-grafana
+            ++ [
+              {
+                access = "proxy";
+                name = "Fly.io";
+                type = "prometheus";
+                url = flyPrometheusUrl;
+                uid = flyPrometheusUid;
+                jsonData = {
+                  httpHeaderName1 = "Authorization";
+                };
+                secureJsonData = {
+                  httpHeaderValue1 = "$__file{${config.sops.secrets."grafana/fly_token".path}}";
+                };
+              }
+              # Chaotic org (id 2) gets its own copy under a different uid, so the vendored Fly dashboards resolve
+              {
+                access = "proxy";
+                name = "Fly.io";
+                type = "prometheus";
+                url = flyPrometheusUrl;
+                uid = chaoticFlyUid;
+                orgId = chaoticOrgId;
+                jsonData = {
+                  httpHeaderName1 = "Authorization";
+                };
+                secureJsonData = {
+                  httpHeaderValue1 = "$__file{${config.sops.secrets."grafana/fly_token".path}}";
+                };
+              }
+            ];
         };
         dashboards.settings = {
           apiVersion = 1;

@@ -65,6 +65,12 @@ in
         environmentFile = config.sops.templates."tailscale-exporter-env".path;
       };
 
+      cloudflareExporter = {
+        enable = true;
+        port = mon.ports.cloudflareExporter;
+        environmentFile = config.sops.templates."cloudflare-exporter-env".path;
+      };
+
       applicationTargets = [
         {
           name = "dovecot";
@@ -222,6 +228,14 @@ in
       TAILSCALE_TAILNET=${mon.tailnetDomain}
       TAILSCALE_OAUTH_CLIENT_ID=${config.sops.placeholder."tailscale/oauth_client_id"}
       TAILSCALE_OAUTH_CLIENT_SECRET=${config.sops.placeholder."tailscale/oauth_client_secret"}
+    '';
+  };
+
+  sops.secrets."cloudflare/exporter_api_token" = { };
+  sops.templates."cloudflare-exporter-env" = {
+    mode = "0400";
+    content = ''
+      CF_API_TOKEN=${config.sops.placeholder."cloudflare/exporter_api_token"}
     '';
   };
 

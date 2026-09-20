@@ -113,6 +113,7 @@ let
       borgmaticExporter = 9996;
       redisExporter = 9121;
       postfixExporter = 9154;
+      cloudflareExporter = 9333;
       dovecotMetrics = 9900;
       gitlabRunnerMetrics = 9252;
       cloudflaredMetrics = 20241;

@@ -2,7 +2,7 @@
   "apiVersion": "dashboard.grafana.app/v2",
   "kind": "Dashboard",
   "metadata": {
-    "name": "gitlab-runner",
+    "name": "cloudflare-analytics",
     "namespace": "default"
   },
   "spec": {
@@ -14,31 +14,24 @@
             "kind": "DataQuery",
             "group": "grafana",
             "version": "v0",
-            "datasource": {
-              "name": "-- Grafana --"
-            },
             "spec": {}
           },
           "enable": true,
           "hide": true,
           "iconColor": "rgba(0, 211, 255, 1)",
           "name": "Annotations & Alerts",
-          "builtIn": true,
-          "legacyOptions": {
-            "type": "dashboard"
-          }
+          "builtIn": true
         }
       }
     ],
     "cursorSync": "Off",
-    "description": "Prometheus Metrics for Gitlab Runners",
     "editable": true,
     "elements": {
-      "panel-10": {
+      "panel-11": {
         "kind": "Panel",
         "spec": {
-          "id": 10,
-          "title": "Configuration Saved Errors",
+          "id": 11,
+          "title": "Request Content Type",
           "description": "",
           "links": [],
           "data": {
@@ -56,11 +49,10 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "editorMode": "code",
-                        "expr": "rate(gitlab_runner_configuration_saving_error_total{job=~\"$job\"}[2m])",
-                        "instant": false,
-                        "legendFormat": "{{instance}}",
-                        "range": true
+                        "expr": "increase(cloudflare_zone_requests_content_type{zone=~\"$zone\"}[$__range])",
+                        "instant": true,
+                        "interval": "",
+                        "legendFormat": "{{content_type}}"
                       }
                     },
                     "refId": "A",
@@ -69,20 +61,29 @@
                 }
               ],
               "transformations": [],
-              "queryOptions": {}
+              "queryOptions": {
+                "maxDataPoints": 1
+              }
             }
           },
           "vizConfig": {
             "kind": "VizConfig",
-            "group": "stat",
+            "group": "piechart",
             "version": "13.1.4",
             "spec": {
               "options": {
-                "colorMode": "value",
-                "graphMode": "area",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "percentChangeColorMode": "standard",
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "table",
+                  "overflow": "ellipsis",
+                  "placement": "right",
+                  "showLegend": true,
+                  "values": [
+                    "value",
+                    "percent"
+                  ]
+                },
+                "pieType": "pie",
                 "reduceOptions": {
                   "calcs": [
                     "lastNotNull"
@@ -90,156 +91,26 @@
                   "fields": "",
                   "values": false
                 },
-                "showPercentChange": false,
-                "textMode": "auto",
-                "wideLayout": true
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 0.1,
-                        "color": "#EAB839"
-                      },
-                      {
-                        "value": 1,
-                        "color": "red"
-                      }
-                    ]
-                  },
-                  "color": {
-                    "mode": "thresholds"
-                  }
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-11": {
-        "kind": "Panel",
-        "spec": {
-          "id": 11,
-          "title": "Errors Total",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "sum by (level) (rate(gitlab_runner_errors_total{job=~\"$job\"}[2m]))",
-                        "instant": false,
-                        "legendFormat": "{{instance}} {{level}}",
-                        "range": true
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "13.1.4",
-            "spec": {
-              "options": {
-                "annotations": {
-                  "clustering": -1,
-                  "multiLane": false
-                },
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "enableFacetedFilter": false,
-                  "overflow": "ellipsis",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
+                "sort": "desc",
                 "tooltip": {
                   "hideZeros": false,
-                  "maxHeight": 600,
                   "mode": "single",
                   "sort": "none"
                 }
               },
               "fieldConfig": {
                 "defaults": {
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 0.1,
-                        "color": "#EAB839"
-                      },
-                      {
-                        "value": 1,
-                        "color": "red"
-                      }
-                    ]
-                  },
+                  "unit": "short",
+                  "decimals": 0,
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
+                    "fixedColor": "#73BF69"
                   },
                   "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "bars",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
                       "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
                     }
                   }
                 },
@@ -249,11 +120,11 @@
           }
         }
       },
-      "panel-16": {
+      "panel-12": {
         "kind": "Panel",
         "spec": {
-          "id": 16,
-          "title": "Feeds Rate",
+          "id": 12,
+          "title": "Request Country",
           "description": "",
           "links": [],
           "data": {
@@ -271,11 +142,217 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "editorMode": "code",
-                        "expr": "sum by (instance, runner, system_id, runner_name) (rate(gitlab_runner_worker_feeds_total{job=~\"$job\"}[2m]))",
+                        "expr": "increase(cloudflare_zone_requests_country{zone=~\"$zone\"}[$__range])",
+                        "instant": true,
+                        "interval": "",
+                        "legendFormat": "{{country}}"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "maxDataPoints": 1
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "piechart",
+            "version": "13.1.4",
+            "spec": {
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "table",
+                  "overflow": "ellipsis",
+                  "placement": "right",
+                  "showLegend": true,
+                  "values": [
+                    "value",
+                    "percent"
+                  ]
+                },
+                "pieType": "pie",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "sort": "desc",
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short",
+                  "decimals": 0,
+                  "color": {
+                    "mode": "palette-classic",
+                    "fixedColor": "#73BF69"
+                  },
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-13": {
+        "kind": "Panel",
+        "spec": {
+          "id": 13,
+          "title": "Requests SSL",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "cloudflare_zone_requests_ssl_encrypted{zone=~\"$zone\"} / cloudflare_zone_requests_total{zone=~\"$zone\"}",
+                        "instant": true,
+                        "interval": "",
+                        "legendFormat": "encrypted"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "( cloudflare_zone_requests_total{zone=~\"$zone\"} - cloudflare_zone_requests_ssl_encrypted{zone=~\"$zone\"}  ) / cloudflare_zone_requests_total{zone=~\"$zone\"}",
+                        "instant": true,
+                        "interval": "",
+                        "legendFormat": "unencrypted"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "maxDataPoints": 1
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "piechart",
+            "version": "13.1.4",
+            "spec": {
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "table",
+                  "overflow": "ellipsis",
+                  "placement": "right",
+                  "showLegend": true,
+                  "values": [
+                    "value"
+                  ]
+                },
+                "pieType": "pie",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "sort": "desc",
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percentunit",
+                  "decimals": 0,
+                  "color": {
+                    "mode": "palette-classic",
+                    "fixedColor": "#73BF69"
+                  },
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-14": {
+        "kind": "Panel",
+        "spec": {
+          "id": 14,
+          "title": "Requests per Country / Second",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "rate(cloudflare_zone_requests_country{zone=~\"$zone\"}[$__interval]) > 0",
                         "instant": false,
-                        "legendFormat": "instance: {{instance}}, runner_id: {{runner}}; system_id: {{system_id}}, runner_name: {{runner_name}}",
-                        "range": true
+                        "interval": "",
+                        "intervalFactor": 10,
+                        "legendFormat": "{{country}}"
                       }
                     },
                     "refId": "A",
@@ -298,8 +375,13 @@
                   "multiLane": false
                 },
                 "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
+                  "calcs": [
+                    "mean",
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
                   "enableFacetedFilter": false,
                   "overflow": "ellipsis",
                   "placement": "bottom",
@@ -307,13 +389,13 @@
                 },
                 "tooltip": {
                   "hideZeros": false,
-                  "maxHeight": 600,
-                  "mode": "single",
-                  "sort": "none"
+                  "mode": "multi",
+                  "sort": "desc"
                 }
               },
               "fieldConfig": {
                 "defaults": {
+                  "unit": "short",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -339,7 +421,7 @@
                     "barAlignment": 0,
                     "barWidthFactor": 0.6,
                     "drawStyle": "line",
-                    "fillOpacity": 0,
+                    "fillOpacity": 10,
                     "gradientMode": "none",
                     "hideFrom": {
                       "legend": false,
@@ -353,7 +435,226 @@
                     "scaleDistribution": {
                       "type": "linear"
                     },
-                    "showPoints": "auto",
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-15": {
+        "kind": "Panel",
+        "spec": {
+          "id": 15,
+          "title": "Bandwidth Content Type",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "rate(cloudflare_zone_bandwidth_content_type{zone=~\"$zone\"}[5m])",
+                        "instant": true,
+                        "interval": "",
+                        "legendFormat": "{{content_type}}"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "maxDataPoints": 1
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "piechart",
+            "version": "13.1.4",
+            "spec": {
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "table",
+                  "overflow": "ellipsis",
+                  "placement": "right",
+                  "showLegend": true,
+                  "values": [
+                    "value",
+                    "percent"
+                  ]
+                },
+                "pieType": "pie",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "sort": "desc",
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "decbytes",
+                  "decimals": 0,
+                  "color": {
+                    "mode": "palette-classic",
+                    "fixedColor": "#73BF69"
+                  },
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-16": {
+        "kind": "Panel",
+        "spec": {
+          "id": 16,
+          "title": "Unique Visitors",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "rate(cloudflare_zone_uniques_total{zone=~\"$zone\"}[$__interval])",
+                        "interval": "",
+                        "intervalFactor": 10,
+                        "legendFormat": "visitors"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.1.4",
+            "spec": {
+              "options": {
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
+                },
+                "legend": {
+                  "calcs": [
+                    "mean",
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
+                  "enableFacetedFilter": false,
+                  "overflow": "ellipsis",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "desc"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
@@ -375,7 +676,7 @@
         "kind": "Panel",
         "spec": {
           "id": 17,
-          "title": "Feeds Failures Rate",
+          "title": "Requests / Second (status codes)",
           "description": "",
           "links": [],
           "data": {
@@ -393,11 +694,10 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "editorMode": "code",
-                        "expr": "sum by (instance, runner, system_id, runner_name) (rate(gitlab_runner_worker_feed_failures_total{job=~\"$job\"}[2m]))",
-                        "instant": false,
-                        "legendFormat": "instance: {{instance}}, runner_id: {{runner}}; system_id: {{system_id}}, runner_name: {{runner_name}}",
-                        "range": true
+                        "expr": "rate(cloudflare_zone_requests_status{zone=~\"$zone\", status!~\"5..\"}[$__interval]) ",
+                        "interval": "",
+                        "intervalFactor": 10,
+                        "legendFormat": "{{status}}"
                       }
                     },
                     "refId": "A",
@@ -420,8 +720,13 @@
                   "multiLane": false
                 },
                 "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
+                  "calcs": [
+                    "mean",
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
                   "enableFacetedFilter": false,
                   "overflow": "ellipsis",
                   "placement": "bottom",
@@ -429,13 +734,13 @@
                 },
                 "tooltip": {
                   "hideZeros": false,
-                  "maxHeight": 600,
-                  "mode": "single",
-                  "sort": "none"
+                  "mode": "multi",
+                  "sort": "desc"
                 }
               },
               "fieldConfig": {
                 "defaults": {
+                  "unit": "short",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -461,7 +766,7 @@
                     "barAlignment": 0,
                     "barWidthFactor": 0.6,
                     "drawStyle": "line",
-                    "fillOpacity": 0,
+                    "fillOpacity": 10,
                     "gradientMode": "none",
                     "hideFrom": {
                       "legend": false,
@@ -475,129 +780,7 @@
                     "scaleDistribution": {
                       "type": "linear"
                     },
-                    "showPoints": "auto",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-18": {
-        "kind": "Panel",
-        "spec": {
-          "id": 18,
-          "title": "Health Check Failures Rate",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "sum by (instance, runner, system_id, runner_name) (rate(gitlab_runner_worker_health_check_failures_total{job=~\"$job\"}[2m]))",
-                        "instant": false,
-                        "legendFormat": "instance: {{instance}}, runner_id: {{runner}}; system_id: {{system_id}}, runner_name: {{runner_name}}",
-                        "range": true
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "13.1.4",
-            "spec": {
-              "options": {
-                "annotations": {
-                  "clustering": -1,
-                  "multiLane": false
-                },
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "enableFacetedFilter": false,
-                  "overflow": "ellipsis",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "hideZeros": false,
-                  "maxHeight": 600,
-                  "mode": "single",
-                  "sort": "none"
-                }
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
-                      }
-                    ]
-                  },
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
+                    "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
@@ -619,7 +802,7 @@
         "kind": "Panel",
         "spec": {
           "id": 19,
-          "title": "Processing Failures Rate",
+          "title": "Total Requests",
           "description": "",
           "links": [],
           "data": {
@@ -637,11 +820,10 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "editorMode": "code",
-                        "expr": "sum by (instance, runner, system_id, runner_name, failure_type) (rate(gitlab_runner_worker_processing_failures_total{job=~\"$job\"}[2m]))",
-                        "instant": false,
-                        "legendFormat": "failure_type: {{failure_type}}, instance: {{instance}}, runner_id: {{runner}}; system_id: {{system_id}}, runner_name: {{runner_name}}",
-                        "range": true
+                        "expr": "increase(cloudflare_zone_requests_total{zone=~\"$zone\"}[$__range])",
+                        "instant": true,
+                        "interval": "",
+                        "legendFormat": ""
                       }
                     },
                     "refId": "A",
@@ -655,80 +837,37 @@
           },
           "vizConfig": {
             "kind": "VizConfig",
-            "group": "timeseries",
+            "group": "stat",
             "version": "13.1.4",
             "spec": {
               "options": {
-                "annotations": {
-                  "clustering": -1,
-                  "multiLane": false
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
                 },
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "enableFacetedFilter": false,
-                  "overflow": "ellipsis",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "hideZeros": false,
-                  "maxHeight": 600,
-                  "mode": "single",
-                  "sort": "none"
-                }
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
               },
               "fieldConfig": {
                 "defaults": {
+                  "unit": "short",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
                       }
                     ]
-                  },
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
                   }
                 },
                 "overrides": []
@@ -741,44 +880,7 @@
         "kind": "Panel",
         "spec": {
           "id": 2,
-          "title": "Controller Build Info",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "text",
-            "version": "13.1.4",
-            "spec": {
-              "options": {
-                "code": {
-                  "language": "plaintext",
-                  "showLineNumbers": false,
-                  "showMiniMap": false
-                },
-                "content": "Version: ```${version}``` Architecture: ```${arch}``` Go: ```${go_version}``` Build at: ```${built_at}```",
-                "mode": "markdown"
-              },
-              "fieldConfig": {
-                "defaults": {},
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-20": {
-        "kind": "Panel",
-        "spec": {
-          "id": 20,
-          "title": "Worker Slots",
+          "title": "Requests / second",
           "description": "",
           "links": [],
           "data": {
@@ -796,11 +898,157 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "editorMode": "code",
-                        "expr": "gitlab_runner_worker_slots_number{job=~\"$job\"}",
-                        "instant": false,
-                        "legendFormat": "{{instance}}",
-                        "range": true
+                        "expr": "rate(cloudflare_zone_requests_total{zone=~\"$zone\"}[$__interval])",
+                        "interval": "",
+                        "intervalFactor": 10,
+                        "legendFormat": "total"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "rate(cloudflare_zone_requests_cached{zone=~\"$zone\"}[$__interval])",
+                        "interval": "",
+                        "intervalFactor": 10,
+                        "legendFormat": "cached"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.1.4",
+            "spec": {
+              "options": {
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
+                },
+                "legend": {
+                  "calcs": [
+                    "mean",
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
+                  "enableFacetedFilter": false,
+                  "overflow": "ellipsis",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-20": {
+        "kind": "Panel",
+        "spec": {
+          "id": 20,
+          "title": "Total Unique Visitors",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "increase(cloudflare_zone_uniques_total{zone=~\"$zone\"}[$__range])",
+                        "instant": true,
+                        "interval": "",
+                        "legendFormat": ""
                       }
                     },
                     "refId": "A",
@@ -825,7 +1073,7 @@
                 "percentChangeColorMode": "standard",
                 "reduceOptions": {
                   "calcs": [
-                    "lastNotNull"
+                    "mean"
                   ],
                   "fields": "",
                   "values": false
@@ -836,21 +1084,15 @@
               },
               "fieldConfig": {
                 "defaults": {
+                  "unit": "short",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
                       }
                     ]
-                  },
-                  "color": {
-                    "mode": "thresholds"
                   }
                 },
                 "overrides": []
@@ -863,7 +1105,7 @@
         "kind": "Panel",
         "spec": {
           "id": 21,
-          "title": "Runner Concurrent",
+          "title": "Bandwidth / second",
           "description": "",
           "links": [],
           "data": {
@@ -881,11 +1123,11 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "editorMode": "code",
-                        "expr": "gitlab_runner_concurrent{job=~\"$job\"}",
+                        "expr": "rate(cloudflare_zone_bandwidth_total{zone=~\"$zone\"}[$__interval])",
                         "instant": false,
-                        "legendFormat": "{{instance}}",
-                        "range": true
+                        "interval": "5m",
+                        "intervalFactor": 10,
+                        "legendFormat": ""
                       }
                     },
                     "refId": "A",
@@ -910,7 +1152,7 @@
                 "percentChangeColorMode": "standard",
                 "reduceOptions": {
                   "calcs": [
-                    "lastNotNull"
+                    "mean"
                   ],
                   "fields": "",
                   "values": false
@@ -921,21 +1163,15 @@
               },
               "fieldConfig": {
                 "defaults": {
+                  "unit": "Bps",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
                       }
                     ]
-                  },
-                  "color": {
-                    "mode": "thresholds"
                   }
                 },
                 "overrides": []
@@ -948,7 +1184,7 @@
         "kind": "Panel",
         "spec": {
           "id": 22,
-          "title": "Job Queuing Duration Exceeded Treshold",
+          "title": "Requests / second",
           "description": "",
           "links": [],
           "data": {
@@ -966,11 +1202,11 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "editorMode": "code",
-                        "expr": "rate(gitlab_runner_acceptable_job_queuing_duration_exceeded_total{job=~\"$job\"}[2m])",
+                        "expr": "rate(cloudflare_zone_requests_total{zone=~\"$zone\"}[$__interval])",
                         "instant": false,
-                        "legendFormat": "{{instance}}",
-                        "range": true
+                        "interval": "5m",
+                        "intervalFactor": 10,
+                        "legendFormat": ""
                       }
                     },
                     "refId": "A",
@@ -995,7 +1231,7 @@
                 "percentChangeColorMode": "standard",
                 "reduceOptions": {
                   "calcs": [
-                    "lastNotNull"
+                    "mean"
                   ],
                   "fields": "",
                   "values": false
@@ -1006,25 +1242,94 @@
               },
               "fieldConfig": {
                 "defaults": {
+                  "unit": "short",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 0.1,
-                        "color": "#EAB839"
-                      },
-                      {
-                        "value": 1,
-                        "color": "red"
                       }
                     ]
-                  },
-                  "color": {
-                    "mode": "thresholds"
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-23": {
+        "kind": "Panel",
+        "spec": {
+          "id": 23,
+          "title": "Uniques / second",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "rate(cloudflare_zone_uniques_total{zone=~\"$zone\"}[$__interval])",
+                        "instant": false,
+                        "interval": "5m",
+                        "intervalFactor": 10,
+                        "legendFormat": ""
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.1.4",
+            "spec": {
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      }
+                    ]
                   }
                 },
                 "overrides": []
@@ -1037,7 +1342,7 @@
         "kind": "Panel",
         "spec": {
           "id": 24,
-          "title": "Api Requests Rate",
+          "title": "Total Bandwidth",
           "description": "",
           "links": [],
           "data": {
@@ -1055,11 +1360,10 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "editorMode": "code",
-                        "expr": "sum by (endpoint, status, instance, runner, system_id) (rate(gitlab_runner_api_request_statuses_total{job=~\"$job\"}[2m]))",
-                        "instant": false,
-                        "legendFormat": "endpoint: {{endpoint}}, status: {{status}}, instance: {{instance}}, runner_id: {{runner}}; system_id: {{system_id}}, runner_name: {{runner_name}}",
-                        "range": true
+                        "expr": "increase(cloudflare_zone_bandwidth_total{zone=~\"$zone\"}[$__range])",
+                        "instant": true,
+                        "interval": "",
+                        "legendFormat": ""
                       }
                     },
                     "refId": "A",
@@ -1073,391 +1377,37 @@
           },
           "vizConfig": {
             "kind": "VizConfig",
-            "group": "timeseries",
+            "group": "stat",
             "version": "13.1.4",
             "spec": {
               "options": {
-                "annotations": {
-                  "clustering": -1,
-                  "multiLane": false
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
                 },
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "enableFacetedFilter": false,
-                  "overflow": "ellipsis",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "hideZeros": false,
-                  "maxHeight": 600,
-                  "mode": "single",
-                  "sort": "none"
-                }
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
               },
               "fieldConfig": {
                 "defaults": {
+                  "unit": "decbytes",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
                       {
                         "value": 0,
                         "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
                       }
                     ]
-                  },
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-25": {
-        "kind": "Panel",
-        "spec": {
-          "id": 25,
-          "title": "Api Request duration",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.99,\n  sum by (le)(\n    rate(\n      gitlab_runner_api_request_duration_seconds_bucket{\n        job=~\"$job\"\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "99%",
-                        "range": true
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.95,\n  sum by (le)(\n    rate(\n      gitlab_runner_api_request_duration_seconds_bucket{\n        job=~\"$job\",\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "95%",
-                        "range": true
-                      }
-                    },
-                    "refId": "B",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.90,\n  sum by (le)(\n    rate(\n      gitlab_runner_api_request_duration_seconds_bucket{\n        job=~\"$job\"\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "90%",
-                        "range": true
-                      }
-                    },
-                    "refId": "C",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.50,\n  sum by (le)(\n    rate(\n      gitlab_runner_api_request_duration_seconds_bucket{\n        job=~\"$job\",\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "50%",
-                        "range": true
-                      }
-                    },
-                    "refId": "D",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "13.1.4",
-            "spec": {
-              "options": {
-                "annotations": {
-                  "clustering": -1,
-                  "multiLane": false
-                },
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "enableFacetedFilter": false,
-                  "overflow": "ellipsis",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "hideZeros": false,
-                  "maxHeight": 600,
-                  "mode": "single",
-                  "sort": "none"
-                }
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "unit": "s",
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
-                      }
-                    ]
-                  },
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 1,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-26": {
-        "kind": "Panel",
-        "spec": {
-          "id": 26,
-          "title": "Autoscaling Machine States",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "gitlab_runner_autoscaling_machine_states{job=~\"$job\"}",
-                        "instant": false,
-                        "legendFormat": "state: {{state}}, executor: {{executor}}, instance: {{instance}}",
-                        "range": true
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "13.1.4",
-            "spec": {
-              "options": {
-                "annotations": {
-                  "clustering": -1,
-                  "multiLane": false
-                },
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "enableFacetedFilter": false,
-                  "overflow": "ellipsis",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "hideZeros": false,
-                  "maxHeight": 600,
-                  "mode": "single",
-                  "sort": "none"
-                }
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
-                      }
-                    ]
-                  },
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
                   }
                 },
                 "overrides": []
@@ -1470,7 +1420,7 @@
         "kind": "Panel",
         "spec": {
           "id": 27,
-          "title": "Autoscaling Machine Creation Duration",
+          "title": "Errors / Second",
           "description": "",
           "links": [],
           "data": {
@@ -1488,80 +1438,13 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.99,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_creation_duration_seconds_bucket{\n        job=~\"$job\"\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "99%",
-                        "range": true
+                        "expr": "rate(cloudflare_zone_requests_status{zone=~\"$zone\", status=~\"5..\"}[$__interval]) ",
+                        "interval": "",
+                        "intervalFactor": 10,
+                        "legendFormat": "{{status}}"
                       }
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.95,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_creation_duration_seconds_bucket{\n        job=~\"$job\",\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "95%",
-                        "range": true
-                      }
-                    },
-                    "refId": "B",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.90,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_creation_duration_seconds_bucket{\n        job=~\"$job\"\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "90%",
-                        "range": true
-                      }
-                    },
-                    "refId": "C",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.50,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_creation_duration_seconds_bucket{\n        job=~\"$job\",\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "50%",
-                        "range": true
-                      }
-                    },
-                    "refId": "D",
                     "hidden": false
                   }
                 }
@@ -1581,8 +1464,13 @@
                   "multiLane": false
                 },
                 "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
+                  "calcs": [
+                    "mean",
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
                   "enableFacetedFilter": false,
                   "overflow": "ellipsis",
                   "placement": "bottom",
@@ -1590,14 +1478,13 @@
                 },
                 "tooltip": {
                   "hideZeros": false,
-                  "maxHeight": 600,
-                  "mode": "single",
-                  "sort": "none"
+                  "mode": "multi",
+                  "sort": "desc"
                 }
               },
               "fieldConfig": {
                 "defaults": {
-                  "unit": "s",
+                  "unit": "short",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -1623,7 +1510,7 @@
                     "barAlignment": 0,
                     "barWidthFactor": 0.6,
                     "drawStyle": "line",
-                    "fillOpacity": 0,
+                    "fillOpacity": 10,
                     "gradientMode": "none",
                     "hideFrom": {
                       "legend": false,
@@ -1633,11 +1520,11 @@
                     "insertNulls": false,
                     "lineInterpolation": "linear",
                     "lineWidth": 1,
-                    "pointSize": 1,
+                    "pointSize": 5,
                     "scaleDistribution": {
                       "type": "linear"
                     },
-                    "showPoints": "auto",
+                    "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
@@ -1659,7 +1546,7 @@
         "kind": "Panel",
         "spec": {
           "id": 28,
-          "title": "Autoscaling Machine Failed Creation Duration",
+          "title": "Requests Status Codes",
           "description": "",
           "links": [],
           "data": {
@@ -1677,164 +1564,68 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.99,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_failed_creation_duration_seconds_bucket{\n        job=~\"$job\"\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "99%",
-                        "range": true
+                        "expr": "increase(cloudflare_zone_requests_status{zone=~\"$zone\"}[$__range])",
+                        "instant": true,
+                        "interval": "",
+                        "legendFormat": "{{ status }}"
                       }
                     },
                     "refId": "A",
                     "hidden": false
                   }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.95,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_failed_creation_duration_seconds_bucket{\n        job=~\"$job\",\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "95%",
-                        "range": true
-                      }
-                    },
-                    "refId": "B",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.90,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_failed_creation_duration_seconds_bucket{\n        job=~\"$job\"\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "90%",
-                        "range": true
-                      }
-                    },
-                    "refId": "C",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.50,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_failed_creation_duration_seconds_bucket{\n        job=~\"$job\",\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "50%",
-                        "range": true
-                      }
-                    },
-                    "refId": "D",
-                    "hidden": false
-                  }
                 }
               ],
               "transformations": [],
-              "queryOptions": {}
+              "queryOptions": {
+                "maxDataPoints": 1
+              }
             }
           },
           "vizConfig": {
             "kind": "VizConfig",
-            "group": "timeseries",
+            "group": "piechart",
             "version": "13.1.4",
             "spec": {
               "options": {
-                "annotations": {
-                  "clustering": -1,
-                  "multiLane": false
-                },
                 "legend": {
                   "calcs": [],
-                  "displayMode": "list",
-                  "enableFacetedFilter": false,
+                  "displayMode": "table",
                   "overflow": "ellipsis",
-                  "placement": "bottom",
-                  "showLegend": true
+                  "placement": "right",
+                  "showLegend": true,
+                  "values": [
+                    "value",
+                    "percent"
+                  ]
                 },
+                "pieType": "pie",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "sort": "desc",
                 "tooltip": {
                   "hideZeros": false,
-                  "maxHeight": 600,
                   "mode": "single",
                   "sort": "none"
                 }
               },
               "fieldConfig": {
                 "defaults": {
-                  "unit": "s",
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
-                      }
-                    ]
-                  },
+                  "unit": "short",
+                  "decimals": 0,
                   "color": {
-                    "mode": "palette-classic"
+                    "mode": "palette-classic",
+                    "fixedColor": "#73BF69"
                   },
                   "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
                     "hideFrom": {
                       "legend": false,
                       "tooltip": false,
                       "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 1,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
                     }
                   }
                 },
@@ -1844,11 +1635,11 @@
           }
         }
       },
-      "panel-29": {
+      "panel-34": {
         "kind": "Panel",
         "spec": {
-          "id": 29,
-          "title": "Autoscaling Machine Stopping Duration",
+          "id": 34,
+          "title": "Threats / second",
           "description": "",
           "links": [],
           "data": {
@@ -1866,80 +1657,12 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.99,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_stopping_duration_seconds_bucket{\n        job=~\"$job\"\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "99%",
-                        "range": true
+                        "expr": "rate(cloudflare_zone_threats_total{zone=~\"$zone\"}[5m])",
+                        "interval": "",
+                        "legendFormat": "{{zone}}/threats"
                       }
                     },
                     "refId": "A",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.95,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_stopping_duration_seconds_bucket{\n        job=~\"$job\",\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "95%",
-                        "range": true
-                      }
-                    },
-                    "refId": "B",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.90,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_stopping_duration_seconds_bucket{\n        job=~\"$job\"\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "90%",
-                        "range": true
-                      }
-                    },
-                    "refId": "C",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.50,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_stopping_duration_seconds_bucket{\n        job=~\"$job\",\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "50%",
-                        "range": true
-                      }
-                    },
-                    "refId": "D",
                     "hidden": false
                   }
                 }
@@ -1958,6 +1681,7 @@
                   "clustering": -1,
                   "multiLane": false
                 },
+                "dataLinks": [],
                 "legend": {
                   "calcs": [],
                   "displayMode": "list",
@@ -1968,14 +1692,13 @@
                 },
                 "tooltip": {
                   "hideZeros": false,
-                  "maxHeight": 600,
-                  "mode": "single",
+                  "mode": "multi",
                   "sort": "none"
                 }
               },
               "fieldConfig": {
                 "defaults": {
-                  "unit": "s",
+                  "unit": "short",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -2001,7 +1724,7 @@
                     "barAlignment": 0,
                     "barWidthFactor": 0.6,
                     "drawStyle": "line",
-                    "fillOpacity": 0,
+                    "fillOpacity": 10,
                     "gradientMode": "none",
                     "hideFrom": {
                       "legend": false,
@@ -2011,200 +1734,11 @@
                     "insertNulls": false,
                     "lineInterpolation": "linear",
                     "lineWidth": 1,
-                    "pointSize": 1,
+                    "pointSize": 5,
                     "scaleDistribution": {
                       "type": "linear"
                     },
-                    "showPoints": "auto",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-30": {
-        "kind": "Panel",
-        "spec": {
-          "id": 30,
-          "title": "Autoscaling Machine Removal Duration",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.99,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_removal_duration_seconds_bucket{\n        job=~\"$job\"\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "99%",
-                        "range": true
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.95,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_removal_duration_seconds_bucket{\n        job=~\"$job\",\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "95%",
-                        "range": true
-                      }
-                    },
-                    "refId": "B",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.90,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_removal_duration_seconds_bucket{\n        job=~\"$job\"\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "90%",
-                        "range": true
-                      }
-                    },
-                    "refId": "C",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "histogram_quantile(\n  0.50,\n  sum by (le)(\n    rate(\n      gitlab_runner_autoscaling_machine_removal_duration_seconds_bucket{\n        job=~\"$job\",\n      }[2m]\n    )\n  )\n)",
-                        "instant": false,
-                        "legendFormat": "50%",
-                        "range": true
-                      }
-                    },
-                    "refId": "D",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "13.1.4",
-            "spec": {
-              "options": {
-                "annotations": {
-                  "clustering": -1,
-                  "multiLane": false
-                },
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "enableFacetedFilter": false,
-                  "overflow": "ellipsis",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "hideZeros": false,
-                  "maxHeight": 600,
-                  "mode": "single",
-                  "sort": "none"
-                }
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "unit": "s",
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
-                      }
-                    ]
-                  },
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 0,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 1,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
+                    "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
@@ -2226,7 +1760,7 @@
         "kind": "Panel",
         "spec": {
           "id": 35,
-          "title": "Job duration p50/p95",
+          "title": "Threats / country",
           "description": "",
           "links": [],
           "data": {
@@ -2244,359 +1778,9 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "expr": "histogram_quantile(0.5, sum by (le) (rate(gitlab_runner_job_duration_seconds_bucket{job=~\"$job\"}[2m])))",
-                        "legendFormat": "p50"
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "expr": "histogram_quantile(0.95, sum by (le) (rate(gitlab_runner_job_duration_seconds_bucket{job=~\"$job\"}[2m])))",
-                        "legendFormat": "p95"
-                      }
-                    },
-                    "refId": "B",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "",
-            "spec": {
-              "options": {},
-              "fieldConfig": {
-                "defaults": {
-                  "unit": "s"
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-36": {
-        "kind": "Panel",
-        "spec": {
-          "id": 36,
-          "title": "Queue wait p50/p95",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "expr": "histogram_quantile(0.5, sum by (le) (rate(gitlab_runner_job_queue_duration_seconds_bucket{job=~\"$job\"}[2m])))",
-                        "legendFormat": "p50"
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "expr": "histogram_quantile(0.95, sum by (le) (rate(gitlab_runner_job_queue_duration_seconds_bucket{job=~\"$job\"}[2m])))",
-                        "legendFormat": "p95"
-                      }
-                    },
-                    "refId": "B",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "",
-            "spec": {
-              "options": {},
-              "fieldConfig": {
-                "defaults": {
-                  "unit": "s"
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-37": {
-        "kind": "Panel",
-        "spec": {
-          "id": 37,
-          "title": "Queue depth",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "expr": "gitlab_runner_job_queue_size{job=~\"$job\"}",
-                        "legendFormat": "size"
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "expr": "gitlab_runner_job_queue_depth{job=~\"$job\"}",
-                        "legendFormat": "depth"
-                      }
-                    },
-                    "refId": "B",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "",
-            "spec": {
-              "options": {},
-              "fieldConfig": {
-                "defaults": {},
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-38": {
-        "kind": "Panel",
-        "spec": {
-          "id": 38,
-          "title": "Concurrency saturation",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "expr": "gitlab_runner_request_concurrency_used_limit{job=~\"$job\"}",
-                        "legendFormat": "used"
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "expr": "gitlab_runner_request_concurrency_hard_limit{job=~\"$job\"}",
-                        "legendFormat": "hard limit"
-                      }
-                    },
-                    "refId": "B",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "expr": "gitlab_runner_limit{job=~\"$job\"}",
-                        "legendFormat": "limit"
-                      }
-                    },
-                    "refId": "C",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "",
-            "spec": {
-              "options": {},
-              "fieldConfig": {
-                "defaults": {},
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-39": {
-        "kind": "Panel",
-        "spec": {
-          "id": 39,
-          "title": "Runner host CPU %",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "expr": "100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{job=\"node-stormwing-containers\", instance=~\".*runner.*\", mode=\"idle\"}[5m])))",
-                        "legendFormat": "{{instance}}"
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "",
-            "spec": {
-              "options": {},
-              "fieldConfig": {
-                "defaults": {
-                  "unit": "percent",
-                  "min": 0,
-                  "max": 100
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-4": {
-        "kind": "Panel",
-        "spec": {
-          "id": 4,
-          "title": "Running Jobs",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "sum by (executor_stage, instance) (gitlab_runner_jobs{job=~\"$job\"})",
-                        "instant": false,
-                        "legendFormat": "{{executor_stage}} {{instance}}",
-                        "range": true
+                        "expr": "rate(cloudflare_zone_threats_country{zone=~\"$zone\"}[5m])",
+                        "interval": "",
+                        "legendFormat": "{{country}}/threats"
                       }
                     },
                     "refId": "A",
@@ -2618,6 +1802,7 @@
                   "clustering": -1,
                   "multiLane": false
                 },
+                "dataLinks": [],
                 "legend": {
                   "calcs": [],
                   "displayMode": "list",
@@ -2628,13 +1813,13 @@
                 },
                 "tooltip": {
                   "hideZeros": false,
-                  "maxHeight": 600,
-                  "mode": "single",
+                  "mode": "multi",
                   "sort": "none"
                 }
               },
               "fieldConfig": {
                 "defaults": {
+                  "unit": "short",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -2659,8 +1844,8 @@
                     "axisPlacement": "auto",
                     "barAlignment": 0,
                     "barWidthFactor": 0.6,
-                    "drawStyle": "bars",
-                    "fillOpacity": 100,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
                     "gradientMode": "none",
                     "hideFrom": {
                       "legend": false,
@@ -2674,7 +1859,7 @@
                     "scaleDistribution": {
                       "type": "linear"
                     },
-                    "showPoints": "auto",
+                    "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
@@ -2692,11 +1877,11 @@
           }
         }
       },
-      "panel-40": {
+      "panel-36": {
         "kind": "Panel",
         "spec": {
-          "id": 40,
-          "title": "Runner host RAM %",
+          "id": 36,
+          "title": "Threats / type",
           "description": "",
           "links": [],
           "data": {
@@ -2714,64 +1899,9 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "expr": "100 * (1 - avg by (instance) (node_memory_MemAvailable_bytes{job=\"node-stormwing-containers\", instance=~\".*runner.*\"} / node_memory_MemTotal_bytes{job=\"node-stormwing-containers\", instance=~\".*runner.*\"}))",
-                        "legendFormat": "{{instance}}"
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "",
-            "spec": {
-              "options": {},
-              "fieldConfig": {
-                "defaults": {
-                  "unit": "percent",
-                  "min": 0,
-                  "max": 100
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-5": {
-        "kind": "Panel",
-        "spec": {
-          "id": 5,
-          "title": "Total Jobs",
-          "description": "",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "prometheus"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "sum by (instance, runner, system_id) (rate(gitlab_runner_jobs_total{job=~\"$job\"}[2m]))",
-                        "instant": false,
-                        "legendFormat": "instance: {{instance}}, runner_id: {{runner}}; system_id: {{system_id}}",
-                        "range": true
+                        "expr": "rate(cloudflare_zone_threats_type{zone=~\"$zone\"}[5m])",
+                        "interval": "",
+                        "legendFormat": "{{type}}/threats"
                       }
                     },
                     "refId": "A",
@@ -2793,6 +1923,7 @@
                   "clustering": -1,
                   "multiLane": false
                 },
+                "dataLinks": [],
                 "legend": {
                   "calcs": [],
                   "displayMode": "list",
@@ -2803,13 +1934,13 @@
                 },
                 "tooltip": {
                   "hideZeros": false,
-                  "maxHeight": 600,
-                  "mode": "single",
+                  "mode": "multi",
                   "sort": "none"
                 }
               },
               "fieldConfig": {
                 "defaults": {
+                  "unit": "short",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -2834,8 +1965,8 @@
                     "axisPlacement": "auto",
                     "barAlignment": 0,
                     "barWidthFactor": 0.6,
-                    "drawStyle": "bars",
-                    "fillOpacity": 100,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
                     "gradientMode": "none",
                     "hideFrom": {
                       "legend": false,
@@ -2849,7 +1980,501 @@
                     "scaleDistribution": {
                       "type": "linear"
                     },
-                    "showPoints": "auto",
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-39": {
+        "kind": "Panel",
+        "spec": {
+          "id": 39,
+          "title": "Requests by Region / second",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "sum by (region)(rate(cloudflare_zone_requests_country{zone=~\"$zone\"}[$__interval]))",
+                        "format": "time_series",
+                        "instant": false,
+                        "interval": "5m",
+                        "intervalFactor": 10,
+                        "legendFormat": "{{ region }}"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.1.4",
+            "spec": {
+              "options": {
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
+                },
+                "dataLinks": [],
+                "legend": {
+                  "calcs": [
+                    "mean",
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
+                  "enableFacetedFilter": false,
+                  "overflow": "ellipsis",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "desc"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-4": {
+        "kind": "Panel",
+        "spec": {
+          "id": 4,
+          "title": "Cached Requests",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "cloudflare_zone_requests_cached{zone=~\"$zone\"} / cloudflare_zone_requests_total{zone=~\"$zone\"}",
+                        "instant": true,
+                        "interval": "",
+                        "legendFormat": "cached"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "(cloudflare_zone_requests_total{zone=~\"$zone\"} - cloudflare_zone_requests_cached{zone=~\"$zone\"}) / cloudflare_zone_requests_total{zone=~\"$zone\"}",
+                        "instant": true,
+                        "interval": "",
+                        "legendFormat": "uncached"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "maxDataPoints": 1
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "piechart",
+            "version": "13.1.4",
+            "spec": {
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "table",
+                  "overflow": "ellipsis",
+                  "placement": "right",
+                  "showLegend": true,
+                  "values": [
+                    "value"
+                  ]
+                },
+                "pieType": "pie",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "sort": "desc",
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percentunit",
+                  "decimals": 0,
+                  "color": {
+                    "mode": "palette-classic",
+                    "fixedColor": "#73BF69"
+                  },
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-40": {
+        "kind": "Panel",
+        "spec": {
+          "id": 40,
+          "title": "Bandwidth by Region / second",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "sum by (region)(rate(cloudflare_zone_bandwidth_country{zone=~\"$zone\"}[$__interval]))",
+                        "interval": "5m",
+                        "intervalFactor": 10,
+                        "legendFormat": "{{ region }}"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.1.4",
+            "spec": {
+              "options": {
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
+                },
+                "dataLinks": [],
+                "legend": {
+                  "calcs": [
+                    "mean",
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
+                  "enableFacetedFilter": false,
+                  "overflow": "ellipsis",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "desc"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "Bps",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-50": {
+        "kind": "Panel",
+        "spec": {
+          "id": 50,
+          "title": "Visits  by Colocations / second",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "rate(cloudflare_zone_colocation_visits{zone=\"$zone\"}[$__interval]) > 0",
+                        "interval": "",
+                        "intervalFactor": 10,
+                        "legendFormat": "{{ colocation }}"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.1.4",
+            "spec": {
+              "options": {
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
+                },
+                "legend": {
+                  "calcs": [
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
+                  "enableFacetedFilter": false,
+                  "overflow": "ellipsis",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
                     "showValues": false,
                     "spanNulls": false,
                     "stacking": {
@@ -2871,7 +2496,7 @@
         "kind": "Panel",
         "spec": {
           "id": 7,
-          "title": "Configuration Loads",
+          "title": "Bandwidth / second",
           "description": "",
           "links": [],
           "data": {
@@ -2889,14 +2514,34 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "editorMode": "code",
-                        "expr": "rate(gitlab_runner_configuration_loaded_total{job=~\"$job\"}[2m])",
-                        "instant": false,
-                        "legendFormat": "{{instance}}",
-                        "range": true
+                        "expr": "rate(cloudflare_zone_bandwidth_total{zone=~\"$zone\"}[$__interval])",
+                        "interval": "5m",
+                        "intervalFactor": 10,
+                        "legendFormat": "total"
                       }
                     },
                     "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "rate(cloudflare_zone_bandwidth_cached{zone=~\"$zone\"}[$__interval])",
+                        "interval": "5m",
+                        "intervalFactor": 10,
+                        "legendFormat": "cached"
+                      }
+                    },
+                    "refId": "B",
                     "hidden": false
                   }
                 }
@@ -2907,28 +2552,37 @@
           },
           "vizConfig": {
             "kind": "VizConfig",
-            "group": "stat",
+            "group": "timeseries",
             "version": "13.1.4",
             "spec": {
               "options": {
-                "colorMode": "value",
-                "graphMode": "area",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "percentChangeColorMode": "standard",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
                 },
-                "showPercentChange": false,
-                "textMode": "auto",
-                "wideLayout": true
+                "dataLinks": [],
+                "legend": {
+                  "calcs": [
+                    "mean",
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
+                  "enableFacetedFilter": false,
+                  "overflow": "ellipsis",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "none"
+                }
               },
               "fieldConfig": {
                 "defaults": {
+                  "unit": "decbytes",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -2943,7 +2597,41 @@
                     ]
                   },
                   "color": {
-                    "mode": "thresholds"
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
                   }
                 },
                 "overrides": []
@@ -2952,11 +2640,11 @@
           }
         }
       },
-      "panel-8": {
+      "panel-87": {
         "kind": "Panel",
         "spec": {
-          "id": 8,
-          "title": "Configuration Loads Errors",
+          "id": 87,
+          "title": "Requests in North America / second",
           "description": "",
           "links": [],
           "data": {
@@ -2974,11 +2662,10 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "editorMode": "code",
-                        "expr": "rate(gitlab_runner_configuration_loading_error_total{job=~\"$job\"}[2m])",
-                        "instant": false,
-                        "legendFormat": "{{instance}}",
-                        "range": true
+                        "expr": "rate(cloudflare_zone_requests_country{zone=~\"$zone\", region=\"North America\"}[$__interval]) > 0.1",
+                        "interval": "5m",
+                        "intervalFactor": 10,
+                        "legendFormat": "{{ country }}"
                       }
                     },
                     "refId": "A",
@@ -2992,28 +2679,36 @@
           },
           "vizConfig": {
             "kind": "VizConfig",
-            "group": "stat",
+            "group": "timeseries",
             "version": "13.1.4",
             "spec": {
               "options": {
-                "colorMode": "value",
-                "graphMode": "area",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "percentChangeColorMode": "standard",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
                 },
-                "showPercentChange": false,
-                "textMode": "auto",
-                "wideLayout": true
+                "legend": {
+                  "calcs": [
+                    "mean",
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
+                  "enableFacetedFilter": false,
+                  "overflow": "ellipsis",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "desc"
+                }
               },
               "fieldConfig": {
                 "defaults": {
+                  "unit": "short",
                   "thresholds": {
                     "mode": "absolute",
                     "steps": [
@@ -3022,17 +2717,299 @@
                         "color": "green"
                       },
                       {
-                        "value": 0.1,
-                        "color": "#EAB839"
-                      },
-                      {
-                        "value": 1,
+                        "value": 80,
                         "color": "red"
                       }
                     ]
                   },
                   "color": {
-                    "mode": "thresholds"
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-88": {
+        "kind": "Panel",
+        "spec": {
+          "id": 88,
+          "title": "Requests in Europe / second",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "rate(cloudflare_zone_requests_country{zone=~\"$zone\", region=\"Europe\"}[$__interval]) > 0.1",
+                        "interval": "5m",
+                        "intervalFactor": 10,
+                        "legendFormat": "{{ country }}"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.1.4",
+            "spec": {
+              "options": {
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
+                },
+                "legend": {
+                  "calcs": [
+                    "mean",
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
+                  "enableFacetedFilter": false,
+                  "overflow": "ellipsis",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "desc"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-89": {
+        "kind": "Panel",
+        "spec": {
+          "id": 89,
+          "title": "Requests / Second (status codes not 2XX)",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "increase(cloudflare_zone_requests_status{zone=~\"$zone\", status!~\"2..\"}[$__interval]) ",
+                        "interval": "",
+                        "intervalFactor": 10,
+                        "legendFormat": "{{status}}"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.1.4",
+            "spec": {
+              "options": {
+                "annotations": {
+                  "clustering": -1,
+                  "multiLane": false
+                },
+                "legend": {
+                  "calcs": [
+                    "mean",
+                    "lastNotNull",
+                    "max",
+                    "min"
+                  ],
+                  "displayMode": "table",
+                  "enableFacetedFilter": false,
+                  "overflow": "ellipsis",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "desc"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
                   }
                 },
                 "overrides": []
@@ -3045,7 +3022,7 @@
         "kind": "Panel",
         "spec": {
           "id": 9,
-          "title": "Configuration Saved",
+          "title": "Cached Bandwidth",
           "description": "",
           "links": [],
           "data": {
@@ -3063,33 +3040,61 @@
                         "name": "prometheus"
                       },
                       "spec": {
-                        "editorMode": "code",
-                        "expr": "rate(gitlab_runner_configuration_saved_total{job=~\"$job\"}[2m])",
-                        "instant": false,
-                        "legendFormat": "{{instance}}",
-                        "range": true
+                        "expr": "cloudflare_zone_bandwidth_cached{zone=~\"$zone\"} / cloudflare_zone_bandwidth_total{zone=~\"$zone\"}",
+                        "instant": true,
+                        "interval": "",
+                        "legendFormat": "cached"
                       }
                     },
                     "refId": "A",
                     "hidden": false
                   }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "prometheus"
+                      },
+                      "spec": {
+                        "expr": "(cloudflare_zone_bandwidth_total{zone=~\"$zone\"} - cloudflare_zone_bandwidth_cached{zone=~\"$zone\"}) / cloudflare_zone_bandwidth_total{zone=~\"$zone\"}",
+                        "instant": true,
+                        "interval": "",
+                        "legendFormat": "uncached"
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": false
+                  }
                 }
               ],
               "transformations": [],
-              "queryOptions": {}
+              "queryOptions": {
+                "maxDataPoints": 1
+              }
             }
           },
           "vizConfig": {
             "kind": "VizConfig",
-            "group": "stat",
+            "group": "piechart",
             "version": "13.1.4",
             "spec": {
               "options": {
-                "colorMode": "value",
-                "graphMode": "area",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "percentChangeColorMode": "standard",
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "table",
+                  "overflow": "ellipsis",
+                  "placement": "right",
+                  "showLegend": true,
+                  "values": [
+                    "value"
+                  ]
+                },
+                "pieType": "pie",
                 "reduceOptions": {
                   "calcs": [
                     "lastNotNull"
@@ -3097,27 +3102,27 @@
                   "fields": "",
                   "values": false
                 },
-                "showPercentChange": false,
-                "textMode": "auto",
-                "wideLayout": true
+                "sort": "desc",
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "single",
+                  "sort": "none"
+                }
               },
               "fieldConfig": {
                 "defaults": {
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
-                      }
-                    ]
-                  },
+                  "unit": "percentunit",
+                  "decimals": 0,
                   "color": {
-                    "mode": "thresholds"
+                    "mode": "palette-classic",
+                    "fixedColor": "#73BF69"
+                  },
+                  "custom": {
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    }
                   }
                 },
                 "overrides": []
@@ -3134,7 +3139,7 @@
           {
             "kind": "RowsLayoutRow",
             "spec": {
-              "title": "Main",
+              "title": "Overview",
               "collapse": false,
               "layout": {
                 "kind": "GridLayout",
@@ -3145,76 +3150,37 @@
                       "spec": {
                         "x": 0,
                         "y": 0,
-                        "width": 24,
-                        "height": 3,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-2"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 0,
-                        "y": 3,
-                        "width": 24,
+                        "width": 4,
                         "height": 5,
                         "element": {
                           "kind": "ElementReference",
-                          "name": "panel-11"
+                          "name": "panel-19"
                         }
                       }
                     },
                     {
                       "kind": "GridLayoutItem",
                       "spec": {
-                        "x": 0,
-                        "y": 8,
-                        "width": 3,
-                        "height": 4,
+                        "x": 4,
+                        "y": 0,
+                        "width": 4,
+                        "height": 5,
                         "element": {
                           "kind": "ElementReference",
-                          "name": "panel-7"
+                          "name": "panel-24"
                         }
                       }
                     },
                     {
                       "kind": "GridLayoutItem",
                       "spec": {
-                        "x": 3,
-                        "y": 8,
-                        "width": 3,
-                        "height": 4,
+                        "x": 8,
+                        "y": 0,
+                        "width": 4,
+                        "height": 5,
                         "element": {
                           "kind": "ElementReference",
-                          "name": "panel-8"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 6,
-                        "y": 8,
-                        "width": 3,
-                        "height": 4,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-9"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 9,
-                        "y": 8,
-                        "width": 3,
-                        "height": 4,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-10"
+                          "name": "panel-22"
                         }
                       }
                     },
@@ -3222,22 +3188,9 @@
                       "kind": "GridLayoutItem",
                       "spec": {
                         "x": 12,
-                        "y": 8,
-                        "width": 3,
-                        "height": 4,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-20"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 15,
-                        "y": 8,
-                        "width": 3,
-                        "height": 4,
+                        "y": 0,
+                        "width": 4,
+                        "height": 5,
                         "element": {
                           "kind": "ElementReference",
                           "name": "panel-21"
@@ -3247,76 +3200,35 @@
                     {
                       "kind": "GridLayoutItem",
                       "spec": {
-                        "x": 18,
-                        "y": 8,
-                        "width": 6,
-                        "height": 4,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-22"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "kind": "RowsLayoutRow",
-            "spec": {
-              "title": "Jobs",
-              "collapse": false,
-              "layout": {
-                "kind": "GridLayout",
-                "spec": {
-                  "items": [
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 0,
+                        "x": 16,
                         "y": 0,
-                        "width": 12,
-                        "height": 8,
+                        "width": 4,
+                        "height": 5,
                         "element": {
                           "kind": "ElementReference",
-                          "name": "panel-4"
+                          "name": "panel-20"
                         }
                       }
                     },
                     {
                       "kind": "GridLayoutItem",
                       "spec": {
-                        "x": 12,
+                        "x": 20,
                         "y": 0,
-                        "width": 12,
-                        "height": 8,
+                        "width": 4,
+                        "height": 5,
                         "element": {
                           "kind": "ElementReference",
-                          "name": "panel-5"
+                          "name": "panel-23"
                         }
                       }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          {
-            "kind": "RowsLayoutRow",
-            "spec": {
-              "title": "Worker",
-              "collapse": false,
-              "layout": {
-                "kind": "GridLayout",
-                "spec": {
-                  "items": [
+                    },
                     {
                       "kind": "GridLayoutItem",
                       "spec": {
                         "x": 0,
-                        "y": 0,
-                        "width": 12,
+                        "y": 5,
+                        "width": 24,
                         "height": 8,
                         "element": {
                           "kind": "ElementReference",
@@ -3327,26 +3239,13 @@
                     {
                       "kind": "GridLayoutItem",
                       "spec": {
-                        "x": 12,
-                        "y": 0,
-                        "width": 12,
-                        "height": 8,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-17"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
                         "x": 0,
-                        "y": 8,
+                        "y": 13,
                         "width": 12,
-                        "height": 8,
+                        "height": 7,
                         "element": {
                           "kind": "ElementReference",
-                          "name": "panel-19"
+                          "name": "panel-87"
                         }
                       }
                     },
@@ -3354,12 +3253,12 @@
                       "kind": "GridLayoutItem",
                       "spec": {
                         "x": 12,
-                        "y": 8,
+                        "y": 13,
                         "width": 12,
-                        "height": 8,
+                        "height": 7,
                         "element": {
                           "kind": "ElementReference",
-                          "name": "panel-18"
+                          "name": "panel-88"
                         }
                       }
                     }
@@ -3371,7 +3270,244 @@
           {
             "kind": "RowsLayoutRow",
             "spec": {
-              "title": "Api and Autoscaling",
+              "title": "Requests",
+              "collapse": false,
+              "layout": {
+                "kind": "GridLayout",
+                "spec": {
+                  "items": [
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 12,
+                        "height": 9,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-2"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 12,
+                        "y": 0,
+                        "width": 12,
+                        "height": 9,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-14"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 9,
+                        "width": 12,
+                        "height": 9,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-17"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 12,
+                        "y": 9,
+                        "width": 12,
+                        "height": 9,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-89"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 18,
+                        "width": 6,
+                        "height": 11,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-4"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 6,
+                        "y": 18,
+                        "width": 6,
+                        "height": 11,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-13"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 12,
+                        "y": 18,
+                        "width": 12,
+                        "height": 11,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-27"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 29,
+                        "width": 12,
+                        "height": 11,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-11"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 12,
+                        "y": 29,
+                        "width": 12,
+                        "height": 11,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-12"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 40,
+                        "width": 12,
+                        "height": 10,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-28"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "title": "Bandwidth",
+              "collapse": false,
+              "layout": {
+                "kind": "GridLayout",
+                "spec": {
+                  "items": [
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 24,
+                        "height": 10,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-7"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 10,
+                        "width": 12,
+                        "height": 10,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-9"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 12,
+                        "y": 10,
+                        "width": 12,
+                        "height": 10,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-15"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "title": "Regions",
+              "collapse": false,
+              "layout": {
+                "kind": "GridLayout",
+                "spec": {
+                  "items": [
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 12,
+                        "height": 10,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-39"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "GridLayoutItem",
+                      "spec": {
+                        "x": 12,
+                        "y": 0,
+                        "width": 12,
+                        "height": 10,
+                        "element": {
+                          "kind": "ElementReference",
+                          "name": "panel-40"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "title": "Threats",
               "collapse": false,
               "layout": {
                 "kind": "GridLayout",
@@ -3386,7 +3522,7 @@
                         "height": 8,
                         "element": {
                           "kind": "ElementReference",
-                          "name": "panel-24"
+                          "name": "panel-34"
                         }
                       }
                     },
@@ -3395,84 +3531,6 @@
                       "spec": {
                         "x": 12,
                         "y": 0,
-                        "width": 12,
-                        "height": 8,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-25"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 0,
-                        "y": 8,
-                        "width": 12,
-                        "height": 8,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-26"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 12,
-                        "y": 8,
-                        "width": 12,
-                        "height": 8,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-27"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 0,
-                        "y": 16,
-                        "width": 12,
-                        "height": 8,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-29"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 12,
-                        "y": 16,
-                        "width": 12,
-                        "height": 8,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-28"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 0,
-                        "y": 24,
-                        "width": 12,
-                        "height": 8,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-30"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 0,
-                        "y": 32,
                         "width": 12,
                         "height": 8,
                         "element": {
@@ -3484,65 +3542,44 @@
                     {
                       "kind": "GridLayoutItem",
                       "spec": {
-                        "x": 12,
-                        "y": 32,
-                        "width": 12,
+                        "x": 0,
+                        "y": 8,
+                        "width": 24,
                         "height": 8,
                         "element": {
                           "kind": "ElementReference",
                           "name": "panel-36"
                         }
                       }
-                    },
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "kind": "RowsLayoutRow",
+            "spec": {
+              "title": "Colocations",
+              "collapse": false,
+              "layout": {
+                "kind": "GridLayout",
+                "spec": {
+                  "items": [
                     {
                       "kind": "GridLayoutItem",
                       "spec": {
                         "x": 0,
-                        "y": 40,
-                        "width": 12,
+                        "y": 0,
+                        "width": 24,
                         "height": 8,
                         "element": {
                           "kind": "ElementReference",
-                          "name": "panel-37"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 12,
-                        "y": 40,
-                        "width": 12,
-                        "height": 8,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-38"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 0,
-                        "y": 48,
-                        "width": 12,
-                        "height": 8,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-39"
-                        }
-                      }
-                    },
-                    {
-                      "kind": "GridLayoutItem",
-                      "spec": {
-                        "x": 12,
-                        "y": 48,
-                        "width": 12,
-                        "height": 8,
-                        "element": {
-                          "kind": "ElementReference",
-                          "name": "panel-40"
+                          "name": "panel-50"
+                        },
+                        "repeat": {
+                          "mode": "variable",
+                          "value": "zone"
                         }
                       }
                     }
@@ -3554,36 +3591,18 @@
         ]
       }
     },
-    "links": [
-      {
-        "title": "Garuda",
-        "type": "dashboards",
-        "icon": "external link",
-        "tooltip": "",
-        "url": "",
-        "tags": [
-          "garuda"
-        ],
-        "asDropdown": false,
-        "targetBlank": false,
-        "includeVars": true,
-        "keepTime": true
-      }
-    ],
+    "links": [],
     "liveNow": false,
     "preload": false,
     "tags": [
-      "gitlab-runner",
-      "ci",
-      "garuda"
+      "cloudflare"
     ],
     "timeSettings": {
       "timezone": "browser",
-      "from": "now-6h",
+      "from": "now-24h",
       "to": "now",
       "autoRefresh": "",
       "autoRefreshIntervals": [
-        "5s",
         "10s",
         "30s",
         "1m",
@@ -3597,37 +3616,18 @@
       "hideTimepicker": false,
       "fiscalYearStartMonth": 0
     },
-    "title": "Gitlab Runner",
+    "title": "CloudFlare Zone Analytics",
     "variables": [
       {
-        "kind": "DatasourceVariable",
-        "spec": {
-          "name": "datasource",
-          "pluginId": "prometheus",
-          "refresh": "onDashboardLoad",
-          "regex": "",
-          "current": {
-            "text": "Prometheus",
-            "value": "prometheus"
-          },
-          "options": [],
-          "multi": false,
-          "includeAll": false,
-          "hide": "dontHide",
-          "skipUrlSync": false,
-          "allowCustomValue": true
-        }
-      },
-      {
         "kind": "QueryVariable",
         "spec": {
-          "name": "job",
+          "name": "zone",
           "current": {
             "text": "",
             "value": ""
           },
           "hide": "dontHide",
-          "refresh": "onDashboardLoad",
+          "refresh": "onTimeRangeChanged",
           "skipUrlSync": false,
           "query": {
             "kind": "DataQuery",
@@ -3637,15 +3637,13 @@
               "name": "prometheus"
             },
             "spec": {
-              "qryType": 1,
-              "query": "label_values(gitlab_runner_version_info,job)",
-              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+              "__legacyStringValue": "label_values(cloudflare_zone_requests_total, zone)"
             }
           },
           "regex": "",
           "regexApplyTo": "value",
           "sort": "disabled",
-          "definition": "label_values(gitlab_runner_version_info,job)",
+          "definition": "label_values(cloudflare_zone_requests_total, zone)",
           "options": [],
           "multi": false,
           "includeAll": false,
@@ -3655,13 +3653,13 @@
       {
         "kind": "QueryVariable",
         "spec": {
-          "name": "version",
+          "name": "regions",
           "current": {
             "text": "",
             "value": ""
           },
           "hide": "hideVariable",
-          "refresh": "onDashboardLoad",
+          "refresh": "onTimeRangeChanged",
           "skipUrlSync": false,
           "query": {
             "kind": "DataQuery",
@@ -3671,119 +3669,15 @@
               "name": "prometheus"
             },
             "spec": {
-              "qryType": 1,
-              "query": "label_values(gitlab_runner_version_info,branch)",
-              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+              "__legacyStringValue": "label_values(cloudflare_zone_requests_country, region)"
             }
           },
           "regex": "",
           "regexApplyTo": "value",
           "sort": "disabled",
-          "definition": "label_values(gitlab_runner_version_info,branch)",
+          "definition": "label_values(cloudflare_zone_requests_country, region)",
           "options": [],
-          "multi": false,
-          "includeAll": false,
-          "allowCustomValue": true
-        }
-      },
-      {
-        "kind": "QueryVariable",
-        "spec": {
-          "name": "arch",
-          "current": {
-            "text": "",
-            "value": ""
-          },
-          "hide": "hideVariable",
-          "refresh": "onDashboardLoad",
-          "skipUrlSync": false,
-          "query": {
-            "kind": "DataQuery",
-            "group": "prometheus",
-            "version": "v0",
-            "datasource": {
-              "name": "prometheus"
-            },
-            "spec": {
-              "qryType": 1,
-              "query": "label_values(gitlab_runner_version_info,architecture)",
-              "refId": "PrometheusVariableQueryEditor-VariableQuery"
-            }
-          },
-          "regex": "",
-          "regexApplyTo": "value",
-          "sort": "disabled",
-          "definition": "label_values(gitlab_runner_version_info,architecture)",
-          "options": [],
-          "multi": false,
-          "includeAll": false,
-          "allowCustomValue": true
-        }
-      },
-      {
-        "kind": "QueryVariable",
-        "spec": {
-          "name": "go_version",
-          "current": {
-            "text": "",
-            "value": ""
-          },
-          "hide": "hideVariable",
-          "refresh": "onDashboardLoad",
-          "skipUrlSync": false,
-          "query": {
-            "kind": "DataQuery",
-            "group": "prometheus",
-            "version": "v0",
-            "datasource": {
-              "name": "prometheus"
-            },
-            "spec": {
-              "qryType": 1,
-              "query": "label_values(gitlab_runner_version_info,go_version)",
-              "refId": "PrometheusVariableQueryEditor-VariableQuery"
-            }
-          },
-          "regex": "",
-          "regexApplyTo": "value",
-          "sort": "disabled",
-          "definition": "label_values(gitlab_runner_version_info,go_version)",
-          "options": [],
-          "multi": false,
-          "includeAll": false,
-          "allowCustomValue": true
-        }
-      },
-      {
-        "kind": "QueryVariable",
-        "spec": {
-          "name": "built_at",
-          "current": {
-            "text": "",
-            "value": ""
-          },
-          "hide": "hideVariable",
-          "refresh": "onDashboardLoad",
-          "skipUrlSync": false,
-          "query": {
-            "kind": "DataQuery",
-            "group": "prometheus",
-            "version": "v0",
-            "datasource": {
-              "name": "prometheus"
-            },
-            "spec": {
-              "qryType": 1,
-              "query": "label_values(gitlab_runner_version_info,built_at)",
-              "refId": "PrometheusVariableQueryEditor-VariableQuery"
-            }
-          },
-          "regex": "",
-          "regexApplyTo": "value",
-          "sort": "disabled",
-          "definition": "label_values(gitlab_runner_version_info,built_at)",
-          "options": [],
-          "multi": false,
+          "multi": true,
           "includeAll": false,
           "allowCustomValue": true
         }

@@ -938,7 +938,36 @@
         ]
       }
     },
-    "links": [],
+    "links": [
+      {
+        "title": "Node-exporter",
+        "type": "dashboards",
+        "icon": "external link",
+        "tooltip": "",
+        "url": "",
+        "tags": [
+          "node-exporter"
+        ],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      },
+      {
+        "title": "Chaotic-aur",
+        "type": "dashboards",
+        "icon": "external link",
+        "tooltip": "",
+        "url": "",
+        "tags": [
+          "chaotic-aur"
+        ],
+        "asDropdown": false,
+        "targetBlank": false,
+        "includeVars": true,
+        "keepTime": true
+      }
+    ],
     "liveNow": false,
     "preload": false,
     "tags": [

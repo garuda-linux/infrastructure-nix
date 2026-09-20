@@ -374,6 +374,38 @@ in
       };
     };
 
+    cloudflareExporter = {
+      enable = mkEnableOption "Enable the Cloudflare Prometheus exporter";
+
+      port = mkOption {
+        default = 9333;
+        type = types.port;
+        description = mdDoc ''
+          The port for the Cloudflare exporter to listen on.
+        '';
+      };
+
+      environmentFile = mkOption {
+        type = types.nullOr types.path;
+        default = null;
+        example = "/run/secrets/cloudflare-exporter-env";
+        description = mdDoc ''
+          File to load as environment file. Must contain CF_API_TOKEN and, for
+          account-scoped tokens, CF_ACCOUNTS (comma delimited account ids).
+        '';
+      };
+
+      extraFlags = mkOption {
+        type = types.listOf types.str;
+        default = [ ];
+        example = [ "--cf_zones=zone1,zone2" ];
+        description = mdDoc ''
+          Extra flags to pass to the Cloudflare exporter, e.g. --cf_zones,
+          --cf_exclude_zones, --free_tier or --scrape_interval.
+        '';
+      };
+    };
+
     applicationTargets = mkOption {
       default = [ ];
       type = types.listOf (
@@ -591,6 +623,16 @@ in
             }
           ];
         }
+        ++ lib.optional cfg.prometheus.cloudflareExporter.enable {
+          job_name = "cloudflare";
+          static_configs = [
+            {
+              targets = [
+                "127.0.0.1:${toString cfg.prometheus.cloudflareExporter.port}"
+              ];
+            }
+          ];
+        }
         ++ cfg.prometheus.scrapeConfigs;
 
         ruleFiles = [
@@ -602,6 +644,26 @@ in
         ++ lib.optional cfg.prometheus.postgresExporter.enable postgresRules
         ++ lib.optional cfg.prometheus.nginxExporter.enable nginxRules
         ++ cfg.prometheus.ruleFiles;
+      };
+
+      # No nixpkgs module for this one, so the unit is defined here
+      systemd.services.cloudflare-exporter = lib.mkIf cfg.prometheus.cloudflareExporter.enable {
+        description = "Prometheus Cloudflare exporter";
+        wantedBy = [ "multi-user.target" ];
+        wants = [ "network-online.target" ];
+        after = [ "network-online.target" ];
+        serviceConfig = {
+          EnvironmentFile = cfg.prometheus.cloudflareExporter.environmentFile;
+          ExecStart = lib.escapeShellArgs (
+            [
+              (lib.getExe pkgs.prometheus-cloudflare-exporter)
+              "--listen=127.0.0.1:${toString cfg.prometheus.cloudflareExporter.port}"
+            ]
+            ++ cfg.prometheus.cloudflareExporter.extraFlags
+          );
+          Restart = "on-failure";
+          RestartSec = 30;
+        };
       };
 
       networking.firewall.interfaces.tailscale0.allowedTCPPorts =
