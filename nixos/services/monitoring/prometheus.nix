@@ -31,6 +31,10 @@ let
   selfMonitoringRules = prometheusRulesFile "self-monitoring" (
     import ./prometheus-rules/self-monitoring-rules.nix
   );
+
+  mailRules = prometheusRulesFile "mail" (import ./prometheus-rules/mail-rules.nix);
+
+  redisRules = prometheusRulesFile "redis" (import ./prometheus-rules/redis-rules.nix);
 in
 {
   options.garuda.monitoring.prometheus = with lib; {
@@ -643,6 +647,8 @@ in
         ++ lib.optional (lib.length cfg.prometheus.borgmaticTargets > 0) borgmaticRules
         ++ lib.optional cfg.prometheus.postgresExporter.enable postgresRules
         ++ lib.optional cfg.prometheus.nginxExporter.enable nginxRules
+        ++ lib.optional cfg.prometheus.postfixExporter.enable mailRules
+        ++ lib.optional cfg.prometheus.redisExporter.enable redisRules
         ++ cfg.prometheus.ruleFiles;
       };
 

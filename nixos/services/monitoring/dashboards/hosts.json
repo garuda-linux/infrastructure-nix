@@ -2187,7 +2187,7 @@
               },
               "fieldConfig": {
                 "defaults": {
-                  "unit": "dtdurations",
+                  "unit": "string",
                   "mappings": [
                     {
                       "type": "value",
@@ -2226,6 +2226,18 @@
                   }
                 },
                 "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "System age"
+                    },
+                    "properties": [
+                      {
+                        "id": "unit",
+                        "value": "dtdurations"
+                      }
+                    ]
+                  },
                   {
                     "matcher": {
                       "id": "byName",
@@ -2611,7 +2623,7 @@
           "name": "datasource",
           "pluginId": "prometheus",
           "refresh": "onDashboardLoad",
-          "regex": "",
+          "regex": "^Prometheus$",
           "current": {
             "text": "Prometheus",
             "value": "prometheus"

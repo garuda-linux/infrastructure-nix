@@ -2,7 +2,7 @@
   "apiVersion": "dashboard.grafana.app/v2",
   "kind": "Dashboard",
   "metadata": {
-    "name": "chaotic-build-queue",
+    "name": "chaotic-aur",
     "namespace": "default"
   },
   "spec": {
@@ -34,8 +34,8 @@
         "kind": "Panel",
         "spec": {
           "id": 1,
-          "title": "Queued packages",
-          "description": "Packages currently waiting in the build queue.",
+          "title": "Active builds",
+          "description": "Packages currently being built.",
           "links": [],
           "data": {
             "kind": "QueryGroup",
@@ -53,10 +53,10 @@
                       },
                       "spec": {
                         "editorMode": "code",
-                        "expr": "build_queue_waiting",
+                        "expr": "build_queue_active",
                         "instant": true,
-                        "legendFormat": "waiting",
-                        "range": false
+                        "range": false,
+                        "legendFormat": "active"
                       }
                     },
                     "refId": "A",
@@ -78,7 +78,6 @@
                 "graphMode": "area",
                 "justifyMode": "auto",
                 "orientation": "auto",
-                "percentChangeColorMode": "standard",
                 "reduceOptions": {
                   "calcs": [
                     "lastNotNull"
@@ -86,7 +85,83 @@
                   "fields": "",
                   "values": false
                 },
-                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "short",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      }
+                    ]
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-2": {
+        "kind": "Panel",
+        "spec": {
+          "id": 2,
+          "title": "Waiting packages",
+          "description": "Packages waiting in the build queue.",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${datasource}"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "build_queue_waiting",
+                        "instant": true,
+                        "range": false,
+                        "legendFormat": "waiting"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.1.4",
+            "spec": {
+              "options": {
+                "colorMode": "value",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "auto",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
                 "textMode": "auto",
                 "wideLayout": true
               },
@@ -117,12 +192,12 @@
           }
         }
       },
-      "panel-2": {
+      "panel-3": {
         "kind": "Panel",
         "spec": {
-          "id": 2,
-          "title": "Active builds",
-          "description": "Packages currently being built.",
+          "id": 3,
+          "title": "Busy builders",
+          "description": "Build nodes currently active.",
           "links": [],
           "data": {
             "kind": "QueryGroup",
@@ -140,10 +215,10 @@
                       },
                       "spec": {
                         "editorMode": "code",
-                        "expr": "build_queue_active",
+                        "expr": "count(build_queue_builder_info{state=\"active\"})",
                         "instant": true,
-                        "legendFormat": "active",
-                        "range": false
+                        "range": false,
+                        "legendFormat": "busy"
                       }
                     },
                     "refId": "A",
@@ -165,7 +240,6 @@
                 "graphMode": "area",
                 "justifyMode": "auto",
                 "orientation": "auto",
-                "percentChangeColorMode": "standard",
                 "reduceOptions": {
                   "calcs": [
                     "lastNotNull"
@@ -173,7 +247,6 @@
                   "fields": "",
                   "values": false
                 },
-                "showPercentChange": false,
                 "textMode": "auto",
                 "wideLayout": true
               },
@@ -196,12 +269,12 @@
           }
         }
       },
-      "panel-3": {
+      "panel-4": {
         "kind": "Panel",
         "spec": {
-          "id": 3,
+          "id": 4,
           "title": "Idle builders",
-          "description": "Build nodes that are currently idle.",
+          "description": "Build nodes currently idle.",
           "links": [],
           "data": {
             "kind": "QueryGroup",
@@ -219,10 +292,10 @@
                       },
                       "spec": {
                         "editorMode": "code",
-                        "expr": "build_queue_idle",
+                        "expr": "count(build_queue_builder_info{state=\"idle\"})",
                         "instant": true,
-                        "legendFormat": "idle",
-                        "range": false
+                        "range": false,
+                        "legendFormat": "idle"
                       }
                     },
                     "refId": "A",
@@ -244,7 +317,6 @@
                 "graphMode": "area",
                 "justifyMode": "auto",
                 "orientation": "auto",
-                "percentChangeColorMode": "standard",
                 "reduceOptions": {
                   "calcs": [
                     "lastNotNull"
@@ -252,7 +324,6 @@
                   "fields": "",
                   "values": false
                 },
-                "showPercentChange": false,
                 "textMode": "auto",
                 "wideLayout": true
               },
@@ -279,449 +350,10 @@
           }
         }
       },
-      "panel-4": {
+      "panel-6": {
         "kind": "Panel",
         "spec": {
-          "id": 4,
-          "title": "Queue change",
-          "description": "Rate the queue is filling or draining, in packages per minute. Negative means it is depleting.",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "${datasource}"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "deriv(build_queue_waiting[5m]) * 60",
-                        "instant": true,
-                        "legendFormat": "packages/min",
-                        "range": false
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "stat",
-            "version": "13.1.4",
-            "spec": {
-              "options": {
-                "colorMode": "value",
-                "graphMode": "area",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "percentChangeColorMode": "standard",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
-                },
-                "showPercentChange": false,
-                "textMode": "auto",
-                "wideLayout": true
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "unit": "short",
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 5,
-                        "color": "yellow"
-                      },
-                      {
-                        "value": 20,
-                        "color": "red"
-                      }
-                    ]
-                  }
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-5": {
-        "kind": "Panel",
-        "spec": {
-          "id": 5,
-          "title": "Build queue",
-          "description": "Active, waiting and idle counts over time.",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "${datasource}"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "build_queue_active",
-                        "legendFormat": "active",
-                        "range": true
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "${datasource}"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "build_queue_waiting",
-                        "legendFormat": "waiting",
-                        "range": true
-                      }
-                    },
-                    "refId": "B",
-                    "hidden": false
-                  }
-                },
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "${datasource}"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "build_queue_idle",
-                        "legendFormat": "idle",
-                        "range": true
-                      }
-                    },
-                    "refId": "C",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "timeseries",
-            "version": "13.1.4",
-            "spec": {
-              "options": {
-                "annotations": {
-                  "clustering": -1,
-                  "multiLane": false
-                },
-                "legend": {
-                  "calcs": [
-                    "lastNotNull",
-                    "max"
-                  ],
-                  "displayMode": "table",
-                  "enableFacetedFilter": false,
-                  "overflow": "ellipsis",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "hideZeros": false,
-                  "mode": "multi",
-                  "sort": "none"
-                }
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "unit": "short",
-                  "min": 0,
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
-                      }
-                    ]
-                  },
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "barWidthFactor": 0.6,
-                    "drawStyle": "line",
-                    "fillOpacity": 10,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "never",
-                    "showValues": false,
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  }
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-7": {
-        "kind": "Panel",
-        "spec": {
-          "id": 7,
-          "title": "Builders by build class",
-          "description": "Idle and active build nodes grouped by build class.",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "${datasource}"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "sum by (build_class) (build_queue_builders{build_class=~\"$build_class\"})",
-                        "legendFormat": "class {{build_class}}",
-                        "range": true
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "stat",
-            "version": "13.1.4",
-            "spec": {
-              "options": {
-                "colorMode": "value",
-                "graphMode": "area",
-                "justifyMode": "auto",
-                "orientation": "auto",
-                "percentChangeColorMode": "standard",
-                "reduceOptions": {
-                  "calcs": [
-                    "lastNotNull"
-                  ],
-                  "fields": "",
-                  "values": false
-                },
-                "showPercentChange": false,
-                "textMode": "auto",
-                "wideLayout": true
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      }
-                    ]
-                  }
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-8": {
-        "kind": "Panel",
-        "spec": {
-          "id": 8,
-          "title": "Builders",
-          "description": "Build nodes by name, class and state.",
-          "links": [],
-          "data": {
-            "kind": "QueryGroup",
-            "spec": {
-              "queries": [
-                {
-                  "kind": "PanelQuery",
-                  "spec": {
-                    "query": {
-                      "kind": "DataQuery",
-                      "group": "prometheus",
-                      "version": "v0",
-                      "datasource": {
-                        "name": "${datasource}"
-                      },
-                      "spec": {
-                        "editorMode": "code",
-                        "expr": "build_queue_builder_info",
-                        "format": "table",
-                        "instant": true,
-                        "legendFormat": "__auto",
-                        "range": false
-                      }
-                    },
-                    "refId": "A",
-                    "hidden": false
-                  }
-                }
-              ],
-              "transformations": [
-                {
-                  "kind": "Transformation",
-                  "group": "organize",
-                  "spec": {
-                    "options": {
-                      "excludeByName": {
-                        "Time": true,
-                        "Value": true,
-                        "__name__": true,
-                        "instance": true,
-                        "job": true
-                      },
-                      "indexByName": {},
-                      "renameByName": {
-                        "build_class": "Build class",
-                        "builder": "Builder",
-                        "state": "State"
-                      }
-                    }
-                  }
-                }
-              ],
-              "queryOptions": {}
-            }
-          },
-          "vizConfig": {
-            "kind": "VizConfig",
-            "group": "table",
-            "version": "13.1.4",
-            "spec": {
-              "options": {
-                "cellHeight": "sm",
-                "showHeader": true,
-                "sortBy": [
-                  {
-                    "desc": false,
-                    "displayName": "Builder"
-                  }
-                ]
-              },
-              "fieldConfig": {
-                "defaults": {
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "value": 0,
-                        "color": "green"
-                      },
-                      {
-                        "value": 80,
-                        "color": "red"
-                      }
-                    ]
-                  },
-                  "custom": {
-                    "align": "auto",
-                    "cellOptions": {
-                      "type": "auto"
-                    },
-                    "footer": {
-                      "reducers": []
-                    },
-                    "inspect": false
-                  }
-                },
-                "overrides": []
-              }
-            }
-          }
-        }
-      },
-      "panel-9": {
-        "kind": "Panel",
-        "spec": {
-          "id": 9,
+          "id": 6,
           "title": "Active packages",
           "description": "Packages currently building, by package and builder.",
           "links": [],
@@ -742,10 +374,10 @@
                       "spec": {
                         "editorMode": "code",
                         "expr": "build_queue_active_package_info",
-                        "format": "table",
                         "instant": true,
+                        "range": false,
                         "legendFormat": "__auto",
-                        "range": false
+                        "format": "table"
                       }
                     },
                     "refId": "A",
@@ -813,13 +445,88 @@
                     "align": "auto",
                     "cellOptions": {
                       "type": "auto"
-                    },
-                    "footer": {
-                      "reducers": []
-                    },
-                    "inspect": false
+                    }
                   }
                 },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-8": {
+        "kind": "Panel",
+        "spec": {
+          "id": 8,
+          "title": "chaotic-v4 build logs",
+          "description": "Build logs from the chaotic-v4 container. Use the search box to filter. Important: these are NOT all builder logs, only the ones running on our infrastructure.",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "loki",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "${logsdatasource}"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "{service_name=\"compose-runner-chaotic-v4.service\"} | json | line_format \"{{.message}}\" | detected_level =~ \"$level\"",
+                        "queryType": "range"
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [
+                {
+                  "kind": "Transformation",
+                  "group": "filterByValue",
+                  "spec": {
+                    "options": {
+                      "filters": [
+                        {
+                          "fieldName": "Line",
+                          "config": {
+                            "id": "regex",
+                            "options": {
+                              "value": "$search"
+                            }
+                          }
+                        }
+                      ],
+                      "match": "any",
+                      "type": "include"
+                    }
+                  }
+                }
+              ],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "logs",
+            "version": "11.5.2",
+            "spec": {
+              "options": {
+                "dedupStrategy": "none",
+                "enableLogDetails": true,
+                "showTime": true,
+                "sortOrder": "Descending",
+                "wrapLogMessage": true,
+                "syntaxHighlighting": false
+              },
+              "fieldConfig": {
+                "defaults": {},
                 "overrides": []
               }
             }
@@ -889,49 +596,23 @@
               "x": 0,
               "y": 4,
               "width": 24,
-              "height": 9,
-              "element": {
-                "kind": "ElementReference",
-                "name": "panel-5"
-              }
-            }
-          },
-          {
-            "kind": "GridLayoutItem",
-            "spec": {
-              "x": 0,
-              "y": 13,
-              "width": 24,
-              "height": 4,
-              "element": {
-                "kind": "ElementReference",
-                "name": "panel-7"
-              }
-            }
-          },
-          {
-            "kind": "GridLayoutItem",
-            "spec": {
-              "x": 0,
-              "y": 17,
-              "width": 24,
               "height": 8,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-6"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 12,
+              "width": 24,
+              "height": 20,
               "element": {
                 "kind": "ElementReference",
                 "name": "panel-8"
-              }
-            }
-          },
-          {
-            "kind": "GridLayoutItem",
-            "spec": {
-              "x": 0,
-              "y": 25,
-              "width": 24,
-              "height": 8,
-              "element": {
-                "kind": "ElementReference",
-                "name": "panel-9"
               }
             }
           }
@@ -940,21 +621,7 @@
     },
     "links": [
       {
-        "title": "Node-exporter",
-        "type": "dashboards",
-        "icon": "external link",
-        "tooltip": "",
-        "url": "",
-        "tags": [
-          "node-exporter"
-        ],
-        "asDropdown": false,
-        "targetBlank": false,
-        "includeVars": true,
-        "keepTime": true
-      },
-      {
-        "title": "Chaotic-aur",
+        "title": "Chaotic-AUR",
         "type": "dashboards",
         "icon": "external link",
         "tooltip": "",
@@ -966,14 +633,25 @@
         "targetBlank": false,
         "includeVars": true,
         "keepTime": true
+      },
+      {
+        "title": "Explore build logs",
+        "type": "link",
+        "icon": "external link",
+        "tooltip": "",
+        "url": "/explore?orgId=1&left=%7B%22datasource%22%3A%22P8E80F9AEF21F6940%22%2C%22queries%22%3A%5B%7B%22refId%22%3A%22A%22%2C%22datasource%22%3A%7B%22type%22%3A%22loki%22%2C%22uid%22%3A%22P8E80F9AEF21F6940%22%7D%2C%22expr%22%3A%22%7Bservice_name%3D%5C%22compose-runner-chaotic-v4.service%5C%22%7D%20%7C%20json%22%7D%5D%7D",
+        "tags": [],
+        "asDropdown": false,
+        "targetBlank": true,
+        "includeVars": false,
+        "keepTime": true
       }
     ],
     "liveNow": false,
     "preload": false,
     "tags": [
-      "build-queue",
       "chaotic-aur",
-      "node-exporter"
+      "logs"
     ],
     "timeSettings": {
       "timezone": "browser",
@@ -995,7 +673,7 @@
       "hideTimepicker": false,
       "fiscalYearStartMonth": 0
     },
-    "title": "Chaotic Build Queue",
+    "title": "Chaotic Builder Status",
     "variables": [
       {
         "kind": "DatasourceVariable",
@@ -1018,38 +696,77 @@
         }
       },
       {
-        "kind": "QueryVariable",
+        "kind": "DatasourceVariable",
         "spec": {
-          "name": "build_class",
-          "current": {
-            "text": [
-              "All"
-            ],
-            "value": [
-              "$__all"
-            ]
-          },
-          "label": "Build class",
-          "hide": "dontHide",
+          "name": "logsdatasource",
+          "pluginId": "loki",
           "refresh": "onDashboardLoad",
-          "skipUrlSync": false,
-          "query": {
-            "kind": "DataQuery",
-            "group": "prometheus",
-            "version": "v0",
-            "spec": {
-              "qryType": 1,
-              "query": "label_values(build_queue_builders, build_class)",
-              "refId": "PrometheusVariableQueryEditor-VariableQuery"
-            }
-          },
           "regex": "",
-          "regexApplyTo": "value",
-          "sort": "alphabeticalAsc",
+          "current": {
+            "text": "Loki",
+            "value": "loki"
+          },
           "options": [],
-          "multi": true,
-          "includeAll": true,
+          "multi": false,
+          "includeAll": false,
+          "label": "Loki",
+          "hide": "dontHide",
+          "skipUrlSync": false,
           "allowCustomValue": true
+        }
+      },
+      {
+        "kind": "TextVariable",
+        "spec": {
+          "name": "search",
+          "current": {
+            "text": ".",
+            "value": "."
+          },
+          "label": "Log search",
+          "hide": "dontHide",
+          "skipUrlSync": false,
+          "query": "."
+        }
+      },
+      {
+        "kind": "CustomVariable",
+        "spec": {
+          "name": "level",
+          "current": {
+            "text": "All",
+            "value": ".*"
+          },
+          "label": "Level",
+          "hide": "dontHide",
+          "refresh": "never",
+          "skipUrlSync": false,
+          "query": "All : .* , error : error|critical|fatal , warn : warn|warning , info : info , debug : debug|trace",
+          "options": [
+            {
+              "text": "All",
+              "value": ".*"
+            },
+            {
+              "text": "error",
+              "value": "error|critical|fatal"
+            },
+            {
+              "text": "warn",
+              "value": "warn|warning"
+            },
+            {
+              "text": "info",
+              "value": "info"
+            },
+            {
+              "text": "debug",
+              "value": "debug|trace"
+            }
+          ],
+          "multi": false,
+          "includeAll": false,
+          "allowCustomValue": false
         }
       }
     ]

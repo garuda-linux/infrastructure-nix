@@ -1542,7 +1542,7 @@
           "name": "datasource",
           "pluginId": "prometheus",
           "refresh": "onDashboardLoad",
-          "regex": "",
+          "regex": "^Prometheus$",
           "current": {
             "text": "Prometheus",
             "value": "prometheus"

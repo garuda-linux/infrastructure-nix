@@ -4360,7 +4360,7 @@
           "name": "DS_PROMETHEUS",
           "pluginId": "prometheus",
           "refresh": "onDashboardLoad",
-          "regex": "",
+          "regex": "^Prometheus$",
           "current": {
             "text": "",
             "value": ""

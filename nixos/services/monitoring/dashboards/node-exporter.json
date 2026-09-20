@@ -21687,7 +21687,7 @@
           "name": "ds_prometheus",
           "pluginId": "prometheus",
           "refresh": "onDashboardLoad",
-          "regex": "",
+          "regex": "^Prometheus$",
           "current": {
             "text": "",
             "value": ""

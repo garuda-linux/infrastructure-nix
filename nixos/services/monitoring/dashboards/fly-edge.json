@@ -2278,7 +2278,8 @@
     "liveNow": false,
     "preload": false,
     "tags": [
-      "fly"
+      "fly",
+      "chaotic-aur"
     ],
     "timeSettings": {
       "timezone": "browser",
@@ -2305,7 +2306,7 @@
           "name": "source",
           "pluginId": "prometheus",
           "refresh": "onDashboardLoad",
-          "regex": "",
+          "regex": "^Fly\\.io$",
           "current": {
             "text": "Fly.io",
             "value": "fly-prometheus"

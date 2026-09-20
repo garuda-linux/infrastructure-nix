@@ -2994,7 +2994,7 @@
           "name": "datasource",
           "pluginId": "prometheus",
           "refresh": "never",
-          "regex": "",
+          "regex": "^Prometheus$",
           "current": {
             "text": "default",
             "value": "default"

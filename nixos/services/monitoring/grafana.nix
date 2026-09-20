@@ -17,6 +17,7 @@ let
   prometheusUid = "prometheus";
   chaoticPrometheusUid = "prometheus-chaotic";
   chaoticFlyUid = "fly-prometheus-chaotic";
+  chaoticLokiUid = "loki-chaotic";
   lokiUid = "P8E80F9AEF21F6940";
 
   # Fly.io's managed Prometheus, reached through its HTTP API with a token.
@@ -28,6 +29,7 @@ let
   organizations = [ "Chaotic" ];
   chaoticDashboardNames = [
     "build-queue.json"
+    "chaotic-aur.json"
     "cloudflare-analytics.json"
     "cloudflare-threats.json"
     "cloudflare-r2.json"
@@ -54,6 +56,8 @@ let
       chaoticPrometheusUid
     else if name == flyPrometheusUid then
       chaoticFlyUid
+    else if name == lokiUid then
+      chaoticLokiUid
     else
       name;
 
@@ -95,6 +99,15 @@ let
             spec.current = {
               text = "Prometheus";
               value = chaoticPrometheusUid;
+            };
+          }
+        else if
+          (variable.kind or "") == "DatasourceVariable" && (variable.spec.pluginId or "") == "loki"
+        then
+          lib.recursiveUpdate variable {
+            spec.current = {
+              text = "Loki";
+              value = chaoticLokiUid;
             };
           }
         # The Chaotic org only gets its own zone: lock the zone variable down to
@@ -209,6 +222,14 @@ in
               type = "loki";
               url = "http://127.0.0.1:${toString cfg.loki.port}";
               uid = lokiUid;
+            }
+            ++ lib.optional cfg.loki.enable {
+              access = "proxy";
+              name = "Loki";
+              type = "loki";
+              url = "http://127.0.0.1:${toString cfg.loki.port}";
+              uid = chaoticLokiUid;
+              orgId = chaoticOrgId;
             }
             ++ lib.optional (cfg.prometheus.enable && cfg.prometheus.alertmanager.enable) {
               access = "proxy";

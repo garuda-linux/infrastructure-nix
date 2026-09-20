@@ -2365,7 +2365,7 @@
           "name": "DS_VICTORIAMETRICS",
           "pluginId": "prometheus",
           "refresh": "onDashboardLoad",
-          "regex": "",
+          "regex": "^Prometheus$",
           "current": {
             "text": "default",
             "value": "default"

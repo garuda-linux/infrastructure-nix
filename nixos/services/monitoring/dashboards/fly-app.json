@@ -2672,7 +2672,8 @@
     "liveNow": false,
     "preload": false,
     "tags": [
-      "fly"
+      "fly",
+      "chaotic-aur"
     ],
     "timeSettings": {
       "timezone": "browser",
