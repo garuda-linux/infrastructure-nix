@@ -217,14 +217,22 @@ let
     mkWebFront =
       { host, vhosts }:
       {
-        garuda = mkMonitoring {
-          inherit host;
-          units = [
-            "cloudflared-tunnel-garuda-cloudflared-legacy.service"
-            "nginx.service"
-          ];
-          exporters = [ "nginxExporter" ];
-        };
+        garuda =
+          recursiveUpdate
+            (mkMonitoring {
+              inherit host;
+              units = [
+                "cloudflared-tunnel-garuda-cloudflared-legacy.service"
+                "nginx.service"
+              ];
+              exporters = [ "nginxExporter" ];
+            })
+            {
+              monitoring.fluent-bit.nginxAccessLog = {
+                enable = true;
+                hostLabel = "web-front-${host}";
+              };
+            };
         systemd.services.cloudflared-metrics-proxy = mkTunnel {
           bind = monitoring."${host}Containers".web-front;
           listen = monitoring.ports.cloudflaredMetrics;

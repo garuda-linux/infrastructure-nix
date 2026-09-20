@@ -9,22 +9,16 @@ let
   cfg = config.garuda.monitoring;
 
   nixosRevision =
-    if config.system.nixos.revision == null then
-      "unknown"
-    else
-      config.system.nixos.revision;
+    if config.system.nixos.revision == null then "dirty" else config.system.nixos.revision;
 
   configuration =
     if config.system.configurationRevision == null then
-      "unknown"
+      "dirty"
     else
       config.system.configurationRevision;
 
   dirty =
-    if lib.hasSuffix "-dirty" configuration then
-      "true"
-    else
-      "false";
+    if configuration == "dirty" || lib.hasSuffix "-dirty" configuration then "true" else "false";
 
   infoContent = ''
     # HELP nixos_info NixOS release, version and configuration revision.

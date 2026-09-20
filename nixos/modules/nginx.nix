@@ -16,6 +16,17 @@
         ~^(?<capture>.*)/ $capture;
       }
 
+      # JSON access log for Loki with Cloudflare visitor-location headers
+      log_format garuda_json escape=json
+        '{"ts":"$time_iso8601","host":"$host","remote":"$remote_addr",'
+        '"request":"$request","status":$status,"bytes":$bytes_sent,'
+        '"req_time":$request_time,"upstream_time":"$upstream_response_time",'
+        '"referer":"$http_referer","agent":"$http_user_agent",'
+        '"cf_country":"$http_cf_ipcountry","cf_lat":"$http_cf_iplatitude",'
+        '"cf_lon":"$http_cf_iplongitude","cf_ray":"$http_cf_ray",'
+        '"tls":"$ssl_protocol"}';
+      access_log /var/log/nginx/access.log garuda_json;
+
       perl_set $symlink_target_rel '
         sub {
           my $r = shift;

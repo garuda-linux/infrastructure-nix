@@ -1,4 +1,3 @@
-_:
-{
+_: {
   config.nixpkgs.overlays = [ (import ./overlay.nix) ];
 }

@@ -379,13 +379,16 @@ let
       }
     ];
 
-    nodeContainerTargets = map (ip: "${ip}:${toString ports.nodeExporter}") (
-      lib.attrValues aerialisContainers
-    );
+    # A web-front exists on both hosts, so qualify it (same convention
+    # as the Loki host labels). All other names are unique already.
+    nodeContainerTargets = lib.mapAttrsToList (name: ip: {
+      target = "${ip}:${toString ports.nodeExporter}";
+      instance = if name == "web-front" then "web-front-aerialis" else name;
+    }) aerialisContainers;
 
     stormwingNodeContainerTargets = map (p: {
       target = "${tailnetHosts.stormwing}:${toString p.port}";
-      inherit (p) name;
+      instance = if p.name == "web-front" then "web-front-stormwing" else p.name;
     }) stormwingNodeProxies;
 
     nginxTargets = [
