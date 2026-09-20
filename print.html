@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex-a44a56cc.js";
+            window.path_to_searchindex_js = "searchindex-d69b3f25.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-4ebbbf40.js"></script>
@@ -2155,6 +2155,12 @@ in
         environmentFile = config.sops.templates."tailscale-exporter-env".path;
       };
 
+      cloudflareExporter = {
+        enable = true;
+        port = mon.ports.cloudflareExporter;
+        environmentFile = config.sops.templates."cloudflare-exporter-env".path;
+      };
+
       applicationTargets = [
         {
           name = "dovecot";
@@ -2312,6 +2318,14 @@ in
       TAILSCALE_TAILNET=${mon.tailnetDomain}
       TAILSCALE_OAUTH_CLIENT_ID=${config.sops.placeholder."tailscale/oauth_client_id"}
       TAILSCALE_OAUTH_CLIENT_SECRET=${config.sops.placeholder."tailscale/oauth_client_secret"}
+    '';
+  };
+
+  sops.secrets."cloudflare/exporter_api_token" = { };
+  sops.templates."cloudflare-exporter-env" = {
+    mode = "0400";
+    content = ''
+      CF_API_TOKEN=${config.sops.placeholder."cloudflare/exporter_api_token"}
     '';
   };
 
@@ -5066,6 +5080,7 @@ which kept only a few GB per host and offered no central alerting.</p>
 <tr><td>dovecot (OpenMetrics)</td><td>Mail auth/IMAP/delivery metrics</td><td>9900</td></tr>
 <tr><td>GitLab runner metrics</td><td>CI runner</td><td>9252</td></tr>
 <tr><td>cloudflared metrics</td><td>Tunnel metrics</td><td>20241</td></tr>
+<tr><td>cloudflare_exporter</td><td>Cloudflare zone/worker analytics</td><td>9333</td></tr>
 </tbody>
 </table>
 </div>
@@ -5092,6 +5107,8 @@ container runs its own tailscaled instead of going through a proxy on the host.<
 <h2 id="grafana"><a class="header" href="#grafana">Grafana</a></h2>
 <p>Dashboards live in <code>nixos/services/monitoring/dashboards</code> and are provisioned into the main organization.
 Datasource uids are pinned, because the dashboards reference them by uid.</p>
+<p>Fly.io’s managed Prometheus is provisioned as an extra datasource in the main organization, authenticated with
+the <code>grafana/fly_token</code> sops secret.</p>
 <p>Grafana has no provisioning support for organizations, and it refuses to start when provisioning targets one
 that does not exist yet. The <code>grafana-organizations</code> unit therefore creates any missing organization listed
 in <code>nixos/services/monitoring/grafana.nix</code> through the Admin API.</p>
