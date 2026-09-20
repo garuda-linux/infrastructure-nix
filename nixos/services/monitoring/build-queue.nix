@@ -45,12 +45,13 @@ let
       ${pkgs.jq}/bin/jq -r '
         ([ (.idle.nodes // [])[]
            | { builder: ((.name // "unknown") | tostring | gsub("[\"\\\\\n]"; "")),
-               class: ((.build_class // "unknown") | tostring),
+               raw_class: ((.build_class // "unknown") | tostring),
                state: "idle" } ]
         + [ (.active.packages // [])[]
             | { builder: ((.node // "unknown") | tostring | gsub("[\"\\\\\n]"; "")),
-                class: ((.build_class // "unknown") | tostring),
+                raw_class: ((.build_class // "unknown") | tostring),
                 state: "active" } ])
+        | map((.class = (if .raw_class == "unknown" then .builder else .raw_class end)) | del(.raw_class))
         | unique
         | .[] | "build_queue_builder_info{builder=\"\(.builder)\",build_class=\"\(.class)\",state=\"\(.state)\"} 1"
       ' <<<"$json"

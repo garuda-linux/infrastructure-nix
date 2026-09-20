@@ -40,14 +40,14 @@
       }
       {
         alert = "BorgmaticRepositoryTooLarge";
-        expr = "borg_total_size > 1099511627776"; # 1 TiB
+        expr = "borg_total_deduplicated_compressed_size > 858993459200"; # ~800 GiB actually occupied on the storage box
         for = "5m";
         labels = {
           severity = "warning";
         };
         annotations = {
           summary = "Borgmatic repository too large ({{ $labels.instance }})";
-          description = "Repository {{ $labels.repository }} is over 1 TiB\n  Host: {{ $labels.instance }}\n  Size: {{ $value | humanize1024 }}B";
+          description = "Repository {{ $labels.repository }} occupies over 800 GiB on disk\n  Host: {{ $labels.instance }}\n  Size: {{ $value | humanize1024 }}B";
         };
       }
       {

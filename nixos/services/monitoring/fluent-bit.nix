@@ -73,7 +73,6 @@ in
         { "log-driver": "fluentd", "log-opts": { "fluentd-address": "127.0.0.1:24224" } }
       '';
     };
-  };
 
     nginxAccessLog = {
       enable = mkEnableOption "Ship Nginx JSON access logs to Loki via a tail input";

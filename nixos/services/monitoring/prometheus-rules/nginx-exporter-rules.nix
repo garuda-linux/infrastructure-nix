@@ -1,54 +1,29 @@
-# Source: https://github.com/samber/awesome-prometheus-alerts
 [
   {
-    name = "KnyarNginxExporter";
+    name = "NginxStubStatus";
     rules = [
       {
-        alert = "NginxHighHttp4xxErrorRate";
-        expr = "sum(rate(nginx_http_requests_total{status=~\"^4..\"}[1m])) / sum(rate(nginx_http_requests_total[1m])) * 100 > 5 and sum(rate(nginx_http_requests_total[1m])) > 0";
+        alert = "NginxDown";
+        expr = "up{job=\"nginx\"} == 0";
         for = "1m";
         labels = {
           severity = "critical";
         };
         annotations = {
-          summary = "Nginx high HTTP 4xx error rate (instance {{ $labels.instance }})";
-          description = "Too many HTTP requests with status 4xx (> 5%)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
+          summary = "Nginx exporter down (instance {{ $labels.instance }})";
+          description = "The nginx exporter has been unreachable for more than a minute.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
         };
       }
       {
-        alert = "NginxHighHttp5xxErrorRate";
-        expr = "sum(rate(nginx_http_requests_total{status=~\"^5..\"}[1m])) / sum(rate(nginx_http_requests_total[1m])) * 100 > 5 and sum(rate(nginx_http_requests_total[1m])) > 0";
-        for = "1m";
-        labels = {
-          severity = "critical";
-        };
-        annotations = {
-          summary = "Nginx high HTTP 5xx error rate (instance {{ $labels.instance }})";
-          description = "Too many HTTP requests with status 5xx (> 5%)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
-        };
-      }
-      {
-        alert = "NginxLatencyHigh";
-        expr = "histogram_quantile(0.99, sum(rate(nginx_http_request_duration_seconds_bucket[2m])) by (host, node, le)) > 3";
-        for = "2m";
+        alert = "NginxConnectionsDropped";
+        expr = "sum by (instance) (rate(nginx_connections_accepted[5m]) - rate(nginx_connections_handled[5m])) > 1";
+        for = "5m";
         labels = {
           severity = "warning";
         };
         annotations = {
-          summary = "Nginx latency high (instance {{ $labels.instance }})";
-          description = "Nginx p99 latency is higher than 3 seconds\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
-        };
-      }
-      {
-        alert = "NginxInternalMetricErrors";
-        expr = "increase(nginx_metric_errors_total[5m]) > 0";
-        for = "1m";
-        labels = {
-          severity = "warning";
-        };
-        annotations = {
-          summary = "Nginx internal metric errors (instance {{ $labels.instance }})";
-          description = "The nginx-lua-prometheus library failed to record one or more metrics (e.g. the shared dictionary used to store metrics is full or an LRU eviction occurred), which may mean other Nginx metrics are incomplete.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
+          summary = "Nginx dropping connections (instance {{ $labels.instance }})";
+          description = "Accepted connections exceed handled ones: workers cannot keep up.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
         };
       }
     ];

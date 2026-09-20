@@ -75,18 +75,18 @@
           description = "Prometheus has restarted more than twice in the last 15 minutes. It might be crashlooping.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
         };
       }
-      # {
-      #   alert = "PrometheusAlertManagerJobMissing";
-      #   expr = "absent(up{job=\"alertmanager\"})";
-      #   for = "0m";
-      #   labels = {
-      #     severity = "warning";
-      #   };
-      #   annotations = {
-      #     summary = "Prometheus AlertManager job missing (instance {{ $labels.instance }})";
-      #     description = "A Prometheus AlertManager job has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
-      #   };
-      # }
+      {
+        alert = "PrometheusAlertManagerJobMissing";
+        expr = "absent(up{job=\"alertmanager\"})";
+        for = "0m";
+        labels = {
+          severity = "warning";
+        };
+        annotations = {
+          summary = "Prometheus AlertManager job missing (instance {{ $labels.instance }})";
+          description = "A Prometheus AlertManager job has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
+        };
+      }
       {
         alert = "PrometheusAlertManagerConfigurationReloadFailure";
         expr = "alertmanager_config_last_reload_successful != 1";

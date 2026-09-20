@@ -89,8 +89,8 @@
       }
       {
         alert = "HostDiskMayFillIn24Hours";
-        expr = "predict_linear(node_filesystem_avail_bytes{fstype!~\"^(fuse.*|tmpfs|cifs|nfs)\"}[3h], 86400) <= 0 and node_filesystem_avail_bytes > 0";
-        for = "2m";
+        expr = "predict_linear(node_filesystem_avail_bytes{fstype!~\"^(fuse.*|tmpfs|cifs|nfs)\"}[6h], 86400) <= 0 and node_filesystem_avail_bytes / node_filesystem_size_bytes < 0.20";
+        for = "1h";
         labels = {
           severity = "warning";
         };
@@ -161,7 +161,7 @@
       }
       {
         alert = "HostHighCPULoad";
-        expr = "1 - (avg without (cpu) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m]))) > .80";
+        expr = "1 - (avg without (cpu) (rate(node_cpu_seconds_total{mode=\"idle\",job!=\"node-stormwing-containers\",instance!=\"stormwing\"}[5m]))) > .80";
         for = "10m";
         labels = {
           severity = "warning";
@@ -185,14 +185,14 @@
       # }
       {
         alert = "HostCPUStealNoisyNeighbor";
-        expr = "avg without (cpu) (rate(node_cpu_seconds_total{mode=\"steal\"}[5m])) * 100 > 10";
+        expr = "avg without (cpu) (rate(node_cpu_seconds_total{mode=\"steal\"}[5m])) * 100 > 20";
         for = "0m";
         labels = {
           severity = "warning";
         };
         annotations = {
           summary = "Host CPU steal noisy neighbor (instance {{ $labels.instance }})";
-          description = "CPU steal is > 10%. A noisy neighbor is killing VM performances or a spot instance may be out of credit.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
+          description = "CPU steal is > 20%. A noisy neighbor is killing VM performances or a spot instance may be out of credit.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}";
         };
       }
       {
