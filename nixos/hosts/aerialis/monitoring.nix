@@ -32,10 +32,7 @@ in
 
     buildQueue.enable = true;
 
-    grafana = {
-      enable = true;
-      port = mon.ports.grafana;
-    };
+    grafana.enable = true;
 
     prometheus = {
       enable = true;

@@ -108,7 +108,7 @@ in
   };
 
   config =
-    lib.mkIf (cfg.enable && cfg.rspamd.enable && cfg.prometheus.nodeExporter.enable && options ? sops)
+    lib.mkIf (cfg.enable && cfg.rspamd.enable && cfg.prometheus.nodeExporter.enable)
       {
         systemd.services.garuda-rspamd-exporter = {
           description = "Poll the Rspamd controller stat into the node_exporter textfile";

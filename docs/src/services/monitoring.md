@@ -47,11 +47,31 @@ containers at all. Stormwing therefore publishes them on its own Tailnet IP:
 The Chaotic-AUR mirrors are scraped over the Tailnet using MagicDNS short names, which is why the monitoring
 container runs its own tailscaled instead of going through a proxy on the host.
 
+## Grafana
+
+Dashboards live in `nixos/services/monitoring/dashboards` and are provisioned into the main organization.
+Datasource uids are pinned, because the dashboards reference them by uid.
+
+Grafana has no provisioning support for organizations, and it refuses to start when provisioning targets one
+that does not exist yet. The `grafana-organizations` unit therefore creates any missing organization listed
+in `nixos/services/monitoring/grafana.nix` through the Admin API.
+
+The Grafana role for GitLab logins is mapped from group membership in
+`nixos/services/monitoring/grafana.nix`. GitLab access levels are not available to Grafana - its connector
+only fetches group full paths from `/api/v4/groups` - so roles cannot be derived from Owner/Maintainer.
+Matching is exact, so a member of a subgroup that is not listed falls back to Viewer.
+
 ## Alerting
 
 Alert rules live in `nixos/services/monitoring/prometheus-rules/` (node-exporter, nginx-exporter, postgres-exporter,
 smartctl-exporter, borgmatic and self-monitoring rules). Alertmanager delivers firing and resolved alerts to Telegram
 as of right now. It can of course be extended to other channels as well.
+
+nspawn containers share the host kernel, so kernel-global metrics (`/proc/meminfo`, `/proc/vmstat`, `/proc/stat`,
+`/sys`, ...) are identical inside a container and its host. Rules backed by those metrics are tagged
+`scope = "host"`, and Alertmanager inhibits the duplicate alert from the `node-*-containers` jobs while the host's own
+alert keeps firing. Container-local rules (filesystem, systemd, network, conntrack) deliberately carry no such label,
+so a genuine container-only problem is still reported.
 
 ## Adding a host or container
 
