@@ -65,14 +65,12 @@ let
       {
         type = "command";
         key = "System type";
-        text = ''
-          if [ -f /run/systemd/container ]; then echo "container ($(cat /run/systemd/container))"; else v=$(systemd-detect-virt 2>/dev/null); if [ -n "$v" ] && [ "$v" != "none" ]; then echo "container ($v)"; else echo baremetal; fi; fi'';
+        text = ''if [ -f /run/systemd/container ]; then echo "container ($(cat /run/systemd/container))"; else v=$(systemd-detect-virt 2>/dev/null); if [ -n "$v" ] && [ "$v" != "none" ]; then echo "container ($v)"; else echo baremetal; fi; fi'';
       }
       {
         type = "command";
         key = "Last update";
-        text = ''
-          if [ -f /run/systemd/container ]; then exit 0; fi; date -d @$(stat -c %Y /run/current-system 2>/dev/null || date +%s) '+%Y-%m-%d %H:%M'';
+        text = "if [ -f /run/systemd/container ]; then exit 0; fi; date -d @$(stat -c %Y /run/current-system 2>/dev/null || date +%s) '+%Y-%m-%d %H:%M";
       }
     ]
     ++ lib.optional (cfg.parentHost != null) {

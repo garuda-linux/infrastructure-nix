@@ -91,6 +91,10 @@ in
       ssl = true;
       ssl_cert_file = "${config.services.postgresql.dataDir}/server.crt";
       ssl_key_file = "${config.services.postgresql.dataDir}/server.key";
+
+      # Defaults (128MB / 4GB) are far too small for a cluster shared by multiple services
+      shared_buffers = "4GB";
+      effective_cache_size = "12GB";
     };
   };
 
