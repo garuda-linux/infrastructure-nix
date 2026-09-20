@@ -39,6 +39,56 @@ let
         | group_by([.class, .state])
         | .[] | "build_queue_builders{build_class=\"\(.[0].class)\",state=\"\(.[0].state)\"} \(length)"
       ' <<<"$json"
+
+      printf '# HELP build_queue_builder_info Build nodes by name, class and state.\n'
+      printf '# TYPE build_queue_builder_info gauge\n'
+      ${pkgs.jq}/bin/jq -r '
+        ([ (.idle.nodes // [])[]
+           | { builder: ((.name // "unknown") | tostring | gsub("[\"\\\\\n]"; "")),
+               class: ((.build_class // "unknown") | tostring),
+               state: "idle" } ]
+        + [ (.active.packages // [])[]
+            | { builder: ((.node // "unknown") | tostring | gsub("[\"\\\\\n]"; "")),
+                class: ((.build_class // "unknown") | tostring),
+                state: "active" } ])
+        | unique
+        | .[] | "build_queue_builder_info{builder=\"\(.builder)\",build_class=\"\(.class)\",state=\"\(.state)\"} 1"
+      ' <<<"$json"
+
+      printf '# HELP build_queue_active_package_info Packages building, by package and builder.\n'
+      printf '# TYPE build_queue_active_package_info gauge\n'
+      ${pkgs.jq}/bin/jq -r '
+        [ (.active.packages // [])[]
+          | { package: ((.name // "unknown") | tostring | gsub("[\"\\\\\n]"; "")),
+              builder: ((.node // "unknown") | tostring | gsub("[\"\\\\\n]"; "")),
+              class: ((.build_class // "unknown") | tostring) } ]
+        | .[] | "build_queue_active_package_info{package=\"\(.package)\",builder=\"\(.builder)\",build_class=\"\(.class)\"} 1"
+      ' <<<"$json"
+
+      printf '# HELP build_queue_waiting_package_info Packages waiting, by package.\n'
+      printf '# TYPE build_queue_waiting_package_info gauge\n'
+      ${pkgs.jq}/bin/jq -r '
+        [ (.waiting.packages // [])[]
+          | { package: ((.name // "unknown") | tostring | gsub("[\"\\\\\n]"; "")),
+              class: ((.build_class // "unknown") | tostring) } ]
+        | .[] | "build_queue_waiting_package_info{package=\"\(.package)\",build_class=\"\(.class)\"} 1"
+      ' <<<"$json"
+
+      printf '# HELP build_queue_waiting_by_class Packages waiting, by build class.\n'
+      printf '# TYPE build_queue_waiting_by_class gauge\n'
+      ${pkgs.jq}/bin/jq -r '
+        [ (.waiting.packages // [])[] | ((.build_class // "unknown") | tostring) ]
+        | group_by(.)
+        | .[] | "build_queue_waiting_by_class{build_class=\"\(.[0])\"} \(length)"
+      ' <<<"$json"
+
+      printf '# HELP build_queue_active_by_class Packages building, by build class.\n'
+      printf '# TYPE build_queue_active_by_class gauge\n'
+      ${pkgs.jq}/bin/jq -r '
+        [ (.active.packages // [])[] | ((.build_class // "unknown") | tostring) ]
+        | group_by(.)
+        | .[] | "build_queue_active_by_class{build_class=\"\(.[0])\"} \(length)"
+      ' <<<"$json"
     } > "$tmp"
 
     ${pkgs.coreutils}/bin/mv -f "$tmp" "$dir/build_queue.prom"

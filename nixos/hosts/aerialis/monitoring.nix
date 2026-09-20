@@ -98,18 +98,19 @@ in
         }
         {
           job_name = "node-aerialis-containers";
-          static_configs = [
-            {
-              targets = mon.nodeContainerTargets;
-            }
-          ];
+          static_configs = map (t: {
+            targets = [ t.target ];
+            labels = {
+              inherit (t) instance;
+            };
+          }) mon.nodeContainerTargets;
         }
         {
           job_name = "node-stormwing-containers";
           static_configs = map (t: {
             targets = [ t.target ];
             labels = {
-              instance = t.name;
+              inherit (t) instance;
             };
           }) mon.stormwingNodeContainerTargets;
         }
