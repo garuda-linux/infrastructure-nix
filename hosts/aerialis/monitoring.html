@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>aerialis - Garuda&#x27;s infra documentation</title>
+        <title>monitoring - Garuda&#x27;s infra documentation</title>
 
 
         <!-- Custom HTML head -->
@@ -12,34 +12,34 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../favicon-de23e50b.svg">
-        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
-        <link rel="stylesheet" href="../css/variables-8adf115d.css">
-        <link rel="stylesheet" href="../css/general-e96d0476.css">
-        <link rel="stylesheet" href="../css/chrome-d279d366.css">
-        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+        <link rel="icon" href="../../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../../css/print-9e4910d8.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+        <link rel="stylesheet" href="../../fonts/fonts-9644e21d.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
-        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
-        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../../ayu-highlight-3fdfc3ac.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href=".././theme/catppuccin.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin.css">
 
 
         <!-- Provide site root and default themes to javascript -->
         <script>
-            const path_to_root = "../";
+            const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../searchindex-a44a56cc.js";
+            window.path_to_searchindex_js = "../../searchindex-a44a56cc.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-4ebbbf40.js"></script>
+        <script src="../../toc-4ebbbf40.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -106,7 +106,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -141,7 +141,7 @@
                     <h1 class="menu-title">Garuda&#x27;s infra documentation</h1>
 
                     <div class="right-buttons">
-                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
                         </a>
                         <a href="https://github.com/garuda-linux/infrastructure-nix" title="Git repository" aria-label="Git repository">
@@ -178,502 +178,256 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="aerialis"><a class="header" href="#aerialis">aerialis</a></h1>
-<p>This is one of the two main infrastructure hosts (see also: stormwing). All services and containers for aerialis are defined in <code>nixos/hosts/aerialis.nix</code> and its submodules.</p>
-<h2 id="host-configuration"><a class="header" href="#host-configuration">Host configuration</a></h2>
+                        <h1 id="monitoring-aerialis"><a class="header" href="#monitoring-aerialis">monitoring (aerialis)</a></h1>
+<p>This container runs our complete monitoring stack: Prometheus, Alertmanager, Grafana and Loki, together with the
+exporters that feed them.</p>
+<h2 id="general"><a class="header" href="#general">General</a></h2>
+<p>It is the counterpart to the agents that the hosts and containers run themselves (node_exporter and Fluent Bit). Unlike
+the other containers it runs its own tailscaled, so that Prometheus can scrape the Chaotic-AUR mirrors over the Tailnet
+using MagicDNS names, and it listens on <code>10.0.5.100</code> on the host’s container bridge.</p>
+<p>See <a href="../../services/monitoring.html">Monitoring</a> for the full picture, including how the stormwing containers are reached
+and how alerts are routed.</p>
+<h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <pre><code class="language-nix">{
+  config,
   garuda-lib,
+  sources,
   ...
 }:
 let
   mon = garuda-lib.monitoring;
+
+  units = [
+    "grafana.service"
+    "prometheus.service"
+    "alertmanager.service"
+    "prometheus-tailscale-exporter.service"
+    "loki.service"
+  ];
 in
 {
-  imports = [
-    ../modules
-    ./../modules/special/hetzner-ex44.nix
+  imports = sources.defaultModules ++ [
+    ../../modules
   ];
 
-  garuda =
-    garuda-lib.mkMonitoring {
-      host = "aerialis";
-      hostInfo = true;
-      units = [
-        "borgmatic.service"
-        "borgmatic.timer"
-        "sshd.service"
-        "tailscaled.service"
-      ];
-      exporters = [
-        "smartctlExporter"
-        "borgmaticExporter"
-      ];
-    }
-    // {
-      backup.borgmatic = {
-        enable = true;
-        name = "aerialis";
-        user = "u342919";
-        host = "u342919.your-storagebox.de";
-        port = 23;
-        label = "hetzner";
-        sshKeySecret = "backup/ssh_aerialis";
-        knownHosts = [
-          {
-            name = "storagebox-ed25519";
-            publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs";  # pragma: allowlist secret
-          }
-          {
-            name = "storagebox-rsa";
-            publicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5EB5p/5Hp3hGW1oHok+PIOH9Pbn7cnUiGmUEBrCVjnAw+HrKyN8bYVV0dIGllswYXwkG/+bgiBlE6IVIBAq+JwVWu1Sss3KarHY3OvFJUXZoZyRRg/Gc/+LRCE7lyKpwWQ70dbelGRyyJFH36eNv6ySXoUYtGkwlU5IVaHPApOxe4LHPZa/qhSRbPo2hwoh0orCtgejRebNtW5nlx00DNFgsvn8Svz2cIYLxsPVzKgUxs8Zxsxgn+Q/UvR7uq4AbAhyBMLxv7DjJ1pc7PJocuTno2Rw9uMZi1gkjbnmiOh6TTXIEWbnroyIhwc8555uto9melEUmWNQ+C+PwAK+MPw==";  # pragma: allowlist secret
-          }
-          {
-            name = "storagebox-ecdsa";
-            publicKey = "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAGK0po6usux4Qv2d8zKZN1dDvbWjxKkGsx7XwFdSUCnF19Q8psHEUWR7C/LtSQ5crU/g+tQVRBtSgoUcE8T+FWp5wBxKvWG2X9gD+s9/4zRmDeSJR77W6gSA/+hpOZoSE+4KgNdnbYSNtbZH/dN74EG7GLb/gcIpbUUzPNXpfKl7mQitw==";  # pragma: allowlist secret
-          }
-        ];
-        sourceDirectories = [
-          "/data_1/containers"
-          "/data_1/persistent/etc/ssh"
-          "/data_2/backup/nextcloud-aio/"
-          "/data_2/containers/chaotic-backend/chaotic/database"
-          "/data_2/containers/mastodon"
-          "/data_2/containers/postgres"
-        ];
-        excludePatterns = [
-          "/data_1/dockercache"
-          "/data_1/dockerdata"
-        ];
-      };
-    };
+  # Own Tailnet identity so Prometheus scrapes mirrors/hosts directly
+  # via MagicDNS instead of socat hairpins on the host.
+  services.garuda-tailscale.enable = true;
 
-  networking = {
-    defaultGateway = "157.180.57.65";
-    defaultGateway6 = {
-      address = "fe80::1";
-      interface = "eth0";
-    };
-    hostName = "aerialis";
-    interfaces."eth0".ipv4.addresses = [
-      {
-        address = "157.180.57.100";
-        prefixLength = 26;
-      }
-    ];
-    nat.forwardPorts = [
-      (garuda-lib.mkNatForward {
-        sourcePort = 80;
-        destination = "10.0.5.10:80";
-      })
-      (garuda-lib.mkNatForward {
-        sourcePort = 443;
-        destination = "10.0.5.10:443";
-      })
-      (garuda-lib.mkNatForward {
-        sourcePort = 443;
-        destination = "10.0.5.10:443";
-        proto = "udp";
-      })
-      (garuda-lib.mkNatForward {
-        sourcePort = 465;
-        destination = "10.0.5.80:465";
-      })
-      (garuda-lib.mkNatForward {
-        sourcePort = 993;
-        destination = "10.0.5.80:993";
-      })
-      (garuda-lib.mkNatForward {
-        sourcePort = 25;
-        destination = "10.0.5.80:25";
-      })
-      (garuda-lib.mkNatForward {
-        sourcePort = 4190;
-        destination = "10.0.5.80:4190";
-      })
-    ];
-  };
-
-  # Can't set this inside the containers
-  boot.kernel.sysctl."vm.overcommit_memory" = "1";
-
-  services.garuda-nspawn = {
-    dockerCache = "/data_1/dockercache/";
-
-    containers = garuda-lib.mkContainers {
-      dir = ./aerialis;
-      ips = mon.aerialisContainers;
-      containers = {
-        chaotic-backend = {
-          mounts = [
-            {
-              name = "chaotic";
-              hostPath = "/data_2/containers/chaotic-backend/chaotic";
-              mountPoint = "/var/garuda/compose-runner/chaotic-backend";
-            }
-            {
-              name = "chaotic-redis";
-              hostPath = "/data_2/containers/chaotic-backend/redis";
-              mountPoint = "/var/lib/redis-chaotic";
-            }
-          ];
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 270;
-            }
-          ];
-          nspawn = {
-            enableTun = true;
-          };
-          needsDocker = true;
-        };
-
-        docker = {
-          mounts = [
-            {
-              name = "compose";
-              hostPath = "/data_1/containers/docker/";
-              mountPoint = "/var/garuda/compose-runner/docker";
-            }
-            {
-              name = "nextcloud-local-backup";
-              hostPath = "/data_2/backup/nextcloud-aio";
-              mountPoint = "/var/garuda/backups/nextcloud";
-            }
-          ];
-          needsDocker = true;
-        };
-
-        docker-proxied = {
-          mounts = [
-            {
-              name = "compose";
-              hostPath = "/data_1/containers/docker-proxied/";
-              mountPoint = "/var/garuda/compose-runner/docker-proxied";
-            }
-          ];
-          needsDocker = true;
-        };
-
-        forum = {
-          mounts = [
-            {
-              name = "forum";
-              hostPath = "/data_1/containers/forum/";
-              mountPoint = "/var/discourse";
-            }
-          ];
-          needsDocker = true;
-        };
-
-        mastodon = {
-          mounts = [
-            {
-              name = "mastodon";
-              hostPath = "/data_2/containers/mastodon/mastodon";
-              mountPoint = "/var/lib/mastodon";
-            }
-            {
-              name = "compose";
-              hostPath = "/data_1/containers/mastodon/compose";
-              mountPoint = "/var/garuda/compose-runner/mastodon";
-            }
-          ];
-          needsDocker = true;
-        };
-
-        mail = {
-          mounts = [
-            {
-              name = "acme";
-              hostPath = "/data_2/containers/web-front/acme";
-              mountPoint = "/var/lib/acme";
-            }
-            {
-              name = "dkim";
-              hostPath = "/data_1/containers/mail/dkim";
-              mountPoint = "/var/dkim";
-            }
-            {
-              name = "index";
-              hostPath = "/data_1/containers/mail/index";
-              mountPoint = "/var/lib/dovecot/indices";
-            }
-            {
-              name = "rspamd";
-              hostPath = "/data_1/containers/mail/rspamd";
-              mountPoint = "/var/lib/redis-rspamd";
-            }
-            {
-              name = "vmail";
-              hostPath = "/data_1/containers/mail/vmail";
-              mountPoint = "/var/vmail";
-            }
-          ];
-        };
-
-        postgres = {
-          mounts = [
-            {
-              name = "data";
-              hostPath = "/data_1/containers/postgres/data";
-              mountPoint = "/var/lib/postgresql";
-            }
-            {
-              name = "postgres_backup";
-              hostPath = "/data_2/containers/postgres/backup";
-              mountPoint = "/var/garuda/backups/postgres";
-            }
-            {
-              name = "acme";
-              hostPath = "/data_2/containers/web-front/acme";
-              mountPoint = "/var/lib/acme";
-              readOnly = true;
-            }
-          ];
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 220;
-            }
-            { containerPort = 5432; }
-          ];
-        };
-
-        web-front = {
-          mounts = [
-            {
-              name = "acme";
-              hostPath = "/data_2/containers/web-front/acme";
-              mountPoint = "/var/lib/acme";
-            }
-            {
-              name = "nginx";
-              hostPath = "/data_2/containers/web-front/nginx";
-              mountPoint = "/var/log/nginx";
-            }
-          ];
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 210;
-            }
-          ];
-        };
-
-        n8n = {
-          mounts = [
-            {
-              name = "n8n";
-              hostPath = "/data_1/containers/n8n/var-lib";
-              mountPoint = "/var/lib";
-            }
-          ];
-        };
-
-        monitoring = {
-          mounts = [
-            {
-              name = "alertmanager";
-              hostPath = "/data_1/containers/monitoring/alertmanager";
-              mountPoint = "/var/lib/private/alertmanager";
-            }
-            {
-              name = "prometheus";
-              hostPath = "/data_1/containers/monitoring/prometheus";
-              mountPoint = "/var/lib/prometheus2";
-            }
-            {
-              name = "grafana";
-              hostPath = "/data_1/containers/monitoring/grafana";
-              mountPoint = "/var/lib/grafana";
-            }
-            {
-              name = "loki";
-              hostPath = "/data_1/containers/monitoring/loki";
-              mountPoint = "/var/lib/loki";
-            }
-            {
-              name = "tailscale";
-              hostPath = "/data_1/containers/monitoring/tailscale";
-              mountPoint = "/var/lib/tailscale";
-            }
-          ];
-          nspawn = {
-            enableTun = true;
-          };
-        };
-      };
-    };
-  };
-
-  systemd.services =
-    garuda-lib.mkContainerOrdering {
-      root = "postgres";
-      containers = [
-        "docker-proxied"
-        "docker"
-        "mastodon"
-        "chaotic-backend"
-      ];
-    }
-    // {
-      loki-tailnet-proxy = garuda-lib.mkTunnel {
-        bind = mon.tailnetIPs.aerialis;
-        listen = mon.ports.loki;
-        target = "${mon.loki.containerAddress}:${toString mon.ports.loki}";
-        after = [
-          "tailscaled.service"
-          "container@monitoring.service"
-        ];
-        wants = [ "container@monitoring.service" ];
-        description = "Expose Loki to Tailnet only";
-      };
-    };
-
-  networking.firewall.interfaces."${mon.bridge.interface}".allowedTCPPorts = [
-    mon.ports.nodeExporter
-    mon.ports.smartctlExporter
-    mon.ports.borgmaticExporter
-  ];
-}
-</code></pre>
-<h2 id="shared-host-configuration"><a class="header" href="#shared-host-configuration">Shared host configuration</a></h2>
-<p>The disk layout, SSH configuration, container bridge (<code>br0</code>) and impermanence are shared with stormwing and live in
-<code>nixos/modules/special/newgen.nix</code>. Hardware-specific settings (kernel, microcode, SMT, smartd) come from
-<code>nixos/modules/special/hetzner-ex44.nix</code>.</p>
-<pre><code class="language-nix">_: {
-  # We want to have same UID's in all containers to allow sharing home directories
-  garuda-lib.unifiedUID = true;
-
-  fileSystems."/" = {
-    device = "none";
-    fsType = "tmpfs";
-    options = [
-      "defaults"
-      "size=50%"
-      "mode=755"
-    ];
-  };
-
-  fileSystems."/data_1" = {
-    device = "/dev/disk/by-label/NIXROOT";
-    fsType = "ext4";
-    neededForBoot = true;
-    options = [
-      "defaults"
-      "noatime"
-      "nodiratime"
-      "errors=remount-ro"
-    ];
-    depends = [ "/" ];
-  };
-
-  fileSystems."/data_2" = {
-    device = "/dev/disk/by-label/NIXDATA";
-    fsType = "btrfs";
-    options = [
-      "defaults"
-      "noatime"
-      "nodiratime"
-      "compress=zstd:1"
-    ];
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-label/NIXBOOT";
-    fsType = "vfat";
-  };
-
-  fileSystems."/nix" = {
-    device = "/data_1/nix";
-    fsType = "none";
-    options = [ "bind" ];
-    depends = [
-      "/data_1"
-    ];
-  };
-
-  services.openssh = {
-    ports = [ 666 ];
-    hostKeys = [
-      {
-        type = "ed25519";
-        path = "/data_1/persistent/etc/ssh/ssh_host_ed25519_key";
-      }
-      {
-        type = "rsa";
-        bits = 4096;
-        path = "/data_1/persistent/etc/ssh/ssh_host_rsa_key";
-      }
-    ];
-  };
-
-  services.garuda-nspawn = {
-    bridgeInterface = "br0";
-    hostInterface = "eth0";
-    hostIp = "10.0.5.1";
-    defaults = {
-      maxMemorySoft = 48318382080; # 45 GiB
-      maxMemoryHard = 53687091200; # 50 GiB
-      maxCpu = 18;
-    };
-  };
-
-  networking.firewall.trustedInterfaces = [ "br0" ];
-
-  garuda-lib.sshkeys = {
-    ed25519 = "/data_1/persistent/etc/ssh/ssh_host_ed25519_key";
-    rsa = "/data_1/persistent/etc/ssh/ssh_host_rsa_key";
-  };
-
-  environment.persistence."/data_1/persistent" = {
+  garuda.monitoring = {
     enable = true;
-    hideMounts = true;
-    directories = [
-      "/home"
-      "/var/cache/netdata"
-      "/var/cache/tailscale"
-      "/var/lib/netdata"
-      "/var/lib/nixos"
-      "/var/lib/tailscale"
-      "/var/lib/vnstat"
-      "/var/log"
-    ];
-    files = [
-      "/etc/machine-id"
-    ];
+
+    domain = "grafana.garudalinux.net";
+    baseDomain = "garudalinux.net";
+
+    buildQueue.enable = true;
+
+    grafana.enable = true;
+
+    prometheus = {
+      enable = true;
+      port = mon.ports.prometheus;
+
+      alertmanager = {
+        enable = true;
+        port = mon.ports.alertmanager;
+        environmentFile = config.sops.templates."alertmanager-env".path;
+        telegram.enable = true;
+      };
+
+      inherit (mon) smartctlTargets;
+
+      inherit (mon) borgmaticTargets;
+
+      nodeExporter = {
+        enable = true;
+        port = mon.ports.nodeExporter;
+      };
+
+      postgresExporter = {
+        enable = true;
+        environmentFile = config.sops.templates."postgres-exporter-env".path;
+      };
+
+      tailscaleExporter = {
+        enable = true;
+        port = 9813;
+        environmentFile = config.sops.templates."tailscale-exporter-env".path;
+      };
+
+      applicationTargets = [
+        {
+          name = "dovecot";
+          address = mon.aerialisContainers.mail;
+          port = mon.ports.dovecotMetrics;
+        }
+        {
+          name = "postfix";
+          address = mon.aerialisContainers.mail;
+          port = mon.ports.postfixExporter;
+        }
+        {
+          name = "redis";
+          address = mon.aerialisContainers.chaotic-backend;
+          port = mon.ports.redisExporter;
+        }
+      ];
+
+      scrapeConfigs = [
+        {
+          job_name = "node-hosts";
+          static_configs = map (t: {
+            targets = [ t.target ];
+            labels = {
+              instance = t.name;
+            };
+          }) mon.nodeHostTargets;
+        }
+        {
+          job_name = "node-aerialis-containers";
+          static_configs = map (t: {
+            targets = [ t.target ];
+            labels = {
+              inherit (t) instance;
+            };
+          }) mon.nodeContainerTargets;
+        }
+        {
+          job_name = "node-stormwing-containers";
+          static_configs = map (t: {
+            targets = [ t.target ];
+            labels = {
+              inherit (t) instance;
+            };
+          }) mon.stormwingNodeContainerTargets;
+        }
+        {
+          job_name = "nginx";
+          static_configs = [
+            {
+              targets = mon.nginxTargets;
+            }
+          ];
+        }
+        {
+          job_name = "cloudflared";
+          static_configs = [
+            {
+              targets = mon.cloudflaredTargets;
+            }
+          ];
+        }
+        {
+          job_name = "gitlab-runner";
+          static_configs = [
+            {
+              targets = mon.gitlabRunnerTargets;
+            }
+          ];
+          scrape_interval = "30s";
+        }
+        {
+          job_name = "node-chaotic-mirrors";
+          static_configs = map (m: {
+            targets = [ m.target ];
+            labels = {
+              instance = m.name;
+            };
+          }) mon.chaoticMirrorTargets;
+        }
+        {
+          job_name = "loki";
+          static_configs = [
+            {
+              targets = [ "127.0.0.1:${toString mon.ports.loki}" ];
+            }
+          ];
+        }
+        {
+          job_name = "alertmanager";
+          static_configs = [
+            {
+              targets = [ "127.0.0.1:${toString mon.ports.alertmanager}" ];
+            }
+          ];
+        }
+      ];
+    };
+
+    loki = {
+      enable = true;
+      port = mon.ports.loki;
+      dataDir = "/var/lib/loki";
+    };
+
+    fluent-bit = {
+      enable = true;
+      lokiAddress = "127.0.0.1";
+      lokiPort = mon.ports.loki;
+      extraSystemdUnits = units;
+    };
   };
 
-  security.sudo.extraConfig = ''
-    Defaults lecture = never
-  '';
+  networking.firewall = {
+    allowedTCPPorts = with mon.ports; [
+      grafana
+      loki
+      prometheus
+      alertmanager
+    ];
+    interfaces."eth0".allowedTCPPorts = [ mon.ports.nodeExporter ];
+  };
+
+  sops.secrets."monitoring/telegram_bot_token" = { };
+  sops.templates."alertmanager-env" = {
+    mode = "0400";
+    content = ''
+      TELEGRAM_BOT_TOKEN=${config.sops.placeholder."monitoring/telegram_bot_token"}
+    '';
+  };
+
+  sops.secrets."grafana/gitlab_client_secret" = {
+    owner = "grafana";
+  };
+  sops.secrets."grafana/smtp_password" = {
+    owner = "grafana";
+  };
+  sops.secrets."grafana/secret_key" = {
+    owner = "grafana";
+  };
+
+  sops.secrets."postgres/netdata" = { };
+  sops.templates."postgres-exporter-env" = {
+    owner = "postgres-exporter";
+    group = "postgres-exporter";
+    mode = "0400";
+    content = "PGPASSWORD=${config.sops.placeholder."postgres/netdata"}";
+  };
+
+  sops.secrets."tailscale/oauth_client_id" = { };
+  sops.secrets."tailscale/oauth_client_secret" = { };
+  sops.templates."tailscale-exporter-env" = {
+    mode = "0400";
+    content = ''
+      TAILSCALE_TAILNET=${mon.tailnetDomain}
+      TAILSCALE_OAUTH_CLIENT_ID=${config.sops.placeholder."tailscale/oauth_client_id"}
+      TAILSCALE_OAUTH_CLIENT_SECRET=${config.sops.placeholder."tailscale/oauth_client_secret"}
+    '';
+  };
+
+  system.stateVersion = "26.11";
 }
 </code></pre>
-<h2 id="containersservices"><a class="header" href="#containersservices">Containers/services</a></h2>
-<ul>
-<li><a href="./aerialis/chaotic-backend.html">chaotic-backend</a>: Backend services for Chaotic-AUR, including API and job processing.</li>
-<li><a href="./aerialis/docker.html">docker</a>: General-purpose Docker container runner for services not packaged in Nix.</li>
-<li><a href="./aerialis/docker-proxied.html">docker-proxied</a>: Docker runner for services that require special proxying or network setup.</li>
-<li><a href="./aerialis/forum.html">forum</a>: Hosts the Discourse forum for the Garuda Linux community.</li>
-<li><a href="./aerialis/mail.html">mail</a>: Handles mail-related services and relays for the infrastructure.</li>
-<li><a href="./aerialis/mastodon.html">mastodon</a>: Runs the Mastodon social network instance.</li>
-<li><a href="./aerialis/monitoring.html">monitoring</a>: Runs the monitoring stack (Prometheus, Grafana, Loki, Alertmanager).</li>
-<li><a href="./aerialis/n8n.html">n8n</a>: Workflow automation and incoming webhooks.</li>
-<li><a href="./aerialis/postgres.html">postgres</a>: Provides PostgreSQL database services for other containers.</li>
-<li><a href="./aerialis/web-front.html">web-front</a>: Acts as the main reverse proxy and web frontend for hosted services.</li>
-</ul>
-<p>See the respective documentation pages for up-to-date configuration and details.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../users/current_users.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../hosts/aerialis/mastodon.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../hosts/aerialis/chaotic-backend.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../hosts/aerialis/n8n.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -683,11 +437,11 @@ in
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../users/current_users.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../hosts/aerialis/mastodon.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../hosts/aerialis/chaotic-backend.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../hosts/aerialis/n8n.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
@@ -707,13 +461,13 @@ in
         </script>
 
 
-        <script src="../elasticlunr-ef4e11c1.min.js"></script>
-        <script src="../mark-09e88c2c.min.js"></script>
-        <script src="../searcher-09f2665d.js"></script>
+        <script src="../../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../../mark-09e88c2c.min.js"></script>
+        <script src="../../searcher-09f2665d.js"></script>
 
-        <script src="../clipboard-1626706a.min.js"></script>
-        <script src="../highlight-abc7f01d.js"></script>
-        <script src="../book-609e4cb8.js"></script>
+        <script src="../../clipboard-1626706a.min.js"></script>
+        <script src="../../highlight-abc7f01d.js"></script>
+        <script src="../../book-609e4cb8.js"></script>
 
         <!-- Custom JS scripts -->
 

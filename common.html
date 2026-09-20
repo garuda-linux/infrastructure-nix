@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex-6e7af055.js";
+            window.path_to_searchindex_js = "searchindex-a44a56cc.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-1306c1d0.js"></script>
+        <script src="toc-4ebbbf40.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -271,11 +271,25 @@ sudo docker compose up -d
 </code></pre>
 <p>The updated containers will be pulled and automatically recreated using the new images.</p>
 <h3 id="checking-whether-backups-were-successful"><a class="header" href="#checking-whether-backups-were-successful">Checking whether backups were successful</a></h3>
-<p>To check whether backups to Hetzner are still working as expected, connect to the server and execute the following:</p>
-<pre><code class="language-sh">systemctl status borgbackup-job-backupToHetzner
+<p>Backups run through <code>borgmatic</code>, which is configured per host with <code>garuda.backup.borgmatic</code> (see
+<code>nixos/services/backup.nix</code>). To check whether backups to Hetzner are still working as expected, connect to the server
+and execute the following:</p>
+<pre><code class="language-sh">systemctl status borgmatic.service
+journalctl -u borgmatic
 </code></pre>
 <p>This should yield a successful unit state. The only exception is having an exit code != <code>0</code> due to files having changed
-during the run.</p>
+during the run. The “Borg backup age” and “Borg backup count” panels in Grafana are a quicker way to spot a stalled
+backup.</p>
+<h3 id="checking-monitoring-and-alerts"><a class="header" href="#checking-monitoring-and-alerts">Checking monitoring and alerts</a></h3>
+<p>The monitoring stack can be reached at:</p>
+<ul>
+<li><a href="https://grafana.garudalinux.net">grafana.garudalinux.net</a> for dashboards</li>
+<li><a href="https://prometheus.garudalinux.net">prometheus.garudalinux.net</a> for queries and scrape targets</li>
+<li><a href="https://alertmanager.garudalinux.net">alertmanager.garudalinux.net</a> to review and silence alerts</li>
+</ul>
+<p>These are all secured by Cloudflare Zerotrust.</p>
+<p>Alerts are additionally delivered to any configured Target. Alert rules live in <code>nixos/services/monitoring/prometheus-rules/</code>
+and dashboards are committed as JSON in <code>nixos/services/monitoring/dashboards/</code>. See <a href="./services/monitoring.html">Monitoring</a> for details.</p>
 <h3 id="updating-chaotic-aur-toolbox"><a class="header" href="#updating-chaotic-aur-toolbox">Updating Chaotic-AUR toolbox</a></h3>
 <p>This needs to be done by updating the flake input (git repo URL of the
 website) <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/flake.nix?ref_type=heads#L44">src-chaotic-toolbox</a>:</p>

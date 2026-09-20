@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-6e7af055.js";
+            window.path_to_searchindex_js = "../../searchindex-a44a56cc.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-1306c1d0.js"></script>
+        <script src="../../toc-4ebbbf40.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -205,18 +205,32 @@ in
   imports = sources.defaultModules ++ [
     ../../modules
     "${sources.chaotic-portable-builder}/nix/nixos.nix"
+    ../../modules/special/iso-upload.nix
     ../../modules/special/ssh-allow-chaotic.nix
   ];
 
-  # This container is just for compose stuff
-  garuda.services.compose-runner.chaotic-v4 = {
-    envfile = config.sops.secrets."compose/chaotic-v4".path;
-    source = ../../../compose/chaotic-v4;
-    extraEnv = {
-      "REDIS_SSH_HOST" = garuda-lib.dns.aerialis;
-      "REDIS_SSH_PORT" = "270";
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "stormwing";
+      units = [
+        "compose-runner-chaotic-v4.service"
+        "nginx.service"
+        "rsyncd.service"
+        "syncthing.service"
+      ];
+    }
+    // {
+      services.compose-runner.chaotic-v4 = {
+        envfile = config.sops.secrets."compose/chaotic-v4".path;
+        source = ../../../compose/chaotic-v4;
+        extraEnv = {
+          "REDIS_SSH_HOST" = garuda-lib.dns.aerialis;
+          "REDIS_SSH_PORT" = "270";
+        };
+      };
     };
-  };
+
+  networking.extraHosts = "10.0.5.40 builds.garudalinux.org";
 
   # Allow controlling infra 4.0's containers without root
   environment.systemPackages = [ wrapperScript ];
@@ -436,6 +450,11 @@ in
           comment = "ISO downloads";
           "read only" = "yes";
         };
+        arch-mirror = {
+          path = "/srv/http/arch-mirror/";
+          comment = "Arch Linux mirror";
+          "read only" = "yes";
+        };
       };
       globalSection = {
         "max connections" = 80;
@@ -497,13 +516,13 @@ in
     };
   };
 
-  sops.secrets = {
-    "cloudflare/api_keys" = { };
-    "cloudflare/r2_rclone" = { };
-    "compose/chaotic-v4" = { };
-    "keypairs/syncthing/cert" = { };
-    "keypairs/syncthing/private" = { };
-  };
+  sops.secrets = garuda-lib.mkSecrets [
+    "cloudflare/api_keys"
+    "cloudflare/r2_rclone"
+    "compose/chaotic-v4"
+    "keypairs/syncthing/cert"
+    "keypairs/syncthing/private"
+  ];
 
   system.stateVersion = "25.05";
 }
@@ -564,6 +583,33 @@ in
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
     extra_hosts: ["host.docker.internal:host-gateway"]
+  chaotic-builder-3:
+    image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
+    container_name: chaotic-builder-3
+    command: builder
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 60s
+    tty: true
+    environment:
+      BUILDER_CLASS: 2
+      BUILDER_HOSTNAME: stormwing-3
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
+      REDIS_SSH_HOST: ${REDIS_SSH_HOST:-?err}
+      REDIS_SSH_PORT: ${REDIS_SSH_PORT:-270}
+      REDIS_SSH_USER: package-deployer
+      SHARED_PATH: /var/garuda/compose-runner/chaotic-v4/shared-3
+      BUILDER_SRCDEST_CACHE_OVERRIDE: /var/garuda/compose-runner/chaotic-v4/shared/srcdest_cache
+      # Override the default database host
+      DATABASE_HOST: host.docker.internal
+      DATABASE_PORT: 22
+    volumes:
+      - ./shared-3:/shared
+      - ./shared/srcdest_cache:/shared/srcdest_cache
+      - ./sshkey:/app/sshkey
+      - /var/run/docker.sock:/var/run/docker.sock
+    extra_hosts: ["host.docker.internal:host-gateway"]
   chaotic-manager:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-manager
@@ -574,12 +620,14 @@ in
     depends_on:
       - chaotic-builder-1
       - chaotic-builder-2
+      - chaotic-builder-3
     deploy:
       restart_policy:
         condition: always
         delay: 60s
     tty: true
     environment:
+      API_TOKEN: ${API_TOKEN:-?err}
       # Address published to outside world
       DATABASE_HOST: builds.garudalinux.org
       DATABASE_PORT: 210
@@ -616,7 +664,7 @@ in
                     }
                 ],
                 "extra_keyrings": [
-                    "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
+                    "https://builds.garudalinux.org/repos/chaotic-aur/chaotic-keyring.pkg.tar.zst"
                 ]
             },
             "garuda": {
@@ -635,7 +683,7 @@ in
                     }
                 ],
                 "extra_keyrings": [
-                    "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
+                    "https://builds.garudalinux.org/repos/chaotic-aur/chaotic-keyring.pkg.tar.zst"
                 ]
             }
         }
@@ -666,7 +714,7 @@ in
       restart_policy:
         condition: always
         delay: 60s
-    command: --cleanup chaotic-builder chaotic-builder-2 chaotic-manager watchtower --interval 3600
+    command: --cleanup chaotic-builder chaotic-builder-2 chaotic-builder-3 chaotic-manager watchtower --interval 3600
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
 </code></pre>
 
@@ -674,7 +722,7 @@ in
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../hosts/stormwing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../hosts/stormwing/arch-mirror.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
@@ -688,7 +736,7 @@ in
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../hosts/stormwing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../hosts/stormwing/arch-mirror.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 

@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex-6e7af055.js";
+            window.path_to_searchindex_js = "searchindex-a44a56cc.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-1306c1d0.js"></script>
+        <script src="toc-4ebbbf40.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -184,12 +184,15 @@
 <h2 id="general-information"><a class="header" href="#general-information">General information</a></h2>
 <ul>
 <li>Our current infrastructure is hosted in two of <a href="https://www.hetzner.com/dedicated-rootserver/ex44">these</a>.</li>
-<li>The servers are being backed up to Hetzner storage boxes via <a href="https://www.borgbackup.org/">Borg</a>.</li>
+<li>The servers are being backed up to Hetzner storage boxes via <a href="https://www.borgbackup.org/">Borg</a>, driven by
+<a href="https://torsion.org/borgmatic/">borgmatic</a>.</li>
 <li>After multiple different setups, we settled on <a href="https://nixos.org/">NixOS</a> as our main OS as it provides reproducible
 and atomically updated system states</li>
 <li>Cloudflare protects most (sub)domains while also making use of its caching feature.
 Exemptions are services such as our mail server and parts violating Cloudflares rules such as proxying Mastodon video content.</li>
 <li>Cloudflare Access in combination with Cloudflared is used to secure access to high-risk services such as admin panels.</li>
+<li>Monitoring and alerting are self-hosted, based on Prometheus, Grafana, Loki and Alertmanager (see
+<a href="#monitoring-1">Monitoring</a>).</li>
 </ul>
 <h2 id="quick-links"><a class="header" href="#quick-links">Quick links</a></h2>
 <ul>
@@ -216,26 +219,21 @@ command.</p>
 
 [[general commands]]
 
-  ansible-core      - Radically simple IT automation
-  apply             - Applies the infra-nix configuration pushed to the servers
-  clean             - Runs the garbage collection on the servers
-  commitizen        - Tool to create committing rules for projects, auto bump versions, and generate changelogs
-  deploy            - Deploys the local NixOS configuration to the servers
-  manix             - Fast CLI documentation searcher for Nix
-  mdbook            - Create books from MarkDown
-  mdbook-admonish   - Preprocessor for mdbook to add Material Design admonishments
-  mdbook-emojicodes - MDBook preprocessor for converting emojicodes (e.g. `: cat :`) into emojis 🐱
-  menu              - prints this menu
-  pre-commit        - Framework for managing and maintaining multi-language pre-commit hooks
-  restart           - Restarts all physical servers
-  rsync             - Fast incremental file transfer utility
-  sops              - Simple and flexible tool for managing secrets
-  update            - Performs a full system update on the servers bumping flake lock
+  ansible-core    - Radically simple IT automation
+  apply           - Applies the infra-nix configuration pushed to the servers
+  clean           - Runs the garbage collection on the servers
+  deploy          - Deploys the local NixOS configuration to the servers
+  menu            - prints this menu
+  prek            - Better `pre-commit`, re-engineered in Rust
+  restart         - Restarts all physical servers
+  rsync           - Fast incremental file transfer utility
+  sops            - Simple and flexible tool for managing secrets
+  update          - Performs a full system update on the servers bumping flake lock
 
 [infra-nix]
 
-  buildiso-local    - Spawns a local buildiso shell to build to ./buildiso (needs Docker)
-  buildiso-remote   - Spawns a buildiso shell on the iso-runner builder
+  buildiso-local  - Spawns a local buildiso shell to build to ./buildiso (needs Docker)
+  buildiso-remote - Spawns a buildiso shell on the iso-runner builder
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="general-structure"><a class="header" href="#general-structure">General structure</a></h1>
@@ -273,9 +271,11 @@ command.</p>
 │   ├── modules
 │   │   ├── special
 │   │   └── static
-│   └── services
-│       ├── compose-runner
-│       └── monitoring
+│   └── services
+│       ├── compose-runner
+│       ├── monitoring
+│       └── mk.nix # garuda-lib construction helpers
+├── pkgs
 ├── scripts
 └── secrets
 </code></pre>
@@ -303,17 +303,22 @@ Checks can then be executed by running one of the following configs:</p>
 <pre><code class="language-sh">nix flake check # checks flake outputs and runs pre-commit at the end
 pre-commit run --all-files # only runs the pre-commit tools on all files
 </code></pre>
-<p>Its configuration can be found in the <code>flake.nix</code> file. (<a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/flake.nix">click me</a>). At the time of writing, the following tools are being run:</p>
+<p>Its configuration can be found in the <code>flake.nix</code> file. (<a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/flake.nix">click me</a>). At the time of writing, the following is being run:</p>
+<p>The pre-commit hooks generated into <code>.pre-commit-config.yaml</code>:</p>
+<ul>
+<li>check-json</li>
+<li>check-yaml</li>
+<li>detect-private-keys</li>
+<li><a href="https://github.com/sirwart/ripsecrets">ripsecrets</a></li>
+</ul>
+<p>Formatting is handled by <a href="https://github.com/numtide/treefmt-nix">treefmt</a>, which runs:</p>
 <ul>
 <li><a href="https://github.com/rhysd/actionlint">actionlint</a></li>
-<li><a href="https://github.com/ansible/ansible-lint">ansible-lint</a></li>
-<li><a href="https://github.com/commitizen-tools/commitizen">commitizen</a></li>
 <li><a href="https://github.com/astro/deadnix">deadnix</a></li>
-<li><a href="https://github.com/oxalica/nil">nil</a></li>
-<li><a href="https://github.com/nix-community/nixpkgs-fmt">nixpkgs-fmt</a></li>
-<li><a href="https://prettier.io/">prettier</a></li>
+<li><a href="https://github.com/NixOS/nixfmt">nixfmt</a></li>
+<li><a href="https://www.shellcheck.net/">shellcheck</a></li>
+<li><a href="https://github.com/mvdan/sh">shfmt</a></li>
 <li><a href="https://github.com/nerdypepper/statix">statix</a></li>
-<li><a href="https://github.com/adrienverge/yamllint">yamllint</a></li>
 </ul>
 <p>It is recommended to run <code>pre-commit run --all-files</code> before trying to commit changes. Then use <code>cz commit</code> to generate a <code>commitizen</code> complying commit message.</p>
 <h2 id="cicd"><a class="header" href="#cicd">CI/CD</a></h2>
@@ -326,13 +331,19 @@ pre-commit run --all-files # only runs the pre-commit tools on all files
 </ul>
 <p>Workflows will generally only be executed if a relevant file has been changed, eg. <code>nix flake check</code> won’t run if only the README was changed.</p>
 <h2 id="monitoring"><a class="header" href="#monitoring">Monitoring</a></h2>
-<p>Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends.
-The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations.
-Might switch to the Prometheus/Grafana/Loki stack in the future. We used to set up children -&gt; parent streaming in the past, though after transitioning to one big host this didn’t make sense anymore.
-Instead, up to 10GB of data gets stored on individual hosts.
-While Netdata agents do have their dashboard, the <a href="https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes">Dashboard provided by Netdata</a> is far superior and allows a better insight, eg. by offering the functions feature.
-Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its <a href="https://learn.netdata.cloud/">documentation</a>.
-To access the previously linked dashboard, use <code>team@garudalinux.org</code> as login, the login will be completed after opening the link sent here.</p>
+<p>Our monitoring stack is self-hosted and defined in <code>nixos/services/monitoring</code>, replacing the previous Netdata setup.
+It consists of Prometheus for metrics, Loki for logs, Grafana for dashboards and Alertmanager for alerting, plus
+Fluent Bit and node_exporter agents that hosts and containers opt into via <code>garuda.monitoring</code>.</p>
+<p>Because both hosts run their own <code>10.0.5.0/24</code> container bridge, the monitoring container cannot reach stormwing’s
+containers directly - stormwing proxies their exporters and relays their logs over the Tailnet instead. See
+<a href="#monitoring-1">Monitoring</a> for details.</p>
+<h2 id="where-configuration-lives"><a class="header" href="#where-configuration-lives">Where configuration lives</a></h2>
+<ul>
+<li><code>nixos/hosts/&lt;host&gt;.nix</code> - host-specific networking, NAT forwards, the container list and host-level tunnels.</li>
+<li><code>nixos/hosts/&lt;host&gt;/&lt;container&gt;.nix</code> - one file per container.</li>
+<li><code>nixos/services/</code> - shared service modules, plus <code>mk.nix</code> which holds the <code>garuda-lib</code> helpers used to build
+repetitive structures.</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="common-tasks"><a href="#common-tasks" class="header">Common tasks</a></h1>
 <h2 id="common-maintenance-tasks"><a class="header" href="#common-maintenance-tasks">Common maintenance tasks</a></h2>
@@ -428,11 +439,25 @@ sudo docker compose up -d
 </code></pre>
 <p>The updated containers will be pulled and automatically recreated using the new images.</p>
 <h3 id="checking-whether-backups-were-successful"><a class="header" href="#checking-whether-backups-were-successful">Checking whether backups were successful</a></h3>
-<p>To check whether backups to Hetzner are still working as expected, connect to the server and execute the following:</p>
-<pre><code class="language-sh">systemctl status borgbackup-job-backupToHetzner
+<p>Backups run through <code>borgmatic</code>, which is configured per host with <code>garuda.backup.borgmatic</code> (see
+<code>nixos/services/backup.nix</code>). To check whether backups to Hetzner are still working as expected, connect to the server
+and execute the following:</p>
+<pre><code class="language-sh">systemctl status borgmatic.service
+journalctl -u borgmatic
 </code></pre>
 <p>This should yield a successful unit state. The only exception is having an exit code != <code>0</code> due to files having changed
-during the run.</p>
+during the run. The “Borg backup age” and “Borg backup count” panels in Grafana are a quicker way to spot a stalled
+backup.</p>
+<h3 id="checking-monitoring-and-alerts"><a class="header" href="#checking-monitoring-and-alerts">Checking monitoring and alerts</a></h3>
+<p>The monitoring stack can be reached at:</p>
+<ul>
+<li><a href="https://grafana.garudalinux.net">grafana.garudalinux.net</a> for dashboards</li>
+<li><a href="https://prometheus.garudalinux.net">prometheus.garudalinux.net</a> for queries and scrape targets</li>
+<li><a href="https://alertmanager.garudalinux.net">alertmanager.garudalinux.net</a> to review and silence alerts</li>
+</ul>
+<p>These are all secured by Cloudflare Zerotrust.</p>
+<p>Alerts are additionally delivered to any configured Target. Alert rules live in <code>nixos/services/monitoring/prometheus-rules/</code>
+and dashboards are committed as JSON in <code>nixos/services/monitoring/dashboards/</code>. See <a href="#monitoring-1">Monitoring</a> for details.</p>
 <h3 id="updating-chaotic-aur-toolbox"><a class="header" href="#updating-chaotic-aur-toolbox">Updating Chaotic-AUR toolbox</a></h3>
 <p>This needs to be done by updating the flake input (git repo URL of the
 website) <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/flake.nix?ref_type=heads#L44">src-chaotic-toolbox</a>:</p>
@@ -474,15 +499,18 @@ will use it to build the toolbox using the new revision automatically.</p>
 <li><a href="https://dash.cloudflare.com">Cloudflare Dashboard</a></li>
 <li><a href="https://status.garudalinux.org">Status page</a></li>
 <li><a href="https://accounts.hetzner.com/">Hetzner Robot</a></li>
-<li><a href="https://app.netdata.cloud">Netdata</a></li>
 <li><a href="https://pgadmin.garudalinux.net">PGAdmin</a></li>
-<li><a href="https://login.tailscale.com/">Tailscale</a></li>
+<li><a href="https://login.tailscale.com">Tailscale</a></li>
+<li><a href="https://grafana.garudalinux.net">Grafana</a></li>
+<li><a href="https://prometheus.garudalinux.net">Prometheus</a></li>
+<li><a href="https://alertmanager.garudalinux.net">Alertmanager</a></li>
 </ul>
 <h2 id="services-to-be-administrated"><a class="header" href="#services-to-be-administrated">Services to be administrated</a></h2>
 <ul>
 <li><a href="https://vault.garudalinux.org">Vaultwarden</a></li>
 <li><a href="https://forum.garudalinux.org">Discourse</a></li>
 <li><a href="https://aur.chaotic.cx">Chaotic-AUR</a></li>
+<li><a href="https://backend.chaotic.cx">Chaotic-AUR Backend</a></li>
 <li><a href="https://ffsync.garudalinux.org">Firefox syncserver</a></li>
 <li><a href="https://lingva.garudalinux.org">Lingva</a></li>
 <li><a href="https://social.garudalinux.org">Mastodon</a></li>
@@ -602,15 +630,369 @@ They may operate the repository by doing all kinds of packaging-related tasks su
 <p>This is one of the two main infrastructure hosts (see also: stormwing). All services and containers for aerialis are defined in <code>nixos/hosts/aerialis.nix</code> and its submodules.</p>
 <h2 id="host-configuration"><a class="header" href="#host-configuration">Host configuration</a></h2>
 <pre><code class="language-nix">{
-  config,
-  pkgs,
+  garuda-lib,
   ...
 }:
+let
+  mon = garuda-lib.monitoring;
+in
 {
   imports = [
     ../modules
     ./../modules/special/hetzner-ex44.nix
   ];
+
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "aerialis";
+      hostInfo = true;
+      units = [
+        "borgmatic.service"
+        "borgmatic.timer"
+        "sshd.service"
+        "tailscaled.service"
+      ];
+      exporters = [
+        "smartctlExporter"
+        "borgmaticExporter"
+      ];
+    }
+    // {
+      backup.borgmatic = {
+        enable = true;
+        name = "aerialis";
+        user = "u342919";
+        host = "u342919.your-storagebox.de";
+        port = 23;
+        label = "hetzner";
+        sshKeySecret = "backup/ssh_aerialis";
+        knownHosts = [
+          {
+            name = "storagebox-ed25519";
+            publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs";  # pragma: allowlist secret
+          }
+          {
+            name = "storagebox-rsa";
+            publicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5EB5p/5Hp3hGW1oHok+PIOH9Pbn7cnUiGmUEBrCVjnAw+HrKyN8bYVV0dIGllswYXwkG/+bgiBlE6IVIBAq+JwVWu1Sss3KarHY3OvFJUXZoZyRRg/Gc/+LRCE7lyKpwWQ70dbelGRyyJFH36eNv6ySXoUYtGkwlU5IVaHPApOxe4LHPZa/qhSRbPo2hwoh0orCtgejRebNtW5nlx00DNFgsvn8Svz2cIYLxsPVzKgUxs8Zxsxgn+Q/UvR7uq4AbAhyBMLxv7DjJ1pc7PJocuTno2Rw9uMZi1gkjbnmiOh6TTXIEWbnroyIhwc8555uto9melEUmWNQ+C+PwAK+MPw==";  # pragma: allowlist secret
+          }
+          {
+            name = "storagebox-ecdsa";
+            publicKey = "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAGK0po6usux4Qv2d8zKZN1dDvbWjxKkGsx7XwFdSUCnF19Q8psHEUWR7C/LtSQ5crU/g+tQVRBtSgoUcE8T+FWp5wBxKvWG2X9gD+s9/4zRmDeSJR77W6gSA/+hpOZoSE+4KgNdnbYSNtbZH/dN74EG7GLb/gcIpbUUzPNXpfKl7mQitw==";  # pragma: allowlist secret
+          }
+        ];
+        sourceDirectories = [
+          "/data_1/containers"
+          "/data_1/persistent/etc/ssh"
+          "/data_2/backup/nextcloud-aio/"
+          "/data_2/containers/chaotic-backend/chaotic/database"
+          "/data_2/containers/mastodon"
+          "/data_2/containers/postgres"
+        ];
+        excludePatterns = [
+          "/data_1/dockercache"
+          "/data_1/dockerdata"
+        ];
+      };
+    };
+
+  networking = {
+    defaultGateway = "157.180.57.65";
+    defaultGateway6 = {
+      address = "fe80::1";
+      interface = "eth0";
+    };
+    hostName = "aerialis";
+    interfaces."eth0".ipv4.addresses = [
+      {
+        address = "157.180.57.100";
+        prefixLength = 26;
+      }
+    ];
+    nat.forwardPorts = [
+      (garuda-lib.mkNatForward {
+        sourcePort = 80;
+        destination = "10.0.5.10:80";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 443;
+        destination = "10.0.5.10:443";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 443;
+        destination = "10.0.5.10:443";
+        proto = "udp";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 465;
+        destination = "10.0.5.80:465";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 993;
+        destination = "10.0.5.80:993";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 25;
+        destination = "10.0.5.80:25";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 4190;
+        destination = "10.0.5.80:4190";
+      })
+    ];
+  };
+
+  # Can't set this inside the containers
+  boot.kernel.sysctl."vm.overcommit_memory" = "1";
+
+  services.garuda-nspawn = {
+    dockerCache = "/data_1/dockercache/";
+
+    containers = garuda-lib.mkContainers {
+      dir = ./aerialis;
+      ips = mon.aerialisContainers;
+      containers = {
+        chaotic-backend = {
+          mounts = [
+            {
+              name = "chaotic";
+              hostPath = "/data_2/containers/chaotic-backend/chaotic";
+              mountPoint = "/var/garuda/compose-runner/chaotic-backend";
+            }
+            {
+              name = "chaotic-redis";
+              hostPath = "/data_2/containers/chaotic-backend/redis";
+              mountPoint = "/var/lib/redis-chaotic";
+            }
+          ];
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 270;
+            }
+          ];
+          nspawn = {
+            enableTun = true;
+          };
+          needsDocker = true;
+        };
+
+        docker = {
+          mounts = [
+            {
+              name = "compose";
+              hostPath = "/data_1/containers/docker/";
+              mountPoint = "/var/garuda/compose-runner/docker";
+            }
+            {
+              name = "nextcloud-local-backup";
+              hostPath = "/data_2/backup/nextcloud-aio";
+              mountPoint = "/var/garuda/backups/nextcloud";
+            }
+          ];
+          needsDocker = true;
+        };
+
+        docker-proxied = {
+          mounts = [
+            {
+              name = "compose";
+              hostPath = "/data_1/containers/docker-proxied/";
+              mountPoint = "/var/garuda/compose-runner/docker-proxied";
+            }
+          ];
+          needsDocker = true;
+        };
+
+        forum = {
+          mounts = [
+            {
+              name = "forum";
+              hostPath = "/data_1/containers/forum/";
+              mountPoint = "/var/discourse";
+            }
+          ];
+          needsDocker = true;
+        };
+
+        mastodon = {
+          mounts = [
+            {
+              name = "mastodon";
+              hostPath = "/data_2/containers/mastodon/mastodon";
+              mountPoint = "/var/lib/mastodon";
+            }
+            {
+              name = "compose";
+              hostPath = "/data_1/containers/mastodon/compose";
+              mountPoint = "/var/garuda/compose-runner/mastodon";
+            }
+          ];
+          needsDocker = true;
+        };
+
+        mail = {
+          mounts = [
+            {
+              name = "acme";
+              hostPath = "/data_2/containers/web-front/acme";
+              mountPoint = "/var/lib/acme";
+            }
+            {
+              name = "dkim";
+              hostPath = "/data_1/containers/mail/dkim";
+              mountPoint = "/var/dkim";
+            }
+            {
+              name = "index";
+              hostPath = "/data_1/containers/mail/index";
+              mountPoint = "/var/lib/dovecot/indices";
+            }
+            {
+              name = "rspamd";
+              hostPath = "/data_1/containers/mail/rspamd";
+              mountPoint = "/var/lib/redis-rspamd";
+            }
+            {
+              name = "vmail";
+              hostPath = "/data_1/containers/mail/vmail";
+              mountPoint = "/var/vmail";
+            }
+          ];
+        };
+
+        postgres = {
+          mounts = [
+            {
+              name = "data";
+              hostPath = "/data_1/containers/postgres/data";
+              mountPoint = "/var/lib/postgresql";
+            }
+            {
+              name = "postgres_backup";
+              hostPath = "/data_2/containers/postgres/backup";
+              mountPoint = "/var/garuda/backups/postgres";
+            }
+            {
+              name = "acme";
+              hostPath = "/data_2/containers/web-front/acme";
+              mountPoint = "/var/lib/acme";
+              readOnly = true;
+            }
+          ];
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 220;
+            }
+            { containerPort = 5432; }
+          ];
+        };
+
+        web-front = {
+          mounts = [
+            {
+              name = "acme";
+              hostPath = "/data_2/containers/web-front/acme";
+              mountPoint = "/var/lib/acme";
+            }
+            {
+              name = "nginx";
+              hostPath = "/data_2/containers/web-front/nginx";
+              mountPoint = "/var/log/nginx";
+            }
+          ];
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 210;
+            }
+          ];
+        };
+
+        n8n = {
+          mounts = [
+            {
+              name = "n8n";
+              hostPath = "/data_1/containers/n8n/var-lib";
+              mountPoint = "/var/lib";
+            }
+          ];
+        };
+
+        monitoring = {
+          mounts = [
+            {
+              name = "alertmanager";
+              hostPath = "/data_1/containers/monitoring/alertmanager";
+              mountPoint = "/var/lib/private/alertmanager";
+            }
+            {
+              name = "prometheus";
+              hostPath = "/data_1/containers/monitoring/prometheus";
+              mountPoint = "/var/lib/prometheus2";
+            }
+            {
+              name = "grafana";
+              hostPath = "/data_1/containers/monitoring/grafana";
+              mountPoint = "/var/lib/grafana";
+            }
+            {
+              name = "loki";
+              hostPath = "/data_1/containers/monitoring/loki";
+              mountPoint = "/var/lib/loki";
+            }
+            {
+              name = "tailscale";
+              hostPath = "/data_1/containers/monitoring/tailscale";
+              mountPoint = "/var/lib/tailscale";
+            }
+          ];
+          nspawn = {
+            enableTun = true;
+          };
+        };
+      };
+    };
+  };
+
+  systemd.services =
+    garuda-lib.mkContainerOrdering {
+      root = "postgres";
+      containers = [
+        "docker-proxied"
+        "docker"
+        "mastodon"
+        "chaotic-backend"
+      ];
+    }
+    // {
+      loki-tailnet-proxy = garuda-lib.mkTunnel {
+        bind = mon.tailnetIPs.aerialis;
+        listen = mon.ports.loki;
+        target = "${mon.loki.containerAddress}:${toString mon.ports.loki}";
+        after = [
+          "tailscaled.service"
+          "container@monitoring.service"
+        ];
+        wants = [ "container@monitoring.service" ];
+        description = "Expose Loki to Tailnet only";
+      };
+    };
+
+  networking.firewall.interfaces."${mon.bridge.interface}".allowedTCPPorts = [
+    mon.ports.nodeExporter
+    mon.ports.smartctlExporter
+    mon.ports.borgmaticExporter
+  ];
+}
+</code></pre>
+<h2 id="shared-host-configuration"><a class="header" href="#shared-host-configuration">Shared host configuration</a></h2>
+<p>The disk layout, SSH configuration, container bridge (<code>br0</code>) and impermanence are shared with stormwing and live in
+<code>nixos/modules/special/newgen.nix</code>. Hardware-specific settings (kernel, microcode, SMT, smartd) come from
+<code>nixos/modules/special/hetzner-ex44.nix</code>.</p>
+<pre><code class="language-nix">_: {
+  # We want to have same UID's in all containers to allow sharing home directories
+  garuda-lib.unifiedUID = true;
 
   fileSystems."/" = {
     device = "none";
@@ -632,9 +1014,7 @@ They may operate the repository by doing all kinds of packaging-related tasks su
       "nodiratime"
       "errors=remount-ro"
     ];
-    depends = [
-      "/"
-    ];
+    depends = [ "/" ];
   };
 
   fileSystems."/data_2" = {
@@ -653,374 +1033,69 @@ They may operate the repository by doing all kinds of packaging-related tasks su
     fsType = "vfat";
   };
 
-  services.openssh.ports = [ 666 ];
-
-  # Network configuration with a bridge interface
-  networking = {
-    defaultGateway = "157.180.57.65";
-    defaultGateway6 = {
-      address = "fe80::1";
-      interface = "eth0";
-    };
-    hostName = "aerialis";
-    interfaces = {
-      "eth0" = {
-        ipv4.addresses = [
-          {
-            address = "157.180.57.100";
-            prefixLength = 26;
-          }
-        ];
-      };
-    };
-    nat.forwardPorts = [
-      {
-        # web-front (HTTP)
-        destination = "10.0.5.10:80";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "tcp";
-        sourcePort = 80;
-      }
-      {
-        # web-front (HTTPS)
-        destination = "10.0.5.10:443";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "tcp";
-        sourcePort = 443;
-      }
-      {
-        # web-front (HTTPS)
-        destination = "10.0.5.10:443";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "udp";
-        sourcePort = 443;
-      }
-      {
-        # mail (SMTP over SSL)
-        destination = "10.0.5.80:465";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "tcp";
-        sourcePort = 465;
-      }
-      {
-        # mail (IMAP over SSL)
-        destination = "10.0.5.80:993";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "tcp";
-        sourcePort = 993;
-      }
-      {
-        # mail (inbound)
-        destination = "10.0.5.80:25";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "tcp";
-        sourcePort = 25;
-      }
-      {
-        # sieve (ManageSieve)
-        destination = "10.0.5.80:4190";
-        loopbackIPs = [ "157.180.57.100" ];
-        proto = "tcp";
-        sourcePort = 4190;
-      }
+  fileSystems."/nix" = {
+    device = "/data_1/nix";
+    fsType = "none";
+    options = [ "bind" ];
+    depends = [
+      "/data_1"
     ];
-    firewall.trustedInterfaces = [ "br0" ];
   };
 
-  # Can't set this inside the containers
-  boot.kernel.sysctl."vm.overcommit_memory" = "1";
+  services.openssh = {
+    ports = [ 666 ];
+    hostKeys = [
+      {
+        type = "ed25519";
+        path = "/data_1/persistent/etc/ssh/ssh_host_ed25519_key";
+      }
+      {
+        type = "rsa";
+        bits = 4096;
+        path = "/data_1/persistent/etc/ssh/ssh_host_rsa_key";
+      }
+    ];
+  };
 
-  # Container config
   services.garuda-nspawn = {
     bridgeInterface = "br0";
     hostInterface = "eth0";
     hostIp = "10.0.5.1";
-    dockerCache = "/data_1/dockercache/";
-
     defaults = {
       maxMemorySoft = 48318382080; # 45 GiB
       maxMemoryHard = 53687091200; # 50 GiB
       maxCpu = 18;
     };
-
-    containers = {
-      chaotic-backend = {
-        config = import ./aerialis/chaotic-backend.nix;
-        extraOptions = {
-          bindMounts = {
-            "chaotic" = {
-              hostPath = "/data_2/containers/chaotic-backend/chaotic";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/compose-runner/chaotic-backend";
-            };
-          };
-          enableTun = true;
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 270;
-              protocol = "tcp";
-            }
-          ];
-        };
-        ipAddress = "10.0.5.70";
-        needsDocker = true;
-      };
-      docker = {
-        config = import ./aerialis/docker.nix;
-        extraOptions = {
-          bindMounts = {
-            "compose" = {
-              hostPath = "/data_1/containers/docker/";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/compose-runner/docker";
-            };
-            "nextcloud-local-backup" = {
-              hostPath = "/data_2/backup/nextcloud-aio";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/backups/nextcloud";
-            };
-          };
-        };
-        ipAddress = "10.0.5.60";
-        needsDocker = true;
-      };
-      docker-proxied = {
-        config = import ./aerialis/docker-proxied.nix;
-        extraOptions = {
-          bindMounts = {
-            "compose" = {
-              hostPath = "/data_1/containers/docker-proxied/";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/compose-runner/docker-proxied";
-            };
-          };
-        };
-        ipAddress = "10.0.5.50";
-        needsDocker = true;
-      };
-      forum = {
-        config = import ./aerialis/forum.nix;
-        extraOptions = {
-          bindMounts = {
-            "forum" = {
-              hostPath = "/data_1/containers/forum/";
-              isReadOnly = false;
-              mountPoint = "/var/discourse";
-            };
-          };
-        };
-        ipAddress = "10.0.5.40";
-        needsDocker = true;
-      };
-      mastodon = {
-        config = import ./aerialis/mastodon.nix;
-        needsDocker = true;
-        extraOptions = {
-          bindMounts = {
-            "mastodon" = {
-              hostPath = "/data_2/containers/mastodon/mastodon";
-              isReadOnly = false;
-              mountPoint = "/var/lib/mastodon";
-            };
-            "compose" = {
-              hostPath = "/data_1/containers/mastodon/compose";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/compose-runner/mastodon";
-            };
-          };
-        };
-        ipAddress = "10.0.5.30";
-      };
-      mail = {
-        config = import ./aerialis/mail.nix;
-        extraOptions = {
-          bindMounts = {
-            "acme" = {
-              hostPath = "/data_2/containers/web-front/acme";
-              isReadOnly = false;
-              mountPoint = "/var/lib/acme";
-            };
-            "dkim" = {
-              hostPath = "/data_1/containers/mail/dkim";
-              isReadOnly = false;
-              mountPoint = "/var/dkim";
-            };
-            "index" = {
-              hostPath = "/data_1/containers/mail/index";
-              isReadOnly = false;
-              mountPoint = "/var/lib/dovecot/indices";
-            };
-            "rspamd" = {
-              hostPath = "/data_1/containers/mail/rspamd";
-              isReadOnly = false;
-              mountPoint = "/var/lib/redis-rspamd";
-            };
-            "vmail" = {
-              hostPath = "/data_1/containers/mail/vmail";
-              isReadOnly = false;
-              mountPoint = "/var/vmail";
-            };
-          };
-        };
-        ipAddress = "10.0.5.80";
-      };
-      postgres = {
-        config = import ./aerialis/postgres.nix;
-        extraOptions = {
-          bindMounts = {
-            "data" = {
-              hostPath = "/data_1/containers/postgres/data";
-              isReadOnly = false;
-              mountPoint = "/var/lib/postgresql";
-            };
-            "postgres_backup" = {
-              hostPath = "/data_2/containers/postgres/backup";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/backups/postgres";
-            };
-          };
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 220;
-              protocol = "tcp";
-            }
-            {
-              containerPort = 5432;
-              hostPort = 5432;
-              protocol = "tcp";
-            }
-          ];
-        };
-        ipAddress = "10.0.5.20";
-      };
-      web-front = {
-        config = import ./aerialis/web-front.nix;
-        extraOptions = {
-          bindMounts = {
-            "acme" = {
-              hostPath = "/data_2/containers/web-front/acme";
-              isReadOnly = false;
-              mountPoint = "/var/lib/acme";
-            };
-            "nginx" = {
-              hostPath = "/data_2/containers/web-front/nginx";
-              isReadOnly = false;
-              mountPoint = "/var/log/nginx";
-            };
-          };
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 210;
-              protocol = "tcp";
-            }
-          ];
-        };
-        ipAddress = "10.0.5.10";
-      };
-      n8n = {
-        config = import ./aerialis/n8n.nix;
-        extraOptions = {
-          bindMounts = {
-            "n8n" = {
-              hostPath = "/data_1/containers/n8n/var-lib";
-              isReadOnly = false;
-              mountPoint = "/var/lib";
-            };
-          };
-        };
-        ipAddress = "10.0.5.90";
-      };
-    };
   };
 
-  # Make sure postgres is started before other containers
-  systemd.services = {
-    "container@docker".requires = [ "container@postgres.service" ];
-    "container@docker-proxied".requires = [ "container@postgres.service" ];
-    "container@mastodon".requires = [ "container@postgres.service" ];
-    "container@chaotic-backend".requires = [ "container@postgres.service" ];
-    "container@postgres" = {
-      before = [
-        "container@docker-proxied.service"
-        "container@docker.service"
-        "container@mastodon.service"
-        "container@chaotic-backend.service"
-      ];
-    };
+  networking.firewall.trustedInterfaces = [ "br0" ];
+
+  garuda-lib.sshkeys = {
+    ed25519 = "/data_1/persistent/etc/ssh/ssh_host_ed25519_key";
+    rsa = "/data_1/persistent/etc/ssh/ssh_host_rsa_key";
   };
 
-  # Monitor a few services of the containers
-  services = {
-    netdata.configDir = {
-      "go.d/postgres.conf" = pkgs.writeText "postgres.conf" ''
-        jobs:
-          - name: postgres
-            dsn: 'postgres://netdata:netdata@10.0.5.20:5432/'
-      '';
-      "go.d/squidlog.conf" = pkgs.writeText "squidlog.conf" ''
-        jobs:
-          - name: squid
-            path: /var/log/squid/access.log
-            log_type: csv
-            csv_config:
-              format: '- resp_time client_address result_code resp_size req_method - - hierarchy mime_type'
-      '';
-      "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
-        jobs:
-          - name: nginx
-            path: /data_2/containers/web-front/nginx/access.log
-      '';
-    };
+  environment.persistence."/data_1/persistent" = {
+    enable = true;
+    hideMounts = true;
+    directories = [
+      "/home"
+      "/var/cache/netdata"
+      "/var/cache/tailscale"
+      "/var/lib/netdata"
+      "/var/lib/nixos"
+      "/var/lib/tailscale"
+      "/var/lib/vnstat"
+      "/var/log"
+    ];
+    files = [
+      "/etc/machine-id"
+    ];
   };
 
-  # Fix permissions of nginx log files to allow Netdata to read it (gets reset frequently)
-  system.activationScripts.netdata = "chown 60:netdata -R /data_2/containers/web-front/nginx";
-
-  # Backup configurations to Hetzner storage box
-  programs.ssh.macs = [ "hmac-sha2-512" ];
-  services.borgbackup.jobs = {
-    backupToHetzner = {
-      compression = "auto,zstd";
-      doInit = true;
-      encryption = {
-        mode = "repokey-blake2";
-        passCommand = ''
-          cat "${config.sops.secrets."backup/repo_key".path}"
-        '';
-      };
-      environment = {
-        BORG_RSH = "ssh -i ${config.sops.secrets."backup/ssh_aerialis".path} -p 23";
-      };
-      exclude = [
-        "/data_1/dockercache"
-        "/data_1/dockerdata"
-      ];
-      paths = [
-        "/data_1/containers"
-        "/data_1/persistent/etc/ssh"
-        "/data_2/backup/nextcloud-aio/"
-        "/data_2/containers/chaotic-backend/chaotic/database"
-        "/data_2/containers/mastodon"
-        "/data_2/containers/postgres"
-      ];
-      prune.keep = {
-        within = "1d";
-        daily = 3;
-        weekly = 1;
-        monthly = 1;
-      };
-      repo = "u342919@u342919.your-storagebox.de:./aerialis";
-      startAt = "daily";
-    };
-  };
-
-  sops.secrets = {
-    "backup/repo_key" = { };
-    "backup/ssh_aerialis" = { };
-  };
+  security.sudo.extraConfig = ''
+    Defaults lecture = never
+  '';
 }
 </code></pre>
 <h2 id="containersservices"><a class="header" href="#containersservices">Containers/services</a></h2>
@@ -1031,6 +1106,8 @@ They may operate the repository by doing all kinds of packaging-related tasks su
 <li><a href="#forum-aerialis">forum</a>: Hosts the Discourse forum for the Garuda Linux community.</li>
 <li><a href="#mail-aerialis">mail</a>: Handles mail-related services and relays for the infrastructure.</li>
 <li><a href="#mastodon-aerialis">mastodon</a>: Runs the Mastodon social network instance.</li>
+<li><a href="#monitoring-aerialis">monitoring</a>: Runs the monitoring stack (Prometheus, Grafana, Loki, Alertmanager).</li>
+<li><a href="#n8n-aerialis">n8n</a>: Workflow automation and incoming webhooks.</li>
 <li><a href="#postgres-aerialis">postgres</a>: Provides PostgreSQL database services for other containers.</li>
 <li><a href="#web-front-aerialis">web-front</a>: Acts as the main reverse proxy and web frontend for hosted services.</li>
 </ul>
@@ -1041,6 +1118,7 @@ They may operate the repository by doing all kinds of packaging-related tasks su
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,
+  garuda-lib,
   sources,
   ...
 }:
@@ -1050,19 +1128,54 @@ They may operate the repository by doing all kinds of packaging-related tasks su
     ../../modules/special/ssh-allow-chaotic.nix
   ];
 
-  garuda.services.compose-runner.chaotic-backend = {
-    envfile = config.sops.secrets."compose/chaotic-backend".path;
-    source = ../../../compose/chaotic-backend;
-    extraEnv = {
-      "SSH_KEY" = config.sops.secrets."keypairs/chaotic/private".path;
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "aerialis";
+      units = [
+        "compose-runner-chaotic-backend.service"
+        "docker.service"
+        "redis-chaotic.service"
+      ];
+      exporters = [ "redisExporter" ];
+      extraPrometheus.redisExporter.passwordFile = config.sops.secrets."redis/exporter".path;
+    }
+    // {
+      services.compose-runner.chaotic-backend = {
+        envfile = config.sops.secrets."compose/chaotic-backend".path;
+        source = ../../../compose/chaotic-backend;
+        extraEnv = {
+          "SSH_KEY" = config.sops.secrets."keypairs/chaotic/private".path;
+        };
+      };
+    };
+
+  services.redis = {
+    servers."chaotic" = {
+      enable = true;
+      port = 6379;
+      requirePassFile = config.sops.secrets."redis/chaotic".path;
+      save = [
+        [
+          20
+          1
+        ]
+      ];
     };
   };
 
-  sops.secrets = {
-    "compose/chaotic-backend" = { };
-    "keypairs/chaotic/private" = { };
-    "redis/chaotic" = { };
-  };
+  sops.secrets =
+    garuda-lib.mkSecrets [
+      "compose/chaotic-backend"
+      "keypairs/chaotic/private"
+      "redis/chaotic"
+    ]
+    // {
+      "redis/exporter" = {
+        owner = "redis-exporter";
+        group = "redis-exporter";
+        mode = "0400";
+      };
+    };
 
   system.stateVersion = "25.05";
 }
@@ -1070,28 +1183,51 @@ They may operate the repository by doing all kinds of packaging-related tasks su
 <h3 id="docker-containers"><a class="header" href="#docker-containers">Docker containers</a></h3>
 <pre><code class="language-yaml">services:
   chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:main
+    image: ghcr.io/chaotic-cx/chaotic-next:2.8.0
     container_name: chaotic-backend
     deploy:
       restart_policy:
         condition: always
         delay: 30s
     environment:
-      AUTH0_AUDIENCE: http://localhost:3000/auth/auth0
-      AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID:-?err}
-      AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET:-?err}
-      AUTH0_DOMAIN: ${AUTH0_DOMAIN:-?err}
+      AUR_USERNAME: ${AUR_USERNAME:-?err}
+      AUR_PASSWORD: ${AUR_PASSWORD:-?err}
+      AUTH_COOKIE_DOMAIN: .chaotic.cx
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-?err}
+      BETTER_AUTH_TRUSTED_ORIGINS: https://aur.chaotic.cx
+      BETTER_AUTH_URL: https://backend.chaotic.cx
+      CAUR_BUILDER_CLAMAV_IMAGE: 'clamav/clamav:latest'
+      CAUR_BUILDER_CPU_LIMIT: 8
+      CAUR_BUILDER_DOCKER_SOCKET: /var/run/docker.sock
+      CAUR_BUILDER_EXTRA_PACMAN_KEYRINGS: https://secret-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst
+      CAUR_BUILDER_EXTRA_PACMAN_REPOS: |
+        [chaotic-aur]
+        Server = https://secret-mirror.chaotic.cx/chaotic-aur/x86_64
+      CAUR_BUILDER_IDLE_TIMEOUT: 600
+      CAUR_BUILDER_IMAGE: registry.gitlab.com/garuda-linux/tools/chaotic-manager/builder:latest
+      CAUR_BUILDER_PIDS_LIMIT: 1024
+      CAUR_BUILDER_POLL_INTERVAL: 15000
+      CAUR_BUILDER_PUBLIC_URL: https://backend.chaotic.cx
+      CAUR_BUILDER_RAM_LIMIT: 8192
+      CAUR_BUILDER_TIMEOUT: 3600
+      CAUR_BUILDER_WORKDIR: /var/garuda/compose-runner/chaotic-backend/portable-builder
       CAUR_DB_KEY: ${CAUR_DB_KEY:-?err}
-      CAUR_GITLAB_ID_CAUR: 54867625
-      CAUR_GITLAB_ID_GARUDA: 48461689
-      CAUR_GITLAB_TOKEN: ${GITLAB_TOKEN_CX:-?err}
+      CAUR_GITLAB_TOKEN: ${TEMERAIRE_BOT_TOKEN:-?err}
       CAUR_GITLAB_WEBHOOK_TOKEN: ${CAUR_GITLAB_WEBHOOK_TOKEN:-?err}
-      CAUR_JWT_SECRET: ${CAUR_JWT_SECRET:-?err}
-      CAUR_TRUST_PROXY: 172.18.0.1
-      CAUR_USERS: ${CAUR_USERS:-?err}
-      CAUR_VAPID_PUBLIC: BFMijCyTcLZu3HRJyMfoB4vtnDcgl7E2SVZgd4uWB3XjO2VvRh_LjYHcY_oJLvMIhdp5Yvuz0gudRpY-PFI9iWA
+      CAUR_MANAGER_API_TOKEN: ${CAUR_MANAGER_API_TOKEN:-?err}
+      CAUR_TRUST_PROXY: true
       CAUR_VAPID_PRIVATE: ${CAUR_VAPID_PRIVATE:-?err}
+      CAUR_VAPID_PUBLIC: BFMijCyTcLZu3HRJyMfoB4vtnDcgl7E2SVZgd4uWB3XjO2VvRh_LjYHcY_oJLvMIhdp5Yvuz0gudRpY-PFI9iWA
+      GITHUB_ISSUES_REPO_NAME: packages
+      GITHUB_ISSUES_REPO_OWNER: chaotic-aur
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-?err}
+      GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-?err}
+      GITLAB_CLIENT_ID: ${GITLAB_CLIENT_ID:-?err}
+      GITLAB_CLIENT_SECRET: ${GITLAB_CLIENT_SECRET:-?err}
+      GITLAB_REDIRECT_URI: https://backend.chaotic.cx/api/auth/callback/gitlab
+      LOG_LEVEL: debug
       NODE_ENV: production
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-?err}
       PG_DATABASE: chaotic-aur
       PG_HOST: 10.0.5.20
       PG_PASSWORD: ${PG_PASSWORD:-?err}
@@ -1099,31 +1235,17 @@ They may operate the repository by doing all kinds of packaging-related tasks su
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
       REDIS_SSH_HOST: host.docker.internal
       REDIS_SSH_USER: package-deployer
+      REPOMANAGER_ABI_DRY_RUN: false
+      REPOMANAGER_MIRROR_URL: https://builds.garudalinux.org/arch-mirror
+      REPOMANAGER_SIGNAL_SCAN_ENABLED: true
+      VIRUSTOTAL_API_KEY: ${VIRUSTOTAL_API_KEY:-?err}
     ports: ["3000:3000"]
-    volumes: ["${SSH_KEY:-?err}:/app/sshkey", "./backend-config:/app/config"]
+    volumes:
+      - "${SSH_KEY:-?err}:/app/sshkey"
+      - "./backend-config:/app/config"
+      - "/var/garuda/compose-runner/chaotic-backend/portable-builder:/var/garuda/compose-runner/chaotic-backend/portable-builder"
+      - "/var/run/docker.sock:/var/run/docker.sock"
     extra_hosts: ["host.docker.internal:host-gateway"]
-
-  # TODO: revert to NixOS service once it no longer segfaults
-  database:
-    image: redis:8.2-m01-alpine
-    container_name: chaotic-database
-    restart: always
-    ports: ["127.0.0.1:6379:6379"]
-    command: redis-server --save 20 1 --loglevel warning --requirepass "${REDIS_PASSWORD:-?err}"
-    volumes: ["./database:/data"]
-
-  marge_bot:
-    image: registry.gitlab.com/marge-org/marge-bot:main
-    container_name: chaotic-marge-
-    restart: always
-    environment:
-      MARGE_AUTH_TOKEN: ${TEMERAIRE_BOT_TOKEN:-?err}
-      MARGE_GITLAB_URL: https://gitlab.com
-      MARGE_USE_HTTPS: true
-      # Scheduled (hourly) 30 */3 * * * UTC
-      # Add a 20 minute buffer after each scheduled time to allow time for the pipeline to run
-      # Every 3 hours between HH:30 and HH:50
-      MARGE_EMBARGO: "Mon@00:30-Mon@00:50,Mon@03:30-Mon@03:50,Mon@06:30-Mon@06:50,Mon@09:30-Mon@09:50,Mon@12:30-Mon@12:50,Mon@15:30-Mon@15:50,Mon@18:30-Mon@18:50,Mon@21:30-Mon@21:50,Tue@00:30-Tue@00:50,Tue@03:30-Tue@03:50,Tue@06:30-Tue@06:50,Tue@09:30-Tue@09:50,Tue@12:30-Tue@12:50,Tue@15:30-Tue@15:50,Tue@18:30-Tue@18:50,Tue@21:30-Tue@21:50,Wed@00:30-Wed@00:50,Wed@03:30-Wed@03:50,Wed@06:30-Wed@06:50,Wed@09:30-Wed@09:50,Wed@12:30-Wed@12:50,Wed@15:30-Wed@15:50,Wed@18:30-Wed@18:50,Wed@21:30-Wed@21:50,Thu@00:30-Thu@00:50,Thu@03:30-Thu@03:50,Thu@06:30-Thu@06:50,Thu@09:30-Thu@09:50,Thu@12:30-Thu@12:50,Thu@15:30-Thu@15:50,Thu@18:30-Thu@18:50,Thu@21:30-Thu@21:50,Fri@00:30-Fri@00:50,Fri@03:30-Fri@03:50,Fri@06:30-Fri@06:50,Fri@09:30-Fri@09:50,Fri@12:30-Fri@12:50,Fri@15:30-Fri@15:50,Fri@18:30-Fri@18:50,Fri@21:30-Fri@21:50,Sat@00:30-Sat@00:50,Sat@03:30-Sat@03:50,Sat@06:30-Sat@06:50,Sat@09:30-Sat@09:50,Sat@12:30-Sat@12:50,Sat@15:30-Sat@15:50,Sat@18:30-Sat@18:50,Sat@21:30-Sat@21:50,Sun@00:30-Sun@00:50,Sun@03:30-Sun@03:50,Sun@06:30-Sun@06:50,Sun@09:30-Sun@09:50,Sun@12:30-Sun@12:50,Sun@15:30-Sun@15:50,Sun@18:30-Sun@18:50,Sun@21:30-Sun@21:50"
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="docker-aerialis"><a class="header" href="#docker-aerialis">docker (aerialis)</a></h1>
@@ -1142,20 +1264,30 @@ and are included in the offsite system backups.</p>
 <h2 id="nix-expression-1"><a class="header" href="#nix-expression-1">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,
+  garuda-lib,
   sources,
   ...
 }:
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
-  # This container is just for compose stuff
-  garuda.services.compose-runner.docker = {
-    envfile = config.sops.secrets."compose/docker".path;
-    source = ../../../compose/docker;
-    extraEnv = {
-      "MATTERBRIDGE_CONFIG" = config.sops.secrets."compose/matterbridge".path;
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "aerialis";
+      units = [
+        "compose-runner-docker.service"
+        "docker.service"
+      ];
+    }
+    // {
+      services.compose-runner.docker = {
+        envfile = config.sops.secrets."compose/docker".path;
+        source = ../../../compose/docker;
+        extraEnv = {
+          "MATTERBRIDGE_CONFIG" = config.sops.secrets."compose/matterbridge".path;
+        };
+      };
     };
-  };
 
   sops.secrets = {
     "compose/docker" = {
@@ -1210,7 +1342,7 @@ and are included in the offsite system backups.</p>
     restart: always
   # Password vault
   vaultwarden:
-    image: vaultwarden/server:1.36.0-alpine
+    image: vaultwarden/server:1.37.3-alpine
     container_name: vaultwarden
     volumes: ["./bitwarden:/data"]
     ports: ["8081:80"]
@@ -1230,7 +1362,7 @@ and are included in the offsite system backups.</p>
     restart: always
   # Secure pastebin
   privatebin:
-    image: privatebin/nginx-fpm-alpine:2.0.5
+    image: privatebin/nginx-fpm-alpine:2.0.6
     container_name: privatebin
     volumes:
       - ./privatebin:/srv/data
@@ -1253,7 +1385,7 @@ and are included in the offsite system backups.</p>
     restart: always
   # IRC/Discord/Telegram relay
   matterbridge:
-    image: 42wim/matterbridge:latest
+    image: registry.gitlab.com/garuda-linux/tools/matterbridge:latest
     container_name: matterbridge
     volumes:
       - ${MATTERBRIDGE_CONFIG:-?err}:/etc/matterbridge/matterbridge.toml:ro
@@ -1263,7 +1395,7 @@ and are included in the offsite system backups.</p>
         delay: 120s
   # Automated container updates
   watchtower:
-    image: nickfedor/watchtower:1.19.0
+    image: nickfedor/watchtower:1.22.1
     container_name: watchtower
     command: --cleanup matterbridge wikijs privatebin vaultwarden thelounge syncserver
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
@@ -1322,22 +1454,32 @@ volumes:
 </ul>
 <h2 id="restarting-containers"><a class="header" href="#restarting-containers">Restarting containers</a></h2>
 <p>This can happen via the following command:</p>
-<pre><code class="language-bash">sudo systemctl restart docker-compose-proxied-root
+<pre><code class="language-bash">sudo systemctl restart compose-runner-docker-proxied
 </code></pre>
 <h2 id="nix-expression-2"><a class="header" href="#nix-expression-2">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,
+  garuda-lib,
   sources,
   ...
 }:
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
-  # This container runs proxied docker containers
-  garuda.services.compose-runner.docker-proxied = {
-    envfile = config.sops.secrets."compose/docker-proxied".path;
-    source = ../../../compose/docker-proxied;
-  };
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "aerialis";
+      units = [
+        "compose-runner-docker-proxied.service"
+        "docker.service"
+      ];
+    }
+    // {
+      services.compose-runner.docker-proxied = {
+        envfile = config.sops.secrets."compose/docker-proxied".path;
+        source = ../../../compose/docker-proxied;
+      };
+    };
 
   # Let Docker use squid as outgoig proxy
   # Fails to pull images if *.docker.io is not excluded from proxy
@@ -1495,7 +1637,7 @@ volumes:
     restart: always
   # Automated container updates
   watchtower:
-    image: nickfedor/watchtower:1.19.0
+    image: nickfedor/watchtower:1.22.1
     container_name: watchtower
     command: --cleanup searx lingva whoogle librey redlib
     volumes: ['/var/run/docker.sock:/var/run/docker.sock']
@@ -1520,9 +1662,14 @@ volumes:
 <li><a href="https://github.com/discourse/discourse_docker">Discourse Docker</a></li>
 </ul>
 <h2 id="nix-expression-3"><a class="header" href="#nix-expression-3">Nix expression</a></h2>
-<pre><code class="language-nix">{ sources, ... }:
+<pre><code class="language-nix">{ garuda-lib, sources, ... }:
 {
   imports = sources.defaultModules ++ [ ../../modules ];
+
+  garuda = garuda-lib.mkMonitoring {
+    host = "aerialis";
+    units = [ "docker.service" ];
+  };
 
   # Enable Docker since we use the official Docker image in /var/discourse
   virtualisation.docker.enable = true;
@@ -1540,23 +1687,37 @@ volumes:
 <p>Configuration for the <code>mail</code> container on aerialis.</p>
 <pre><code class="language-nix">{
   config,
+  garuda-lib,
   lib,
   pkgs,
   sources,
   ...
 }:
 let
+  mon = garuda-lib.monitoring;
+
   authres_status = pkgs.roundcubePlugins.roundcubePlugin rec {
     pname = "authres_status";
-    version = "0.7.0";
+    version = "0.7.1";
     src = pkgs.fetchzip {
       url = "https://github.com/pimlie/authres_status/archive/refs/tags/${version}.zip";
-      hash = "sha256-+rnHc2vJC4ozRdcHAYg1J5rIWe4k/yTgD5xYr9NA/Hg=";
+      hash = "sha256-vQGllx3NzVkjQdnIosvQtI3iQ02HrGIF7sSL7G2E5c4=";
     };
   };
 in
 {
   imports = sources.defaultModules ++ [ ../../modules ];
+
+  garuda = lib.recursiveUpdate (garuda-lib.mkMonitoring {
+    host = "aerialis";
+    units = [
+      "dovecot2.service"
+      "nginx.service"
+      "postfix.service"
+      "rspamd.service"
+    ];
+    exporters = [ "postfixExporter" ];
+  }) { monitoring.rspamd.enable = true; };
 
   # NixOS Mailserver
   mailserver = {
@@ -1597,14 +1758,8 @@ in
         hashedPasswordFile = config.sops.secrets."mail/mastodonatgl".path;
         sendOnly = true;
       };
-      "naman@garudalinux.org" = {
-        hashedPasswordFile = config.sops.secrets."mail/namanatgl".path;
-      };
       "noreply@garudalinux.org" = {
         hashedPasswordFile = config.sops.secrets."mail/noreplyatgl".path;
-      };
-      "rohit@garudalinux.org" = {
-        hashedPasswordFile = config.sops.secrets."mail/rohitatgl".path;
       };
       "security@garudalinux.org" = {
         hashedPasswordFile = config.sops.secrets."mail/securityatgl".path;
@@ -1663,8 +1818,6 @@ in
       "xstefen@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.xstefen ];
     };
     indexDir = "/var/lib/dovecot/indices";
-    # We do it via UptimeKuma, and since we don't enable NAT reflection in this server, this
-    # shuts down the services.
     systemDomain = "garudalinux.org";
     systemName = "Garuda Linux";
     # SMTP on port 587 is deprecated and disabled by default
@@ -1681,7 +1834,32 @@ in
       notify = true;
       push_notification = true;
     };
+
+    "service stats" = {
+      "inet_listener http" = {
+        port = mon.ports.dovecotMetrics;
+      };
+    };
+    "metric auth_success" = {
+      filter = "event=auth_request_finished AND success=yes";
+    };
+    "metric auth_failure" = {
+      filter = "event=auth_request_finished AND success=no";
+    };
+    "metric imap_command" = {
+      filter = "event=imap_command_finished";
+      "group_by cmd_name" = { };
+      "group_by tagged_reply_state" = { };
+    };
+    "metric mail_delivery" = {
+      filter = "event=mail_delivery_finished";
+    };
+    "metric push_notification" = {
+      filter = "event=push_notification_finished";
+    };
   };
+
+  networking.firewall.interfaces."eth0".allowedTCPPorts = [ mon.ports.dovecotMetrics ];
 
   # Postmaster alias
   services.postfix.postmasterAlias = "root@garudalinux.org";
@@ -1724,30 +1902,28 @@ in
     forceSSL = lib.mkForce false;
   };
 
-  # Secrets
-  sops.secrets = {
-    "backup/repo_key" = { };
-    "backup/ssh_aerialis" = { };
-    "mail/a0xzatchaotic" = { };
-    "mail/cloudatgl" = { };
-    "mail/complaintsatgl" = { };
-    "mail/dr460nf1r3atchaotic" = { };
-    "mail/dr460nf1r3atgl" = { };
-    "mail/filoatgl" = { };
-    "mail/gitlabatgl" = { };
-    "mail/hatchaotic" = { };
-    "mail/mastodonatgl" = { };
-    "mail/namanatgl" = { };
-    "mail/noreplyatgl" = { };
-    "mail/rohitatgl" = { };
-    "mail/securityatgl" = { };
-    "mail/sgsatgl" = { };
-    "mail/spam-reportsatgl" = { };
-    "mail/teamatgl" = { };
-    "mail/tneatgl" = { };
-    "mail/wilburatchaotic" = { };
-    "mail/yorperatgl" = { };
-  };
+  sops.secrets = garuda-lib.mkSecrets [
+    "backup/repo_key"
+    "backup/ssh_aerialis"
+    "mail/rspamd_controller"
+    "mail/a0xzatchaotic"
+    "mail/cloudatgl"
+    "mail/complaintsatgl"
+    "mail/dr460nf1r3atchaotic"
+    "mail/dr460nf1r3atgl"
+    "mail/filoatgl"
+    "mail/gitlabatgl"
+    "mail/hatchaotic"
+    "mail/mastodonatgl"
+    "mail/noreplyatgl"
+    "mail/securityatgl"
+    "mail/sgsatgl"
+    "mail/spam-reportsatgl"
+    "mail/teamatgl"
+    "mail/tneatgl"
+    "mail/wilburatchaotic"
+    "mail/yorperatgl"
+  ];
 
   system.stateVersion = "22.05";
 
@@ -1762,64 +1938,30 @@ in
 <p>Configuration for the <code>mastodon</code> container on aerialis.</p>
 <pre><code class="language-nix">{
   config,
+  garuda-lib,
   lib,
-  pkgs,
   sources,
   ...
 }:
-let
-  # https://git.kempkens.io/daniel/dotfiles/src/branch/master/system/nixos/mastodon.nix
-  pkg-base = pkgs.mastodon;
-  pkg-mastodon = pkg-base.overrideAttrs (_: {
-    mastodonModules = pkg-base.mastodonModules.overrideAttrs (
-      oldMods:
-      let
-        tangerine-ui = pkgs.fetchFromGitHub {
-          owner = "nileane";
-          repo = "TangerineUI-for-Mastodon";
-          rev = "v2.5.3";
-          hash = "sha256-fs/pwIwXZvSNVmlSG304CMT/hSW/RtrzraMsrhg/TbE=";
-        };
-      in
-      {
-        pname = "${oldMods.pname}+themes";
-
-        postPatch = ''
-          styleDir=$PWD/app/javascript/styles
-
-          cp -r ${tangerine-ui}/mastodon/app/javascript/styles/* $styleDir
-
-          echo "tangerineui: styles/tangerineui.scss" &gt;&gt;$PWD/config/themes.yml
-          echo "tangerineui-purple: styles/tangerineui-purple.scss" &gt;&gt;$PWD/config/themes.yml
-          echo "tangerineui-cherry: styles/tangerineui-cherry.scss" &gt;&gt;$PWD/config/themes.yml
-          echo "tangerineui-lagoon: styles/tangerineui-lagoon.scss" &gt;&gt;$PWD/config/themes.yml
-        '';
-      }
-    );
-
-    nativeBuildInputs = [ pkgs.yq-go ];
-
-    postBuild = ''
-      # Make theme available
-      echo "tangerineui: styles/tangerineui.scss" &gt;&gt;$PWD/config/themes.yml
-      echo "tangerineui-purple: styles/tangerineui-purple.scss" &gt;&gt;$PWD/config/themes.yml
-      echo "tangerineui-cherry: styles/tangerineui-cherry.scss" &gt;&gt;$PWD/config/themes.yml
-      echo "tangerineui-lagoon: styles/tangerineui-lagoon.scss" &gt;&gt;$PWD/config/themes.yml
-
-      yq -i '.en.themes.tangerineui = "Tangerine UI"' $PWD/config/locales/en.yml
-      yq -i '.en.themes.tangerineui-purple = "Tangerine UI (Purple)"' $PWD/config/locales/en.yml
-      yq -i '.en.themes.tangerineui-cherry = "Tangerine UI (Cherry)"' $PWD/config/locales/en.yml
-      yq -i '.en.themes.tangerineui-lagoon = "Tangerine UI (Lagoon)"' $PWD/config/locales/en.yml
-    '';
-  });
-in
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
-  # This container is just for compose stuff
-  garuda.services.compose-runner.mastodon = {
-    source = ../../../compose/mastodon;
-  };
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "aerialis";
+      units = [
+        "compose-runner-mastodon.service"
+        "mastodon-sidekiq.service"
+        "mastodon-streaming.service"
+        "mastodon-web.service"
+        "nginx.service"
+      ];
+    }
+    // {
+      services.compose-runner.mastodon = {
+        source = ../../../compose/mastodon;
+      };
+    };
 
   # Our Mastodon
   services.mastodon = {
@@ -1844,7 +1986,6 @@ in
       startAt = "daily";
       olderThanDays = 7;
     };
-    package = pkg-mastodon;
     smtp = {
       authenticate = true;
       fromAddress = "noreply@garudalinux.org";
@@ -1937,9 +2078,294 @@ in
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
+<h1 id="monitoring-aerialis"><a class="header" href="#monitoring-aerialis">monitoring (aerialis)</a></h1>
+<p>This container runs our complete monitoring stack: Prometheus, Alertmanager, Grafana and Loki, together with the
+exporters that feed them.</p>
+<h2 id="general-2"><a class="header" href="#general-2">General</a></h2>
+<p>It is the counterpart to the agents that the hosts and containers run themselves (node_exporter and Fluent Bit). Unlike
+the other containers it runs its own tailscaled, so that Prometheus can scrape the Chaotic-AUR mirrors over the Tailnet
+using MagicDNS names, and it listens on <code>10.0.5.100</code> on the host’s container bridge.</p>
+<p>See <a href="#monitoring-1">Monitoring</a> for the full picture, including how the stormwing containers are reached
+and how alerts are routed.</p>
+<h2 id="nix-expression-6"><a class="header" href="#nix-expression-6">Nix expression</a></h2>
+<pre><code class="language-nix">{
+  config,
+  garuda-lib,
+  sources,
+  ...
+}:
+let
+  mon = garuda-lib.monitoring;
+
+  units = [
+    "grafana.service"
+    "prometheus.service"
+    "alertmanager.service"
+    "prometheus-tailscale-exporter.service"
+    "loki.service"
+  ];
+in
+{
+  imports = sources.defaultModules ++ [
+    ../../modules
+  ];
+
+  # Own Tailnet identity so Prometheus scrapes mirrors/hosts directly
+  # via MagicDNS instead of socat hairpins on the host.
+  services.garuda-tailscale.enable = true;
+
+  garuda.monitoring = {
+    enable = true;
+
+    domain = "grafana.garudalinux.net";
+    baseDomain = "garudalinux.net";
+
+    buildQueue.enable = true;
+
+    grafana.enable = true;
+
+    prometheus = {
+      enable = true;
+      port = mon.ports.prometheus;
+
+      alertmanager = {
+        enable = true;
+        port = mon.ports.alertmanager;
+        environmentFile = config.sops.templates."alertmanager-env".path;
+        telegram.enable = true;
+      };
+
+      inherit (mon) smartctlTargets;
+
+      inherit (mon) borgmaticTargets;
+
+      nodeExporter = {
+        enable = true;
+        port = mon.ports.nodeExporter;
+      };
+
+      postgresExporter = {
+        enable = true;
+        environmentFile = config.sops.templates."postgres-exporter-env".path;
+      };
+
+      tailscaleExporter = {
+        enable = true;
+        port = 9813;
+        environmentFile = config.sops.templates."tailscale-exporter-env".path;
+      };
+
+      applicationTargets = [
+        {
+          name = "dovecot";
+          address = mon.aerialisContainers.mail;
+          port = mon.ports.dovecotMetrics;
+        }
+        {
+          name = "postfix";
+          address = mon.aerialisContainers.mail;
+          port = mon.ports.postfixExporter;
+        }
+        {
+          name = "redis";
+          address = mon.aerialisContainers.chaotic-backend;
+          port = mon.ports.redisExporter;
+        }
+      ];
+
+      scrapeConfigs = [
+        {
+          job_name = "node-hosts";
+          static_configs = map (t: {
+            targets = [ t.target ];
+            labels = {
+              instance = t.name;
+            };
+          }) mon.nodeHostTargets;
+        }
+        {
+          job_name = "node-aerialis-containers";
+          static_configs = map (t: {
+            targets = [ t.target ];
+            labels = {
+              inherit (t) instance;
+            };
+          }) mon.nodeContainerTargets;
+        }
+        {
+          job_name = "node-stormwing-containers";
+          static_configs = map (t: {
+            targets = [ t.target ];
+            labels = {
+              inherit (t) instance;
+            };
+          }) mon.stormwingNodeContainerTargets;
+        }
+        {
+          job_name = "nginx";
+          static_configs = [
+            {
+              targets = mon.nginxTargets;
+            }
+          ];
+        }
+        {
+          job_name = "cloudflared";
+          static_configs = [
+            {
+              targets = mon.cloudflaredTargets;
+            }
+          ];
+        }
+        {
+          job_name = "gitlab-runner";
+          static_configs = [
+            {
+              targets = mon.gitlabRunnerTargets;
+            }
+          ];
+          scrape_interval = "30s";
+        }
+        {
+          job_name = "node-chaotic-mirrors";
+          static_configs = map (m: {
+            targets = [ m.target ];
+            labels = {
+              instance = m.name;
+            };
+          }) mon.chaoticMirrorTargets;
+        }
+        {
+          job_name = "loki";
+          static_configs = [
+            {
+              targets = [ "127.0.0.1:${toString mon.ports.loki}" ];
+            }
+          ];
+        }
+        {
+          job_name = "alertmanager";
+          static_configs = [
+            {
+              targets = [ "127.0.0.1:${toString mon.ports.alertmanager}" ];
+            }
+          ];
+        }
+      ];
+    };
+
+    loki = {
+      enable = true;
+      port = mon.ports.loki;
+      dataDir = "/var/lib/loki";
+    };
+
+    fluent-bit = {
+      enable = true;
+      lokiAddress = "127.0.0.1";
+      lokiPort = mon.ports.loki;
+      extraSystemdUnits = units;
+    };
+  };
+
+  networking.firewall = {
+    allowedTCPPorts = with mon.ports; [
+      grafana
+      loki
+      prometheus
+      alertmanager
+    ];
+    interfaces."eth0".allowedTCPPorts = [ mon.ports.nodeExporter ];
+  };
+
+  sops.secrets."monitoring/telegram_bot_token" = { };
+  sops.templates."alertmanager-env" = {
+    mode = "0400";
+    content = ''
+      TELEGRAM_BOT_TOKEN=${config.sops.placeholder."monitoring/telegram_bot_token"}
+    '';
+  };
+
+  sops.secrets."grafana/gitlab_client_secret" = {
+    owner = "grafana";
+  };
+  sops.secrets."grafana/smtp_password" = {
+    owner = "grafana";
+  };
+  sops.secrets."grafana/secret_key" = {
+    owner = "grafana";
+  };
+
+  sops.secrets."postgres/netdata" = { };
+  sops.templates."postgres-exporter-env" = {
+    owner = "postgres-exporter";
+    group = "postgres-exporter";
+    mode = "0400";
+    content = "PGPASSWORD=${config.sops.placeholder."postgres/netdata"}";
+  };
+
+  sops.secrets."tailscale/oauth_client_id" = { };
+  sops.secrets."tailscale/oauth_client_secret" = { };
+  sops.templates."tailscale-exporter-env" = {
+    mode = "0400";
+    content = ''
+      TAILSCALE_TAILNET=${mon.tailnetDomain}
+      TAILSCALE_OAUTH_CLIENT_ID=${config.sops.placeholder."tailscale/oauth_client_id"}
+      TAILSCALE_OAUTH_CLIENT_SECRET=${config.sops.placeholder."tailscale/oauth_client_secret"}
+    '';
+  };
+
+  system.stateVersion = "26.11";
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="n8n-aerialis"><a class="header" href="#n8n-aerialis">n8n (aerialis)</a></h1>
+<p>This container runs our n8n workflow automation instance.</p>
+<h2 id="general-3"><a class="header" href="#general-3">General</a></h2>
+<p>n8n is used to automate recurring tasks and glue our services together. The editor and API are reachable at
+<a href="https://n8n.garudalinux.net">n8n.garudalinux.net</a>, while incoming webhooks use the separate
+<a href="https://n8n-webhooks.garudalinux.net">n8n-webhooks.garudalinux.net</a> host, which only proxies <code>/webhook</code> and returns
+<code>404</code> for everything else. Both hosts are proxied by the <a href="#web-front-aerialis">aerialis web-front</a>.</p>
+<h2 id="nix-expression-7"><a class="header" href="#nix-expression-7">Nix expression</a></h2>
+<pre><code class="language-nix">{
+  garuda-lib,
+  sources,
+  ...
+}:
+{
+  imports = sources.defaultModules ++ [
+    ../../modules
+  ];
+
+  garuda = garuda-lib.mkMonitoring {
+    host = "aerialis";
+    units = [ "n8n.service" ];
+  };
+
+  services.n8n = {
+    enable = true;
+    environment = {
+      N8N_PORT = "5678";
+      N8N_PROXY_HOPS = "1";
+      N8N_HOST = "n8n.garudalinux.net";
+      N8N_EDITOR_BASE_URL = "https://n8n.garudalinux.net";
+      WEBHOOK_URL = "https://n8n-webhooks.garudalinux.net";
+      N8N_PUBLIC_API_DISABLED = true;
+      N8N_PUBLIC_API_SWAGGERUI_DISABLED = true;
+      N8N_DIAGNOSTICS_ENABLED = false;
+      N8N_VERSION_NOTIFICATIONS_ENABLED = false;
+      N8N_TEMPLATES_ENABLED = false;
+    };
+    openFirewall = true;
+  };
+
+  system.stateVersion = "25.11";
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
 <h1 id="postgres-aerialis"><a class="header" href="#postgres-aerialis">postgres (aerialis)</a></h1>
 <p>This container provides PostgreSQL database services for other containers and applications on aerialis.</p>
-<h2 id="general-2"><a class="header" href="#general-2">General</a></h2>
+<h2 id="general-4"><a class="header" href="#general-4">General</a></h2>
 <p>This container houses our Postgres database. Multiple services access it:</p>
 <ul>
 <li>Mastodon</li>
@@ -1950,9 +2376,9 @@ in
 <h2 id="admin-interface"><a class="header" href="#admin-interface">Admin interface</a></h2>
 <p>The admin interface powered by Pgadmin can be accessed <a href="https://pgadmin.garudalinux.net">here</a>.
 Authentication happens via Cloudflare Access.</p>
-<h2 id="nix-expression-6"><a class="header" href="#nix-expression-6">Nix expression</a></h2>
+<h2 id="nix-expression-8"><a class="header" href="#nix-expression-8">Nix expression</a></h2>
 <pre><code class="language-nix">{
-  inputs,
+  garuda-lib,
   pkgs,
   sources,
   config,
@@ -1982,7 +2408,11 @@ in
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
-  # Our Postgres database
+  garuda = garuda-lib.mkMonitoring {
+    host = "aerialis";
+    units = [ "postgresql.service" ];
+  };
+
   services.postgresql = {
     enable = true;
     ensureDatabases = [
@@ -2010,25 +2440,41 @@ in
         name = "chaotic-aur";
         ensureDBOwnership = true;
       }
+      {
+        name = "netdata";
+        ensureClauses.login = true;
+      }
     ];
-    initialScript = pkgs.writeText "backend-initScript" ''
-      CREATE USER netdata;
-      GRANT pg_monitor TO netdata;
-    '';
+    extensions = with pkgs.postgresql_18.pkgs; [
+      pg_hll # chaotic-aur uses this for the useragent/ip statistics
+      pg_repack # this lets us run the vacuum online
+    ];
     authentication = lib.mkForce ''
       local all all peer
-      host chaotic-aur chaotic-router 0.0.0.0/0 scram-sha-256
+      hostssl chaotic-aur chaotic-router 0.0.0.0/0 scram-sha-256
+      host all netdata 10.0.5.1/32 scram-sha-256
       # Reject anything else coming from the outside world somehow someway
       host all all 10.0.5.1/32 reject
       # Allow connections from the internal network
-      host all all 10.0.5.0/24 md5
+      host all all 10.0.5.0/24 scram-sha-256
       # Allow localhost connections
-      host all all 127.0.0.1/32 md5
+      host all all 127.0.0.1/32 scram-sha-256
       # Block the rest of the internet
       host all all 0.0.0.0/0 reject
     '';
-    # This is publically accesible now through port 5432, however only the chaotic-router user can access the database through the internet
+    # This is publically accessible now through port 5432, however only the chaotic-router user can access
+    # the database through the internet, and only over TLS
     enableTCPIP = true;
+    package = pkgs.postgresql_18;
+    settings = {
+      ssl = true;
+      ssl_cert_file = "${config.services.postgresql.dataDir}/server.crt";
+      ssl_key_file = "${config.services.postgresql.dataDir}/server.key";
+
+      # Defaults (128MB / 4GB) are far too small for a cluster shared by multiple services
+      shared_buffers = "4GB";
+      effective_cache_size = "12GB";
+    };
   };
 
   # Regular backups for our database (every 6h)
@@ -2044,6 +2490,7 @@ in
     initialPasswordFile = config.sops.secrets."postgres/pg_admin".path;
     openFirewall = true;
     settings = {
+      DEFAULT_SERVER = "10.0.5.20";
       FIXED_BINARY_PATHS = {
         "pg" = "${config.services.postgresql.package}/bin";
       };
@@ -2052,7 +2499,6 @@ in
       WEBSERVER_REMOTE_USER = "X-Forwarded-User";
       MASTER_PASSWORD_REQUIRED = false;
     };
-    package = inputs.nixpkgs-stable.legacyPackages."${pkgs.system}".pgadmin4;
   };
 
   systemd.services.pgadmin = {
@@ -2063,10 +2509,31 @@ in
     '';
   };
 
+  # Serve the live ACME wildcard cert to Postgres for external TLS
+  system.activationScripts.postgresServerCert = ''
+    install -o postgres -g postgres -m 0600 \
+      /var/lib/acme/garudalinux.org/key.pem \
+      ${config.services.postgresql.dataDir}/server.key
+    install -o postgres -g postgres -m 0644 \
+      /var/lib/acme/garudalinux.org/fullchain.pem \
+      ${config.services.postgresql.dataDir}/server.crt
+  '';
+
   # Open up ports for Postgres
   networking.firewall.allowedTCPPorts = [ 5432 ];
 
   sops.secrets."postgres/pg_admin" = { };
+  sops.secrets."postgres/netdata" = {
+    owner = "postgres";
+    group = "postgres";
+    mode = "0400";
+  };
+
+  systemd.services.postgresql.postStart = lib.mkAfter ''
+    PASS=$(cat ${config.sops.secrets."postgres/netdata".path})
+    ${config.services.postgresql.package}/bin/psql -U postgres -c "ALTER USER netdata WITH LOGIN PASSWORD '$PASS'"
+    ${config.services.postgresql.package}/bin/psql -U postgres -c "GRANT pg_monitor TO netdata"
+  '';
 
   system.stateVersion = "23.05";
 }
@@ -2074,496 +2541,359 @@ in
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="web-front-aerialis"><a class="header" href="#web-front-aerialis">web-front (aerialis)</a></h1>
 <p>This container acts as the main reverse proxy and web frontend for hosted services on aerialis, handling HTTPS termination and routing.</p>
-<h2 id="general-3"><a class="header" href="#general-3">General</a></h2>
+<h2 id="general-5"><a class="header" href="#general-5">General</a></h2>
 <p>This container is used as a reverse proxy for all of our public facing services.
 It also contains a Cloudflared instance,
 which a few services are only being exposed to, instead of being reverse proxied by Nginx itself.</p>
-<h2 id="nix-expression-7"><a class="header" href="#nix-expression-7">Nix expression</a></h2>
+<h2 id="nix-expression-9"><a class="header" href="#nix-expression-9">Nix expression</a></h2>
 <pre><code class="language-nix">{
-  config,
   garuda-lib,
   pkgs,
   sources,
   ...
 }:
 let
-  inherit (garuda-lib) allowOnlyCloudflared;
   inherit (garuda-lib) allowOnlyCloudflareZerotrust;
-  inherit (garuda-lib) generateCloudflaredIngress;
+  inherit (garuda-lib) mkCatchAllVhost;
+  inherit (garuda-lib) mkCloudflaredVhost;
+  inherit (garuda-lib) mkProxyVhost;
+  inherit (garuda-lib) mkZerotrustVhost;
 
   website = pkgs.garuda-website;
   startpage = pkgs.garuda-startpage;
-in
-rec {
-  imports = sources.defaultModules ++ [ ../../modules ];
 
-  services.nginx = {
-    enable = true;
-    virtualHosts = {
-      "garudalinux.org" = {
-        addSSL = true;
-        http3 = true;
-        locations = {
-          "/" = {
-            index = "index.html";
-            root = website;
-            extraConfig = ''
-              # First attempt to serve request as file, then
-              # as directory, then redirect to index.html (Angular) if no file found.
-              try_files $uri $uri/ /index.html;
+  vhosts = {
+    "garudalinux.org" = {
+      addSSL = true;
+      http3 = true;
+      locations = {
+        "/" = {
+          index = "index.html";
+          root = website;
+          extraConfig = ''
+            # First attempt to serve request as file, then
+            # as directory, then redirect to index.html (Angular) if no file found.
+            try_files $uri $uri/ /index.html;
+            expires 5m;
+          '';
+        };
+        "/discord" = {
+          extraConfig = "expires 12h;";
+          return = "307 https://discord.gg/w5jbhq3juh";
+        };
+        "/telegram" = {
+          extraConfig = "expires 12h;";
+          return = "307 https://t.me/+TAZWHgryP6elOyS8";
+        };
+        "/os/" = {
+          extraConfig = ''
+            try_files $uri =404;
+            expires 5m;
+
+            location = /os/garuda-update/remote-update {
+              expires 12h;
+              return 301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update;
+            }
+            location = /os/garuda-diag/diagnostic {
+              expires 12h;
+              return 301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/4892890/raw/main/diagnostics;
+            }
+            location = /os/garuda-update/hotfix {
               expires 5m;
-            '';
-          };
-          "/discord" = {
-            extraConfig = "expires 12h;";
-            return = "307 https://discord.gg/w5jbhq3juh";
-          };
-          "/telegram" = {
-            extraConfig = "expires 12h;";
-            return = "307 https://t.me/+TAZWHgryP6elOyS8";
-          };
-          "/os/" = {
-            extraConfig = ''
-              try_files $uri =404;
+              return 307 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/4899885/raw/main/hotfix;
+            }
+            location = /os/garuda-update/hotfix-check {
               expires 5m;
+              return 200 '7';
+            }
+            location = /os/garuda-update/garuda-hotfixes-version {
+              expires 12h;
+              return 410 'Feature removed in Garuda System Maintenance 3.1.0';
+            }
+          '';
+        };
+        "/.well-known/webfinger" = {
+          extraConfig = "expires 12h;";
+          return = "301 https://social.garudalinux.org$request_uri";
+        };
+      };
+      quic = true;
+      serverAliases = [ "www.garudalinux.org" ];
+      useACMEHost = "garudalinux.org";
+    };
+    "start.garudalinux.org" = {
+      addSSL = true;
+      http3 = true;
+      locations = {
+        "/" = {
+          index = "index.html";
+          root = startpage;
+          extraConfig = ''
+            # First attempt to serve request as file, then
+            # as directory, then redirect to index.html (Angular) if no file found.
+            try_files $uri $uri/ /index.html;
+            expires 5m;
+          '';
+        };
+      };
+      quic = true;
+      useACMEHost = "garudalinux.org";
+    };
+    "cloud-aio.garudalinux.org" = mkProxyVhost {
+      upstream = "http://10.0.5.60:11000";
+      locationExtraConfig = ''
+        client_body_buffer_size 512k;
+        proxy_read_timeout 86400s;
+        client_max_body_size 0;
 
-              location = /os/garuda-update/remote-update {
-                expires 12h;
-                return 301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/2147440/raw/main/remote-update;
-              }
-              location = /os/garuda-diag/diagnostic {
-                expires 12h;
-                return 301 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/4892890/raw/main/diagnostics;
-              }
-              location = /os/garuda-update/hotfix {
-                expires 5m;
-                return 307 https://gitlab.com/garuda-linux/themes-and-settings/settings/garuda-common-settings/-/snippets/4899885/raw/main/hotfix;
-              }
-              location = /os/garuda-update/hotfix-check {
-                expires 5m;
-                return 200 '7';
-              }
-              location = /os/garuda-update/garuda-hotfixes-version {
-                expires 12h;
-                return 410 'Feature removed in Garuda System Maintenance 3.1.0';
-              }
-            '';
-          };
-          "/.well-known/webfinger" = {
-            extraConfig = "expires 12h;";
-            return = "301 https://social.garudalinux.org$request_uri";
-          };
-        };
-        quic = true;
-        serverAliases = [ "www.garudalinux.org" ];
-        useACMEHost = "garudalinux.org";
-      };
-      "start.garudalinux.org" = {
-        addSSL = true;
-        http3 = true;
-        locations = {
-          "/" = {
-            index = "index.html";
-            root = startpage;
-            extraConfig = ''
-              # First attempt to serve request as file, then
-              # as directory, then redirect to index.html (Angular) if no file found.
-              try_files $uri $uri/ /index.html;
-              expires 5m;
-            '';
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "cloud-aio.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            extraConfig = ''
-              client_body_buffer_size 512k;
-              proxy_read_timeout 86400s;
-              client_max_body_size 0;
+        # Allow accessing through trusted domain
+        set_real_ip_from      172.0.0.0/16;
+      '';
+    };
+    "cloud-temp.garudalinux.org" = mkZerotrustVhost {
+      upstream = "https://10.0.5.60:8080";
+      locationExtraConfig = ''
+        client_body_buffer_size 512k;
+        proxy_read_timeout 86400s;
+        client_max_body_size 0;
 
-              # Allow accessing through trusted domain
-              set_real_ip_from      172.0.0.0/16;
-            '';
-            proxyPass = "http://10.0.5.60:11000";
-          };
+        # Allow accessing through trusted domain
+        set_real_ip_from      172.0.0.0/16;
+      '';
+    };
+    "search.garudalinux.org" = mkCloudflaredVhost {
+      upstream = "http://10.0.5.50:5000";
+    };
+    "searx.garudalinux.org" = mkCloudflaredVhost {
+      upstream = "http://10.0.5.50:8080";
+    };
+    "librey.garudalinux.org" = mkProxyVhost {
+      upstream = "http://10.0.5.50:8081";
+    };
+    "ffsync.garudalinux.org" = mkProxyVhost {
+      upstream = "http://10.0.5.60:5001";
+    };
+    "bin.garudalinux.org" = mkProxyVhost {
+      upstream = "http://10.0.5.60:8082";
+    };
+    "bitwarden.garudalinux.org" = mkProxyVhost {
+      upstream = "http://10.0.5.60:8081";
+      serverAliases = [ "vault.garudalinux.org" ];
+    };
+    "forum.garudalinux.org" = mkProxyVhost {
+      upstream = "http://10.0.5.40:80";
+      prologue = "client_max_body_size 100M;";
+      extraLocations = {
+        "/c/announcements/announcements-maintenance/45.json" = {
+          proxyPass = "http://10.0.5.40:80";
+          extraConfig = "expires 2m;";
         };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "cloud-temp.garudalinux.org" = allowOnlyCloudflareZerotrust {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            extraConfig = ''
-              client_body_buffer_size 512k;
-              proxy_read_timeout 86400s;
-              client_max_body_size 0;
-
-              # Allow accessing through trusted domain
-              set_real_ip_from      172.0.0.0/16;
-            '';
-            proxyPass = "https://10.0.5.60:8080";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "search.garudalinux.org" = allowOnlyCloudflared {
-        addSSL = true;
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.50:5000";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-      };
-      "searx.garudalinux.org" = allowOnlyCloudflared {
-        addSSL = true;
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.50:8080";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-      };
-      "librey.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.50:8081";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "ffsync.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.60:5001";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "bin.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.60:8082";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "bitwarden.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.60:8081";
-          };
-        };
-        quic = true;
-        serverAliases = [ "vault.garudalinux.org" ];
-        useACMEHost = "garudalinux.org";
-      };
-      "forum.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          client_max_body_size 100M;
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.40:80";
-          };
-          "/c/announcements/announcements-maintenance/45.json" = {
-            extraConfig = "expires 2m;";
-            proxyPass = "http://10.0.5.40:80";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "social.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          client_max_body_size 100M;
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.30";
-          };
-          "/.well-known/webfinger" = {
-            proxyPass = "http://10.0.5.30";
-            extraConfig = ''
-              if ($args ~* "resource=acct:(.*)@(chaotic.cx|social.garudalinux.org)$") {
-                set $w1 $1;
-                rewrite .* /.well-known/webfinger?resource=acct:$w1@garudalinux.org? break;
-              }
-            '';
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "social-video.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          client_max_body_size 100M;
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-          location ~* .(mp4|webm)$ {
-            proxy_pass http://10.0.5.30;
-          }
-        '';
-        locations = {
-          "/" = {
-            return = "301 https://social.garudalinux.org$request_uri";
-          };
-        };
-        http3 = true;
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "element.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          # Redirect to forum post
-          "/" = {
-            return = "301 https://forum.garudalinux.org/t/39538";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "matrix.garudalinux.org" = {
-        addSSL = true;
-        http3 = true;
-        listen = [
-          {
-            addr = "0.0.0.0";
-            port = 443;
-            ssl = true;
-          }
-        ];
-        locations = {
-          "/" = {
-            # Redirect to forum post
-            return = "301 https://forum.garudalinux.org/t/39538";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "lingva.garudalinux.org" = allowOnlyCloudflared {
-        addSSL = true;
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.50:3002";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-      };
-      "reddit.garudalinux.org" = allowOnlyCloudflared {
-        addSSL = true;
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.50:8082";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-      };
-      "pgadmin.garudalinux.net" = allowOnlyCloudflareZerotrust {
-        locations = {
-          "/" = {
-            extraConfig = ''
-              ${garuda-lib.nginxReverseProxySettings}
-
-              proxy_pass http://10.0.5.20:5050;
-              proxy_set_header X-Forwarded-User $http_cf_access_authenticated_user_email;
-
-              proxy_hide_header Cache-Control;
-              proxy_hide_header Expires;
-              add_header Cache-Control 'no-store';
-            '';
-          };
-        };
-      };
-      "n8n-webhooks.garudalinux.net" = {
-        addSSL = true;
-        locations = {
-          "/" = {
-            return = "404";
-          };
-          "/webhook" = {
-            extraConfig = ''
-              ${garuda-lib.nginxReverseProxySettings}
-
-              proxy_pass http://10.0.5.90:5678;
-            '';
-          };
-        };
-        useACMEHost = "garudalinux.net";
-      };
-      "n8n.garudalinux.net" = allowOnlyCloudflareZerotrust {
-        locations = {
-          "/" = {
-            extraConfig = ''
-              ${garuda-lib.nginxReverseProxySettings}
-
-              proxy_pass http://10.0.5.90:5678;
-            '';
-          };
-        };
-      };
-      "wiki.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.60:3001";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "chaotic-backend.garudalinux.org" = {
-        addSSL = true;
-        http3 = true;
-        locations = {
-          "/sse" = {
-            proxyPass = "http://10.0.5.70:3000";
-            extraConfig = ''
-              # SSE essential settings
-              proxy_http_version 1.1;
-              proxy_set_header Connection "";
-              proxy_buffering off;
-              # Timeouts
-              proxy_connect_timeout 60s;
-              proxy_read_timeout 3600s;
-              proxy_send_timeout 3600s;
-              # Headers
-              add_header Content-Type text/event-stream;
-              add_header Cache-Control no-cache;
-              add_header X-Accel-Buffering no;
-            '';
-          };
-          "/" = {
-            proxyPass = "http://10.0.5.70:3000";
-            extraConfig = ''
-              ${garuda-lib.nginxReverseProxySettings}
-            '';
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.org";
-      };
-      "mail.garudalinux.net" = {
-        addSSL = true;
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.80:80";
-          };
-        };
-        quic = true;
-        useACMEHost = "garudalinux.net";
-      };
-      # Default catch-all for unknown domains
-      "_" = {
-        addSSL = true;
-        extraConfig = ''
-          log_not_found off;
-          return 404;
-        '';
-        http3 = true;
-        quic = true;
-        useACMEHost = "garudalinux.org";
       };
     };
-  };
+    "social.garudalinux.org" = mkProxyVhost {
+      upstream = "http://10.0.5.30";
+      prologue = "client_max_body_size 100M;";
+      extraLocations = {
+        "/.well-known/webfinger" = {
+          proxyPass = "http://10.0.5.30";
+          extraConfig = ''
+            if ($args ~* "resource=acct:(.*)@(chaotic.cx|social.garudalinux.org)$") {
+              set $w1 $1;
+              rewrite .* /.well-known/webfinger?resource=acct:$w1@garudalinux.org? break;
+            }
+          '';
+        };
+      };
+    };
+    "social-video.garudalinux.org" = {
+      addSSL = true;
+      extraConfig = ''
+        client_max_body_size 100M;
+        ${garuda-lib.setRealIpFromConfig}
+        ${garuda-lib.nginxReverseProxySettings}
+        location ~* .(mp4|webm)$ {
+          proxy_pass http://10.0.5.30;
+        }
+      '';
+      locations = {
+        "/" = {
+          return = "301 https://social.garudalinux.org$request_uri";
+        };
+      };
+      http3 = true;
+      quic = true;
+      useACMEHost = "garudalinux.org";
+    };
+    "element.garudalinux.org" = {
+      addSSL = true;
+      extraConfig = ''
+        ${garuda-lib.setRealIpFromConfig}
+        ${garuda-lib.nginxReverseProxySettings}
+      '';
+      http3 = true;
+      locations = {
+        # Redirect to forum post
+        "/" = {
+          return = "301 https://forum.garudalinux.org/t/39538";
+        };
+      };
+      quic = true;
+      useACMEHost = "garudalinux.org";
+    };
+    "matrix.garudalinux.org" = {
+      addSSL = true;
+      http3 = true;
+      listen = [
+        {
+          addr = "0.0.0.0";
+          port = 443;
+          ssl = true;
+        }
+      ];
+      locations = {
+        "/" = {
+          # Redirect to forum post
+          return = "301 https://forum.garudalinux.org/t/39538";
+        };
+      };
+      quic = true;
+      useACMEHost = "garudalinux.org";
+    };
+    "lingva.garudalinux.org" = mkCloudflaredVhost {
+      upstream = "http://10.0.5.50:3002";
+    };
+    "reddit.garudalinux.org" = mkCloudflaredVhost {
+      upstream = "http://10.0.5.50:8082";
+    };
+    "pgadmin.garudalinux.net" = allowOnlyCloudflareZerotrust {
+      locations = {
+        "/" = {
+          extraConfig = ''
+            ${garuda-lib.nginxReverseProxySettings}
 
-  services.garuda-cloudflared = {
-    enable = true;
-    ingress = {
-      # "example.garudalinux.net" = "http://10.0.5.100:8085";
-    }
-    // (generateCloudflaredIngress services.nginx.virtualHosts);
-    tunnel-credentials = config.sops.secrets."cloudflare/tunnels/aerialis".path;
-  };
+            proxy_pass http://10.0.5.20:5050;
+            proxy_set_header X-Forwarded-User $http_cf_access_authenticated_user_email;
 
-  sops.secrets."cloudflare/tunnels/aerialis" = { };
+            proxy_hide_header Cache-Control;
+            proxy_hide_header Expires;
+            add_header Cache-Control 'no-store';
+          '';
+        };
+      };
+    };
+    "n8n-webhooks.garudalinux.net" = {
+      addSSL = true;
+      locations = {
+        "/" = {
+          return = "404";
+        };
+        "/webhook" = {
+          extraConfig = ''
+            ${garuda-lib.nginxReverseProxySettings}
+
+            proxy_pass http://10.0.5.90:5678;
+          '';
+        };
+      };
+      useACMEHost = "garudalinux.net";
+    };
+    "n8n.garudalinux.net" = allowOnlyCloudflareZerotrust {
+      locations = {
+        "/" = {
+          extraConfig = ''
+            ${garuda-lib.nginxReverseProxySettings}
+
+            proxy_pass http://10.0.5.90:5678;
+          '';
+        };
+      };
+    };
+    "wiki.garudalinux.org" = mkProxyVhost {
+      upstream = "http://10.0.5.60:3001";
+    };
+    "backend.chaotic.cx" = {
+      addSSL = true;
+      http3 = true;
+      locations = {
+        "~ ^/(sse|metrics/live/traffic|logs/[^/]+/[^/]+|api/manager/logs|gitlab/(aur-scan|pipelines)/)" = {
+          proxyPass = "http://10.0.5.70:3000";
+          recommendedProxySettings = false;
+          extraConfig = ''
+            proxy_http_version      1.1;
+            proxy_set_header        Host $host;
+            proxy_set_header        X-Real-IP $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        X-Forwarded-Proto $scheme;
+            proxy_set_header        X-Forwarded-Host $host;
+            proxy_set_header        X-Forwarded-Server $host;
+            proxy_set_header        Connection "";
+            proxy_set_header        Upgrade $http_upgrade;
+
+            proxy_redirect          off;
+            proxy_connect_timeout   60s;
+            proxy_read_timeout      3600s;
+            proxy_send_timeout      3600s;
+          '';
+        };
+        "/" = {
+          proxyPass = "http://10.0.5.70:3000";
+          recommendedProxySettings = false;
+          extraConfig = ''
+            proxy_http_version      1.1;
+            proxy_set_header        Host $host;
+            proxy_set_header        X-Real-IP $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        X-Forwarded-Proto $scheme;
+            proxy_set_header        X-Forwarded-Host $host;
+            proxy_set_header        X-Forwarded-Server $host;
+            proxy_set_header        Upgrade $http_upgrade;
+            proxy_set_header        Connection $connection_upgrade;
+
+            proxy_redirect          off;
+            proxy_buffering         off;
+            proxy_connect_timeout   60s;
+            proxy_read_timeout      60s;
+            proxy_send_timeout      60s;
+          '';
+        };
+      };
+      quic = true;
+      useACMEHost = "backend.chaotic.cx";
+    };
+    "mail.garudalinux.net" = mkProxyVhost {
+      upstream = "http://10.0.5.80:80";
+      acmeHost = "garudalinux.net";
+      realIp = false;
+    };
+    "grafana.garudalinux.net" = mkCloudflaredVhost {
+      upstream = "http://10.0.5.100:3010";
+      acmeHost = "garudalinux.net";
+    };
+    "prometheus.garudalinux.net" = mkZerotrustVhost {
+      upstream = "http://10.0.5.100:9090";
+      acmeHost = "garudalinux.net";
+    };
+    "alertmanager.garudalinux.net" = mkZerotrustVhost {
+      upstream = "http://10.0.5.100:9093";
+      acmeHost = "garudalinux.net";
+    };
+    "_" = mkCatchAllVhost { };
+  };
+in
+{
+  imports = sources.defaultModules ++ [ ../../modules ];
+
+  inherit
+    (garuda-lib.mkWebFront {
+      host = "aerialis";
+      inherit vhosts;
+    })
+    garuda
+    networking
+    services
+    sops
+    systemd
+    ;
 
   system.stateVersion = "25.05";
 }
@@ -2574,15 +2904,354 @@ rec {
 <h2 id="host-configuration-1"><a class="header" href="#host-configuration-1">Host configuration</a></h2>
 <pre><code class="language-nix">{
   config,
+  garuda-lib,
   lib,
-  pkgs,
   ...
 }:
+let
+  mon = garuda-lib.monitoring;
+
+  mkTailnetProxy =
+    {
+      name,
+      container,
+      port,
+      targetPort ? port,
+      description,
+    }:
+    {
+      inherit name;
+      bind = mon.tailnetIPs.stormwing;
+      listen = port;
+      target = "${mon.stormwingContainers.${container}}:${toString targetPort}";
+      after = [
+        "tailscaled.service"
+        "container@${container}.service"
+      ];
+      wants = [ "container@${container}.service" ];
+      inherit description;
+    };
+in
 {
   imports = [
     ../modules
     ./../modules/special/hetzner-ex44.nix
   ];
+
+  garuda = garuda-lib.mkMonitoring {
+    host = "stormwing";
+    lokiAddress = mon.loki.tailnetAddress;
+    hostInfo = true;
+    units = [
+      "sshd.service"
+      "tailscaled.service"
+    ];
+    exporters = [ "smartctlExporter" ];
+  };
+
+  swapDevices = [
+    {
+      device = "/data_1/swapfile";
+      size = 32 * 1024;
+    }
+  ];
+
+  networking = {
+    defaultGateway = "157.180.57.1";
+    defaultGateway6 = {
+      address = "fe80::1";
+      interface = "eth0";
+    };
+    hostName = "stormwing";
+    interfaces."eth0".ipv4.addresses = [
+      {
+        address = "157.180.57.51";
+        prefixLength = 26;
+      }
+    ];
+    nat.forwardPorts = [
+      (garuda-lib.mkNatForward {
+        sourcePort = 210;
+        destination = "10.0.5.10:22";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 220;
+        destination = "10.0.5.20:22";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 80;
+        destination = "10.0.5.40:80";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 443;
+        destination = "10.0.5.40:443";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 443;
+        destination = "10.0.5.40:443";
+        proto = "udp";
+      })
+    ];
+  };
+
+  services.garuda-nspawn = {
+    dockerCache = "/data_2/dockercache/";
+
+    containers = garuda-lib.mkContainers {
+      dir = ./stormwing;
+      ips = mon.stormwingContainers;
+      containers = {
+        chaotic-v4 = {
+          mounts = [
+            {
+              name = "arch-mirror";
+              hostPath = "/data_2/containers/arch-mirror/mirror";
+              mountPoint = "/srv/http/arch-mirror";
+            }
+            {
+              name = "chaotic";
+              hostPath = "/data_2/containers/chaotic-v4/chaotic";
+              mountPoint = "/var/garuda/compose-runner/chaotic-v4";
+            }
+            {
+              name = "syncthing";
+              hostPath = "/data_2/containers/chaotic-v4/syncthing";
+              mountPoint = "/var/lib/syncthing";
+            }
+            {
+              name = "chaotic-v4";
+              hostPath = "/data_1/chaotic-v4/";
+              mountPoint = "/srv/http/repos";
+            }
+            {
+              name = "iso-builds";
+              hostPath = "/data_1/iso/iso";
+              mountPoint = "/srv/http/iso";
+            }
+            {
+              name = "garuda-nix-builds";
+              hostPath = "/data_1/iso/garuda-nix";
+              mountPoint = "/srv/http/garuda-nix";
+            }
+          ];
+          forwardPorts = [
+            { containerPort = 873; }
+            {
+              containerPort = 21027;
+              protocol = "udp";
+            }
+            { containerPort = 22000; }
+            {
+              containerPort = 22000;
+              protocol = "udp";
+            }
+          ];
+          nspawn = {
+            enableTun = true;
+          };
+          needsDocker = true;
+          # Only entitled to 1/5 of the CPU resources in case of contention
+          cpuWeight = 20;
+          ioWeight = 20;
+        };
+
+        arch-mirror = {
+          mounts = [
+            {
+              name = "arch-mirror";
+              hostPath = "/data_2/containers/arch-mirror/mirror";
+              mountPoint = "/srv/http/arch-mirror";
+            }
+          ];
+        };
+
+        github-runner = {
+          mounts = [
+            {
+              name = "token";
+              hostPath = config.sops.secrets."compose/github-runner".path;
+              mountPoint = "/var/.github-runner.env";
+              readOnly = true;
+            }
+            {
+              name = "gitlab-config";
+              hostPath = "/data_2/containers/github-runner/gitlab-runner";
+              mountPoint = "/etc/gitlab-runner";
+            }
+            {
+              name = "ssh-keys";
+              hostPath = "/data_2/containers/github-runner/ssh";
+              mountPoint = "/etc/ssh";
+            }
+            {
+              name = "github-cache";
+              hostPath = "/data_2/cache/github-runner";
+              mountPoint = "/var/cache/github-runner";
+            }
+          ];
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 230;
+            }
+          ];
+          nspawn = {
+            ephemeral = lib.mkForce true;
+          };
+          defaults = false;
+          needsDocker = true;
+          cpuWeight = 20;
+          ioWeight = 20;
+        };
+
+        firedragon-runner = {
+          mounts = [
+            {
+              name = "firedragon-runner";
+              hostPath = "/data_2/containers/firedragon-runner";
+              mountPoint = "/var/garuda/compose-runner/firedragon-runner";
+            }
+          ];
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 250;
+            }
+          ];
+          nspawn = {
+            ephemeral = lib.mkForce true;
+          };
+          defaults = false;
+          needsDocker = true;
+          cpuWeight = 10;
+          ioWeight = 10;
+        };
+
+        gitlab-runner = {
+          mounts = [
+            {
+              name = "nix-cache";
+              hostPath = "/data_2/containers/gitlab-runner/nix";
+              mountPoint = "/nix";
+            }
+            {
+              name = "gitlab-runner";
+              hostPath = "/data_2/containers/gitlab-runner/gitlab-runner";
+              mountPoint = "/var/lib/private/gitlab-runner";
+            }
+          ];
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 260;
+            }
+          ];
+          needsDocker = true;
+          needsKvm = true;
+          cpuWeight = 20;
+          ioWeight = 20;
+        };
+
+        iso-runner = {
+          mounts = [
+            {
+              name = "iso";
+              hostPath = "/data_1/iso/";
+              mountPoint = "/var/garuda/buildiso";
+            }
+            {
+              name = "cache";
+              hostPath = "/data_1/cache/iso-runner";
+              mountPoint = "/var/garuda/buildiso/cache";
+            }
+            {
+              name = "pacman_cache";
+              hostPath = "/data_1/cache/pacman-cache";
+              mountPoint = "/var/cache/pacman/pkg";
+            }
+          ];
+          needsDocker = true;
+        };
+
+        web-front = {
+          mounts = [
+            {
+              name = "acme";
+              hostPath = "/data_1/containers/web-front/acme";
+              mountPoint = "/var/lib/acme";
+            }
+            {
+              name = "nginx";
+              hostPath = "/data_1/containers/web-front/nginx";
+              mountPoint = "/var/log/nginx";
+            }
+          ];
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 240;
+            }
+          ];
+        };
+      };
+    };
+  };
+
+  systemd.services = garuda-lib.mkTunnels (
+    [
+      (mkTailnetProxy {
+        name = "nginx-tailnet-proxy";
+        container = "web-front";
+        port = mon.ports.nginxExporter;
+        description = "Expose web-front nginx exporter to Tailnet only";
+      })
+      {
+        name = "loki-relay";
+        bind = mon.bridge.address;
+        listen = mon.stormwingLokiRelay.listenPort;
+        target = mon.stormwingLokiRelay.target;
+        after = [ "tailscaled.service" ];
+        description = "Relay stormwing container logs to Loki on aerialis";
+      }
+    ]
+    ++ map (
+      p:
+      mkTailnetProxy {
+        name = "node-exporter-${p.name}-tailnet-proxy";
+        container = p.name;
+        inherit (p) port;
+        targetPort = mon.ports.nodeExporter;
+        description = "Expose ${p.name} node exporter to Tailnet only";
+      }
+    ) mon.stormwingNodeProxies
+    ++ map (
+      p:
+      mkTailnetProxy {
+        name = "service-${p.name}-tailnet-proxy";
+        inherit (p) container;
+        inherit (p) port;
+        inherit (p) targetPort;
+        description = "Expose ${p.container} ${toString p.targetPort} to Tailnet only";
+      }
+    ) mon.stormwingServiceProxies
+  );
+
+  networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
+    mon.ports.nginxExporter
+    32041
+    39252
+  ];
+
+  sops.secrets."compose/github-runner" = { };
+}
+</code></pre>
+<h2 id="shared-host-configuration-1"><a class="header" href="#shared-host-configuration-1">Shared host configuration</a></h2>
+<p>The disk layout, SSH configuration, container bridge (<code>br0</code>) and impermanence are shared with aerialis and live in
+<code>nixos/modules/special/newgen.nix</code>. Hardware-specific settings (kernel, microcode, SMT, smartd) come from
+<code>nixos/modules/special/hetzner-ex44.nix</code>.</p>
+<pre><code class="language-nix">_: {
+  # We want to have same UID's in all containers to allow sharing home directories
+  garuda-lib.unifiedUID = true;
 
   fileSystems."/" = {
     device = "none";
@@ -2604,9 +3273,7 @@ rec {
       "nodiratime"
       "errors=remount-ro"
     ];
-    depends = [
-      "/"
-    ];
+    depends = [ "/" ];
   };
 
   fileSystems."/data_2" = {
@@ -2625,304 +3292,131 @@ rec {
     fsType = "vfat";
   };
 
-  swapDevices = [
-    {
-      device = "/data_1/swapfile";
-      size = 32 * 1024;
-    }
-  ];
-
-  services.openssh.ports = [ 666 ];
-
-  # Network configuration with a bridge interface
-  networking = {
-    defaultGateway = "157.180.57.1";
-    defaultGateway6 = {
-      address = "fe80::1";
-      interface = "eth0";
-    };
-    hostName = "stormwing";
-    interfaces = {
-      "eth0" = {
-        ipv4.addresses = [
-          {
-            address = "157.180.57.51";
-            prefixLength = 26;
-          }
-        ];
-      };
-    };
-    # Specify these here to allow containers to access
-    # our services from the internal network via NAT reflection
-    nat.forwardPorts = [
-      # Here because we need to take advantage of NAT reflection.
-      # In general, SSH ports should not be here.
-      {
-        # chaotic-v4 (SSH)
-        destination = "10.0.5.10:22";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "tcp";
-        sourcePort = 210;
-      }
-      {
-        # iso-runner (SSH)
-        destination = "10.0.5.20:22";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "tcp";
-        sourcePort = 220;
-      }
-      {
-        # web-front (HTTP)
-        destination = "10.0.5.40:80";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "tcp";
-        sourcePort = 80;
-      }
-      {
-        # web-front (HTTPS)
-        destination = "10.0.5.40:443";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "tcp";
-        sourcePort = 443;
-      }
-      {
-        # web-front (HTTPS)
-        destination = "10.0.5.40:443";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "udp";
-        sourcePort = 443;
-      }
+  fileSystems."/nix" = {
+    device = "/data_1/nix";
+    fsType = "none";
+    options = [ "bind" ];
+    depends = [
+      "/data_1"
     ];
-    firewall.trustedInterfaces = [ "br0" ];
   };
 
-  # Container config
+  services.openssh = {
+    ports = [ 666 ];
+    hostKeys = [
+      {
+        type = "ed25519";
+        path = "/data_1/persistent/etc/ssh/ssh_host_ed25519_key";
+      }
+      {
+        type = "rsa";
+        bits = 4096;
+        path = "/data_1/persistent/etc/ssh/ssh_host_rsa_key";
+      }
+    ];
+  };
+
   services.garuda-nspawn = {
     bridgeInterface = "br0";
     hostInterface = "eth0";
     hostIp = "10.0.5.1";
-    dockerCache = "/data_2/dockercache/";
-
     defaults = {
       maxMemorySoft = 48318382080; # 45 GiB
       maxMemoryHard = 53687091200; # 50 GiB
       maxCpu = 18;
     };
-
-    containers = {
-      chaotic-v4 = {
-        config = import ./stormwing/chaotic-v4.nix;
-        extraOptions = {
-          bindMounts = {
-            # Begin data_2
-            "chaotic" = {
-              hostPath = "/data_2/containers/chaotic-v4/chaotic";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/compose-runner/chaotic-v4";
-            };
-            "syncthing" = {
-              hostPath = "/data_2/containers/chaotic-v4/syncthing";
-              isReadOnly = false;
-              mountPoint = "/var/lib/syncthing";
-            };
-            # End data_2
-            # Begin data_1
-            "chaotic-v4" = {
-              hostPath = "/data_1/chaotic-v4/";
-              isReadOnly = false;
-              mountPoint = "/srv/http/repos";
-            };
-            "iso-builds" = {
-              hostPath = "/data_1/iso/iso";
-              isReadOnly = false;
-              mountPoint = "/srv/http/iso";
-            };
-            # End data_1
-          };
-          forwardPorts = [
-            {
-              containerPort = 873;
-              hostPort = 873;
-              protocol = "tcp";
-            }
-            {
-              containerPort = 21027;
-              hostPort = 21027;
-              protocol = "udp";
-            }
-            {
-              containerPort = 22000;
-              hostPort = 22000;
-              protocol = "tcp";
-            }
-            {
-              containerPort = 22000;
-              hostPort = 22000;
-              protocol = "udp";
-            }
-          ];
-          enableTun = true;
-        };
-        ipAddress = "10.0.5.10";
-        needsDocker = true;
-        # Only entitled to 1/5 of the CPU resources in case of contention
-        cpuWeight = 20;
-        ioWeight = 20;
-      };
-      github-runner = {
-        config = import ./stormwing/github-runner.nix;
-        defaults = false;
-        extraOptions = {
-          bindMounts = {
-            "token" = {
-              hostPath = config.sops.secrets."compose/github-runner".path;
-              isReadOnly = true;
-              mountPoint = "/var/.github-runner.env";
-            };
-            "gitlab-config" = {
-              hostPath = "/data_2/containers/github-runner/gitlab-runner";
-              isReadOnly = false;
-              mountPoint = "/etc/gitlab-runner";
-            };
-            "ssh-keys" = {
-              hostPath = "/data_2/containers/github-runner/ssh";
-              isReadOnly = false;
-              mountPoint = "/etc/ssh";
-            };
-            "github-cache" = {
-              hostPath = "/data_2/cache/github-runner";
-              isReadOnly = false;
-              mountPoint = "/var/cache/github-runner";
-            };
-          };
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 230;
-              protocol = "tcp";
-            }
-          ];
-          ephemeral = lib.mkForce true;
-        };
-        ipAddress = "10.0.5.30";
-        needsDocker = true;
-        # Only entitled to 1/5 of the CPU resources in case of contention
-        cpuWeight = 20;
-        ioWeight = 20;
-      };
-      firedragon-runner = {
-        config = import ./stormwing/firedragon-runner.nix;
-        defaults = false;
-        extraOptions = {
-          bindMounts = {
-            "firedragon-runner" = {
-              hostPath = "/data_2/containers/firedragon-runner";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/compose-runner/firedragon-runner";
-            };
-          };
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 250;
-              protocol = "tcp";
-            }
-          ];
-          ephemeral = lib.mkForce true;
-        };
-        ipAddress = "10.0.5.50";
-        needsDocker = true;
-        # Only entitled to 10% of the CPU resources in case of contention
-        cpuWeight = 10;
-        ioWeight = 10;
-      };
-      iso-runner = {
-        config = import ./stormwing/iso-runner.nix;
-        extraOptions = {
-          bindMounts = {
-            "iso" = {
-              hostPath = "/data_1/iso/";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/buildiso";
-            };
-            "cache" = {
-              hostPath = "/data_1/cache/iso-runner";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/buildiso/cache";
-            };
-            "pacman_cache" = {
-              hostPath = "/data_1/cache/pacman-cache";
-              isReadOnly = false;
-              mountPoint = "/var/cache/pacman/pkg";
-            };
-          };
-        };
-        ipAddress = "10.0.5.20";
-        needsDocker = true;
-      };
-      web-front = {
-        config = import ./stormwing/web-front.nix;
-        extraOptions = {
-          bindMounts = {
-            "acme" = {
-              hostPath = "/data_1/containers/web-front/acme";
-              isReadOnly = false;
-              mountPoint = "/var/lib/acme";
-            };
-            "nginx" = {
-              hostPath = "/data_1/containers/web-front/nginx";
-              isReadOnly = false;
-              mountPoint = "/var/log/nginx";
-            };
-          };
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 240;
-              protocol = "tcp";
-            }
-          ];
-        };
-        ipAddress = "10.0.5.40";
-      };
-    };
   };
 
-  # Monitor a few services of the containers
-  services = {
-    netdata.configDir = {
-      "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
-        jobs:
-          - name: nginx
-            path: /data_1/containers/web-front/nginx/access.log
-      '';
-    };
+  networking.firewall.trustedInterfaces = [ "br0" ];
+
+  garuda-lib.sshkeys = {
+    ed25519 = "/data_1/persistent/etc/ssh/ssh_host_ed25519_key";
+    rsa = "/data_1/persistent/etc/ssh/ssh_host_rsa_key";
   };
 
-  sops.secrets = {
-    "compose/github-runner" = { };
+  environment.persistence."/data_1/persistent" = {
+    enable = true;
+    hideMounts = true;
+    directories = [
+      "/home"
+      "/var/cache/netdata"
+      "/var/cache/tailscale"
+      "/var/lib/netdata"
+      "/var/lib/nixos"
+      "/var/lib/tailscale"
+      "/var/lib/vnstat"
+      "/var/log"
+    ];
+    files = [
+      "/etc/machine-id"
+    ];
   };
+
+  security.sudo.extraConfig = ''
+    Defaults lecture = never
+  '';
 }
 </code></pre>
 <h2 id="containersservices-1"><a class="header" href="#containersservices-1">Containers/services</a></h2>
 <ul>
+<li><a href="hosts/arch-mirror.html">arch-mirror</a>: Mirrors the Arch Linux repositories and pushes them to Cloudflare R2.</li>
 <li><a href="hosts/chaotic-v4.html">chaotic-v4</a>: Main Chaotic-AUR builder and repository sync container.</li>
 <li><a href="hosts/firedragon-runner.html">firedragon-runner</a>: CI runner for building and testing the Firedragon browser.</li>
 <li><a href="hosts/github-runner.html">github-runner</a>: GitHub Actions runner for CI/CD tasks related to Garuda Linux projects.</li>
+<li><a href="hosts/gitlab-runner.html">gitlab-runner</a>: GitLab CI runners for building our packages.</li>
 <li><a href="hosts/iso-runner.html">iso-runner</a>: Dedicated builder for Garuda Linux ISO images.</li>
 <li><a href="hosts/web-front.html">web-front</a>: Reverse proxy and web frontend for services running on stormwing.</li>
 </ul>
 <p>See the respective documentation pages for up-to-date configuration and details.</p>
 <div style="break-before: page; page-break-before: always;"></div>
+<h1 id="arch-mirror-stormwing"><a class="header" href="#arch-mirror-stormwing">arch-mirror (stormwing)</a></h1>
+<p>This container mirrors the Arch Linux repositories.</p>
+<h2 id="general-6"><a class="header" href="#general-6">General</a></h2>
+<p>The <code>garuda-arch-mirror</code> service syncs the mirror from its configured upstream and serves it through nginx. Synced
+packages are additionally pushed to Cloudflare R2 with rclone, so users can also fetch them from there. The mirror
+directory is shared with <a href="#chaotic-v4-stormwing">chaotic-v4</a>, which serves it as <code>/srv/http/arch-mirror</code> as well.</p>
+<h2 id="nix-expression-10"><a class="header" href="#nix-expression-10">Nix expression</a></h2>
+<pre><code class="language-nix">{
+  config,
+  garuda-lib,
+  sources,
+  ...
+}:
+{
+  imports = sources.defaultModules ++ [ ../../modules ];
+
+  garuda = garuda-lib.mkMonitoring {
+    host = "stormwing";
+    units = [
+      "garuda-arch-mirror.service"
+      "nginx.service"
+    ];
+  };
+
+  services.garuda-arch-mirror = {
+    enable = true;
+    upstreamUrl = "rsync://mirror.23m.com/archlinux/";
+    lastupdateUrl = "https://mirror.23m.com/archlinux/lastupdate";
+    tls = false;
+    rcloneConfig = config.sops.secrets."cloudflare/r2_rclone".path;
+    rcloneDest = "r2:/mirror/arch";
+  };
+
+  sops.secrets = garuda-lib.mkSecrets [ "cloudflare/r2_rclone" ];
+
+  system.stateVersion = "25.05";
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
 <h1 id="chaotic-v4-stormwing"><a class="header" href="#chaotic-v4-stormwing">chaotic-v4 (stormwing)</a></h1>
 <p>This container is the main Chaotic-AUR builder and repository sync node, responsible for building and distributing packages.</p>
-<h2 id="general-4"><a class="header" href="#general-4">General</a></h2>
+<h2 id="general-7"><a class="header" href="#general-7">General</a></h2>
 <p>This is the nspawn container used to run Chaotic-AUR’s new build system, <code>infra 4.0</code>.</p>
 <p>Restarting the Docker stack, in case it is needed, can happen via <code>sudo chaotic-restart</code>.
 For information on how to use the new build system, please refer to the <a href="hosts/services/chaotic-4.0.html">documentation</a>.</p>
 <p>In general, manual intervention should not be needed,
 as the system is designed to be fully automated via GitLab CI or GitHub actions.</p>
-<h2 id="nix-expression-8"><a class="header" href="#nix-expression-8">Nix expression</a></h2>
+<h2 id="nix-expression-11"><a class="header" href="#nix-expression-11">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,
   garuda-lib,
@@ -2941,18 +3435,32 @@ in
   imports = sources.defaultModules ++ [
     ../../modules
     "${sources.chaotic-portable-builder}/nix/nixos.nix"
+    ../../modules/special/iso-upload.nix
     ../../modules/special/ssh-allow-chaotic.nix
   ];
 
-  # This container is just for compose stuff
-  garuda.services.compose-runner.chaotic-v4 = {
-    envfile = config.sops.secrets."compose/chaotic-v4".path;
-    source = ../../../compose/chaotic-v4;
-    extraEnv = {
-      "REDIS_SSH_HOST" = garuda-lib.dns.aerialis;
-      "REDIS_SSH_PORT" = "270";
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "stormwing";
+      units = [
+        "compose-runner-chaotic-v4.service"
+        "nginx.service"
+        "rsyncd.service"
+        "syncthing.service"
+      ];
+    }
+    // {
+      services.compose-runner.chaotic-v4 = {
+        envfile = config.sops.secrets."compose/chaotic-v4".path;
+        source = ../../../compose/chaotic-v4;
+        extraEnv = {
+          "REDIS_SSH_HOST" = garuda-lib.dns.aerialis;
+          "REDIS_SSH_PORT" = "270";
+        };
+      };
     };
-  };
+
+  networking.extraHosts = "10.0.5.40 builds.garudalinux.org";
 
   # Allow controlling infra 4.0's containers without root
   environment.systemPackages = [ wrapperScript ];
@@ -3172,6 +3680,11 @@ in
           comment = "ISO downloads";
           "read only" = "yes";
         };
+        arch-mirror = {
+          path = "/srv/http/arch-mirror/";
+          comment = "Arch Linux mirror";
+          "read only" = "yes";
+        };
       };
       globalSection = {
         "max connections" = 80;
@@ -3233,13 +3746,13 @@ in
     };
   };
 
-  sops.secrets = {
-    "cloudflare/api_keys" = { };
-    "cloudflare/r2_rclone" = { };
-    "compose/chaotic-v4" = { };
-    "keypairs/syncthing/cert" = { };
-    "keypairs/syncthing/private" = { };
-  };
+  sops.secrets = garuda-lib.mkSecrets [
+    "cloudflare/api_keys"
+    "cloudflare/r2_rclone"
+    "compose/chaotic-v4"
+    "keypairs/syncthing/cert"
+    "keypairs/syncthing/private"
+  ];
 
   system.stateVersion = "25.05";
 }
@@ -3300,6 +3813,33 @@ in
       - ./sshkey:/app/sshkey
       - /var/run/docker.sock:/var/run/docker.sock
     extra_hosts: ["host.docker.internal:host-gateway"]
+  chaotic-builder-3:
+    image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
+    container_name: chaotic-builder-3
+    command: builder
+    deploy:
+      restart_policy:
+        condition: always
+        delay: 60s
+    tty: true
+    environment:
+      BUILDER_CLASS: 2
+      BUILDER_HOSTNAME: stormwing-3
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
+      REDIS_SSH_HOST: ${REDIS_SSH_HOST:-?err}
+      REDIS_SSH_PORT: ${REDIS_SSH_PORT:-270}
+      REDIS_SSH_USER: package-deployer
+      SHARED_PATH: /var/garuda/compose-runner/chaotic-v4/shared-3
+      BUILDER_SRCDEST_CACHE_OVERRIDE: /var/garuda/compose-runner/chaotic-v4/shared/srcdest_cache
+      # Override the default database host
+      DATABASE_HOST: host.docker.internal
+      DATABASE_PORT: 22
+    volumes:
+      - ./shared-3:/shared
+      - ./shared/srcdest_cache:/shared/srcdest_cache
+      - ./sshkey:/app/sshkey
+      - /var/run/docker.sock:/var/run/docker.sock
+    extra_hosts: ["host.docker.internal:host-gateway"]
   chaotic-manager:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
     container_name: chaotic-manager
@@ -3310,12 +3850,14 @@ in
     depends_on:
       - chaotic-builder-1
       - chaotic-builder-2
+      - chaotic-builder-3
     deploy:
       restart_policy:
         condition: always
         delay: 60s
     tty: true
     environment:
+      API_TOKEN: ${API_TOKEN:-?err}
       # Address published to outside world
       DATABASE_HOST: builds.garudalinux.org
       DATABASE_PORT: 210
@@ -3352,7 +3894,7 @@ in
                     }
                 ],
                 "extra_keyrings": [
-                    "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
+                    "https://builds.garudalinux.org/repos/chaotic-aur/chaotic-keyring.pkg.tar.zst"
                 ]
             },
             "garuda": {
@@ -3371,7 +3913,7 @@ in
                     }
                 ],
                 "extra_keyrings": [
-                    "https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst"
+                    "https://builds.garudalinux.org/repos/chaotic-aur/chaotic-keyring.pkg.tar.zst"
                 ]
             }
         }
@@ -3402,73 +3944,55 @@ in
       restart_policy:
         condition: always
         delay: 60s
-    command: --cleanup chaotic-builder chaotic-builder-2 chaotic-manager watchtower --interval 3600
+    command: --cleanup chaotic-builder chaotic-builder-2 chaotic-builder-3 chaotic-manager watchtower --interval 3600
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="firedragon-runner-stormwing"><a class="header" href="#firedragon-runner-stormwing">firedragon-runner (stormwing)</a></h1>
 <p>This container is a CI runner for building and testing the Firedragon browser in an isolated environment.
 It is separate from the other GitLab runner to ensure only one build runs at a time, while the others can run in parallel.</p>
-<h2 id="nix-expression-9"><a class="header" href="#nix-expression-9">Nix expression</a></h2>
+<h2 id="nix-expression-12"><a class="header" href="#nix-expression-12">Nix expression</a></h2>
 <pre><code class="language-nix">{
+  garuda-lib,
+  inputs,
   keys,
   ...
 }:
 {
   # No default modules, untrusted container!
-  # imports = sources.defaultModules ++ [
-  #   ./garuda/garuda.nix
-  # ];
-
   imports = [
+    inputs.sops-nix.nixosModules.sops
+    ../../modules/garuda-lib.nix
     ../../modules/hardening.nix
     ../../modules/motd.nix
     ../../services/compose-runner/compose-runner.nix
+    ../../services/mk.nix
+    ../../services/monitoring
   ];
 
-  # Common Docker configurations
-  virtualisation.docker = {
-    autoPrune.enable = true;
-    autoPrune.flags = [ "-a" ];
-  };
-
-  # GitLab runners
-  garuda.services.compose-runner.firedragon-runner = {
-    source = ../../../compose/firedragon-runner;
-  };
-
-  # Enable SSH
-  services.openssh.enable = true;
-
-  # No custom users - only Stefan and root via nixos-container root-login
-  users = {
-    allowNoPasswordLogin = true;
-    mutableUsers = false;
-    users.stefan = {
+  inherit
+    (garuda-lib.mkUntrustedRunner {
+      user = "stefan";
       home = "/home/stefan";
-      isNormalUser = true;
-      openssh.authorizedKeys.keyFiles = [ keys.stefan ];
-    };
-  };
-
-  nix.settings.trusted-users = [ "stefan" ];
-  security.sudo.extraRules = [
-    {
-      users = [ "stefan" ];
-      commands = [
-        {
-          command = "ALL";
-          options = [ "NOPASSWD" ];
-        }
+      key = keys.stefan;
+      units = [
+        "compose-runner-firedragon.service"
+        "docker.service"
       ];
-    }
-  ];
-
-  systemd.oomd = {
-    enable = true;
-    enableSystemSlice = true;
-    enableUserSlices = true;
-  };
+      runners = {
+        firedragon-runner = {
+          source = ../../../compose/firedragon-runner;
+        };
+      };
+    })
+    garuda
+    nix
+    security
+    services
+    systemd
+    users
+    virtualisation
+    ;
 
   system.stateVersion = "25.05";
 }
@@ -3493,82 +4017,63 @@ It is separate from the other GitLab runner to ensure only one build runs at a t
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="github-runner-stormwing"><a class="header" href="#github-runner-stormwing">github-runner (stormwing)</a></h1>
 <p>This container is a GitHub Actions runner for CI/CD tasks related to Garuda Linux projects.</p>
-<h2 id="general-5"><a class="header" href="#general-5">General</a></h2>
+<h2 id="general-8"><a class="header" href="#general-8">General</a></h2>
 <p>With this container, we provide a GitHub runner as well as (more recently), a GitLab runner. This container does <strong>not</strong>
 have the regular Garuda configurations because it is considered untrusted.
 Access needs to happen by running <code>nixos-container root-login</code>
-on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortalis.html#connecting-to-the-server">click me</a>).</p>
+on <a href="#stormwing">stormwing</a>.</p>
 <h2 id="restarting-containers-1"><a class="header" href="#restarting-containers-1">Restarting containers</a></h2>
-<p>This can happen via the following command:</p>
-<pre><code class="language-bash">sudo systemctl restart docker-compose-gitlab-runner-root
+<p>This can happen via the following commands:</p>
+<pre><code class="language-bash">sudo systemctl restart compose-runner-github-runner
+sudo systemctl restart compose-runner-gitlab-runner
 </code></pre>
 <p>Watchtower additionally keeps the containers up to date.</p>
-<h2 id="nix-expression-10"><a class="header" href="#nix-expression-10">Nix expression</a></h2>
+<h2 id="nix-expression-13"><a class="header" href="#nix-expression-13">Nix expression</a></h2>
 <pre><code class="language-nix">{
+  garuda-lib,
+  inputs,
   keys,
   ...
 }:
 {
   # No default modules, untrusted container!
-  # imports = sources.defaultModules ++ [
-  #   ./garuda/garuda.nix
-  # ];
-
   imports = [
+    inputs.sops-nix.nixosModules.sops
+    ../../modules/garuda-lib.nix
     ../../modules/hardening.nix
     ../../modules/motd.nix
     ../../services/compose-runner/compose-runner.nix
+    ../../services/mk.nix
+    ../../services/monitoring
   ];
 
-  # Common Docker configurations
-  virtualisation.docker = {
-    autoPrune.enable = true;
-    autoPrune.flags = [ "-a" ];
-  };
-
-  # This container is just for compose stuff
-  garuda.services.compose-runner.github-runner = {
-    envfile = "/var/.github-runner.env";
-    source = ../../../compose/github-runner;
-  };
-  garuda.services.compose-runner.gitlab-runner = {
-    source = ../../../compose/gitlab-runner;
-  };
-
-  # Enable SSH
-  services.openssh.enable = true;
-
-  # No custom users - only Pedro and root via nixos-container root-login
-  users = {
-    allowNoPasswordLogin = true;
-    mutableUsers = false;
-    users.pedrohlc = {
+  inherit
+    (garuda-lib.mkUntrustedRunner {
+      user = "pedrohlc";
       home = "/home/pedrohlc";
-      isNormalUser = true;
-      openssh.authorizedKeys.keyFiles = [ keys.pedrohlc ];
-    };
-  };
-
-  # Make Pedro god here
-  nix.settings.trusted-users = [ "pedrohlc" ];
-  security.sudo.extraRules = [
-    {
-      users = [ "pedrohlc" ];
-      commands = [
-        {
-          command = "ALL";
-          options = [ "NOPASSWD" ];
-        }
+      key = keys.pedrohlc;
+      units = [
+        "compose-runner-github-runner.service"
+        "docker.service"
       ];
-    }
-  ];
-
-  # OOM prevention
-  systemd.oomd = {
-    enable = true; # This is actually the default, anyways...
-    enableSystemSlice = true;
-    enableUserSlices = true;
-  };
+      runners = {
+        github-runner = {
+          envfile = "/var/.github-runner.env";
+          source = ../../../compose/github-runner;
+        };
+        gitlab-runner = {
+          source = ../../../compose/gitlab-runner;
+        };
+      };
+    })
+    garuda
+    nix
+    security
+    services
+    systemd
+    users
+    virtualisation
+    ;
 
   system.stateVersion = "25.05";
 }
@@ -3592,30 +4097,101 @@ on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortali
 </code></pre>
 <h3 id="docker-containers-gitlab"><a class="header" href="#docker-containers-gitlab">Docker containers (GitLab)</a></h3>
 <pre><code class="language-yaml">services:
-  github-runner:
-    image: myoung34/github-runner:latest
-    container_name: github-runner
-    privileged: true
-    environment:
-      ACCESS_TOKEN: ${ACCESS_TOKEN:-?err}
-      EPHEMERAL: true
-      LABELS: nyxbuilder
-      ORG_NAME: chaotic-cx
-      RUNNER_NAME: immortalis
-      RUNNER_SCOPE: org
-      RUNNER_WORKDIR: /var/cache/github-runner/work
-    volumes: ['/var/cache/github-runner/work:/var/cache/github-runner/work']
+  gitlab-runner-garuda:
+    image: gitlab/gitlab-runner:alpine
+    container_name: gitlab-runner-garuda
+    volumes:
+      - /etc/gitlab-runner:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: 'no'
+  gitlab-runner-chaotic:
+    image: gitlab/gitlab-runner:alpine
+    container_name: gitlab-runner-chaotic
+    volumes:
+      - /etc/gitlab-runner/chaotic:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: 'no'
+  gitlab-runner-dind:
+    image: gitlab/gitlab-runner:alpine
+    container_name: gitlab-runner-dind
+    volumes:
+      - /etc/gitlab-runner/dind:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: 'no'
+  # Automated container updates
+  watchtower:
+    image: nickfedor/watchtower:1.22.1
+    container_name: watchtower
+    command: --cleanup watchtower gitlab-runner-chaotic gitlab-runner-garuda gitlab-runner-dind
+    volumes: ['/var/run/docker.sock:/var/run/docker.sock']
+    restart: always
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="gitlab-runner-stormwing"><a class="header" href="#gitlab-runner-stormwing">gitlab-runner (stormwing)</a></h1>
+<p>This container runs GitLab CI runners that build our packages.</p>
+<h2 id="general-9"><a class="header" href="#general-9">General</a></h2>
+<p>Two runners are configured on it, <code>stormwing-nix-caching</code> and <code>stormwing-nix-dind</code>. Both make use of the shared Nix
+cache and are allowed to use KVM, which is why the container has <code>/dev/kvm</code> passed through. The main selling point
+of these is obviously the shared Nix store, which is the reason why these should in the long run be preferred over
+the other Docker-based runner.</p>
+<p>For these to pick up any builds, the tags <code>nix</code> or <code>nix-dind</code> must be added to the CI configuration.</p>
+<p>Its metrics are exposed on port <code>9252</code> and published on stormwing’s Tailnet IP for Prometheus (see
+<a href="#monitoring-1">Monitoring</a>).</p>
+<h2 id="nix-expression-14"><a class="header" href="#nix-expression-14">Nix expression</a></h2>
+<pre><code class="language-nix">{
+  config,
+  garuda-lib,
+  sources,
+  ...
+}:
+{
+  imports = sources.defaultModules ++ [ ../../modules ];
+
+  garuda = garuda-lib.mkMonitoring {
+    host = "stormwing";
+    units = [
+      "docker.service"
+      "gitlab-runner.service"
+    ];
+  };
+
+  networking.firewall.interfaces."eth0".allowedTCPPorts = [ 9252 ];
+
+  services.garuda-gitlab-runner = {
+    enable = true;
+    runners = {
+      stormwing-nix-caching = {
+        authenticationTokenConfigFile =
+          config.sops.secrets."gitlab-runner/runners/stormwing-nix-caching".path;
+        nix-caching.enable = true;
+        kvm.enable = true;
+      };
+      stormwing-nix-dind = {
+        authenticationTokenConfigFile = config.sops.secrets."gitlab-runner/runners/stormwing-nix-dind".path;
+        nix-caching.enable = true;
+        kvm.enable = true;
+      };
+    };
+  };
+
+  sops.secrets = garuda-lib.mkSecrets [
+    "gitlab-runner/runners/stormwing-nix-caching"
+    "gitlab-runner/runners/stormwing-nix-dind"
+  ];
+
+  system.stateVersion = "26.11";
+}
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="iso-runner-stormwing"><a class="header" href="#iso-runner-stormwing">iso-runner (stormwing)</a></h1>
 <p>This container is a dedicated builder for Garuda Linux ISO images, providing a reproducible build environment.</p>
-<h2 id="general-6"><a class="header" href="#general-6">General</a></h2>
+<h2 id="general-10"><a class="header" href="#general-10">General</a></h2>
 <p>This container is used to build our ISO via a Docker container.
 It has been used to provide a GitHub runner as well,
 though this one got moved to its <a href="#github-runner-stormwing">own container</a> recently.</p>
-<h2 id="nix-expression-11"><a class="header" href="#nix-expression-11">Nix expression</a></h2>
+<h2 id="nix-expression-15"><a class="header" href="#nix-expression-15">Nix expression</a></h2>
 <pre><code class="language-nix">{
+  garuda-lib,
   lib,
   pkgs,
   sources,
@@ -3633,15 +4209,22 @@ let
         echo "Ensuring container and garuda-tools are up-to-date.."
         docker exec buildiso pacman -Syu --noconfirm || exit 1
         echo "Building all ISO Garuda currently offers.."
-        docker exec buildiso buildall || exit 1
+        docker exec buildiso bash -c "umask 0022; buildall" || exit 1
+        ;;
+      "ci-trigger release "*)
+        echo "Ensuring container and garuda-tools are up-to-date.."
+        docker exec buildiso pacman -Syu --noconfirm || exit 1
+        echo "Building and deploying release ISOs.."
+        docker exec buildiso bash -c "umask 0022; buildall; deployiso -SCv" || exit 1
+        echo "Deployed all ISOs to the mirror, to push it as latest run 'deployiso -R' on the server after testing!"
         ;;
       "ci-trigger "* )
         echo "Ensuring container and garuda-tools are up-to-date.."
         docker exec buildiso pacman -Syu --noconfirm || exit 2
         echo "Building $_FLAVOUR.."
-        docker exec buildiso buildiso -i || exit 2
-        [[ $_KERNEL != "" ]] &amp;&amp; (docker exec buildiso buildiso -p "$_FLAVOUR" -k "$_KERNEL" || exit 3)
-        docker exec buildiso buildiso -p "$_FLAVOUR" || exit 3
+        docker exec buildiso bash -c "umask 0022; buildiso -i" || exit 2
+        [[ $_KERNEL != "" ]] &amp;&amp; (docker exec buildiso bash -c "umask 0022; buildiso -p "$_FLAVOUR" -k "$_KERNEL"" || exit 3)
+        docker exec buildiso bash -c "umask 0022; buildiso -p "$_FLAVOUR"" || exit 3
         ;;
       *)
         echo "Access only allowed for building purposes!"
@@ -3651,6 +4234,14 @@ let
 in
 {
   imports = sources.defaultModules ++ [ ../../modules ];
+
+  garuda = garuda-lib.mkMonitoring {
+    host = "stormwing";
+    units = [
+      "buildiso.service"
+      "docker.service"
+    ];
+  };
 
   # Lets build Garuda ISO here, serving is done via
   # Temeraire already
@@ -3690,88 +4281,66 @@ in
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="web-front-stormwing"><a class="header" href="#web-front-stormwing">web-front (stormwing)</a></h1>
 <p>This container acts as the reverse proxy and web frontend for services running on stormwing, handling HTTPS and routing.</p>
-<h2 id="nix-expression-12"><a class="header" href="#nix-expression-12">Nix expression</a></h2>
+<h2 id="nix-expression-16"><a class="header" href="#nix-expression-16">Nix expression</a></h2>
 <p>Configuration for the <code>web-front</code> container on stormwing.</p>
 <pre><code class="language-nix">{
-  config,
   garuda-lib,
   sources,
   ...
 }:
 let
   inherit (garuda-lib) allowOnlyCloudflareZerotrust;
-  inherit (garuda-lib) generateCloudflaredIngress;
-in
-rec {
-  imports = sources.defaultModules ++ [ ../../modules ];
+  inherit (garuda-lib) mkCatchAllVhost;
+  inherit (garuda-lib) mkProxyVhost;
 
-  services.nginx = {
-    enable = true;
-    virtualHosts = {
-      "builds.garudalinux.org" = {
-        addSSL = true;
-        extraConfig = ''
-          proxy_buffering off;
-          ${garuda-lib.setRealIpFromConfig}
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        http3 = true;
-        locations = {
-          "/" = {
-            proxyPass = "http://10.0.5.10:80";
-          };
-          "/logs/" = {
-            proxyPass = "http://10.0.5.10:80";
-            extraConfig = ''
-              proxy_buffering off;
-              proxy_read_timeout 330s;
-            '';
-          };
+  vhosts = {
+    "builds.garudalinux.org" = mkProxyVhost {
+      upstream = "http://10.0.5.10:80";
+      prologue = "proxy_buffering off;";
+      serverAliases = [
+        "cf-builds.garudalinux.org"
+        "iso.builds.garudalinux.org"
+      ];
+      extraLocations = {
+        "/logs/" = {
+          proxyPass = "http://10.0.5.10:80";
+          extraConfig = ''
+            proxy_buffering off;
+            proxy_read_timeout 330s;
+          '';
         };
-        quic = true;
-        serverAliases = [
-          "cf-builds.garudalinux.org"
-          "iso.builds.garudalinux.org"
-        ];
-        useACMEHost = "garudalinux.org";
-      };
-      "syncthing-build.garudalinux.net" = allowOnlyCloudflareZerotrust {
-        extraConfig = ''
-          ${garuda-lib.nginxReverseProxySettings}
-        '';
-        locations = {
-          "/" = {
-            extraConfig = ''
-              proxy_pass http://10.0.5.10:8384;
-              proxy_set_header Authorization "Basic ${garuda-lib.secrets.syncthing.esxi-build.credentials.base64}";
-            '';
-          };
-        };
-      };
-      # Default catch-all for unknown domains
-      "_" = {
-        addSSL = true;
-        extraConfig = ''
-          log_not_found off;
-          return 404;
-        '';
-        http3 = true;
-        quic = true;
-        useACMEHost = "garudalinux.org";
       };
     };
+    "syncthing-build.garudalinux.net" = allowOnlyCloudflareZerotrust {
+      extraConfig = ''
+        ${garuda-lib.nginxReverseProxySettings}
+      '';
+      locations = {
+        "/" = {
+          extraConfig = ''
+            proxy_pass http://10.0.5.10:8384;
+            proxy_set_header Authorization "Basic ${garuda-lib.secrets.syncthing.esxi-build.credentials.base64}";
+          '';
+        };
+      };
+    };
+    "_" = mkCatchAllVhost { };
   };
+in
+{
+  imports = sources.defaultModules ++ [ ../../modules ];
 
-  services.garuda-cloudflared = {
-    enable = true;
-    ingress = {
-      # "example.garudalinux.net" = "http://10.0.5.100:8085";
-    }
-    // (generateCloudflaredIngress services.nginx.virtualHosts);
-    tunnel-credentials = config.sops.secrets."cloudflare/tunnels/stormwing".path;
-  };
-
-  sops.secrets."cloudflare/tunnels/stormwing" = { };
+  inherit
+    (garuda-lib.mkWebFront {
+      host = "stormwing";
+      inherit vhosts;
+    })
+    garuda
+    networking
+    services
+    sops
+    systemd
+    ;
 
   system.stateVersion = "25.05";
 }
@@ -3805,22 +4374,22 @@ repository.</p>
 </ol>
 <p><a href="https://gitlab.com/garuda-linux/pkgbuilds/-/blob/main/SOURCES">This file</a> provides the needed information to check for the new version with the scheme <code>$repourl $pkgbuildPathInPkgbuildsRepo $GitlabProjectId</code></p>
 <h2 id="releasing-a-new-version"><a class="header" href="#releasing-a-new-version">Releasing a new version</a></h2>
-<p>This means executing the following for doing changes and releasing a new version:</p>
+<p>Releasing only needs a new tag or a push - the pipelines (in particular the chaotic-repository-template) take care of the rest.</p>
 <ol>
-<li>Would be modified directly in the new pkgbuilds repo, along with their source.
-Versions are bumped in the PKGBUILD itself and deployments need to happen by increasing <code>pkgver</code> + supplying a fitting commit message (append <em>[deploy pkgname ]</em> to it)</li>
-<li>In case of modifying these, one would make the changes to the source files repo (not the new PKGBUILDs one).
-Then, if a new version should be built, one would push the corresponding tag to that repo (omitting “v”, adding v breaks the PKGBUILD!).
-That’s everything needed in case no packaging changes (adding new dependencies for example) that require changing the PKGBUILD occur.
-The <a href="https://gitlab.com/garuda-linux/pkgbuilds/-/pipeline_schedules">half-hourly pipeline</a> of the <a href="https://gitlab.com/garuda-linux/pkgbuilds">PKGBUILD repo</a> then checks for the existence of a new tag.
-Once a new one gets detected, the PKGBUILD gets updated and deployment occurs via <code>[deploy *]</code> in the commit message.
-<em>If PKGBUILD changes need to be implemented, this would of course indicate doing it as described in 1. This would increase pkgrel only and not the actual version.</em></li>
+<li>Packages that have all required files in the pkgbuilds repo: bump <code>pkgver</code> in the PKGBUILD and push. The pipeline
+picks the change up and deploys the package.</li>
+<li>Packages that build from an external repository (listed in the SOURCES file above): push the corresponding tag to
+that repository (omitting “v”, adding v breaks the PKGBUILD!). Nothing else is needed as long as no packaging
+changes are required. The <a href="https://gitlab.com/garuda-linux/pkgbuilds/-/pipeline_schedules">half-hourly pipeline</a> of
+the <a href="https://gitlab.com/garuda-linux/pkgbuilds">PKGBUILD repo</a> then detects the new tag, updates the PKGBUILD and
+deploys the package.
+<em>If PKGBUILD changes need to be implemented as well, this would of course indicate doing it as described in 1. This
+would increase pkgrel only and not the actual version.</em></li>
 </ol>
-<p>There are currently three bash scripts responsible for CI/CD:</p>
+<p>There are currently two bash scripts responsible for CI/CD:</p>
 <ul>
 <li><a href="https://gitlab.com/garuda-linux/pkgbuilds/-/blob/main/.ci/lint.sh?ref_type=heads">Checking PKGBUILDs/code style</a></li>
 <li><a href="https://gitlab.com/garuda-linux/pkgbuilds/-/blob/main/.ci/version-bump.sh?ref_type=heads">Updating the package versions automatically</a></li>
-<li><a href="https://gitlab.com/garuda-linux/pkgbuilds/-/blob/main/.ci/what-to-deploy.sh?ref_type=heads">Triggering automated deployments via commit message</a></li>
 </ul>
 <p>Past pipeline runs may be reviewed by visiting the <a href="https://gitlab.com/garuda-linux/pkgbuilds/-/pipelines">pipelines</a> page.</p>
 <div style="break-before: page; page-break-before: always;"></div>
@@ -3906,11 +4475,8 @@ Renaming folders does also count as removing packages.</p>
 <p>Whenever pushing a new commit, the CI pipeline will carry out the following actions:</p>
 <ul>
 <li>Checking when the last <code>scheduled</code> tag was created. This is used to determine which packages need to be scheduled.</li>
-<li>It parses each commit for a <code>[deploy $foldername]</code> string, only accepting valid values derived from the existing
-PKGBUILD folders. <code>[deploy all]</code> is a valid parameter as well. Misspelling <code>$pkgname</code> is a fatal error here. Any
-issues must be fixed and force-pushed.</li>
-<li>Then, the changed files are parsed. This also includes removed packages. Any changed relevant folder content will
-cause a package deployment of the corresponding package.</li>
+<li>The changed files are parsed, which also includes removed packages. Any changed relevant folder content causes a
+deployment of the corresponding package.</li>
 <li>The final action is to build the schedule parameters (handing it over to the scheduled job via artifacts) and remove
 all obsolete packages in case an earlier step is detected.</li>
 <li>In case all of these actions succeed, the <code>scheduled</code> tag gets updated, so we can refer to it on a later pipeline run.</li>
@@ -4476,6 +5042,84 @@ Copy those to the <code>./docs/theme/css</code> folder and alter the occurrences
 diff to find out where).
 After uncommenting <code>additional-css</code> in <code>book.toml</code>, run <code>mdbook build</code> again to verify nothing got broken along the way.</p>
 <div style="break-before: page; page-break-before: always;"></div>
+<h1 id="monitoring-1"><a class="header" href="#monitoring-1">Monitoring</a></h1>
+<p>Our monitoring stack is self-hosted and lives in <code>nixos/services/monitoring</code>. It replaced the previous Netdata setup,
+which kept only a few GB per host and offered no central alerting.</p>
+<h2 id="components"><a class="header" href="#components">Components</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Component</th><th>Purpose</th><th>Port</th></tr>
+</thead>
+<tbody>
+<tr><td>Prometheus</td><td>Metric storage and alert evaluation</td><td>9090</td></tr>
+<tr><td>Alertmanager</td><td>Alert routing (Telegram)</td><td>9093</td></tr>
+<tr><td>Grafana</td><td>Dashboards</td><td>3010</td></tr>
+<tr><td>Loki</td><td>Log storage</td><td>3030</td></tr>
+<tr><td>node_exporter</td><td>Host and container metrics</td><td>3021</td></tr>
+<tr><td>Fluent Bit</td><td>Ships container/host logs to Loki</td><td>-</td></tr>
+<tr><td>smartctl_exporter</td><td>Disk health</td><td>9633</td></tr>
+<tr><td>borgmatic_exporter</td><td>Backup age, size and archive count</td><td>9996</td></tr>
+<tr><td>nginx_exporter</td><td>Web frontend metrics</td><td>9113</td></tr>
+<tr><td>redis_exporter</td><td>Chaotic-AUR Redis</td><td>9121</td></tr>
+<tr><td>postfix_exporter</td><td>Mail queue and delivery</td><td>9154</td></tr>
+<tr><td>dovecot (OpenMetrics)</td><td>Mail auth/IMAP/delivery metrics</td><td>9900</td></tr>
+<tr><td>GitLab runner metrics</td><td>CI runner</td><td>9252</td></tr>
+<tr><td>cloudflared metrics</td><td>Tunnel metrics</td><td>20241</td></tr>
+</tbody>
+</table>
+</div>
+<p>Everything runs in the <code>monitoring</code> container on aerialis (<code>10.0.5.100</code>). Hosts and containers opt in with
+<code>garuda.monitoring</code>; the port numbers above are all defined once in <code>garuda-lib.monitoring.ports</code>.</p>
+<p>Not every endpoint belongs to a dedicated exporter: Dovecot is scraped through its built-in stats listener, which
+serves OpenMetrics on port 9900. Endpoints like this are declared with
+<code>garuda.monitoring.prometheus.applicationTargets</code>, which also covers the postfix and redis exporters.</p>
+<p>Prometheus retention is bounded by <code>garuda.monitoring.prometheus.retentionTime</code> and <code>retentionSize</code>.
+Loki is bounded by <code>garuda.monitoring.loki.retentionPeriod</code>.</p>
+<h2 id="how-the-pieces-reach-each-other"><a class="header" href="#how-the-pieces-reach-each-other">How the pieces reach each other</a></h2>
+<p>Both hosts run their own <code>10.0.5.0/24</code> container bridge, so the monitoring container cannot reach stormwing’s
+containers at all. Stormwing therefore publishes them on its own Tailnet IP:</p>
+<ul>
+<li>each stormwing container’s node_exporter is proxied on <code>31000 + last octet of the container IP</code>
+(<code>garuda-lib.monitoring.stormwingNodeProxies</code>)</li>
+<li>the GitLab runner and web-front cloudflared metrics are proxied on 39252 and 32041 respectively
+(<code>stormwingServiceProxies</code>)</li>
+<li>stormwing container logs are shipped to the bridge address and relayed by the <code>loki-relay</code> unit to
+<code>aerialis:3030</code>, where <code>loki-tailnet-proxy</code> forwards them into the monitoring container</li>
+</ul>
+<p>The Chaotic-AUR mirrors are scraped over the Tailnet using MagicDNS short names, which is why the monitoring
+container runs its own tailscaled instead of going through a proxy on the host.</p>
+<h2 id="grafana"><a class="header" href="#grafana">Grafana</a></h2>
+<p>Dashboards live in <code>nixos/services/monitoring/dashboards</code> and are provisioned into the main organization.
+Datasource uids are pinned, because the dashboards reference them by uid.</p>
+<p>Grafana has no provisioning support for organizations, and it refuses to start when provisioning targets one
+that does not exist yet. The <code>grafana-organizations</code> unit therefore creates any missing organization listed
+in <code>nixos/services/monitoring/grafana.nix</code> through the Admin API.</p>
+<p>The Grafana role for GitLab logins is mapped from group membership in
+<code>nixos/services/monitoring/grafana.nix</code>. GitLab access levels are not available to Grafana - its connector
+only fetches group full paths from <code>/api/v4/groups</code> - so roles cannot be derived from Owner/Maintainer.
+Matching is exact, so a member of a subgroup that is not listed falls back to Viewer.</p>
+<h2 id="alerting"><a class="header" href="#alerting">Alerting</a></h2>
+<p>Alert rules live in <code>nixos/services/monitoring/prometheus-rules/</code> (node-exporter, nginx-exporter, postgres-exporter,
+smartctl-exporter, borgmatic and self-monitoring rules). Alertmanager delivers firing and resolved alerts to Telegram
+as of right now. It can of course be extended to other channels as well.</p>
+<p>nspawn containers share the host kernel, so kernel-global metrics (<code>/proc/meminfo</code>, <code>/proc/vmstat</code>, <code>/proc/stat</code>,
+<code>/sys</code>, …) are identical inside a container and its host. Rules backed by those metrics are tagged
+<code>scope = "host"</code>, and Alertmanager inhibits the duplicate alert from the <code>node-*-containers</code> jobs while the host’s own
+alert keeps firing. Container-local rules (filesystem, systemd, network, conntrack) deliberately carry no such label,
+so a genuine container-only problem is still reported.</p>
+<h2 id="adding-a-host-or-container"><a class="header" href="#adding-a-host-or-container">Adding a host or container</a></h2>
+<p>Set <code>garuda.monitoring</code> on the host or container. <code>garuda-lib.mkMonitoring</code> also adds the units to the the MOTD and
+into Fluent Bit’s log collection:</p>
+<pre><code class="language-nix">garuda = garuda-lib.mkMonitoring {
+  host = "aerialis";
+  units = [ "nginx.service" ];
+  exporters = [ "nginxExporter" ];
+};
+</code></pre>
+<p><code>exporters</code> adds exporters on top of the always-enabled node_exporter. <code>hostInfo = true</code> additionally exports NixOS
+build and version information, which feeds the “Host fleet” panel, and is only set on the two hosts themselves.</p>
+<div style="break-before: page; page-break-before: always;"></div>
 <h1 id="tailscale"><a class="header" href="#tailscale">Tailscale</a></h1>
 <p>Our current access policies look as follows:</p>
 <pre><code class="language-json">// This tailnet's ACLs are maintained in https://gitlab.com/garuda-linux/infra-nix
@@ -4507,6 +5151,28 @@ After uncommenting <code>additional-css</code> in <code>book.toml</code>, run <c
 			"src":    ["tag:chaotic-node"],
 			"dst":    ["100.75.227.149:22,6379"],
 		},
+		// Monitoring (Prometheus scrapes exporters on infra, fluent-bit pushes to Loki)
+		{
+			"action": "accept",
+			"src":    ["tag:monitoring"],
+			"dst":    ["tag:infra:3021,9113,9633,9996,31010,31020,31030,31040,31050,31060,31070,32041,39252"],
+		},
+		{
+			"action": "accept",
+			"src":    ["tag:infra"],
+			"dst":    ["tag:monitoring:3030"],
+		},
+		// Mirrors: Prometheus scrapes their exporters, they push logs to Loki
+		{
+			"action": "accept",
+			"src":    ["tag:monitoring"],
+			"dst":    ["tag:mirror:3021,9113,9633,9996"],
+		},
+		{
+			"action": "accept",
+			"src":    ["tag:mirror"],
+			"dst":    ["tag:monitoring:3030"],
+		},
 	],
 	// Current infra maintainers
 	"groups": {
@@ -4517,294 +5183,90 @@ After uncommenting <code>additional-css</code> in <code>book.toml</code>, run <c
 		// Admins may apply the "infra" tag
 		"tag:infra":        ["group:admins"],
 		"tag:chaotic-node": ["group:admins"],
+		"tag:monitoring":   ["group:admins"],
+		"tag:mirror":       ["group:admins"],
 	},
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="garuda-linux-code-of-conduct"><a class="header" href="#garuda-linux-code-of-conduct">Garuda Linux Code of Conduct</a></h1>
-<p>Thank you for being a part of the Garuda Linux community. We value your participation and want everyone to have an
-enjoyable and fulfilling experience. Accordingly, all participants are expected to follow this Code of Conduct, and to
-show respect, understanding, and consideration to one another. Thank you for helping make this a welcoming, friendly
-community for everyone.</p>
+<h1 id="contributor-covenant-30-code-of-conduct"><a class="header" href="#contributor-covenant-30-code-of-conduct">Contributor Covenant 3.0 Code of Conduct</a></h1>
+<h2 id="our-pledge"><a class="header" href="#our-pledge">Our Pledge</a></h2>
+<p>We pledge to make our community welcoming, safe, and equitable for all.</p>
+<p>We are committed to fostering an environment that respects and promotes the dignity, rights, and contributions of all individuals, regardless of characteristics including race, ethnicity, caste, color, age, physical characteristics, neurodiversity, disability, sex or gender, gender identity or expression, sexual orientation, language, philosophy or religion, national or social origin, socio-economic position, level of education, or other status. The same privileges of participation are extended to everyone who participates in good faith and in accordance with this Covenant.</p>
+<h2 id="encouraged-behaviors"><a class="header" href="#encouraged-behaviors">Encouraged Behaviors</a></h2>
+<p>While acknowledging differences in social norms, we all strive to meet our community’s expectations for positive behavior. We also understand that our words and actions may be interpreted differently than we intend based on culture, background, or native language.</p>
+<p>With these considerations in mind, we agree to behave mindfully toward each other and act in ways that center our shared values, including:</p>
+<ol>
+<li>Respecting the <strong>purpose of our community</strong>, our activities, and our ways of gathering.</li>
+<li>Engaging <strong>kindly and honestly</strong> with others.</li>
+<li>Respecting <strong>different viewpoints</strong> and experiences.</li>
+<li><strong>Taking responsibility</strong> for our actions and contributions.</li>
+<li>Gracefully giving and accepting <strong>constructive feedback</strong>.</li>
+<li>Committing to <strong>repairing harm</strong> when it occurs.</li>
+<li>Behaving in other ways that promote and sustain the <strong>well-being of our community</strong>.</li>
+</ol>
+<h2 id="restricted-behaviors"><a class="header" href="#restricted-behaviors">Restricted Behaviors</a></h2>
+<p>We agree to restrict the following behaviors in our community. Instances, threats, and promotion of these behaviors are violations of this Code of Conduct.</p>
+<ol>
+<li><strong>Harassment.</strong> Violating explicitly expressed boundaries or engaging in unnecessary personal attention after any clear request to stop.</li>
+<li><strong>Character attacks.</strong> Making insulting, demeaning, or pejorative comments directed at a community member or group of people.</li>
+<li><strong>Stereotyping or discrimination.</strong> Characterizing anyone’s personality or behavior on the basis of immutable identities or traits.</li>
+<li><strong>Sexualization.</strong> Behaving in a way that would generally be considered inappropriately intimate in the context or purpose of the community.</li>
+<li><strong>Violating confidentiality</strong>. Sharing or acting on someone’s personal or private information without their permission.</li>
+<li><strong>Endangerment.</strong> Causing, encouraging, or threatening violence or other harm toward any person or group.</li>
+<li>Behaving in other ways that <strong>threaten the well-being</strong> of our community.</li>
+</ol>
+<h3 id="other-restrictions"><a class="header" href="#other-restrictions">Other Restrictions</a></h3>
+<ol>
+<li><strong>Misleading identity.</strong> Impersonating someone else for any reason, or pretending to be someone else to evade enforcement actions.</li>
+<li><strong>Failing to credit sources.</strong> Not properly crediting the sources of content you contribute.</li>
+<li><strong>Promotional materials</strong>. Sharing marketing or other commercial content in a way that is outside the norms of the community.</li>
+<li><strong>Irresponsible communication.</strong> Failing to responsibly present content which includes, links or describes any other restricted behaviors.</li>
+</ol>
+<h2 id="reporting-an-issue"><a class="header" href="#reporting-an-issue">Reporting an Issue</a></h2>
+<p>Tensions can occur between community members even when they are trying their best to collaborate. Not every conflict represents a code of conduct violation, and this Code of Conduct reinforces encouraged behaviors and norms that can help avoid conflicts and minimize harm.</p>
+<p>When an incident does occur, it is important to report it promptly. To report a possible violation, <strong>[NOTE: describe your means of reporting here.]</strong></p>
+<p>Community Moderators take reports of violations seriously and will make every effort to respond in a timely manner. They will investigate all reports of code of conduct violations, reviewing messages, logs, and recordings, or interviewing witnesses and other participants. Community Moderators will keep investigation and enforcement actions as transparent as possible while prioritizing safety and confidentiality. In order to honor these values, enforcement actions are carried out in private with the involved parties, but communicating to the whole community may be part of a mutually agreed upon resolution.</p>
+<h2 id="addressing-and-repairing-harm"><a class="header" href="#addressing-and-repairing-harm">Addressing and Repairing Harm</a></h2>
+<p><strong>[NOTE: The remedies and repairs outlined below are suggestions based on best practices in code of conduct enforcement. If your community has its own established enforcement process, be sure to edit this section to describe your own policies.]</strong></p>
+<p>If an investigation by the Community Moderators finds that this Code of Conduct has been violated, the following enforcement ladder may be used to determine how best to repair harm, based on the incident’s impact on the individuals involved and the community as a whole. Depending on the severity of a violation, lower rungs on the ladder may be skipped.</p>
+<ol>
+<li>Warning
+<ol>
+<li>Event: A violation involving a single incident or series of incidents.</li>
+<li>Consequence: A private, written warning from the Community Moderators.</li>
+<li>Repair: Examples of repair include a private written apology, acknowledgement of responsibility, and seeking clarification on expectations.</li>
+</ol>
+</li>
+<li>Temporarily Limited Activities
+<ol>
+<li>Event: A repeated incidence of a violation that previously resulted in a warning, or the first incidence of a more serious violation.</li>
+<li>Consequence: A private, written warning with a time-limited cooldown period designed to underscore the seriousness of the situation and give the community members involved time to process the incident. The cooldown period may be limited to particular communication channels or interactions with particular community members.</li>
+<li>Repair: Examples of repair may include making an apology, using the cooldown period to reflect on actions and impact, and being thoughtful about re-entering community spaces after the period is over.</li>
+</ol>
+</li>
+<li>Temporary Suspension
+<ol>
+<li>Event: A pattern of repeated violation which the Community Moderators have tried to address with warnings, or a single serious violation.</li>
+<li>Consequence: A private written warning with conditions for return from suspension. In general, temporary suspensions give the person being suspended time to reflect upon their behavior and possible corrective actions.</li>
+<li>Repair: Examples of repair include respecting the spirit of the suspension, meeting the specified conditions for return, and being thoughtful about how to reintegrate with the community when the suspension is lifted.</li>
+</ol>
+</li>
+<li>Permanent Ban
+<ol>
+<li>Event: A pattern of repeated code of conduct violations that other steps on the ladder have failed to resolve, or a violation so serious that the Community Moderators determine there is no way to keep the community safe with this person as a member.</li>
+<li>Consequence: Access to all community spaces, tools, and communication channels is removed. In general, permanent bans should be rarely used, should have strong reasoning behind them, and should only be resorted to if working through other remedies has failed to change the behavior.</li>
+<li>Repair: There is no possible repair in cases of this severity.</li>
+</ol>
+</li>
+</ol>
+<p>This enforcement ladder is intended as a guideline. It does not limit the ability of Community Managers to use their discretion and judgment, in keeping with the best interests of our community.</p>
 <h2 id="scope"><a class="header" href="#scope">Scope</a></h2>
-<p>This Code of Conduct applies to all Garuda Linux community spaces, including, but not limited to:</p>
-<ul>
-<li>Code repositories - <code>gitlab.com/garuda-linux</code> and <code>github.com/garuda-linux</code></li>
-<li>Garuda Linux’s Telegram channels and groups (including bridges to Matrix)</li>
-<li>Mailing <code>*@garudalinux.org</code></li>
-<li>Community spaces hosted on <code>garudalinux.org</code> infrastructure</li>
-</ul>
-<p>Communication channels and private conversations that are normally out of scope may be considered in scope if a Garuda
-Linux participant is being stalked or harassed. Social media conversations may be considered in-scope if the incident
-occurred under a Garuda Linux related hashtag, or when an official Garuda Linux account on social media is tagged, or
-within any other discussion about Garuda Linux. The Garuda Linux’s staff reserves the right to take actions against
-behaviors that happen in any context, if they are deemed to be relevant to the Garuda Linux project and its
-participants.</p>
-<p>All participants in Garuda Linux community spaces are subject to the Code of Conduct. This includes founding members,
-staff members, corporate sponsors, and paid employees. This also includes volunteers, maintainers, leaders,
-contributors, contribution reviewers, issue reporters, Garuda Linux users, and anyone participating in discussion in
-Garuda Linux community spaces.</p>
-<h2 id="reporting-an-incident"><a class="header" href="#reporting-an-incident">Reporting an Incident</a></h2>
-<p>If you believe that someone is violating the Code of Conduct, or have any other concerns, please
-contact <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
-<h2 id="our-standards"><a class="header" href="#our-standards">Our Standards</a></h2>
-<p>The Garuda Linux community is dedicated to providing a positive experience for everyone, regardless of:</p>
-<ul>
-<li>age</li>
-<li>body size</li>
-<li>caste</li>
-<li>citizenship</li>
-<li>disability</li>
-<li>education</li>
-<li>ethnicity</li>
-<li>familial status</li>
-<li>gender expression</li>
-<li>gender identity</li>
-<li>genetic information</li>
-<li>immigration status</li>
-<li>level of experience</li>
-<li>nationality</li>
-<li>personal appearance</li>
-<li>pregnancy</li>
-<li>race</li>
-<li>religion</li>
-<li>sex characteristics</li>
-<li>sexual orientation</li>
-<li>sexual identity</li>
-<li>socio-economic status</li>
-<li>tribe</li>
-<li>veteran status</li>
-</ul>
-<h2 id="community-guidelines"><a class="header" href="#community-guidelines">Community Guidelines</a></h2>
-<p>Behaviors that contribute to creating a positive environment include:</p>
-<ul>
-<li><strong>Be friendly.</strong> Use welcoming and inclusive language.</li>
-<li><strong>Be empathetic.</strong> Be respectful of others’ viewpoints and experiences.</li>
-<li><strong>Be respectful.</strong> Express disagreements in a polite and constructive manner.</li>
-<li><strong>Be considerate.</strong> Focus on what is best for the community. Keep discussions around technology choices constructive
-and respectful. Remember that decisions are often a difficult choice between competing priorities.</li>
-<li><strong>Be patient and generous.</strong> If someone asks for help, it is because they need it. When documentation is available
-that answers the question, politely point them to it. If the question is off-topic, suggest a more appropriate online
-space to seek help.</li>
-<li><strong>Try to be concise.</strong> Read the discussion before commenting in order to not repeat a point that has been made.</li>
-</ul>
-<h2 id="inappropriate-behavior"><a class="header" href="#inappropriate-behavior">Inappropriate Behavior</a></h2>
-<p>We want all participants in the Garuda Linux community have the best possible experience they can. Community members
-asked to stop any inappropriate behavior are expected to comply immediately.</p>
-<p>Inappropriate behaviors include, but are not limited to:</p>
-<ul>
-<li><strong>Deliberate intimidation, stalking, or following.</strong></li>
-<li><strong>Sustained disruption of online discussion, talks, or other events.</strong> Sustained disruption of events, online
-discussions, or meetings, including talks and presentations, will not be tolerated. This includes ‘Talking over’ or ’
-heckling’ event speakers or influencing crowd actions that cause hostility in event sessions. Sustained disruption
-also includes drinking alcohol to excess or using recreational drugs to excess, or pushing others to do so.</li>
-<li><strong>Harassment of people who don’t drink alcohol or other legal substances.</strong> We do not tolerate derogatory comments
-about those who abstain from alcohol or other legal substances. We do not tolerate pushing people to drink, talking
-about their abstinence or preferences to others, or pressuring them to drink - physically or through jeering.</li>
-<li><strong>Sexist, racist, homophobic, transphobic, ableist language or otherwise exclusionary language.</strong> This includes
-deliberately referring to someone by a gender that they do not identify with, and/or questioning the legitimacy of an
-individual’s gender identity. If you’re unsure if a word is derogatory, don’t use it. This also includes repeated
-subtle and/or indirect discrimination.</li>
-<li><strong>Unwelcome sexual attention or behavior that contributes to a sexualized environment.</strong> This includes sexualized
-comments, jokes or imagery in interactions, communications or presentation materials, as well as inappropriate
-touching, groping, or sexual advances. Sponsors should not use sexualized images, activities, or other material.
-Meetup organizing staff and other volunteer organizers should not use sexualized clothing/uniforms/costumes, or
-otherwise create a sexualized environment.</li>
-<li><strong>Unwelcome physical contact.</strong> This includes touching a person without permission, including sensitive areas such as
-their hair, pregnant stomach, mobility device (wheelchair, scooter, etc) or tattoos. This also includes physically
-blocking or intimidating another person. Physical contact without affirmative consent is not acceptable. This includes
-sharing or distribution of sexualized images or text.</li>
-<li><strong>Violence or threats of violence.</strong> Violence and threats of violence are not acceptable - online or offline. This
-includes incitement of violence toward any individual, including encouraging a person to commit self-harm. This also
-includes posting or threatening to post other people’s personally identifying information (“doxxing”) online.</li>
-<li><strong>Influencing or encouraging inappropriate behavior.</strong> If you influence or encourage another person to violate the
-Code of Conduct, you may face the same consequences as if you had violated the Code of Conduct.</li>
-</ul>
-<h3 id="safety-versus-comfort"><a class="header" href="#safety-versus-comfort">Safety versus Comfort</a></h3>
-<p>The Garuda Linux community prioritizes marginalized people’s safety over privileged people’s comfort. The following are
-not against the Code of Conduct.</p>
-<ul>
-<li>“Reverse”-isms, including “reverse racism,” “reverse sexism,” and “cisphobia”</li>
-<li>Reasonable communication of boundaries, such as “leave me alone,” “go away,” or “I’m not discussing this with you.”</li>
-<li>Criticizing racist, sexist, cissexist, or otherwise oppressive behavior or assumptions</li>
-<li>Communicating boundaries or criticizing oppressive behavior in a “tone” you don’t find congenial</li>
-</ul>
-<p>If you have questions about the above statements, please
-read <a href="https://wiki.gnome.org/Foundation/CodeOfConduct/SupportingDiversity">GNOME Foundation’s document on Supporting Diversity</a>.</p>
-<p>Outreach and diversity efforts directed at under-represented groups are permitted under the code of conduct. For
-example, a social event for women would not be classified as being outside the Code of Conduct under this provision.</p>
-<p>Basic expectations for conduct are not covered by the “reverse-ism clause” and would be enforced irrespective of the
-demographics of those involved. For example, racial discrimination will not be tolerated, irrespective of the race of
-those involved. Nor would unwanted sexual attention be tolerated, whatever someone’s gender or sexual orientation.
-Members of our community have the right to expect that participants in the project will uphold these standards.</p>
-<p>If a participant engages in behavior that violates this code of conduct, the Garuda Linux’s staff may take any action
-they deem appropriate. In cases involving the staff or founding members the immediate action is expelishment.</p>
-<h2 id="procedure-for-handling-incidents"><a class="header" href="#procedure-for-handling-incidents">Procedure for Handling Incidents</a></h2>
-<p>You can make a report by emailing <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
-<p>If you make a report via email, we hope you can provide us with some information that will help us identify the reported
-person. If you don’t remember all the details, we still encourage you to make a report.</p>
-<p>We encourage you to include the following information in your report:</p>
-<ul>
-<li>Your contact info (so we can get in touch with you if we need to follow up)</li>
-<li>Date and time of the incident</li>
-<li>Whether the incident is ongoing</li>
-<li>Which online community and which part of the online community space it occurred in</li>
-<li>Description of the incident</li>
-<li>Identifying information of the reported person such as name, online username, handle, email address, or IP address</li>
-<li>A link to the conversation</li>
-<li>Any logs or screenshots of the conversation</li>
-<li>Additional circumstances surrounding the incident</li>
-<li>Other people involved in or witnesses to the incident and their contact information or # Garuda Linux Code of Conduct</li>
-</ul>
-<p>Thank you for being a part of the Garuda Linux community. We value your participation and want everyone to have an
-enjoyable and fulfilling experience.
-Accordingly, all participants are expected to follow this Code of Conduct, and to show respect, understanding, and
-consideration to one another.
-Thank you for helping make this a welcoming, friendly community for everyone.</p>
-<h2 id="scope-1"><a class="header" href="#scope-1">Scope</a></h2>
-<p>This Code of Conduct applies to all Garuda Linux community spaces, including, but not limited to:</p>
-<ul>
-<li>Code repositories - <code>gitlab.com/garuda-linux</code> and <code>github.com/garuda-linux</code></li>
-<li>Garuda Linux’s Telegram channels and groups (including bridges to Matrix)</li>
-<li>Mailing <code>*@garudalinux.org</code></li>
-<li>Community spaces hosted on <code>garudalinux.org</code> infrastructure</li>
-</ul>
-<p>Communication channels and private conversations that are normally out of scope may be considered in scope if a Garuda
-Linux participant is being stalked or harassed.
-Social media conversations may be considered in-scope if the incident occurred under a Garuda Linux related hashtag, or
-when an official Garuda Linux account on social media is tagged, or within any other discussion about Garuda Linux.
-The Garuda Linux’s staff reserves the right to take actions against behaviors that happen in any context, if they are
-deemed to be relevant to the Garuda Linux project and its participants.</p>
-<p>All participants in Garuda Linux community spaces are subject to the Code of Conduct. This includes founding members,
-staff members, corporate sponsors, and paid employees.
-This also includes volunteers, maintainers, leaders, contributors, contribution reviewers, issue reporters, Garuda Linux
-users, and anyone participating in discussion in Garuda Linux community spaces.</p>
-<h2 id="reporting-an-incident-1"><a class="header" href="#reporting-an-incident-1">Reporting an Incident</a></h2>
-<p>If you believe that someone is violating the Code of Conduct, or have any other concerns, please
-contact <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
-<h2 id="our-standards-1"><a class="header" href="#our-standards-1">Our Standards</a></h2>
-<p>The Garuda Linux community is dedicated to providing a positive experience for everyone, regardless of:</p>
-<ul>
-<li>age</li>
-<li>body size</li>
-<li>caste</li>
-<li>citizenship</li>
-<li>disability</li>
-<li>education</li>
-<li>ethnicity</li>
-<li>familial status</li>
-<li>gender expression</li>
-<li>gender identity</li>
-<li>genetic information</li>
-<li>immigration status</li>
-<li>level of experience</li>
-<li>nationality</li>
-<li>personal appearance</li>
-<li>pregnancy</li>
-<li>race</li>
-<li>religion</li>
-<li>sex characteristics</li>
-<li>sexual orientation</li>
-<li>sexual identity</li>
-<li>socio-economic status</li>
-<li>tribe</li>
-<li>veteran status</li>
-</ul>
-<h2 id="community-guidelines-1"><a class="header" href="#community-guidelines-1">Community Guidelines</a></h2>
-<p>Behaviors that contribute to creating a positive environment include:</p>
-<ul>
-<li><strong>Be friendly.</strong> Use welcoming and inclusive language.</li>
-<li><strong>Be empathetic.</strong> Be respectful of others’ viewpoints and experiences.</li>
-<li><strong>Be respectful.</strong> Express disagreements in a polite and constructive manner.</li>
-<li><strong>Be considerate.</strong> Focus on what is best for the community. Keep discussions around technology choices constructive
-and respectful.<br>Remember that decisions are often a difficult choice between competing priorities.</li>
-<li><strong>Be patient and generous.</strong> If someone asks for help, it is because they need it.
-When documentation is available that answers the question, politely point them to it. If the question is off-topic,
-suggest a more appropriate online space to seek help.</li>
-<li><strong>Try to be concise.</strong> Read the discussion before commenting in order to not repeat a point that has been made.</li>
-</ul>
-<h2 id="inappropriate-behavior-1"><a class="header" href="#inappropriate-behavior-1">Inappropriate Behavior</a></h2>
-<p>We want all participants in the Garuda Linux community have the best possible experience they can. Community members
-asked to stop any inappropriate behavior are expected to comply immediately.</p>
-<p>Inappropriate behaviors include, but are not limited to:</p>
-<ul>
-<li><strong>Deliberate intimidation, stalking, or following.</strong></li>
-<li><strong>Sustained disruption of online discussion, talks, or other events.</strong> Sustained disruption of events, online
-discussions, or meetings, including talks and presentations, will not be tolerated.
-This includes ‘Talking over’ or ‘heckling’ event speakers or influencing crowd actions that cause hostility in event
-sessions.
-Sustained disruption also includes drinking alcohol to excess or using recreational drugs to excess, or pushing others
-to do so.</li>
-<li><strong>Harassment of people who don’t drink alcohol or other legal substances.</strong> We do not tolerate derogatory comments
-about those who abstain from alcohol or other legal substances.
-We do not tolerate pushing people to drink, talking about their abstinence or preferences to others, or pressuring
-them to drink - physically or through jeering.</li>
-<li><strong>Sexist, racist, homophobic, transphobic, ableist language or otherwise exclusionary language.</strong> This includes
-deliberately referring to someone by a gender that they do not identify with, and/or
-questioning the legitimacy of an individual’s gender identity.
-If you’re unsure if a word is derogatory, don’t use it. This also includes repeated subtle and/or indirect
-discrimination.</li>
-<li><strong>Unwelcome sexual attention or behavior that contributes to a sexualized environment.</strong> This includes sexualized
-comments, jokes or imagery in interactions, communications or presentation materials, as well as inappropriate
-touching, groping, or sexual advances. Sponsors should not use sexualized images, activities, or other material.
-Meetup organizing staff and other volunteer organizers should not use sexualized clothing/uniforms/costumes, or
-otherwise create a sexualized environment.</li>
-<li><strong>Unwelcome physical contact.</strong> This includes touching a person without permission, including sensitive areas such as
-their hair, pregnant stomach, mobility device (wheelchair, scooter, etc) or tattoos. This also includes physically
-blocking or intimidating another person. Physical contact without affirmative consent is not acceptable. This includes
-sharing or distribution of sexualized images or text.</li>
-<li><strong>Violence or threats of violence.</strong> Violence and threats of violence are not acceptable - online or offline. This
-includes incitement of violence toward any individual, including encouraging a person to commit self-harm. This also
-includes posting or threatening to post other people’s personally identifying information (“doxxing”) online.</li>
-<li><strong>Influencing or encouraging inappropriate behavior.</strong> If you influence or encourage another person to violate the
-Code of Conduct, you may face the same consequences as if you had violated the Code of Conduct.</li>
-</ul>
-<h3 id="safety-versus-comfort-1"><a class="header" href="#safety-versus-comfort-1">Safety versus Comfort</a></h3>
-<p>The Garuda Linux community prioritizes marginalized people’s safety over privileged people’s comfort. The following are
-not against the Code of Conduct.</p>
-<ul>
-<li>“Reverse”-isms, including “reverse racism,” “reverse sexism,” and “cisphobia”</li>
-<li>Reasonable communication of boundaries, such as “leave me alone,” “go away,” or “I’m not discussing this with you.”</li>
-<li>Criticizing racist, sexist, cissexist, or otherwise oppressive behavior or assumptions</li>
-<li>Communicating boundaries or criticizing oppressive behavior in a “tone” you don’t find congenial</li>
-</ul>
-<p>If you have questions about the above statements, please
-read <a href="https://wiki.gnome.org/Foundation/CodeOfConduct/SupportingDiversity">GNOME Foundation’s document on Supporting Diversity</a>.</p>
-<p>Outreach and diversity efforts directed at under-represented groups are permitted under the code of conduct. For
-example, a social event for women would not be classified as being outside the Code of Conduct under this provision.</p>
-<p>Basic expectations for conduct are not covered by the “reverse-ism clause” and would be enforced irrespective of the
-demographics of those involved. For example, racial discrimination will not be tolerated, irrespective of the race of
-those involved. Nor would unwanted sexual attention be tolerated, whatever someone’s gender or sexual orientation.
-Members of our community have the right to expect that participants in the project will uphold these standards.</p>
-<p>If a participant engages in behavior that violates this code of conduct, the Garuda Linux’s staff may take any action
-they deem appropriate. In cases involving the staff or founding members the immediate action is expelishment.</p>
-<h2 id="procedure-for-handling-incidents-1"><a class="header" href="#procedure-for-handling-incidents-1">Procedure for Handling Incidents</a></h2>
-<p>You can make a report by emailing <a href="mailto:team@garudalinux.org">team@garudalinux.org</a>.</p>
-<p>If you make a report via email, we hope you can provide us with some information that will help us identify the reported
-person. If you don’t remember all the details, we still encourage you to make a report.</p>
-<p>We encourage you to include the following information in your report:</p>
-<ul>
-<li>Your contact info (so we can get in touch with you if we need to follow up)</li>
-<li>Date and time of the incident</li>
-<li>Whether the incident is ongoing</li>
-<li>Which online community and which part of the online community space it occurred in</li>
-<li>Description of the incident</li>
-<li>Identifying information of the reported person such as name, online username, handle, email address, or IP address</li>
-<li>A link to the conversation</li>
-<li>Any logs or screenshots of the conversation</li>
-<li>Additional circumstances surrounding the incident</li>
-<li>Other people involved in or witnesses to the incident and their contact information or description</li>
-</ul>
-<h2 id="license"><a class="header" href="#license">License</a></h2>
-<p>The Garuda Linux Code of Conduct is licensed under
-a <a href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution Share-Alike 3.0 Unported License</a>.</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="https://licensebuttons.net/l/by-sa/3.0/88x31.png" alt="Creative Commons License"><span class="img-wrapper"><img src="https://licensebuttons.net/l/by-sa/3.0/88x31.png" alt="Creative Commons License"></span></label></p>
+<p>This Code of Conduct applies within all community spaces, and also applies when an individual is officially representing the community in public or other spaces. Examples of representing our community include using an official email address, posting via an official social media account, or acting as an appointed representative at an online or offline event.</p>
 <h2 id="attribution"><a class="header" href="#attribution">Attribution</a></h2>
-<p>The Garuda Linux Code of Conduct was forked from GNOME Foundation’s Code of Conduct (last modified 2020-10-01), which is
-under a Creative Commons license. See
-the <a href="https://web.archive.org/web/20210813233606/https://wiki.gnome.org/Foundation/CodeOfConduct">original page</a> for the
-original attributions.
-description</p>
+<p>This Code of Conduct is adapted from the Contributor Covenant, version 3.0, permanently available at <a href="https://www.contributor-covenant.org/version/3/0/">https://www.contributor-covenant.org/version/3/0/</a>.</p>
+<p>Contributor Covenant is stewarded by the Organization for Ethical Source and licensed under CC BY-SA 4.0. To view a copy of this license, visit <a href="https://creativecommons.org/licenses/by-sa/4.0/">https://creativecommons.org/licenses/by-sa/4.0/</a></p>
+<p>For answers to common questions about Contributor Covenant, see the FAQ at <a href="https://www.contributor-covenant.org/faq">https://www.contributor-covenant.org/faq</a>. Translations are provided at <a href="https://www.contributor-covenant.org/translations">https://www.contributor-covenant.org/translations</a>. Additional enforcement and community guideline resources can be found at <a href="https://www.contributor-covenant.org/resources">https://www.contributor-covenant.org/resources</a>. The enforcement ladder was inspired by the work of <a href="https://github.com/mozilla/inclusion">Mozilla’s code of conduct team</a>.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="privacy-policy-for-garuda-linux"><a class="header" href="#privacy-policy-for-garuda-linux">Privacy policy for Garuda Linux</a></h1>
 <h2 id="about-this-document"><a class="header" href="#about-this-document">About this document</a></h2>

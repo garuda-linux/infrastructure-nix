@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex-6e7af055.js";
+            window.path_to_searchindex_js = "searchindex-a44a56cc.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-1306c1d0.js"></script>
+        <script src="toc-4ebbbf40.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -213,9 +213,11 @@
 │   ├── modules
 │   │   ├── special
 │   │   └── static
-│   └── services
-│       ├── compose-runner
-│       └── monitoring
+│   └── services
+│       ├── compose-runner
+│       ├── monitoring
+│       └── mk.nix # garuda-lib construction helpers
+├── pkgs
 ├── scripts
 └── secrets
 </code></pre>
@@ -243,17 +245,22 @@ Checks can then be executed by running one of the following configs:</p>
 <pre><code class="language-sh">nix flake check # checks flake outputs and runs pre-commit at the end
 pre-commit run --all-files # only runs the pre-commit tools on all files
 </code></pre>
-<p>Its configuration can be found in the <code>flake.nix</code> file. (<a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/flake.nix">click me</a>). At the time of writing, the following tools are being run:</p>
+<p>Its configuration can be found in the <code>flake.nix</code> file. (<a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/flake.nix">click me</a>). At the time of writing, the following is being run:</p>
+<p>The pre-commit hooks generated into <code>.pre-commit-config.yaml</code>:</p>
+<ul>
+<li>check-json</li>
+<li>check-yaml</li>
+<li>detect-private-keys</li>
+<li><a href="https://github.com/sirwart/ripsecrets">ripsecrets</a></li>
+</ul>
+<p>Formatting is handled by <a href="https://github.com/numtide/treefmt-nix">treefmt</a>, which runs:</p>
 <ul>
 <li><a href="https://github.com/rhysd/actionlint">actionlint</a></li>
-<li><a href="https://github.com/ansible/ansible-lint">ansible-lint</a></li>
-<li><a href="https://github.com/commitizen-tools/commitizen">commitizen</a></li>
 <li><a href="https://github.com/astro/deadnix">deadnix</a></li>
-<li><a href="https://github.com/oxalica/nil">nil</a></li>
-<li><a href="https://github.com/nix-community/nixpkgs-fmt">nixpkgs-fmt</a></li>
-<li><a href="https://prettier.io/">prettier</a></li>
+<li><a href="https://github.com/NixOS/nixfmt">nixfmt</a></li>
+<li><a href="https://www.shellcheck.net/">shellcheck</a></li>
+<li><a href="https://github.com/mvdan/sh">shfmt</a></li>
 <li><a href="https://github.com/nerdypepper/statix">statix</a></li>
-<li><a href="https://github.com/adrienverge/yamllint">yamllint</a></li>
 </ul>
 <p>It is recommended to run <code>pre-commit run --all-files</code> before trying to commit changes. Then use <code>cz commit</code> to generate a <code>commitizen</code> complying commit message.</p>
 <h2 id="cicd"><a class="header" href="#cicd">CI/CD</a></h2>
@@ -266,13 +273,19 @@ pre-commit run --all-files # only runs the pre-commit tools on all files
 </ul>
 <p>Workflows will generally only be executed if a relevant file has been changed, eg. <code>nix flake check</code> won’t run if only the README was changed.</p>
 <h2 id="monitoring"><a class="header" href="#monitoring">Monitoring</a></h2>
-<p>Our current monitoring stack mostly relies on Netdata to provide insight into current system loads and trends.
-The major reason for using it was that it provides the most vital metrics and alerts out of the box without having to create in-depth configurations.
-Might switch to the Prometheus/Grafana/Loki stack in the future. We used to set up children -&gt; parent streaming in the past, though after transitioning to one big host this didn’t make sense anymore.
-Instead, up to 10GB of data gets stored on individual hosts.
-While Netdata agents do have their dashboard, the <a href="https://app.netdata.cloud/spaces/garuda-infra/rooms/all-nodes">Dashboard provided by Netdata</a> is far superior and allows a better insight, eg. by offering the functions feature.
-Additional services like Squid or Nginx have been configured to be monitored by Netdata plugins as well. Further information can be found in its <a href="https://learn.netdata.cloud/">documentation</a>.
-To access the previously linked dashboard, use <code>team@garudalinux.org</code> as login, the login will be completed after opening the link sent here.</p>
+<p>Our monitoring stack is self-hosted and defined in <code>nixos/services/monitoring</code>, replacing the previous Netdata setup.
+It consists of Prometheus for metrics, Loki for logs, Grafana for dashboards and Alertmanager for alerting, plus
+Fluent Bit and node_exporter agents that hosts and containers opt into via <code>garuda.monitoring</code>.</p>
+<p>Because both hosts run their own <code>10.0.5.0/24</code> container bridge, the monitoring container cannot reach stormwing’s
+containers directly - stormwing proxies their exporters and relays their logs over the Tailnet instead. See
+<a href="./services/monitoring.html">Monitoring</a> for details.</p>
+<h2 id="where-configuration-lives"><a class="header" href="#where-configuration-lives">Where configuration lives</a></h2>
+<ul>
+<li><code>nixos/hosts/&lt;host&gt;.nix</code> - host-specific networking, NAT forwards, the container list and host-level tunnels.</li>
+<li><code>nixos/hosts/&lt;host&gt;/&lt;container&gt;.nix</code> - one file per container.</li>
+<li><code>nixos/services/</code> - shared service modules, plus <code>mk.nix</code> which holds the <code>garuda-lib</code> helpers used to build
+repetitive structures.</li>
+</ul>
 
                     </main>
 

@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-6e7af055.js";
+            window.path_to_searchindex_js = "../../searchindex-a44a56cc.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-1306c1d0.js"></script>
+        <script src="../../toc-4ebbbf40.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -184,78 +184,59 @@
 <p>With this container, we provide a GitHub runner as well as (more recently), a GitLab runner. This container does <strong>not</strong>
 have the regular Garuda configurations because it is considered untrusted.
 Access needs to happen by running <code>nixos-container root-login</code>
-on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortalis.html#connecting-to-the-server">click me</a>).</p>
+on <a href="../stormwing.html">stormwing</a>.</p>
 <h2 id="restarting-containers"><a class="header" href="#restarting-containers">Restarting containers</a></h2>
-<p>This can happen via the following command:</p>
-<pre><code class="language-bash">sudo systemctl restart docker-compose-gitlab-runner-root
+<p>This can happen via the following commands:</p>
+<pre><code class="language-bash">sudo systemctl restart compose-runner-github-runner
+sudo systemctl restart compose-runner-gitlab-runner
 </code></pre>
 <p>Watchtower additionally keeps the containers up to date.</p>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <pre><code class="language-nix">{
+  garuda-lib,
+  inputs,
   keys,
   ...
 }:
 {
   # No default modules, untrusted container!
-  # imports = sources.defaultModules ++ [
-  #   ./garuda/garuda.nix
-  # ];
-
   imports = [
+    inputs.sops-nix.nixosModules.sops
+    ../../modules/garuda-lib.nix
     ../../modules/hardening.nix
     ../../modules/motd.nix
     ../../services/compose-runner/compose-runner.nix
+    ../../services/mk.nix
+    ../../services/monitoring
   ];
 
-  # Common Docker configurations
-  virtualisation.docker = {
-    autoPrune.enable = true;
-    autoPrune.flags = [ "-a" ];
-  };
-
-  # This container is just for compose stuff
-  garuda.services.compose-runner.github-runner = {
-    envfile = "/var/.github-runner.env";
-    source = ../../../compose/github-runner;
-  };
-  garuda.services.compose-runner.gitlab-runner = {
-    source = ../../../compose/gitlab-runner;
-  };
-
-  # Enable SSH
-  services.openssh.enable = true;
-
-  # No custom users - only Pedro and root via nixos-container root-login
-  users = {
-    allowNoPasswordLogin = true;
-    mutableUsers = false;
-    users.pedrohlc = {
+  inherit
+    (garuda-lib.mkUntrustedRunner {
+      user = "pedrohlc";
       home = "/home/pedrohlc";
-      isNormalUser = true;
-      openssh.authorizedKeys.keyFiles = [ keys.pedrohlc ];
-    };
-  };
-
-  # Make Pedro god here
-  nix.settings.trusted-users = [ "pedrohlc" ];
-  security.sudo.extraRules = [
-    {
-      users = [ "pedrohlc" ];
-      commands = [
-        {
-          command = "ALL";
-          options = [ "NOPASSWD" ];
-        }
+      key = keys.pedrohlc;
+      units = [
+        "compose-runner-github-runner.service"
+        "docker.service"
       ];
-    }
-  ];
-
-  # OOM prevention
-  systemd.oomd = {
-    enable = true; # This is actually the default, anyways...
-    enableSystemSlice = true;
-    enableUserSlices = true;
-  };
+      runners = {
+        github-runner = {
+          envfile = "/var/.github-runner.env";
+          source = ../../../compose/github-runner;
+        };
+        gitlab-runner = {
+          source = ../../../compose/gitlab-runner;
+        };
+      };
+    })
+    garuda
+    nix
+    security
+    services
+    systemd
+    users
+    virtualisation
+    ;
 
   system.stateVersion = "25.05";
 }
@@ -279,20 +260,34 @@ on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortali
 </code></pre>
 <h3 id="docker-containers-gitlab"><a class="header" href="#docker-containers-gitlab">Docker containers (GitLab)</a></h3>
 <pre><code class="language-yaml">services:
-  github-runner:
-    image: myoung34/github-runner:latest
-    container_name: github-runner
-    privileged: true
-    environment:
-      ACCESS_TOKEN: ${ACCESS_TOKEN:-?err}
-      EPHEMERAL: true
-      LABELS: nyxbuilder
-      ORG_NAME: chaotic-cx
-      RUNNER_NAME: immortalis
-      RUNNER_SCOPE: org
-      RUNNER_WORKDIR: /var/cache/github-runner/work
-    volumes: ['/var/cache/github-runner/work:/var/cache/github-runner/work']
+  gitlab-runner-garuda:
+    image: gitlab/gitlab-runner:alpine
+    container_name: gitlab-runner-garuda
+    volumes:
+      - /etc/gitlab-runner:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: 'no'
+  gitlab-runner-chaotic:
+    image: gitlab/gitlab-runner:alpine
+    container_name: gitlab-runner-chaotic
+    volumes:
+      - /etc/gitlab-runner/chaotic:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: 'no'
+  gitlab-runner-dind:
+    image: gitlab/gitlab-runner:alpine
+    container_name: gitlab-runner-dind
+    volumes:
+      - /etc/gitlab-runner/dind:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: 'no'
+  # Automated container updates
+  watchtower:
+    image: nickfedor/watchtower:1.22.1
+    container_name: watchtower
+    command: --cleanup watchtower gitlab-runner-chaotic gitlab-runner-garuda gitlab-runner-dind
+    volumes: ['/var/run/docker.sock:/var/run/docker.sock']
+    restart: always
 </code></pre>
 
                     </main>
@@ -303,7 +298,7 @@ on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortali
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../../hosts/stormwing/iso-runner.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../hosts/stormwing/gitlab-runner.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -317,7 +312,7 @@ on <code>immortalis</code> (<a href="http://docs.garudalinux.net/hosts/immortali
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../../hosts/stormwing/iso-runner.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../hosts/stormwing/gitlab-runner.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

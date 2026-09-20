@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-6e7af055.js";
+            window.path_to_searchindex_js = "../../searchindex-a44a56cc.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-1306c1d0.js"></script>
+        <script src="../../toc-4ebbbf40.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -185,9 +185,14 @@
 <li><a href="https://github.com/discourse/discourse_docker">Discourse Docker</a></li>
 </ul>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
-<pre><code class="language-nix">{ sources, ... }:
+<pre><code class="language-nix">{ garuda-lib, sources, ... }:
 {
   imports = sources.defaultModules ++ [ ../../modules ];
+
+  garuda = garuda-lib.mkMonitoring {
+    host = "aerialis";
+    units = [ "docker.service" ];
+  };
 
   # Enable Docker since we use the official Docker image in /var/discourse
   virtualisation.docker.enable = true;

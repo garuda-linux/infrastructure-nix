@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-6e7af055.js";
+            window.path_to_searchindex_js = "../../searchindex-a44a56cc.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-1306c1d0.js"></script>
+        <script src="../../toc-4ebbbf40.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -183,6 +183,7 @@
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,
+  garuda-lib,
   sources,
   ...
 }:
@@ -192,19 +193,54 @@
     ../../modules/special/ssh-allow-chaotic.nix
   ];
 
-  garuda.services.compose-runner.chaotic-backend = {
-    envfile = config.sops.secrets."compose/chaotic-backend".path;
-    source = ../../../compose/chaotic-backend;
-    extraEnv = {
-      "SSH_KEY" = config.sops.secrets."keypairs/chaotic/private".path;
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "aerialis";
+      units = [
+        "compose-runner-chaotic-backend.service"
+        "docker.service"
+        "redis-chaotic.service"
+      ];
+      exporters = [ "redisExporter" ];
+      extraPrometheus.redisExporter.passwordFile = config.sops.secrets."redis/exporter".path;
+    }
+    // {
+      services.compose-runner.chaotic-backend = {
+        envfile = config.sops.secrets."compose/chaotic-backend".path;
+        source = ../../../compose/chaotic-backend;
+        extraEnv = {
+          "SSH_KEY" = config.sops.secrets."keypairs/chaotic/private".path;
+        };
+      };
+    };
+
+  services.redis = {
+    servers."chaotic" = {
+      enable = true;
+      port = 6379;
+      requirePassFile = config.sops.secrets."redis/chaotic".path;
+      save = [
+        [
+          20
+          1
+        ]
+      ];
     };
   };
 
-  sops.secrets = {
-    "compose/chaotic-backend" = { };
-    "keypairs/chaotic/private" = { };
-    "redis/chaotic" = { };
-  };
+  sops.secrets =
+    garuda-lib.mkSecrets [
+      "compose/chaotic-backend"
+      "keypairs/chaotic/private"
+      "redis/chaotic"
+    ]
+    // {
+      "redis/exporter" = {
+        owner = "redis-exporter";
+        group = "redis-exporter";
+        mode = "0400";
+      };
+    };
 
   system.stateVersion = "25.05";
 }
@@ -212,28 +248,51 @@
 <h3 id="docker-containers"><a class="header" href="#docker-containers">Docker containers</a></h3>
 <pre><code class="language-yaml">services:
   chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:main
+    image: ghcr.io/chaotic-cx/chaotic-next:2.8.0
     container_name: chaotic-backend
     deploy:
       restart_policy:
         condition: always
         delay: 30s
     environment:
-      AUTH0_AUDIENCE: http://localhost:3000/auth/auth0
-      AUTH0_CLIENT_ID: ${AUTH0_CLIENT_ID:-?err}
-      AUTH0_CLIENT_SECRET: ${AUTH0_CLIENT_SECRET:-?err}
-      AUTH0_DOMAIN: ${AUTH0_DOMAIN:-?err}
+      AUR_USERNAME: ${AUR_USERNAME:-?err}
+      AUR_PASSWORD: ${AUR_PASSWORD:-?err}
+      AUTH_COOKIE_DOMAIN: .chaotic.cx
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-?err}
+      BETTER_AUTH_TRUSTED_ORIGINS: https://aur.chaotic.cx
+      BETTER_AUTH_URL: https://backend.chaotic.cx
+      CAUR_BUILDER_CLAMAV_IMAGE: 'clamav/clamav:latest'
+      CAUR_BUILDER_CPU_LIMIT: 8
+      CAUR_BUILDER_DOCKER_SOCKET: /var/run/docker.sock
+      CAUR_BUILDER_EXTRA_PACMAN_KEYRINGS: https://secret-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst
+      CAUR_BUILDER_EXTRA_PACMAN_REPOS: |
+        [chaotic-aur]
+        Server = https://secret-mirror.chaotic.cx/chaotic-aur/x86_64
+      CAUR_BUILDER_IDLE_TIMEOUT: 600
+      CAUR_BUILDER_IMAGE: registry.gitlab.com/garuda-linux/tools/chaotic-manager/builder:latest
+      CAUR_BUILDER_PIDS_LIMIT: 1024
+      CAUR_BUILDER_POLL_INTERVAL: 15000
+      CAUR_BUILDER_PUBLIC_URL: https://backend.chaotic.cx
+      CAUR_BUILDER_RAM_LIMIT: 8192
+      CAUR_BUILDER_TIMEOUT: 3600
+      CAUR_BUILDER_WORKDIR: /var/garuda/compose-runner/chaotic-backend/portable-builder
       CAUR_DB_KEY: ${CAUR_DB_KEY:-?err}
-      CAUR_GITLAB_ID_CAUR: 54867625
-      CAUR_GITLAB_ID_GARUDA: 48461689
-      CAUR_GITLAB_TOKEN: ${GITLAB_TOKEN_CX:-?err}
+      CAUR_GITLAB_TOKEN: ${TEMERAIRE_BOT_TOKEN:-?err}
       CAUR_GITLAB_WEBHOOK_TOKEN: ${CAUR_GITLAB_WEBHOOK_TOKEN:-?err}
-      CAUR_JWT_SECRET: ${CAUR_JWT_SECRET:-?err}
-      CAUR_TRUST_PROXY: 172.18.0.1
-      CAUR_USERS: ${CAUR_USERS:-?err}
-      CAUR_VAPID_PUBLIC: BFMijCyTcLZu3HRJyMfoB4vtnDcgl7E2SVZgd4uWB3XjO2VvRh_LjYHcY_oJLvMIhdp5Yvuz0gudRpY-PFI9iWA
+      CAUR_MANAGER_API_TOKEN: ${CAUR_MANAGER_API_TOKEN:-?err}
+      CAUR_TRUST_PROXY: true
       CAUR_VAPID_PRIVATE: ${CAUR_VAPID_PRIVATE:-?err}
+      CAUR_VAPID_PUBLIC: BFMijCyTcLZu3HRJyMfoB4vtnDcgl7E2SVZgd4uWB3XjO2VvRh_LjYHcY_oJLvMIhdp5Yvuz0gudRpY-PFI9iWA
+      GITHUB_ISSUES_REPO_NAME: packages
+      GITHUB_ISSUES_REPO_OWNER: chaotic-aur
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-?err}
+      GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET:-?err}
+      GITLAB_CLIENT_ID: ${GITLAB_CLIENT_ID:-?err}
+      GITLAB_CLIENT_SECRET: ${GITLAB_CLIENT_SECRET:-?err}
+      GITLAB_REDIRECT_URI: https://backend.chaotic.cx/api/auth/callback/gitlab
+      LOG_LEVEL: debug
       NODE_ENV: production
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-?err}
       PG_DATABASE: chaotic-aur
       PG_HOST: 10.0.5.20
       PG_PASSWORD: ${PG_PASSWORD:-?err}
@@ -241,31 +300,17 @@
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
       REDIS_SSH_HOST: host.docker.internal
       REDIS_SSH_USER: package-deployer
+      REPOMANAGER_ABI_DRY_RUN: false
+      REPOMANAGER_MIRROR_URL: https://builds.garudalinux.org/arch-mirror
+      REPOMANAGER_SIGNAL_SCAN_ENABLED: true
+      VIRUSTOTAL_API_KEY: ${VIRUSTOTAL_API_KEY:-?err}
     ports: ["3000:3000"]
-    volumes: ["${SSH_KEY:-?err}:/app/sshkey", "./backend-config:/app/config"]
+    volumes:
+      - "${SSH_KEY:-?err}:/app/sshkey"
+      - "./backend-config:/app/config"
+      - "/var/garuda/compose-runner/chaotic-backend/portable-builder:/var/garuda/compose-runner/chaotic-backend/portable-builder"
+      - "/var/run/docker.sock:/var/run/docker.sock"
     extra_hosts: ["host.docker.internal:host-gateway"]
-
-  # TODO: revert to NixOS service once it no longer segfaults
-  database:
-    image: redis:8.2-m01-alpine
-    container_name: chaotic-database
-    restart: always
-    ports: ["127.0.0.1:6379:6379"]
-    command: redis-server --save 20 1 --loglevel warning --requirepass "${REDIS_PASSWORD:-?err}"
-    volumes: ["./database:/data"]
-
-  marge_bot:
-    image: registry.gitlab.com/marge-org/marge-bot:main
-    container_name: chaotic-marge-
-    restart: always
-    environment:
-      MARGE_AUTH_TOKEN: ${TEMERAIRE_BOT_TOKEN:-?err}
-      MARGE_GITLAB_URL: https://gitlab.com
-      MARGE_USE_HTTPS: true
-      # Scheduled (hourly) 30 */3 * * * UTC
-      # Add a 20 minute buffer after each scheduled time to allow time for the pipeline to run
-      # Every 3 hours between HH:30 and HH:50
-      MARGE_EMBARGO: "Mon@00:30-Mon@00:50,Mon@03:30-Mon@03:50,Mon@06:30-Mon@06:50,Mon@09:30-Mon@09:50,Mon@12:30-Mon@12:50,Mon@15:30-Mon@15:50,Mon@18:30-Mon@18:50,Mon@21:30-Mon@21:50,Tue@00:30-Tue@00:50,Tue@03:30-Tue@03:50,Tue@06:30-Tue@06:50,Tue@09:30-Tue@09:50,Tue@12:30-Tue@12:50,Tue@15:30-Tue@15:50,Tue@18:30-Tue@18:50,Tue@21:30-Tue@21:50,Wed@00:30-Wed@00:50,Wed@03:30-Wed@03:50,Wed@06:30-Wed@06:50,Wed@09:30-Wed@09:50,Wed@12:30-Wed@12:50,Wed@15:30-Wed@15:50,Wed@18:30-Wed@18:50,Wed@21:30-Wed@21:50,Thu@00:30-Thu@00:50,Thu@03:30-Thu@03:50,Thu@06:30-Thu@06:50,Thu@09:30-Thu@09:50,Thu@12:30-Thu@12:50,Thu@15:30-Thu@15:50,Thu@18:30-Thu@18:50,Thu@21:30-Thu@21:50,Fri@00:30-Fri@00:50,Fri@03:30-Fri@03:50,Fri@06:30-Fri@06:50,Fri@09:30-Fri@09:50,Fri@12:30-Fri@12:50,Fri@15:30-Fri@15:50,Fri@18:30-Fri@18:50,Fri@21:30-Fri@21:50,Sat@00:30-Sat@00:50,Sat@03:30-Sat@03:50,Sat@06:30-Sat@06:50,Sat@09:30-Sat@09:50,Sat@12:30-Sat@12:50,Sat@15:30-Sat@15:50,Sat@18:30-Sat@18:50,Sat@21:30-Sat@21:50,Sun@00:30-Sun@00:50,Sun@03:30-Sun@03:50,Sun@06:30-Sun@06:50,Sun@09:30-Sun@09:50,Sun@12:30-Sun@12:50,Sun@15:30-Sun@15:50,Sun@18:30-Sun@18:50,Sun@21:30-Sun@21:50"
 </code></pre>
 
                     </main>

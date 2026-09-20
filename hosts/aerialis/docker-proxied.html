@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-6e7af055.js";
+            window.path_to_searchindex_js = "../../searchindex-a44a56cc.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-1306c1d0.js"></script>
+        <script src="../../toc-4ebbbf40.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -193,22 +193,32 @@
 </ul>
 <h2 id="restarting-containers"><a class="header" href="#restarting-containers">Restarting containers</a></h2>
 <p>This can happen via the following command:</p>
-<pre><code class="language-bash">sudo systemctl restart docker-compose-proxied-root
+<pre><code class="language-bash">sudo systemctl restart compose-runner-docker-proxied
 </code></pre>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,
+  garuda-lib,
   sources,
   ...
 }:
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
-  # This container runs proxied docker containers
-  garuda.services.compose-runner.docker-proxied = {
-    envfile = config.sops.secrets."compose/docker-proxied".path;
-    source = ../../../compose/docker-proxied;
-  };
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "aerialis";
+      units = [
+        "compose-runner-docker-proxied.service"
+        "docker.service"
+      ];
+    }
+    // {
+      services.compose-runner.docker-proxied = {
+        envfile = config.sops.secrets."compose/docker-proxied".path;
+        source = ../../../compose/docker-proxied;
+      };
+    };
 
   # Let Docker use squid as outgoig proxy
   # Fails to pull images if *.docker.io is not excluded from proxy
@@ -366,7 +376,7 @@
     restart: always
   # Automated container updates
   watchtower:
-    image: nickfedor/watchtower:1.19.0
+    image: nickfedor/watchtower:1.22.1
     container_name: watchtower
     command: --cleanup searx lingva whoogle librey redlib
     volumes: ['/var/run/docker.sock:/var/run/docker.sock']

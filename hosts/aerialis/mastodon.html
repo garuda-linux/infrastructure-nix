@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-6e7af055.js";
+            window.path_to_searchindex_js = "../../searchindex-a44a56cc.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-1306c1d0.js"></script>
+        <script src="../../toc-4ebbbf40.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -184,64 +184,30 @@
 <p>Configuration for the <code>mastodon</code> container on aerialis.</p>
 <pre><code class="language-nix">{
   config,
+  garuda-lib,
   lib,
-  pkgs,
   sources,
   ...
 }:
-let
-  # https://git.kempkens.io/daniel/dotfiles/src/branch/master/system/nixos/mastodon.nix
-  pkg-base = pkgs.mastodon;
-  pkg-mastodon = pkg-base.overrideAttrs (_: {
-    mastodonModules = pkg-base.mastodonModules.overrideAttrs (
-      oldMods:
-      let
-        tangerine-ui = pkgs.fetchFromGitHub {
-          owner = "nileane";
-          repo = "TangerineUI-for-Mastodon";
-          rev = "v2.5.3";
-          hash = "sha256-fs/pwIwXZvSNVmlSG304CMT/hSW/RtrzraMsrhg/TbE=";
-        };
-      in
-      {
-        pname = "${oldMods.pname}+themes";
-
-        postPatch = ''
-          styleDir=$PWD/app/javascript/styles
-
-          cp -r ${tangerine-ui}/mastodon/app/javascript/styles/* $styleDir
-
-          echo "tangerineui: styles/tangerineui.scss" &gt;&gt;$PWD/config/themes.yml
-          echo "tangerineui-purple: styles/tangerineui-purple.scss" &gt;&gt;$PWD/config/themes.yml
-          echo "tangerineui-cherry: styles/tangerineui-cherry.scss" &gt;&gt;$PWD/config/themes.yml
-          echo "tangerineui-lagoon: styles/tangerineui-lagoon.scss" &gt;&gt;$PWD/config/themes.yml
-        '';
-      }
-    );
-
-    nativeBuildInputs = [ pkgs.yq-go ];
-
-    postBuild = ''
-      # Make theme available
-      echo "tangerineui: styles/tangerineui.scss" &gt;&gt;$PWD/config/themes.yml
-      echo "tangerineui-purple: styles/tangerineui-purple.scss" &gt;&gt;$PWD/config/themes.yml
-      echo "tangerineui-cherry: styles/tangerineui-cherry.scss" &gt;&gt;$PWD/config/themes.yml
-      echo "tangerineui-lagoon: styles/tangerineui-lagoon.scss" &gt;&gt;$PWD/config/themes.yml
-
-      yq -i '.en.themes.tangerineui = "Tangerine UI"' $PWD/config/locales/en.yml
-      yq -i '.en.themes.tangerineui-purple = "Tangerine UI (Purple)"' $PWD/config/locales/en.yml
-      yq -i '.en.themes.tangerineui-cherry = "Tangerine UI (Cherry)"' $PWD/config/locales/en.yml
-      yq -i '.en.themes.tangerineui-lagoon = "Tangerine UI (Lagoon)"' $PWD/config/locales/en.yml
-    '';
-  });
-in
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
-  # This container is just for compose stuff
-  garuda.services.compose-runner.mastodon = {
-    source = ../../../compose/mastodon;
-  };
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "aerialis";
+      units = [
+        "compose-runner-mastodon.service"
+        "mastodon-sidekiq.service"
+        "mastodon-streaming.service"
+        "mastodon-web.service"
+        "nginx.service"
+      ];
+    }
+    // {
+      services.compose-runner.mastodon = {
+        source = ../../../compose/mastodon;
+      };
+    };
 
   # Our Mastodon
   services.mastodon = {
@@ -266,7 +232,6 @@ in
       startAt = "daily";
       olderThanDays = 7;
     };
-    package = pkg-mastodon;
     smtp = {
       authenticate = true;
       fromAddress = "noreply@garudalinux.org";
@@ -367,7 +332,7 @@ in
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../../hosts/aerialis/postgres.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../hosts/aerialis/monitoring.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -381,7 +346,7 @@ in
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../../hosts/aerialis/postgres.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../hosts/aerialis/monitoring.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

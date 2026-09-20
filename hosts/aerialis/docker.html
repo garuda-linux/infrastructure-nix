@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-6e7af055.js";
+            window.path_to_searchindex_js = "../../searchindex-a44a56cc.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-1306c1d0.js"></script>
+        <script src="../../toc-4ebbbf40.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -194,20 +194,30 @@ and are included in the offsite system backups.</p>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,
+  garuda-lib,
   sources,
   ...
 }:
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
-  # This container is just for compose stuff
-  garuda.services.compose-runner.docker = {
-    envfile = config.sops.secrets."compose/docker".path;
-    source = ../../../compose/docker;
-    extraEnv = {
-      "MATTERBRIDGE_CONFIG" = config.sops.secrets."compose/matterbridge".path;
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "aerialis";
+      units = [
+        "compose-runner-docker.service"
+        "docker.service"
+      ];
+    }
+    // {
+      services.compose-runner.docker = {
+        envfile = config.sops.secrets."compose/docker".path;
+        source = ../../../compose/docker;
+        extraEnv = {
+          "MATTERBRIDGE_CONFIG" = config.sops.secrets."compose/matterbridge".path;
+        };
+      };
     };
-  };
 
   sops.secrets = {
     "compose/docker" = {
@@ -262,7 +272,7 @@ and are included in the offsite system backups.</p>
     restart: always
   # Password vault
   vaultwarden:
-    image: vaultwarden/server:1.36.0-alpine
+    image: vaultwarden/server:1.37.3-alpine
     container_name: vaultwarden
     volumes: ["./bitwarden:/data"]
     ports: ["8081:80"]
@@ -282,7 +292,7 @@ and are included in the offsite system backups.</p>
     restart: always
   # Secure pastebin
   privatebin:
-    image: privatebin/nginx-fpm-alpine:2.0.5
+    image: privatebin/nginx-fpm-alpine:2.0.6
     container_name: privatebin
     volumes:
       - ./privatebin:/srv/data
@@ -305,7 +315,7 @@ and are included in the offsite system backups.</p>
     restart: always
   # IRC/Discord/Telegram relay
   matterbridge:
-    image: 42wim/matterbridge:latest
+    image: registry.gitlab.com/garuda-linux/tools/matterbridge:latest
     container_name: matterbridge
     volumes:
       - ${MATTERBRIDGE_CONFIG:-?err}:/etc/matterbridge/matterbridge.toml:ro
@@ -315,7 +325,7 @@ and are included in the offsite system backups.</p>
         delay: 120s
   # Automated container updates
   watchtower:
-    image: nickfedor/watchtower:1.19.0
+    image: nickfedor/watchtower:1.22.1
     container_name: watchtower
     command: --cleanup matterbridge wikijs privatebin vaultwarden thelounge syncserver
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]

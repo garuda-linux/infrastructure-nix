@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../searchindex-6e7af055.js";
+            window.path_to_searchindex_js = "../searchindex-a44a56cc.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-1306c1d0.js"></script>
+        <script src="../toc-4ebbbf40.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -183,15 +183,354 @@
 <h2 id="host-configuration"><a class="header" href="#host-configuration">Host configuration</a></h2>
 <pre><code class="language-nix">{
   config,
+  garuda-lib,
   lib,
-  pkgs,
   ...
 }:
+let
+  mon = garuda-lib.monitoring;
+
+  mkTailnetProxy =
+    {
+      name,
+      container,
+      port,
+      targetPort ? port,
+      description,
+    }:
+    {
+      inherit name;
+      bind = mon.tailnetIPs.stormwing;
+      listen = port;
+      target = "${mon.stormwingContainers.${container}}:${toString targetPort}";
+      after = [
+        "tailscaled.service"
+        "container@${container}.service"
+      ];
+      wants = [ "container@${container}.service" ];
+      inherit description;
+    };
+in
 {
   imports = [
     ../modules
     ./../modules/special/hetzner-ex44.nix
   ];
+
+  garuda = garuda-lib.mkMonitoring {
+    host = "stormwing";
+    lokiAddress = mon.loki.tailnetAddress;
+    hostInfo = true;
+    units = [
+      "sshd.service"
+      "tailscaled.service"
+    ];
+    exporters = [ "smartctlExporter" ];
+  };
+
+  swapDevices = [
+    {
+      device = "/data_1/swapfile";
+      size = 32 * 1024;
+    }
+  ];
+
+  networking = {
+    defaultGateway = "157.180.57.1";
+    defaultGateway6 = {
+      address = "fe80::1";
+      interface = "eth0";
+    };
+    hostName = "stormwing";
+    interfaces."eth0".ipv4.addresses = [
+      {
+        address = "157.180.57.51";
+        prefixLength = 26;
+      }
+    ];
+    nat.forwardPorts = [
+      (garuda-lib.mkNatForward {
+        sourcePort = 210;
+        destination = "10.0.5.10:22";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 220;
+        destination = "10.0.5.20:22";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 80;
+        destination = "10.0.5.40:80";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 443;
+        destination = "10.0.5.40:443";
+      })
+      (garuda-lib.mkNatForward {
+        sourcePort = 443;
+        destination = "10.0.5.40:443";
+        proto = "udp";
+      })
+    ];
+  };
+
+  services.garuda-nspawn = {
+    dockerCache = "/data_2/dockercache/";
+
+    containers = garuda-lib.mkContainers {
+      dir = ./stormwing;
+      ips = mon.stormwingContainers;
+      containers = {
+        chaotic-v4 = {
+          mounts = [
+            {
+              name = "arch-mirror";
+              hostPath = "/data_2/containers/arch-mirror/mirror";
+              mountPoint = "/srv/http/arch-mirror";
+            }
+            {
+              name = "chaotic";
+              hostPath = "/data_2/containers/chaotic-v4/chaotic";
+              mountPoint = "/var/garuda/compose-runner/chaotic-v4";
+            }
+            {
+              name = "syncthing";
+              hostPath = "/data_2/containers/chaotic-v4/syncthing";
+              mountPoint = "/var/lib/syncthing";
+            }
+            {
+              name = "chaotic-v4";
+              hostPath = "/data_1/chaotic-v4/";
+              mountPoint = "/srv/http/repos";
+            }
+            {
+              name = "iso-builds";
+              hostPath = "/data_1/iso/iso";
+              mountPoint = "/srv/http/iso";
+            }
+            {
+              name = "garuda-nix-builds";
+              hostPath = "/data_1/iso/garuda-nix";
+              mountPoint = "/srv/http/garuda-nix";
+            }
+          ];
+          forwardPorts = [
+            { containerPort = 873; }
+            {
+              containerPort = 21027;
+              protocol = "udp";
+            }
+            { containerPort = 22000; }
+            {
+              containerPort = 22000;
+              protocol = "udp";
+            }
+          ];
+          nspawn = {
+            enableTun = true;
+          };
+          needsDocker = true;
+          # Only entitled to 1/5 of the CPU resources in case of contention
+          cpuWeight = 20;
+          ioWeight = 20;
+        };
+
+        arch-mirror = {
+          mounts = [
+            {
+              name = "arch-mirror";
+              hostPath = "/data_2/containers/arch-mirror/mirror";
+              mountPoint = "/srv/http/arch-mirror";
+            }
+          ];
+        };
+
+        github-runner = {
+          mounts = [
+            {
+              name = "token";
+              hostPath = config.sops.secrets."compose/github-runner".path;
+              mountPoint = "/var/.github-runner.env";
+              readOnly = true;
+            }
+            {
+              name = "gitlab-config";
+              hostPath = "/data_2/containers/github-runner/gitlab-runner";
+              mountPoint = "/etc/gitlab-runner";
+            }
+            {
+              name = "ssh-keys";
+              hostPath = "/data_2/containers/github-runner/ssh";
+              mountPoint = "/etc/ssh";
+            }
+            {
+              name = "github-cache";
+              hostPath = "/data_2/cache/github-runner";
+              mountPoint = "/var/cache/github-runner";
+            }
+          ];
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 230;
+            }
+          ];
+          nspawn = {
+            ephemeral = lib.mkForce true;
+          };
+          defaults = false;
+          needsDocker = true;
+          cpuWeight = 20;
+          ioWeight = 20;
+        };
+
+        firedragon-runner = {
+          mounts = [
+            {
+              name = "firedragon-runner";
+              hostPath = "/data_2/containers/firedragon-runner";
+              mountPoint = "/var/garuda/compose-runner/firedragon-runner";
+            }
+          ];
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 250;
+            }
+          ];
+          nspawn = {
+            ephemeral = lib.mkForce true;
+          };
+          defaults = false;
+          needsDocker = true;
+          cpuWeight = 10;
+          ioWeight = 10;
+        };
+
+        gitlab-runner = {
+          mounts = [
+            {
+              name = "nix-cache";
+              hostPath = "/data_2/containers/gitlab-runner/nix";
+              mountPoint = "/nix";
+            }
+            {
+              name = "gitlab-runner";
+              hostPath = "/data_2/containers/gitlab-runner/gitlab-runner";
+              mountPoint = "/var/lib/private/gitlab-runner";
+            }
+          ];
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 260;
+            }
+          ];
+          needsDocker = true;
+          needsKvm = true;
+          cpuWeight = 20;
+          ioWeight = 20;
+        };
+
+        iso-runner = {
+          mounts = [
+            {
+              name = "iso";
+              hostPath = "/data_1/iso/";
+              mountPoint = "/var/garuda/buildiso";
+            }
+            {
+              name = "cache";
+              hostPath = "/data_1/cache/iso-runner";
+              mountPoint = "/var/garuda/buildiso/cache";
+            }
+            {
+              name = "pacman_cache";
+              hostPath = "/data_1/cache/pacman-cache";
+              mountPoint = "/var/cache/pacman/pkg";
+            }
+          ];
+          needsDocker = true;
+        };
+
+        web-front = {
+          mounts = [
+            {
+              name = "acme";
+              hostPath = "/data_1/containers/web-front/acme";
+              mountPoint = "/var/lib/acme";
+            }
+            {
+              name = "nginx";
+              hostPath = "/data_1/containers/web-front/nginx";
+              mountPoint = "/var/log/nginx";
+            }
+          ];
+          forwardPorts = [
+            {
+              containerPort = 22;
+              hostPort = 240;
+            }
+          ];
+        };
+      };
+    };
+  };
+
+  systemd.services = garuda-lib.mkTunnels (
+    [
+      (mkTailnetProxy {
+        name = "nginx-tailnet-proxy";
+        container = "web-front";
+        port = mon.ports.nginxExporter;
+        description = "Expose web-front nginx exporter to Tailnet only";
+      })
+      {
+        name = "loki-relay";
+        bind = mon.bridge.address;
+        listen = mon.stormwingLokiRelay.listenPort;
+        target = mon.stormwingLokiRelay.target;
+        after = [ "tailscaled.service" ];
+        description = "Relay stormwing container logs to Loki on aerialis";
+      }
+    ]
+    ++ map (
+      p:
+      mkTailnetProxy {
+        name = "node-exporter-${p.name}-tailnet-proxy";
+        container = p.name;
+        inherit (p) port;
+        targetPort = mon.ports.nodeExporter;
+        description = "Expose ${p.name} node exporter to Tailnet only";
+      }
+    ) mon.stormwingNodeProxies
+    ++ map (
+      p:
+      mkTailnetProxy {
+        name = "service-${p.name}-tailnet-proxy";
+        inherit (p) container;
+        inherit (p) port;
+        inherit (p) targetPort;
+        description = "Expose ${p.container} ${toString p.targetPort} to Tailnet only";
+      }
+    ) mon.stormwingServiceProxies
+  );
+
+  networking.firewall.interfaces."tailscale0".allowedTCPPorts = [
+    mon.ports.nginxExporter
+    32041
+    39252
+  ];
+
+  sops.secrets."compose/github-runner" = { };
+}
+</code></pre>
+<h2 id="shared-host-configuration"><a class="header" href="#shared-host-configuration">Shared host configuration</a></h2>
+<p>The disk layout, SSH configuration, container bridge (<code>br0</code>) and impermanence are shared with aerialis and live in
+<code>nixos/modules/special/newgen.nix</code>. Hardware-specific settings (kernel, microcode, SMT, smartd) come from
+<code>nixos/modules/special/hetzner-ex44.nix</code>.</p>
+<pre><code class="language-nix">_: {
+  # We want to have same UID's in all containers to allow sharing home directories
+  garuda-lib.unifiedUID = true;
 
   fileSystems."/" = {
     device = "none";
@@ -213,9 +552,7 @@
       "nodiratime"
       "errors=remount-ro"
     ];
-    depends = [
-      "/"
-    ];
+    depends = [ "/" ];
   };
 
   fileSystems."/data_2" = {
@@ -234,290 +571,78 @@
     fsType = "vfat";
   };
 
-  swapDevices = [
-    {
-      device = "/data_1/swapfile";
-      size = 32 * 1024;
-    }
-  ];
-
-  services.openssh.ports = [ 666 ];
-
-  # Network configuration with a bridge interface
-  networking = {
-    defaultGateway = "157.180.57.1";
-    defaultGateway6 = {
-      address = "fe80::1";
-      interface = "eth0";
-    };
-    hostName = "stormwing";
-    interfaces = {
-      "eth0" = {
-        ipv4.addresses = [
-          {
-            address = "157.180.57.51";
-            prefixLength = 26;
-          }
-        ];
-      };
-    };
-    # Specify these here to allow containers to access
-    # our services from the internal network via NAT reflection
-    nat.forwardPorts = [
-      # Here because we need to take advantage of NAT reflection.
-      # In general, SSH ports should not be here.
-      {
-        # chaotic-v4 (SSH)
-        destination = "10.0.5.10:22";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "tcp";
-        sourcePort = 210;
-      }
-      {
-        # iso-runner (SSH)
-        destination = "10.0.5.20:22";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "tcp";
-        sourcePort = 220;
-      }
-      {
-        # web-front (HTTP)
-        destination = "10.0.5.40:80";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "tcp";
-        sourcePort = 80;
-      }
-      {
-        # web-front (HTTPS)
-        destination = "10.0.5.40:443";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "tcp";
-        sourcePort = 443;
-      }
-      {
-        # web-front (HTTPS)
-        destination = "10.0.5.40:443";
-        loopbackIPs = [ "157.180.57.51" ];
-        proto = "udp";
-        sourcePort = 443;
-      }
+  fileSystems."/nix" = {
+    device = "/data_1/nix";
+    fsType = "none";
+    options = [ "bind" ];
+    depends = [
+      "/data_1"
     ];
-    firewall.trustedInterfaces = [ "br0" ];
   };
 
-  # Container config
+  services.openssh = {
+    ports = [ 666 ];
+    hostKeys = [
+      {
+        type = "ed25519";
+        path = "/data_1/persistent/etc/ssh/ssh_host_ed25519_key";
+      }
+      {
+        type = "rsa";
+        bits = 4096;
+        path = "/data_1/persistent/etc/ssh/ssh_host_rsa_key";
+      }
+    ];
+  };
+
   services.garuda-nspawn = {
     bridgeInterface = "br0";
     hostInterface = "eth0";
     hostIp = "10.0.5.1";
-    dockerCache = "/data_2/dockercache/";
-
     defaults = {
       maxMemorySoft = 48318382080; # 45 GiB
       maxMemoryHard = 53687091200; # 50 GiB
       maxCpu = 18;
     };
-
-    containers = {
-      chaotic-v4 = {
-        config = import ./stormwing/chaotic-v4.nix;
-        extraOptions = {
-          bindMounts = {
-            # Begin data_2
-            "chaotic" = {
-              hostPath = "/data_2/containers/chaotic-v4/chaotic";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/compose-runner/chaotic-v4";
-            };
-            "syncthing" = {
-              hostPath = "/data_2/containers/chaotic-v4/syncthing";
-              isReadOnly = false;
-              mountPoint = "/var/lib/syncthing";
-            };
-            # End data_2
-            # Begin data_1
-            "chaotic-v4" = {
-              hostPath = "/data_1/chaotic-v4/";
-              isReadOnly = false;
-              mountPoint = "/srv/http/repos";
-            };
-            "iso-builds" = {
-              hostPath = "/data_1/iso/iso";
-              isReadOnly = false;
-              mountPoint = "/srv/http/iso";
-            };
-            # End data_1
-          };
-          forwardPorts = [
-            {
-              containerPort = 873;
-              hostPort = 873;
-              protocol = "tcp";
-            }
-            {
-              containerPort = 21027;
-              hostPort = 21027;
-              protocol = "udp";
-            }
-            {
-              containerPort = 22000;
-              hostPort = 22000;
-              protocol = "tcp";
-            }
-            {
-              containerPort = 22000;
-              hostPort = 22000;
-              protocol = "udp";
-            }
-          ];
-          enableTun = true;
-        };
-        ipAddress = "10.0.5.10";
-        needsDocker = true;
-        # Only entitled to 1/5 of the CPU resources in case of contention
-        cpuWeight = 20;
-        ioWeight = 20;
-      };
-      github-runner = {
-        config = import ./stormwing/github-runner.nix;
-        defaults = false;
-        extraOptions = {
-          bindMounts = {
-            "token" = {
-              hostPath = config.sops.secrets."compose/github-runner".path;
-              isReadOnly = true;
-              mountPoint = "/var/.github-runner.env";
-            };
-            "gitlab-config" = {
-              hostPath = "/data_2/containers/github-runner/gitlab-runner";
-              isReadOnly = false;
-              mountPoint = "/etc/gitlab-runner";
-            };
-            "ssh-keys" = {
-              hostPath = "/data_2/containers/github-runner/ssh";
-              isReadOnly = false;
-              mountPoint = "/etc/ssh";
-            };
-            "github-cache" = {
-              hostPath = "/data_2/cache/github-runner";
-              isReadOnly = false;
-              mountPoint = "/var/cache/github-runner";
-            };
-          };
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 230;
-              protocol = "tcp";
-            }
-          ];
-          ephemeral = lib.mkForce true;
-        };
-        ipAddress = "10.0.5.30";
-        needsDocker = true;
-        # Only entitled to 1/5 of the CPU resources in case of contention
-        cpuWeight = 20;
-        ioWeight = 20;
-      };
-      firedragon-runner = {
-        config = import ./stormwing/firedragon-runner.nix;
-        defaults = false;
-        extraOptions = {
-          bindMounts = {
-            "firedragon-runner" = {
-              hostPath = "/data_2/containers/firedragon-runner";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/compose-runner/firedragon-runner";
-            };
-          };
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 250;
-              protocol = "tcp";
-            }
-          ];
-          ephemeral = lib.mkForce true;
-        };
-        ipAddress = "10.0.5.50";
-        needsDocker = true;
-        # Only entitled to 10% of the CPU resources in case of contention
-        cpuWeight = 10;
-        ioWeight = 10;
-      };
-      iso-runner = {
-        config = import ./stormwing/iso-runner.nix;
-        extraOptions = {
-          bindMounts = {
-            "iso" = {
-              hostPath = "/data_1/iso/";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/buildiso";
-            };
-            "cache" = {
-              hostPath = "/data_1/cache/iso-runner";
-              isReadOnly = false;
-              mountPoint = "/var/garuda/buildiso/cache";
-            };
-            "pacman_cache" = {
-              hostPath = "/data_1/cache/pacman-cache";
-              isReadOnly = false;
-              mountPoint = "/var/cache/pacman/pkg";
-            };
-          };
-        };
-        ipAddress = "10.0.5.20";
-        needsDocker = true;
-      };
-      web-front = {
-        config = import ./stormwing/web-front.nix;
-        extraOptions = {
-          bindMounts = {
-            "acme" = {
-              hostPath = "/data_1/containers/web-front/acme";
-              isReadOnly = false;
-              mountPoint = "/var/lib/acme";
-            };
-            "nginx" = {
-              hostPath = "/data_1/containers/web-front/nginx";
-              isReadOnly = false;
-              mountPoint = "/var/log/nginx";
-            };
-          };
-          forwardPorts = [
-            {
-              containerPort = 22;
-              hostPort = 240;
-              protocol = "tcp";
-            }
-          ];
-        };
-        ipAddress = "10.0.5.40";
-      };
-    };
   };
 
-  # Monitor a few services of the containers
-  services = {
-    netdata.configDir = {
-      "go.d/web_log.conf" = pkgs.writeText "web_log.conf" ''
-        jobs:
-          - name: nginx
-            path: /data_1/containers/web-front/nginx/access.log
-      '';
-    };
+  networking.firewall.trustedInterfaces = [ "br0" ];
+
+  garuda-lib.sshkeys = {
+    ed25519 = "/data_1/persistent/etc/ssh/ssh_host_ed25519_key";
+    rsa = "/data_1/persistent/etc/ssh/ssh_host_rsa_key";
   };
 
-  sops.secrets = {
-    "compose/github-runner" = { };
+  environment.persistence."/data_1/persistent" = {
+    enable = true;
+    hideMounts = true;
+    directories = [
+      "/home"
+      "/var/cache/netdata"
+      "/var/cache/tailscale"
+      "/var/lib/netdata"
+      "/var/lib/nixos"
+      "/var/lib/tailscale"
+      "/var/lib/vnstat"
+      "/var/log"
+    ];
+    files = [
+      "/etc/machine-id"
+    ];
   };
+
+  security.sudo.extraConfig = ''
+    Defaults lecture = never
+  '';
 }
 </code></pre>
 <h2 id="containersservices"><a class="header" href="#containersservices">Containers/services</a></h2>
 <ul>
+<li><a href="arch-mirror.html">arch-mirror</a>: Mirrors the Arch Linux repositories and pushes them to Cloudflare R2.</li>
 <li><a href="chaotic-v4.html">chaotic-v4</a>: Main Chaotic-AUR builder and repository sync container.</li>
 <li><a href="firedragon-runner.html">firedragon-runner</a>: CI runner for building and testing the Firedragon browser.</li>
 <li><a href="github-runner.html">github-runner</a>: GitHub Actions runner for CI/CD tasks related to Garuda Linux projects.</li>
+<li><a href="gitlab-runner.html">gitlab-runner</a>: GitLab CI runners for building our packages.</li>
 <li><a href="iso-runner.html">iso-runner</a>: Dedicated builder for Garuda Linux ISO images.</li>
 <li><a href="web-front.html">web-front</a>: Reverse proxy and web frontend for services running on stormwing.</li>
 </ul>
@@ -531,7 +656,7 @@
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../hosts/stormwing/chaotic-v4.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../hosts/stormwing/arch-mirror.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -545,7 +670,7 @@
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../hosts/stormwing/chaotic-v4.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../hosts/stormwing/arch-mirror.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

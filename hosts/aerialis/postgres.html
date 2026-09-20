@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-6e7af055.js";
+            window.path_to_searchindex_js = "../../searchindex-a44a56cc.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-1306c1d0.js"></script>
+        <script src="../../toc-4ebbbf40.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -193,7 +193,7 @@
 Authentication happens via Cloudflare Access.</p>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <pre><code class="language-nix">{
-  inputs,
+  garuda-lib,
   pkgs,
   sources,
   config,
@@ -223,7 +223,11 @@ in
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
-  # Our Postgres database
+  garuda = garuda-lib.mkMonitoring {
+    host = "aerialis";
+    units = [ "postgresql.service" ];
+  };
+
   services.postgresql = {
     enable = true;
     ensureDatabases = [
@@ -251,25 +255,41 @@ in
         name = "chaotic-aur";
         ensureDBOwnership = true;
       }
+      {
+        name = "netdata";
+        ensureClauses.login = true;
+      }
     ];
-    initialScript = pkgs.writeText "backend-initScript" ''
-      CREATE USER netdata;
-      GRANT pg_monitor TO netdata;
-    '';
+    extensions = with pkgs.postgresql_18.pkgs; [
+      pg_hll # chaotic-aur uses this for the useragent/ip statistics
+      pg_repack # this lets us run the vacuum online
+    ];
     authentication = lib.mkForce ''
       local all all peer
-      host chaotic-aur chaotic-router 0.0.0.0/0 scram-sha-256
+      hostssl chaotic-aur chaotic-router 0.0.0.0/0 scram-sha-256
+      host all netdata 10.0.5.1/32 scram-sha-256
       # Reject anything else coming from the outside world somehow someway
       host all all 10.0.5.1/32 reject
       # Allow connections from the internal network
-      host all all 10.0.5.0/24 md5
+      host all all 10.0.5.0/24 scram-sha-256
       # Allow localhost connections
-      host all all 127.0.0.1/32 md5
+      host all all 127.0.0.1/32 scram-sha-256
       # Block the rest of the internet
       host all all 0.0.0.0/0 reject
     '';
-    # This is publically accesible now through port 5432, however only the chaotic-router user can access the database through the internet
+    # This is publically accessible now through port 5432, however only the chaotic-router user can access
+    # the database through the internet, and only over TLS
     enableTCPIP = true;
+    package = pkgs.postgresql_18;
+    settings = {
+      ssl = true;
+      ssl_cert_file = "${config.services.postgresql.dataDir}/server.crt";
+      ssl_key_file = "${config.services.postgresql.dataDir}/server.key";
+
+      # Defaults (128MB / 4GB) are far too small for a cluster shared by multiple services
+      shared_buffers = "4GB";
+      effective_cache_size = "12GB";
+    };
   };
 
   # Regular backups for our database (every 6h)
@@ -285,6 +305,7 @@ in
     initialPasswordFile = config.sops.secrets."postgres/pg_admin".path;
     openFirewall = true;
     settings = {
+      DEFAULT_SERVER = "10.0.5.20";
       FIXED_BINARY_PATHS = {
         "pg" = "${config.services.postgresql.package}/bin";
       };
@@ -293,7 +314,6 @@ in
       WEBSERVER_REMOTE_USER = "X-Forwarded-User";
       MASTER_PASSWORD_REQUIRED = false;
     };
-    package = inputs.nixpkgs-stable.legacyPackages."${pkgs.system}".pgadmin4;
   };
 
   systemd.services.pgadmin = {
@@ -304,10 +324,31 @@ in
     '';
   };
 
+  # Serve the live ACME wildcard cert to Postgres for external TLS
+  system.activationScripts.postgresServerCert = ''
+    install -o postgres -g postgres -m 0600 \
+      /var/lib/acme/garudalinux.org/key.pem \
+      ${config.services.postgresql.dataDir}/server.key
+    install -o postgres -g postgres -m 0644 \
+      /var/lib/acme/garudalinux.org/fullchain.pem \
+      ${config.services.postgresql.dataDir}/server.crt
+  '';
+
   # Open up ports for Postgres
   networking.firewall.allowedTCPPorts = [ 5432 ];
 
   sops.secrets."postgres/pg_admin" = { };
+  sops.secrets."postgres/netdata" = {
+    owner = "postgres";
+    group = "postgres";
+    mode = "0400";
+  };
+
+  systemd.services.postgresql.postStart = lib.mkAfter ''
+    PASS=$(cat ${config.sops.secrets."postgres/netdata".path})
+    ${config.services.postgresql.package}/bin/psql -U postgres -c "ALTER USER netdata WITH LOGIN PASSWORD '$PASS'"
+    ${config.services.postgresql.package}/bin/psql -U postgres -c "GRANT pg_monitor TO netdata"
+  '';
 
   system.stateVersion = "23.05";
 }
@@ -317,7 +358,7 @@ in
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../hosts/aerialis/mastodon.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../hosts/aerialis/n8n.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
@@ -331,7 +372,7 @@ in
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../hosts/aerialis/mastodon.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../hosts/aerialis/n8n.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 

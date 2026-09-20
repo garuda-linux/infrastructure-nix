@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-6e7af055.js";
+            window.path_to_searchindex_js = "../../searchindex-a44a56cc.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-1306c1d0.js"></script>
+        <script src="../../toc-4ebbbf40.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -184,23 +184,37 @@
 <p>Configuration for the <code>mail</code> container on aerialis.</p>
 <pre><code class="language-nix">{
   config,
+  garuda-lib,
   lib,
   pkgs,
   sources,
   ...
 }:
 let
+  mon = garuda-lib.monitoring;
+
   authres_status = pkgs.roundcubePlugins.roundcubePlugin rec {
     pname = "authres_status";
-    version = "0.7.0";
+    version = "0.7.1";
     src = pkgs.fetchzip {
       url = "https://github.com/pimlie/authres_status/archive/refs/tags/${version}.zip";
-      hash = "sha256-+rnHc2vJC4ozRdcHAYg1J5rIWe4k/yTgD5xYr9NA/Hg=";
+      hash = "sha256-vQGllx3NzVkjQdnIosvQtI3iQ02HrGIF7sSL7G2E5c4=";
     };
   };
 in
 {
   imports = sources.defaultModules ++ [ ../../modules ];
+
+  garuda = lib.recursiveUpdate (garuda-lib.mkMonitoring {
+    host = "aerialis";
+    units = [
+      "dovecot2.service"
+      "nginx.service"
+      "postfix.service"
+      "rspamd.service"
+    ];
+    exporters = [ "postfixExporter" ];
+  }) { monitoring.rspamd.enable = true; };
 
   # NixOS Mailserver
   mailserver = {
@@ -241,14 +255,8 @@ in
         hashedPasswordFile = config.sops.secrets."mail/mastodonatgl".path;
         sendOnly = true;
       };
-      "naman@garudalinux.org" = {
-        hashedPasswordFile = config.sops.secrets."mail/namanatgl".path;
-      };
       "noreply@garudalinux.org" = {
         hashedPasswordFile = config.sops.secrets."mail/noreplyatgl".path;
-      };
-      "rohit@garudalinux.org" = {
-        hashedPasswordFile = config.sops.secrets."mail/rohitatgl".path;
       };
       "security@garudalinux.org" = {
         hashedPasswordFile = config.sops.secrets."mail/securityatgl".path;
@@ -307,8 +315,6 @@ in
       "xstefen@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.xstefen ];
     };
     indexDir = "/var/lib/dovecot/indices";
-    # We do it via UptimeKuma, and since we don't enable NAT reflection in this server, this
-    # shuts down the services.
     systemDomain = "garudalinux.org";
     systemName = "Garuda Linux";
     # SMTP on port 587 is deprecated and disabled by default
@@ -325,7 +331,32 @@ in
       notify = true;
       push_notification = true;
     };
+
+    "service stats" = {
+      "inet_listener http" = {
+        port = mon.ports.dovecotMetrics;
+      };
+    };
+    "metric auth_success" = {
+      filter = "event=auth_request_finished AND success=yes";
+    };
+    "metric auth_failure" = {
+      filter = "event=auth_request_finished AND success=no";
+    };
+    "metric imap_command" = {
+      filter = "event=imap_command_finished";
+      "group_by cmd_name" = { };
+      "group_by tagged_reply_state" = { };
+    };
+    "metric mail_delivery" = {
+      filter = "event=mail_delivery_finished";
+    };
+    "metric push_notification" = {
+      filter = "event=push_notification_finished";
+    };
   };
+
+  networking.firewall.interfaces."eth0".allowedTCPPorts = [ mon.ports.dovecotMetrics ];
 
   # Postmaster alias
   services.postfix.postmasterAlias = "root@garudalinux.org";
@@ -368,30 +399,28 @@ in
     forceSSL = lib.mkForce false;
   };
 
-  # Secrets
-  sops.secrets = {
-    "backup/repo_key" = { };
-    "backup/ssh_aerialis" = { };
-    "mail/a0xzatchaotic" = { };
-    "mail/cloudatgl" = { };
-    "mail/complaintsatgl" = { };
-    "mail/dr460nf1r3atchaotic" = { };
-    "mail/dr460nf1r3atgl" = { };
-    "mail/filoatgl" = { };
-    "mail/gitlabatgl" = { };
-    "mail/hatchaotic" = { };
-    "mail/mastodonatgl" = { };
-    "mail/namanatgl" = { };
-    "mail/noreplyatgl" = { };
-    "mail/rohitatgl" = { };
-    "mail/securityatgl" = { };
-    "mail/sgsatgl" = { };
-    "mail/spam-reportsatgl" = { };
-    "mail/teamatgl" = { };
-    "mail/tneatgl" = { };
-    "mail/wilburatchaotic" = { };
-    "mail/yorperatgl" = { };
-  };
+  sops.secrets = garuda-lib.mkSecrets [
+    "backup/repo_key"
+    "backup/ssh_aerialis"
+    "mail/rspamd_controller"
+    "mail/a0xzatchaotic"
+    "mail/cloudatgl"
+    "mail/complaintsatgl"
+    "mail/dr460nf1r3atchaotic"
+    "mail/dr460nf1r3atgl"
+    "mail/filoatgl"
+    "mail/gitlabatgl"
+    "mail/hatchaotic"
+    "mail/mastodonatgl"
+    "mail/noreplyatgl"
+    "mail/securityatgl"
+    "mail/sgsatgl"
+    "mail/spam-reportsatgl"
+    "mail/teamatgl"
+    "mail/tneatgl"
+    "mail/wilburatchaotic"
+    "mail/yorperatgl"
+  ];
 
   system.stateVersion = "22.05";
 
