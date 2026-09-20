@@ -6,3 +6,4 @@
 .vault_pass
 buildiso/**
 result/
+*.d.ts

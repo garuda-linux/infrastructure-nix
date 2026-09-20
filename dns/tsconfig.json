@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "lib": ["es5"],
+    "allowJs": true,
+    "checkJs": true,
+    "module": "nodenext",
+    "strict": true,
+    "noEmit": true
+  },
+  "include": ["dnsconfig.js", "types-dnscontrol.d.ts"]
+}

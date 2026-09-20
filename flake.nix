@@ -147,6 +147,7 @@
                 }).shell;
               shared_commands = [
                 { package = "ansible"; }
+                { package = "dnscontrol"; }
                 { package = "rsync"; }
                 { package = "sops"; }
                 {
@@ -217,6 +218,9 @@
                 devshell = {
                   name = "infra-nix";
                   startup = {
+                    dnscontrol.text = ''
+                      cd dns && dnscontrol write-types &>/dev/null
+                    '';
                     infra-nix-shell.text = ''
                       export LC_ALL="C.UTF-8"
                       export NIX_PATH=nixpkgs=${nixpkgs}
@@ -251,25 +255,33 @@
               };
             };
 
-          checks.pre-commit-check = inputs.pre-commit-hooks.lib.${system}.run {
-            package = pkgs.prek;
-            hooks = {
-              check-json.enable = true;
-              # commitizen.enable = true; tests fail currently
-              detect-private-keys.enable = true;
-              check-yaml.enable = true;
-              ripsecrets.enable = true;
-              treefmt = {
-                enable = false;
-                name = "treefmt";
-                entry = "treefmt";
-                types = [
-                  "text"
-                ];
-                pass_filenames = false;
+          checks = {
+            dnscontrol = pkgs.runCommand "dnscontrol" { } ''
+              cd ${./dns}
+              ${pkgs.dnscontrol}/bin/dnscontrol check
+              touch $out
+            '';
+
+            pre-commit-check = inputs.pre-commit-hooks.lib.${system}.run {
+              package = pkgs.prek;
+              hooks = {
+                check-json.enable = true;
+                check-yaml.enable = true;
+                commitizen.enable = true;
+                detect-private-keys.enable = true;
+                ripsecrets.enable = true;
+                treefmt = {
+                  enable = false;
+                  name = "treefmt";
+                  entry = "treefmt";
+                  types = [
+                    "text"
+                  ];
+                  pass_filenames = false;
+                };
               };
+              src = ./.;
             };
-            src = ./.;
           };
 
           treefmt = {
