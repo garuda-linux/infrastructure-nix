@@ -17,8 +17,8 @@
 
   services.garuda-arch-mirror = {
     enable = true;
-    upstreamUrl = "rsync://mirror.23m.com/archlinux/";
-    lastupdateUrl = "https://mirror.23m.com/archlinux/lastupdate";
+    upstreamUrl = "rsync://f.matthieul.dev/mirror/archlinux/";
+    lastupdateUrl = "https://f.matthieul.dev/mirror/archlinux/lastupdate";
     tls = false;
     rcloneConfig = config.sops.secrets."cloudflare/r2_rclone".path;
     rcloneDest = "r2:/mirror/arch";
