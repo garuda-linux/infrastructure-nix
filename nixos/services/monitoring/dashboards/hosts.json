@@ -642,9 +642,9 @@
                         "editorMode": "code",
                         "expr": "sort_desc(100 * (1 - node_filesystem_avail_bytes{job=~\"$group\", instance=~\"$instance\", mountpoint=~\"/boot|/home|/data_1|/data_2\", fstype!~\"tmpfs|overlay|squashfs|nsfs|ramfs\"} / node_filesystem_size_bytes{job=~\"$group\", instance=~\"$instance\", mountpoint=~\"/boot|/home|/data_1|/data_2\", fstype!~\"tmpfs|overlay|squashfs|nsfs|ramfs\"}))",
                         "format": "time_series",
-                        "instant": false,
+                        "instant": true,
                         "legendFormat": "__auto",
-                        "range": true
+                        "range": false
                       }
                     },
                     "refId": "A",

@@ -320,6 +320,11 @@ let
     "grafana.garudalinux.net" = mkCloudflaredVhost {
       upstream = "http://10.0.5.100:3010";
       acmeHost = "garudalinux.net";
+      extraLocations = {
+        "= /static/fly-regions.geojson" = {
+          alias = ../../services/monitoring/static/fly-regions.geojson;
+        };
+      };
     };
     "prometheus.garudalinux.net" = mkZerotrustVhost {
       upstream = "http://10.0.5.100:9090";

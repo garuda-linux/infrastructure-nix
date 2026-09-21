@@ -818,7 +818,7 @@
                       "spec": {
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sum(rate(fly_edge_data_out{app=\"$app\"}[$__range])) by (region) > 0",
+                        "expr": "label_replace(sum(rate(fly_edge_data_out{app=\"$app\"}[$__range])) by (region) > 0, \"lookup\", \"$1\", \"region\", \"(.*)\")",
                         "format": "table",
                         "instant": true,
                         "legendFormat": "__auto",
@@ -842,7 +842,7 @@
                       "spec": {
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sum(rate(fly_instance_net_sent_bytes{app=\"$app\"}[$__range])) by (region) > 0",
+                        "expr": "label_replace(sum(rate(fly_instance_net_sent_bytes{app=\"$app\"}[$__range])) by (region) > 0, \"lookup\", \"$1\", \"region\", \"(.*)\")",
                         "format": "table",
                         "instant": true,
                         "legendFormat": "__auto",
@@ -925,8 +925,8 @@
                       "options": "A"
                     },
                     "location": {
-                      "gazetteer": "public/gazetteer/airports.geojson",
-                      "lookup": "region",
+                      "gazetteer": "/static/fly-regions.geojson",
+                      "lookup": "lookup",
                       "mode": "lookup"
                     },
                     "name": "Edge",
@@ -978,8 +978,8 @@
                       "options": "B"
                     },
                     "location": {
-                      "gazetteer": "public/gazetteer/airports.geojson",
-                      "lookup": "region",
+                      "gazetteer": "/static/fly-regions.geojson",
+                      "lookup": "lookup",
                       "mode": "lookup"
                     },
                     "name": "Instance",
@@ -1111,7 +1111,7 @@
                       "spec": {
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sum(increase(fly_edge_http_response_time_seconds_count{app=\"$app\"}[$__range])) by (region, le) / max(sum(increase(fly_edge_http_response_time_seconds_count{app=\"$app\"}[$__range])) by (region, le))",
+                        "expr": "label_replace(sum(increase(fly_edge_http_response_time_seconds_count{app=\"$app\"}[$__range])) by (region), \"lookup\", \"$1\", \"region\", \"(.*)\")",
                         "format": "table",
                         "instant": true,
                         "legendFormat": "__auto",
@@ -1135,7 +1135,7 @@
                       "spec": {
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sum(increase(fly_edge_http_response_time_seconds_sum{app=\"$app\"}[$__range])) by (region) / sum(increase(fly_edge_http_response_time_seconds_count{app=\"$app\"}[$__range])) by (region) * 1000",
+                        "expr": "label_replace(sum(increase(fly_edge_http_response_time_seconds_sum{app=\"$app\"}[$__range])) by (region) / sum(increase(fly_edge_http_response_time_seconds_count{app=\"$app\"}[$__range])) by (region) * 1000, \"lookup\", \"$1\", \"region\", \"(.*)\")",
                         "format": "table",
                         "instant": true,
                         "legendFormat": "__auto",
@@ -1147,27 +1147,7 @@
                   }
                 }
               ],
-              "transformations": [
-                {
-                  "kind": "Transformation",
-                  "group": "seriesToColumns",
-                  "spec": {
-                    "options": {
-                      "byField": "region"
-                    }
-                  }
-                },
-                {
-                  "kind": "Transformation",
-                  "group": "renameByRegex",
-                  "spec": {
-                    "options": {
-                      "regex": "Value #A",
-                      "renamePattern": "Count"
-                    }
-                  }
-                }
-              ],
+              "transformations": [],
               "queryOptions": {}
             }
           },
@@ -1190,7 +1170,6 @@
                   "showAttribution": false,
                   "showDebug": false,
                   "showMeasure": false,
-                  "showScale": false,
                   "showZoom": true
                 },
                 "layers": [
@@ -1210,7 +1189,7 @@
                           "mode": "mod"
                         },
                         "size": {
-                          "field": "Value #A",
+                          "field": "Value #B",
                           "fixed": 5,
                           "max": 15,
                           "min": 1
@@ -1233,9 +1212,13 @@
                         }
                       }
                     },
+                    "filterData": {
+                      "id": "byRefId",
+                      "options": "B"
+                    },
                     "location": {
-                      "gazetteer": "public/gazetteer/airports.geojson",
-                      "lookup": "region",
+                      "gazetteer": "/static/fly-regions.geojson",
+                      "lookup": "lookup",
                       "mode": "lookup"
                     },
                     "name": "Latency",
