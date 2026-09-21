@@ -110,6 +110,7 @@ in
         echo "Changes detected, syncing from upstream."
         rsync_cmd \
           --exclude='*.links.tar.gz*' \
+          --exclude='*-debug/' \
           --exclude='/other' \
           --exclude='/sources' \
           --exclude='/iso' \
