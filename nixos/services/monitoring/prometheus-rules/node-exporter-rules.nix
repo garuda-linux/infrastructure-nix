@@ -53,6 +53,7 @@
         for = "0m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host unusual network throughput in (instance {{ $labels.instance }})";
@@ -65,6 +66,7 @@
         for = "0m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host unusual network throughput out (instance {{ $labels.instance }})";
@@ -90,6 +92,7 @@
         for = "2m";
         labels = {
           severity = "critical";
+          scope = "host";
         };
         annotations = {
           summary = "Host out of disk space (instance {{ $labels.instance }})";
@@ -102,6 +105,7 @@
         for = "1h";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host disk may fill in 24 hours (instance {{ $labels.instance }})";
@@ -114,6 +118,7 @@
         for = "2m";
         labels = {
           severity = "critical";
+          scope = "host";
         };
         annotations = {
           summary = "Host out of inodes (instance {{ $labels.instance }})";
@@ -126,6 +131,7 @@
         for = "2m";
         labels = {
           severity = "critical";
+          scope = "host";
         };
         annotations = {
           summary = "Host filesystem device error (instance {{ $labels.instance }})";
@@ -138,6 +144,7 @@
         for = "2m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host inodes may fill in 24 hours (instance {{ $labels.instance }})";
@@ -382,6 +389,7 @@
         for = "2m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host Network Receive Errors (instance {{ $labels.instance }})";
@@ -394,6 +402,7 @@
         for = "2m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Host Network Transmit Errors (instance {{ $labels.instance }})";
