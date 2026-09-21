@@ -73,7 +73,7 @@
       }
       {
         alert = "HostDiskIOUtilizationHigh";
-        expr = "(rate(node_disk_io_time_seconds_total[5m]) > .80)";
+        expr = "rate(node_disk_io_time_seconds_total{job!=\"node-stormwing-containers\",job!=\"node-chaotic-mirrors\"}[5m]) > .80";
         for = "0m";
         labels = {
           severity = "warning";
@@ -172,7 +172,7 @@
       }
       {
         alert = "HostHighCPULoad";
-        expr = "1 - (avg without (cpu) (rate(node_cpu_seconds_total{mode=\"idle\",job!=\"node-stormwing-containers\",instance!=\"stormwing\"}[5m]))) > .80";
+        expr = "1 - (avg without (cpu) (rate(node_cpu_seconds_total{mode=\"idle\",job!=\"node-stormwing-containers\",job!=\"node-chaotic-mirrors\",instance!=\"stormwing\"}[5m]))) > .80";
         for = "10m";
         labels = {
           severity = "warning";
@@ -197,7 +197,7 @@
       # }
       {
         alert = "HostCPUStealNoisyNeighbor";
-        expr = "avg without (cpu) (rate(node_cpu_seconds_total{mode=\"steal\"}[5m])) * 100 > 20";
+        expr = "avg without (cpu) (rate(node_cpu_seconds_total{mode=\"steal\",job!=\"node-chaotic-mirrors\"}[5m])) * 100 > 20";
         for = "0m";
         labels = {
           severity = "warning";
@@ -210,7 +210,7 @@
       }
       {
         alert = "HostCPUHighIowait";
-        expr = "avg without (cpu) (rate(node_cpu_seconds_total{mode=\"iowait\"}[5m])) > .10";
+        expr = "avg without (cpu) (rate(node_cpu_seconds_total{mode=\"iowait\",job!=\"node-chaotic-mirrors\"}[5m])) > .10";
         for = "0m";
         labels = {
           severity = "warning";

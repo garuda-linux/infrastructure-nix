@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  options,
   pkgs,
   ...
 }:
@@ -107,37 +106,35 @@ in
     };
   };
 
-  config =
-    lib.mkIf (cfg.enable && cfg.rspamd.enable && cfg.prometheus.nodeExporter.enable)
-      {
-        systemd.services.garuda-rspamd-exporter = {
-          description = "Poll the Rspamd controller stat into the node_exporter textfile";
-          wantedBy = [ "multi-user.target" ];
-          wants = [ "network-online.target" ];
-          after = [
-            "network-online.target"
-            "rspamd.service"
-          ];
-          serviceConfig = {
-            Type = "oneshot";
-            EnvironmentFile = config.sops.templates."rspamd-env".path;
-          };
-          script = writer.outPath;
-        };
-
-        systemd.timers.garuda-rspamd-exporter = {
-          wantedBy = [ "timers.target" ];
-          timerConfig = {
-            OnBootSec = "2min";
-            OnUnitActiveSec = cfg.rspamd.interval;
-          };
-        };
-
-        sops.secrets."mail/rspamd_controller" = { };
-        sops.templates."rspamd-env" = {
-          content = ''
-            RSPAMD_PASSWORD=${config.sops.placeholder."mail/rspamd_controller"}
-          '';
-        };
+  config = lib.mkIf (cfg.enable && cfg.rspamd.enable && cfg.prometheus.nodeExporter.enable) {
+    systemd.services.garuda-rspamd-exporter = {
+      description = "Poll the Rspamd controller stat into the node_exporter textfile";
+      wantedBy = [ "multi-user.target" ];
+      wants = [ "network-online.target" ];
+      after = [
+        "network-online.target"
+        "rspamd.service"
+      ];
+      serviceConfig = {
+        Type = "oneshot";
+        EnvironmentFile = config.sops.templates."rspamd-env".path;
       };
+      script = writer.outPath;
+    };
+
+    systemd.timers.garuda-rspamd-exporter = {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "2min";
+        OnUnitActiveSec = cfg.rspamd.interval;
+      };
+    };
+
+    sops.secrets."mail/rspamd_controller" = { };
+    sops.templates."rspamd-env" = {
+      content = ''
+        RSPAMD_PASSWORD=${config.sops.placeholder."mail/rspamd_controller"}
+      '';
+    };
+  };
 }

@@ -70,13 +70,17 @@ let
     if lib.isAttrs value then
       lib.mapAttrs (
         attrName: attrValue:
-        if
-          attrName == "datasource" && lib.isAttrs attrValue && (attrValue.name or "") != ""
-        then
+        if attrName == "datasource" && lib.isAttrs attrValue && (attrValue.name or "") != "" then
           let
             uid = chaoticDatasourceUid attrValue.name;
           in
-          if uid == attrValue.name then attrValue else { name = uid; uid = uid; }
+          if uid == attrValue.name then
+            attrValue
+          else
+            {
+              name = uid;
+              inherit uid;
+            }
         else
           rewriteChaoticDatasources attrValue
       ) value
@@ -273,7 +277,9 @@ in
           apiVersion = 1;
           providers = [
             (dashboardProvider "garuda" 1 "${config.services.grafana.dataDir}/dashboards-rendered/garuda")
-            (dashboardProvider "chaotic" chaoticOrgId "${config.services.grafana.dataDir}/dashboards-rendered/chaotic")
+            (dashboardProvider "chaotic" chaoticOrgId
+              "${config.services.grafana.dataDir}/dashboards-rendered/chaotic"
+            )
           ];
         };
       };
@@ -353,12 +359,16 @@ in
 
     # Grafana only applies `security.admin_password` while creating the admin user, so an
     # install that already has one silently keeps its old password.
-    systemd.services.grafana.serviceConfig.ExecStartPre = [ adminPasswordScript renderDashboardsScript ];
+    systemd.services.grafana.serviceConfig.ExecStartPre = [
+      adminPasswordScript
+      renderDashboardsScript
+    ];
 
     sops.secrets = {
       "grafana/carto_key" = {
         owner = "grafana";
-      };      "grafana/admin_password" = {
+      };
+      "grafana/admin_password" = {
         owner = "grafana";
       };
       "grafana/fly_token" = {

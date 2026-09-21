@@ -68,6 +68,7 @@ in
         pkgs.rsync
         pkgs.openssl
         pkgs.curl
+        pkgs.diffutils
       ];
       serviceConfig.Type = "oneshot";
       script = ''
