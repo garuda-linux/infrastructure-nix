@@ -150,13 +150,19 @@ let
   # Grafana's GitLab connector only ever receives group full paths (from /api/v4/groups),
   # never access levels, so roles are matched on group membership. Longer paths are
   # checked first so that a subgroup rule wins over its parent group.
+  grafanaAdminEmails = [
+    "gitlab@dr460nf1r3.org"
+  ];
+
   gitlabRoleMapping = {
-    "garuda-linux/devops" = "Admin";
-    "garuda-linux" = "Editor";
+    "garuda-linux" = "Viewer";
   };
 
   gitlabRolePath =
-    lib.concatStringsSep " || " (
+    "contains(["
+    + lib.concatMapStringsSep ", " (email: "'${email}'") grafanaAdminEmails
+    + "], email) && 'Admin' || "
+    + lib.concatStringsSep " || " (
       map (group: "contains(groups[*], '${group}') && '${gitlabRoleMapping.${group}}'") (
         builtins.sort (a: b: builtins.stringLength a > builtins.stringLength b) (
           builtins.attrNames gitlabRoleMapping
@@ -331,8 +337,6 @@ in
           scopes = "read_api read_user openid profile email";
           allowed_groups = "garuda-linux";
           role_attribute_path = gitlabRolePath;
-          # Garuda DevOps is automatically also a Chaotic-AUR admin.
-          org_mapping = "garuda-linux/devops:Chaotic:Admin";
           skip_org_role_sync = false;
           use_pkce = true;
           use_refresh_token = true;

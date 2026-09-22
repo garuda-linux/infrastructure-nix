@@ -60,11 +60,6 @@ Grafana has no provisioning support for organizations, and it refuses to start w
 that does not exist yet. The `grafana-organizations` unit therefore creates any missing organization listed
 in `nixos/services/monitoring/grafana.nix` through the Admin API.
 
-The Grafana role for GitLab logins is mapped from group membership in
-`nixos/services/monitoring/grafana.nix`. GitLab access levels are not available to Grafana - its connector
-only fetches group full paths from `/api/v4/groups` - so roles cannot be derived from Owner/Maintainer.
-Matching is exact, so a member of a subgroup that is not listed falls back to Viewer.
-
 ## Alerting
 
 Alert rules live in `nixos/services/monitoring/prometheus-rules/` (node-exporter, nginx-exporter, postgres-exporter,
