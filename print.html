@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex-d69b3f25.js";
+            window.path_to_searchindex_js = "searchindex-e434df35.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-4ebbbf40.js"></script>
@@ -669,15 +669,15 @@ in
         knownHosts = [
           {
             name = "storagebox-ed25519";
-            publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs";  # pragma: allowlist secret
+            publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs"; # pragma: allowlist secret
           }
           {
             name = "storagebox-rsa";
-            publicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5EB5p/5Hp3hGW1oHok+PIOH9Pbn7cnUiGmUEBrCVjnAw+HrKyN8bYVV0dIGllswYXwkG/+bgiBlE6IVIBAq+JwVWu1Sss3KarHY3OvFJUXZoZyRRg/Gc/+LRCE7lyKpwWQ70dbelGRyyJFH36eNv6ySXoUYtGkwlU5IVaHPApOxe4LHPZa/qhSRbPo2hwoh0orCtgejRebNtW5nlx00DNFgsvn8Svz2cIYLxsPVzKgUxs8Zxsxgn+Q/UvR7uq4AbAhyBMLxv7DjJ1pc7PJocuTno2Rw9uMZi1gkjbnmiOh6TTXIEWbnroyIhwc8555uto9melEUmWNQ+C+PwAK+MPw==";  # pragma: allowlist secret
+            publicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5EB5p/5Hp3hGW1oHok+PIOH9Pbn7cnUiGmUEBrCVjnAw+HrKyN8bYVV0dIGllswYXwkG/+bgiBlE6IVIBAq+JwVWu1Sss3KarHY3OvFJUXZoZyRRg/Gc/+LRCE7lyKpwWQ70dbelGRyyJFH36eNv6ySXoUYtGkwlU5IVaHPApOxe4LHPZa/qhSRbPo2hwoh0orCtgejRebNtW5nlx00DNFgsvn8Svz2cIYLxsPVzKgUxs8Zxsxgn+Q/UvR7uq4AbAhyBMLxv7DjJ1pc7PJocuTno2Rw9uMZi1gkjbnmiOh6TTXIEWbnroyIhwc8555uto9melEUmWNQ+C+PwAK+MPw=="; # pragma: allowlist secret
           }
           {
             name = "storagebox-ecdsa";
-            publicKey = "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAGK0po6usux4Qv2d8zKZN1dDvbWjxKkGsx7XwFdSUCnF19Q8psHEUWR7C/LtSQ5crU/g+tQVRBtSgoUcE8T+FWp5wBxKvWG2X9gD+s9/4zRmDeSJR77W6gSA/+hpOZoSE+4KgNdnbYSNtbZH/dN74EG7GLb/gcIpbUUzPNXpfKl7mQitw==";  # pragma: allowlist secret
+            publicKey = "ecdsa-sha2-nistp521 AAAAE2VjZHNhLXNoYTItbmlzdHA1MjEAAAAIbmlzdHA1MjEAAACFBAGK0po6usux4Qv2d8zKZN1dDvbWjxKkGsx7XwFdSUCnF19Q8psHEUWR7C/LtSQ5crU/g+tQVRBtSgoUcE8T+FWp5wBxKvWG2X9gD+s9/4zRmDeSJR77W6gSA/+hpOZoSE+4KgNdnbYSNtbZH/dN74EG7GLb/gcIpbUUzPNXpfKl7mQitw=="; # pragma: allowlist secret
           }
         ];
         sourceDirectories = [
@@ -1183,7 +1183,7 @@ in
 <h3 id="docker-containers"><a class="header" href="#docker-containers">Docker containers</a></h3>
 <pre><code class="language-yaml">services:
   chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:2.8.0
+    image: ghcr.io/chaotic-cx/chaotic-next:2.9.0-pre
     container_name: chaotic-backend
     deploy:
       restart_policy:
@@ -2882,6 +2882,11 @@ let
     "grafana.garudalinux.net" = mkCloudflaredVhost {
       upstream = "http://10.0.5.100:3010";
       acmeHost = "garudalinux.net";
+      extraLocations = {
+        "= /static/fly-regions.geojson" = {
+          alias = ../../services/monitoring/static/fly-regions.geojson;
+        };
+      };
     };
     "prometheus.garudalinux.net" = mkZerotrustVhost {
       upstream = "http://10.0.5.100:9090";
@@ -3046,6 +3051,11 @@ in
               name = "garuda-nix-builds";
               hostPath = "/data_1/iso/garuda-nix";
               mountPoint = "/srv/http/garuda-nix";
+            }
+            {
+              name = "misc-files";
+              hostPath = "/data_2/containers/chaotic-v4/misc";
+              mountPoint = "/srv/http/misc";
             }
           ];
           forwardPorts = [
@@ -3409,8 +3419,8 @@ directory is shared with <a href="#chaotic-v4-stormwing">chaotic-v4</a>, which s
 
   services.garuda-arch-mirror = {
     enable = true;
-    upstreamUrl = "rsync://mirror.23m.com/archlinux/";
-    lastupdateUrl = "https://mirror.23m.com/archlinux/lastupdate";
+    upstreamUrl = "rsync://f.matthieul.dev/mirror/archlinux/";
+    lastupdateUrl = "https://f.matthieul.dev/mirror/archlinux/lastupdate";
     tls = false;
     rcloneConfig = config.sops.secrets."cloudflare/r2_rclone".path;
     rcloneDest = "r2:/mirror/arch";
@@ -5112,10 +5122,6 @@ the <code>grafana/fly_token</code> sops secret.</p>
 <p>Grafana has no provisioning support for organizations, and it refuses to start when provisioning targets one
 that does not exist yet. The <code>grafana-organizations</code> unit therefore creates any missing organization listed
 in <code>nixos/services/monitoring/grafana.nix</code> through the Admin API.</p>
-<p>The Grafana role for GitLab logins is mapped from group membership in
-<code>nixos/services/monitoring/grafana.nix</code>. GitLab access levels are not available to Grafana - its connector
-only fetches group full paths from <code>/api/v4/groups</code> - so roles cannot be derived from Owner/Maintainer.
-Matching is exact, so a member of a subgroup that is not listed falls back to Viewer.</p>
 <h2 id="alerting"><a class="header" href="#alerting">Alerting</a></h2>
 <p>Alert rules live in <code>nixos/services/monitoring/prometheus-rules/</code> (node-exporter, nginx-exporter, postgres-exporter,
 smartctl-exporter, borgmatic and self-monitoring rules). Alertmanager delivers firing and resolved alerts to Telegram

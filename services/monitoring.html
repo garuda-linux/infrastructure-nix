@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../searchindex-d69b3f25.js";
+            window.path_to_searchindex_js = "../searchindex-e434df35.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-4ebbbf40.js"></script>
@@ -234,10 +234,6 @@ the <code>grafana/fly_token</code> sops secret.</p>
 <p>Grafana has no provisioning support for organizations, and it refuses to start when provisioning targets one
 that does not exist yet. The <code>grafana-organizations</code> unit therefore creates any missing organization listed
 in <code>nixos/services/monitoring/grafana.nix</code> through the Admin API.</p>
-<p>The Grafana role for GitLab logins is mapped from group membership in
-<code>nixos/services/monitoring/grafana.nix</code>. GitLab access levels are not available to Grafana - its connector
-only fetches group full paths from <code>/api/v4/groups</code> - so roles cannot be derived from Owner/Maintainer.
-Matching is exact, so a member of a subgroup that is not listed falls back to Viewer.</p>
 <h2 id="alerting"><a class="header" href="#alerting">Alerting</a></h2>
 <p>Alert rules live in <code>nixos/services/monitoring/prometheus-rules/</code> (node-exporter, nginx-exporter, postgres-exporter,
 smartctl-exporter, borgmatic and self-monitoring rules). Alertmanager delivers firing and resolved alerts to Telegram

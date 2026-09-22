@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-d69b3f25.js";
+            window.path_to_searchindex_js = "../../searchindex-e434df35.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-4ebbbf40.js"></script>
@@ -204,8 +204,8 @@ directory is shared with <a href="chaotic-v4.html">chaotic-v4</a>, which serves 
 
   services.garuda-arch-mirror = {
     enable = true;
-    upstreamUrl = "rsync://mirror.23m.com/archlinux/";
-    lastupdateUrl = "https://mirror.23m.com/archlinux/lastupdate";
+    upstreamUrl = "rsync://f.matthieul.dev/mirror/archlinux/";
+    lastupdateUrl = "https://f.matthieul.dev/mirror/archlinux/lastupdate";
     tls = false;
     rcloneConfig = config.sops.secrets."cloudflare/r2_rclone".path;
     rcloneDest = "r2:/mirror/arch";
