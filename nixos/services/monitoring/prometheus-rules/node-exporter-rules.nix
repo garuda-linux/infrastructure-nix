@@ -101,7 +101,7 @@
       }
       {
         alert = "HostDiskMayFillIn24Hours";
-        expr = "predict_linear(node_filesystem_avail_bytes{fstype!~\"^(fuse.*|tmpfs|cifs|nfs)\"}[6h], 86400) <= 0 and node_filesystem_avail_bytes / node_filesystem_size_bytes < 0.20";
+        expr = "predict_linear(node_filesystem_avail_bytes{fstype!~\"^(fuse.*|tmpfs|cifs|nfs)\",job!~\"node-.+-containers\"}[6h], 86400) <= 0 and node_filesystem_avail_bytes{job!~\"node-.+-containers\"} / node_filesystem_size_bytes{job!~\"node-.+-containers\"} < 0.20";
         for = "1h";
         labels = {
           severity = "warning";
@@ -140,7 +140,7 @@
       }
       {
         alert = "HostInodesMayFillIn24Hours";
-        expr = "predict_linear(node_filesystem_files_free{fstype!~\"^(fuse.*|tmpfs|cifs|nfs)\"}[1h], 86400) <= 0 and node_filesystem_files_free > 0";
+        expr = "predict_linear(node_filesystem_files_free{fstype!~\"^(fuse.*|tmpfs|cifs|nfs)\",job!~\"node-.+-containers\"}[1h], 86400) <= 0 and node_filesystem_files_free{job!~\"node-.+-containers\"} > 0";
         for = "2m";
         labels = {
           severity = "warning";

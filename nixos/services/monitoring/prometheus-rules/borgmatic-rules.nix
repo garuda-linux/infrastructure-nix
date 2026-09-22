@@ -56,6 +56,7 @@
         for = "5m";
         labels = {
           severity = "info";
+          scope = "host";
         };
         annotations = {
           summary = "Borgmatic repository growing fast ({{ $labels.instance }})";

@@ -636,6 +636,14 @@ in
               ];
             }
           ];
+          # Drop per-country per-host breakdowns: ~10k series each, unused by any dashboard
+          metric_relabel_configs = [
+            {
+              source_labels = [ "__name__" ];
+              regex = "cloudflare_zone_requests_(origin_)?status_country_host";
+              action = "drop";
+            }
+          ];
         }
         ++ cfg.prometheus.scrapeConfigs;
 

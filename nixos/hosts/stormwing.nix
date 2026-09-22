@@ -129,6 +129,11 @@ in
               hostPath = "/data_1/iso/garuda-nix";
               mountPoint = "/srv/http/garuda-nix";
             }
+            {
+              name = "misc-files";
+              hostPath = "/data_2/containers/chaotic-v4/misc";
+              mountPoint = "/srv/http/misc";
+            }
           ];
           forwardPorts = [
             { containerPort = 873; }
