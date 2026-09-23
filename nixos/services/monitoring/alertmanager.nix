@@ -124,6 +124,14 @@ in
           group_wait = "30s";
           group_interval = "5m";
           repeat_interval = "4h";
+          # Host-global alerts keep firing notifications, drop the recovered spam
+          routes = [
+            {
+              matchers = [ ''scope="host"'' ];
+              receiver = "garuda-no-resolved";
+              continue = true;
+            }
+          ];
         };
         # nspawn containers share the host kernel, so host-global metrics
         # (meminfo, vmstat, /proc/stat, /sys, ...) read identically inside
@@ -141,14 +149,17 @@ in
             equal = [ "alertname" ];
           }
         ];
-        receivers = [
-          {
-            name = "garuda";
-            webhook_configs = lib.optional (cfg.prometheus.alertmanager.webhookUrl != null) {
-              url = cfg.prometheus.alertmanager.webhookUrl;
-            };
+        receivers =
+          let
+            mkGarudaReceiver = name: sendResolved: {
+              inherit name;
+              webhook_configs = lib.optional (cfg.prometheus.alertmanager.webhookUrl != null) {
+                url = cfg.prometheus.alertmanager.webhookUrl;
+                send_resolved = sendResolved;
+              };
             telegram_configs = lib.optional cfg.prometheus.alertmanager.telegram.enable {
               bot_token = "$TELEGRAM_BOT_TOKEN";
+              send_resolved = sendResolved;
               chat_id = cfg.prometheus.alertmanager.telegram.chatId;
               api_url = cfg.prometheus.alertmanager.telegram.apiUrl;
               parse_mode = cfg.prometheus.alertmanager.telegram.parseMode;
@@ -172,13 +183,18 @@ in
             };
             email_configs = lib.optional cfg.prometheus.alertmanager.email.enable {
               inherit (cfg.prometheus.alertmanager.email) to;
+              send_resolved = sendResolved;
               inherit (cfg.prometheus.alertmanager.email) from;
               inherit (cfg.prometheus.alertmanager.email) smarthost;
               auth_username = cfg.prometheus.alertmanager.email.authUsername;
               auth_password = "$EMAIL_PASSWORD";
             };
-          }
-        ];
+          };
+          in
+          [
+            (mkGarudaReceiver "garuda" true)
+            (mkGarudaReceiver "garuda-no-resolved" false)
+          ];
       };
     };
 

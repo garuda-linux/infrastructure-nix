@@ -84,7 +84,7 @@ in
 
     keepDaily = lib.mkOption {
       type = lib.types.int;
-      default = 4;
+      default = 2;
     };
 
     keepWeekly = lib.mkOption {
@@ -142,6 +142,16 @@ in
         Type = "oneshot";
         LoadCredential = "borgmatic.pw:${repositoryKey}";
         ExecStart = "${pkgs.borgmatic}/bin/borgmatic init --encryption repokey-blake2";
+        PrivateTmp = true;
+      };
+    };
+
+    systemd.services.borgmatic-prune = {
+      description = "Prune borgmatic backup repository (retention from config)";
+      serviceConfig = {
+        Type = "oneshot";
+        LoadCredential = "borgmatic.pw:${repositoryKey}";
+        ExecStart = "${pkgs.borgmatic}/bin/borgmatic prune";
         PrivateTmp = true;
       };
     };

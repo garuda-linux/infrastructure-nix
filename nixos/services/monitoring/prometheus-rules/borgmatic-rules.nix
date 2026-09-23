@@ -8,6 +8,7 @@
         for = "5m";
         labels = {
           severity = "warning";
+          scope = "host";
         };
         annotations = {
           summary = "Borgmatic backup missed ({{ $labels.instance }})";
