@@ -49,16 +49,15 @@ command.
 
 [[general commands]]
 
-  ansible-core    - Radically simple IT automation
-  apply           - Applies the infra-nix configuration pushed to the servers
   clean           - Runs the garbage collection on the servers
-  deploy          - Deploys the local NixOS configuration to the servers
+  colmena         - Simple, stateless NixOS deployment tool
+  deploy          - Builds and switches the servers to the local configuration (args go to colmena apply, e.g. --on aerialis)
+  dnscontrol      - Synchronize your DNS to multiple providers from a simple DSL
   menu            - prints this menu
   prek            - Better `pre-commit`, re-engineered in Rust
   restart         - Restarts all physical servers
-  rsync           - Fast incremental file transfer utility
   sops            - Simple and flexible tool for managing secrets
-  update          - Performs a full system update on the servers bumping flake lock
+  update          - Bumps flake.lock and deploys it to the servers for the next boot
 
 [infra-nix]
 

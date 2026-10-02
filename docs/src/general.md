@@ -3,11 +3,6 @@
 A general overview of the folder structure can be found below:
 
 ```shell
-├── ansible
-│   ├── host_vars
-│   │   ├── aerialis
-│   │   └── stormwing
-│   └── playbooks
 ├── assets
 ├── compose
 │   ├── chaotic-backend
@@ -50,23 +45,28 @@ A general overview of the folder structure can be found below:
 Secrets are managed via the sops-nix module, which allows us to encrypt sensitive files and supply them in an encrypted way to our hosts.
 They will then be decrypted at runtime by using the hosts ed25519 SSH host key.
 This is done by using the `sops` tool, which encrypts files using a key stored in the `~/.config/sops/` directory.
-The submodule is available in the `secrets` directory once it has been set up for the first time. It can be initialized by running:
+The encrypted files live in the `secrets` directory of this repository, recipients are configured in `.sops.yaml`:
 
-```sh
-git submodule init
-git submodule update
-```
+- `secrets/<host>.yaml` holds the secrets of one host and its containers, and is only decryptable by that host (and the admins).
+  It is the default `sopsFile`, picked via the host name (or `garuda.motd.parentHost` inside containers).
+- `secrets/common.yaml` holds secrets needed on every host, like user password hashes. Secrets from it need
+  `sopsFile = ../../secrets/common.yaml;` (relative to the module) in their `sops.secrets` declaration.
+
+A new host needs its age key (`ssh-to-age < /etc/ssh/ssh_host_ed25519_key.pub`) in `.sops.yaml`, a creation rule for
+its own file, and an entry in the `common.yaml` rule.
+Only values are encrypted, so key names are visible to anyone with access to the repository.
+Every secret is consumed at runtime via `sops.secrets` or `sops.templates`, nothing secret may be evaluated into the Nix store.
 
 To view or edit any of these files, one can use the following commands:
 
 ```sh
-sops secrets/filename.yaml # opens editor for the file
+sops secrets/aerialis.yaml # opens editor for the file
 sops -e secrets/filename.yaml # encrypts the file
 sops -d secrets/filename.yaml # decrypts the file
 ```
 
 This assumes a fitting sops key is available in the `~/.config/sops/` directory.
-It is important to keep the `secrets` directory in the latest state before deploying a new configuration as misconfigurations might happen otherwise.
+After changing recipients in `.sops.yaml`, run `sops updatekeys secrets/<file>.yaml` to re-encrypt the data key.
 
 ## Passwords in general
 

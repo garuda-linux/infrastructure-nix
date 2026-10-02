@@ -27,6 +27,7 @@ in
           set -e
 
           TELEGRAM_TOKEN="$(cat "${config.sops.secrets."telegram/buildiso_token".path}")"
+          TELEGRAM_CHANNEL="$(cat "${config.sops.secrets."telegram/updates_channel".path}")"
 
           docker run --rm --privileged --name buildiso \
             -v "/var/garuda/buildiso/cache/buildiso:/var/cache/garuda-tools/garuda-chroots/buildiso" \
@@ -36,7 +37,7 @@ in
             -v "/var/garuda/buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
             -v "${config.sops.secrets."keypairs/ssh_team/private".path}:/root/.ssh/id_ed25519" \
             -v "${config.sops.secrets."cloudflare/r2_rclone".path}:/root/.config/rclone/rclone.conf" \
-            -e "TELEGRAM=tgram://''${TELEGRAM_TOKEN}/${garuda-lib.secrets.telegram.updates_channel}" \
+            -e "TELEGRAM=tgram://''${TELEGRAM_TOKEN}/''${TELEGRAM_CHANNEL}" \
             "$(docker build -q "${sources.buildiso}")" auto-noweekly
         '';
         Restart = "on-failure";
@@ -105,6 +106,7 @@ in
       "cloudflare/r2_rclone" = { };
       "keypairs/ssh_team/private" = { };
       "telegram/buildiso_token" = { };
+      "telegram/updates_channel" = { };
     };
   };
 }

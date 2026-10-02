@@ -12,8 +12,8 @@ In case of a password being required, its hash needs to be generated as follows:
 nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt' > /path/to/hashedPasswordFile
 ```
 
-The file then needs to be added to our sops file and committed to our [secrets](https://gitlab.com/garuda-linux/infra-nix-secrets) repository.
-This one is only available to members of our GitLab org and usually is cloned as git submodule to `./secrets`.
+The hash then needs to be added to `secrets/common.yaml` (`sops secrets/common.yaml`) and committed to this repository.
+The corresponding `sops.secrets` entry in `users.nix` needs `sopsFile = ../../secrets/common.yaml;`.
 
 ## Onboarding a new admin
 

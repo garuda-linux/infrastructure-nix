@@ -1,5 +1,7 @@
 {
+  config,
   garuda-lib,
+  lib,
   sources,
   ...
 }:
@@ -7,6 +9,11 @@ let
   inherit (garuda-lib) allowOnlyCloudflareZerotrust;
   inherit (garuda-lib) mkCatchAllVhost;
   inherit (garuda-lib) mkProxyVhost;
+
+  webFront = garuda-lib.mkWebFront {
+    host = "stormwing";
+    inherit vhosts;
+  };
 
   vhosts = {
     "builds.garudalinux.org" = mkProxyVhost {
@@ -34,7 +41,7 @@ let
         "/" = {
           extraConfig = ''
             proxy_pass http://10.0.5.10:8384;
-            proxy_set_header Authorization "Basic ${garuda-lib.secrets.syncthing.esxi-build.credentials.base64}";
+            include ${config.sops.templates."syncthing-build-auth.conf".path};
           '';
         };
       };
@@ -45,17 +52,23 @@ in
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
-  inherit
-    (garuda-lib.mkWebFront {
-      host = "stormwing";
-      inherit vhosts;
-    })
+  inherit (webFront)
     garuda
     networking
     services
-    sops
     systemd
     ;
+
+  sops = lib.recursiveUpdate webFront.sops {
+    secrets."syncthing/gui_basic_auth" = { };
+    templates."syncthing-build-auth.conf" = {
+      owner = "nginx";
+      content = ''
+        proxy_set_header Authorization "Basic ${config.sops.placeholder."syncthing/gui_basic_auth"}";
+      '';
+      restartUnits = [ "nginx.service" ];
+    };
+  };
 
   system.stateVersion = "25.05";
 }

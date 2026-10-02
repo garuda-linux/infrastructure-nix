@@ -1,9 +1,7 @@
-.ansible
 .crates-lsp
 .direnv
 .idea
 .pre-commit-config.yaml
-.vault_pass
 buildiso/**
 result/
 *.d.ts

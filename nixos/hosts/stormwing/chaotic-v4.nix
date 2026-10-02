@@ -91,17 +91,26 @@ in
       gui = {
         apikey = "garudalinux";
         insecureSkipHostcheck = true;
-        inherit (garuda-lib.secrets.syncthing.esxi-build.credentials) user password;
       };
     };
     guiAddress = "10.0.5.10:8384";
+    guiPasswordFile = config.sops.secrets."syncthing/gui_password".path;
   };
+
+  # The GUI user has no file-based option, patch it in after syncthing-init applied the settings
+  systemd.services.syncthing-init.postStart = ''
+    ${pkgs.curl}/bin/curl -sSf -X PATCH -H "X-API-Key: garudalinux" \
+      --variable "user@${config.sops.secrets."syncthing/gui_user".path}" \
+      --expand-json '{ "user": "{{user:trim:json}}" }' \
+      http://10.0.5.10:8384/rest/config/gui
+  '';
 
   # Auto reset syncthing stuff
   systemd.services.syncthing-reset = {
     serviceConfig.Type = "oneshot";
     script = ''
-      "${pkgs.curl}/bin/curl" -X POST -H "X-API-Key: garudalinux" http://10.0.5.10:8384/rest/db/override?folder=${garuda-lib.secrets.syncthing.folders.chaotic-aur}
+      folder="$(cat "${config.sops.secrets."syncthing/folder_chaotic_aur".path}")"
+      "${pkgs.curl}/bin/curl" -X POST -H "X-API-Key: garudalinux" "http://10.0.5.10:8384/rest/db/override?folder=$folder"
     '';
   };
   systemd.timers.syncthing-reset = {
@@ -328,12 +337,17 @@ in
   };
 
   sops.secrets = garuda-lib.mkSecrets [
-    "cloudflare/api_keys"
     "cloudflare/r2_rclone"
     "compose/chaotic-v4"
     "keypairs/syncthing/cert"
     "keypairs/syncthing/private"
-  ];
+    "syncthing/folder_chaotic_aur"
+    "syncthing/gui_password"
+    "syncthing/gui_user"
+  ]
+  // {
+    "cloudflare/api_keys".sopsFile = ../../../secrets/common.yaml;
+  };
 
   system.stateVersion = "25.05";
 }

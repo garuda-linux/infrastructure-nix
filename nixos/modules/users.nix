@@ -9,14 +9,15 @@
 {
   # Generate password files with
   # nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt' > /path/to/hashedPasswordFile
-  # and add them to infra-nix-secrets repo
+  # and add them to secrets/common.yaml via sops
   users = {
     # All users are immuntable; if a password is required it needs to be set via hashedPasswordFile
     mutableUsers = false;
     # Define our users
-    users.ansible = {
+    # Used by colmena for deployments
+    users.deploy = {
       extraGroups = [ "wheel" ];
-      home = "/home/ansible";
+      home = "/home/deploy";
       isNormalUser = true;
       openssh.authorizedKeys.keyFiles = [
         keys.nico
@@ -105,7 +106,7 @@
   security.sudo.extraRules = [
     {
       users = [
-        "ansible"
+        "deploy"
         "tne"
         "nico"
         "sgs"
@@ -119,9 +120,21 @@
     }
   ];
 
+  # colmena copies locally built, unsigned closures as the deploy user
+  nix.settings.trusted-users = [ "deploy" ];
+
   sops.secrets = {
-    "passwords/nico".neededForUsers = true;
-    "passwords/tne".neededForUsers = true;
-    "passwords/sgs".neededForUsers = true;
+    "passwords/nico" = {
+      neededForUsers = true;
+      sopsFile = ../../secrets/common.yaml;
+    };
+    "passwords/tne" = {
+      neededForUsers = true;
+      sopsFile = ../../secrets/common.yaml;
+    };
+    "passwords/sgs" = {
+      neededForUsers = true;
+      sopsFile = ../../secrets/common.yaml;
+    };
   };
 }

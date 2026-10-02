@@ -41,6 +41,6 @@ in
     # Always allow traffic from Tailscale network
     networking.firewall.trustedInterfaces = [ "tailscale0" ];
 
-    sops.secrets."tailscale/authkey" = { };
+    sops.secrets."tailscale/authkey".sopsFile = ../../secrets/common.yaml;
   };
 }

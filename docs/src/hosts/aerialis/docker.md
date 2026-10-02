@@ -4,8 +4,15 @@ This container runs general-purpose Docker workloads for services that are not p
 
 ## General
 
-This container is used to run regular Docker containers.
-Recently, the `compose-runner` module has been replaced by native Nix expressions.
+This container is used to run regular Docker containers via the `compose-runner` module.
+
+## Restarting containers
+
+This can happen via the following command:
+
+```bash
+sudo systemctl restart compose-runner-docker
+```
 
 ## Nextcloud AIO
 

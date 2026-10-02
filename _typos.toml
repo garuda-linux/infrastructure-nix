@@ -10,7 +10,7 @@ extend-ignore-identifiers-re = [
 check-file = false
 
 [type.secrets]
-extend-glob = ["shared.yaml"]
+extend-glob = ["common.yaml", "stormwing.yaml", "aerialis.yaml"]
 check-file = false
 
 [type.changelog]

@@ -41,45 +41,69 @@ let
     };
   };
 
-  patchedNixosSystem =
-    args:
-    let
-      inherit (args) system;
-      unpatched = nixpkgs.legacyPackages."${system}";
-      patches = builtins.filter (a: a != null) (
-        nixpkgs.lib.mapAttrsToList (
-          name: patch: if nixpkgs.lib.hasPrefix "nixos-patch-" name then patch else null
-        ) inputs
-      );
-      result =
-        if builtins.length patches > 0 then
-          import (
-            unpatched.applyPatches {
-              inherit patches;
-              name = "nixpkgs-patched";
-              src = nixpkgs;
-            }
-            + /nixos/lib/eval-config.nix
-          ) args
-        else
-          nixpkgs.lib.nixosSystem args;
-    in
-    result;
+  patches = builtins.filter (a: a != null) (
+    nixpkgs.lib.mapAttrsToList (
+      name: patch: if nixpkgs.lib.hasPrefix "nixos-patch-" name then patch else null
+    ) inputs
+  );
+
+  patchedNixpkgs =
+    if builtins.length patches > 0 then
+      nixpkgs.legacyPackages.${system}.applyPatches {
+        inherit patches;
+        name = "nixpkgs-patched";
+        src = nixpkgs;
+      }
+    else
+      nixpkgs;
+
+  hosts = {
+    stormwing = defaultModules ++ newGenModules ++ [ ./hosts/stormwing.nix ];
+    aerialis = defaultModules ++ newGenModules ++ [ ./hosts/aerialis.nix ];
+  };
+
+  pkgs = nixpkgs.legacyPackages.${system};
+  makeHive =
+    rawHive:
+    import "${pkgs.colmena.src}/src/nix/hive/eval.nix" {
+      inherit rawHive;
+      colmenaOptions = import "${pkgs.colmena.src}/src/nix/hive/options.nix";
+      colmenaModules = import "${pkgs.colmena.src}/src/nix/hive/modules.nix";
+      hermetic = true;
+    };
+
+  colmenaHive = {
+    meta = {
+      nixpkgs = pkgs;
+      nodeNixpkgs = builtins.mapAttrs (_: value: value.pkgs) self.nixosConfigurations;
+      nodeSpecialArgs = builtins.mapAttrs (_: value: value._module.specialArgs) self.nixosConfigurations;
+    };
+    defaults.deployment.targetUser = "deploy";
+  }
+  // builtins.mapAttrs (name: value: {
+    imports = value._module.args.modules;
+    deployment = {
+      targetHost = "${name}.garudalinux.org";
+      targetPort = builtins.head value.config.services.openssh.ports;
+    };
+  }) self.nixosConfigurations;
 
 in
 {
   flake = {
-    nixosConfigurations = {
-      "stormwing" = patchedNixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ newGenModules ++ [ ./hosts/stormwing.nix ];
-      };
-      "aerialis" = patchedNixosSystem {
-        inherit system;
-        inherit specialArgs;
-        modules = defaultModules ++ newGenModules ++ [ ./hosts/aerialis.nix ];
-      };
-    };
+    nixosConfigurations = builtins.mapAttrs (
+      _: modules:
+      (
+        if builtins.length patches > 0 then
+          import "${patchedNixpkgs}/nixos/lib/eval-config.nix"
+        else
+          nixpkgs.lib.nixosSystem
+      )
+        {
+          inherit modules specialArgs system;
+        }
+    ) hosts;
+
+    colmenaHive = makeHive colmenaHive;
   };
 }

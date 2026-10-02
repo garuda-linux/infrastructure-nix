@@ -73,7 +73,6 @@
     enable = true;
     shellAbbrs = {
       "cls" = "clear";
-      "reb" = "sudo nixos-rebuild switch -L";
       "roll" = "sudo nixos-rebuild switch --rollback";
       "su" = "sudo su -";
     };
@@ -186,8 +185,8 @@
       ];
       auto-optimise-store = true;
       builders-use-substitutes = true;
+      nix-path = [ "nixpkgs=${inputs.nixpkgs}" ];
     };
-    nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
     package = pkgs.lixPackageSets.latest.lix;
   };
 
@@ -210,7 +209,6 @@
       extraArgs = "--keep-since 2d";
       dates = "daily";
     };
-    flake = "/etc/nixos";
   };
 
   # Allow unfree packages
@@ -239,8 +237,17 @@
   services.logrotate.checkConfig = false;
 
   # Secrets management
+  # Secrets are split into common.yaml (all hosts) and <host>.yaml, which containers share with their host
   sops = {
-    defaultSopsFile = ../../secrets/shared.yaml;
+    defaultSopsFile =
+      let
+        host =
+          if config.garuda.motd.parentHost != null then
+            config.garuda.motd.parentHost
+          else
+            config.networking.hostName;
+      in
+      ../../secrets + "/${host}.yaml";
     age.sshKeyPaths = [ garuda-lib.sshkeys.ed25519 ];
   };
 }

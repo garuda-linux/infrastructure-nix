@@ -146,53 +146,36 @@
                   };
                 }).shell;
               shared_commands = [
-                { package = "ansible"; }
+                { package = "colmena"; }
                 { package = "dnscontrol"; }
-                { package = "rsync"; }
                 { package = "sops"; }
                 {
-                  name = "apply";
-                  help = "Applies the infra-nix configuration pushed to the servers";
+                  name = "deploy";
+                  help = "Builds and switches the servers to the local configuration (args go to colmena apply, e.g. --on aerialis)";
                   command = ''
-                    pushd ansible &>/dev/null
-                    ansible-playbook playbooks/apply.yml
-                    popd &>/dev/null
+                    colmena apply "$@"
                   '';
                 }
                 {
                   name = "clean";
                   help = "Runs the garbage collection on the servers";
                   command = ''
-                    pushd ansible &>/dev/null
-                    ansible-playbook playbooks/garbage_collect.yml
-                    popd &>/dev/null
-                  '';
-                }
-                {
-                  name = "deploy";
-                  help = "Deploys the local NixOS configuration to the servers";
-                  command = ''
-                    pushd ansible &>/dev/null
-                    ansible-playbook playbooks/garuda.yml
-                    popd &>/dev/null
+                    colmena exec "$@" -- sudo nh clean all
                   '';
                 }
                 {
                   name = "update";
-                  help = "Performs a full system update on the servers bumping flake lock";
+                  help = "Bumps flake.lock and deploys it to the servers for the next boot";
                   command = ''
-                    pushd ansible &>/dev/null
-                    ansible-playbook playbooks/system_update.yml
-                    popd &>/dev/null
+                    nix flake update
+                    colmena apply boot "$@"
                   '';
                 }
                 {
                   name = "restart";
                   help = "Restarts all physical servers";
                   command = ''
-                    pushd ansible &>/dev/null
-                    ansible-playbook playbooks/reboot.yml
-                    popd &>/dev/null
+                    colmena exec "$@" -- sudo systemctl reboot
                   '';
                 }
                 {

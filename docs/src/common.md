@@ -43,52 +43,46 @@ deployiso -Sd # to delete the old ISOs on Sourceforge once they aren't needed an
 deployiso -FSRd # oneliner for the above-given commands
 ```
 
+### Deploying configurations
+
+Deployments happen via [colmena](https://colmena.cli.rs) from a local clone of the
+[infra-nix](https://gitlab.com/garuda-linux/infra-nix) repo. The hive is derived from `nixosConfigurations` in
+`nixos/flake-module.nix`, so every host added there is deployable automatically. Systems are built locally and the
+closure is copied to the servers, connecting as the `deploy` user on port 666. Your SSH key needs to be authorized for
+that user (see `users.nix`).
+
+All commands below are available in the devshell (`nix develop`). Arguments are passed through to colmena, so
+`--on aerialis` (or `--on @tag`, comma-separated) limits a command to specific hosts:
+
+```sh
+deploy                 # build and switch all servers to the local configuration
+deploy --on aerialis   # only one host
+deploy boot            # activate on next boot instead of switching right away
+deploy --build-on-target --on stormwing # build on the server itself instead of locally
+clean                  # garbage collect on all servers
+restart --on stormwing # reboot a server
+```
+
+Plain colmena works too, e.g. `colmena build` to only build or `colmena exec --on aerialis -- uptime`.
+
+Keep in mind that switching restarts every service whose files changed since the last deployment. On our Hetzner
+servers, this includes a restart of every declarative `nixos-container` if needed, causing a small downtime.
+
 ### Updating the system
 
-One needs to have the [infra-nix](https://gitlab.com/garuda-linux/infra-nix) repo cloned locally. Then proceed by
-updating the `flake.lock` file, pushing it to the server & building the configurations:
-
 ```sh
-nix flake update
-ansible-playbook garuda.yml -l $servername # Eg. aerialis
-deploy # Skip using the above command and use this one in case nix develop was used
+update # nix flake update + colmena apply boot
+restart --on $servername # once ready for the reboot
 ```
 
-Then you can either apply it via Ansible or connect to the host to view more details about the process while it runs:
-
-```sh
-ansible-playbook apply.yml -l $servername # Ansible
-
-apply # Nix develop shell
-
-ssh -p 666 $user@builds.garudalinux.org
-sudo nixos-rebuild switch
-```
-
-Keep in mind that this will restart every service whose files changed since the last system update. On our Hetzner
-server, this includes a restart of every declarative `nixos-container` if needed, causing a small downtime.
+The new generation is only activated on the next boot. Use `nix flake update && deploy` instead to switch right away.
+Remember to commit the updated `flake.lock`.
 
 ### Changing system configurations
 
-Most system configurations are contained in individual Nix files in the `nix` directory of this repo. This means
-changing anything must not be done manually but by editing the corresponding file and pushing/applying the configuration
-afterward.
-
-```sh
-ansible-playbook garuda.yml -l $servername # Eg. aerialis
-deploy # In case nix develop is used
-```
-
-As with the system update, one can either apply via Ansible or manually:
-
-```sh
-ansible-playbook apply.yml -l $servername # Ansible
-
-apply # Nix develop shell
-
-ssh -p 666 $user@builds.garudalinux.org
-sudo nixos-rebuild switch
-```
+Most system configurations are contained in individual Nix files in the `nixos` directory of this repo. This means
+changing anything must not be done manually but by editing the corresponding file and deploying the configuration
+afterward via `deploy`.
 
 #### Adding a user
 
@@ -115,17 +109,26 @@ Docker containers sometimes use the `latest` tag in case no current tag is avail
 Piped and Searx, where it is often crucial to have the latest build to bypass Google's restrictions.
 Containers using the `latest` tag are automatically updated via [watchtower](https://containrrr.dev/watchtower/) daily.
 The remaining ones can be updated by changing their version in the corresponding `compose.yml` and then
-running `deploy` & `apply`.
-If containers are to be updated manually, this can be achieved by connecting to the host,
-running `nixos-container root-login $containername`, and executing:
+running `deploy`.
+
+Every compose stack is managed by a `compose-runner-$name` systemd service, which syncs the compose files and the `.env`
+file to `/var/garuda/compose-runner/$name` and recreates the stack on every start. Don't run `docker compose up`/`down`
+there by hand, as the service won't notice and the next restart overrides it anyway. To restart a stack, connect to the
+host, run `nixos-container root-login $containername` and restart its service:
 
 ```sh
-cd /var/garuda/compose-runner/$name/ # replace $name with the actual docker-compose.yml or autocomplete via tab
-sudo docker compose pull
-sudo docker compose up -d
+systemctl restart compose-runner-$name # e.g. compose-runner-docker
+systemctl status compose-runner-$name
+journalctl -u compose-runner-$name -f
 ```
 
-The updated containers will be pulled and automatically recreated using the new images.
+To pull newer images for tags that don't change (like `latest`) manually, pull first and then restart the service:
+
+```sh
+cd /var/garuda/compose-runner/$name
+docker compose pull
+systemctl restart compose-runner-$name
+```
 
 ### Checking whether backups were successful
 
@@ -165,5 +168,5 @@ cd nix
 nix flake lock --update-input src-chaotic-toolbox # toolbox
 ```
 
-After that deploy as usual by running `deploy` and `apply`. The commit and corresponding hash will be updated and NixOS
+After that deploy as usual by running `deploy`. The commit and corresponding hash will be updated and NixOS
 will use it to build the toolbox using the new revision automatically.

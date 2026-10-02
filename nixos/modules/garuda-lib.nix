@@ -7,7 +7,6 @@
 }:
 with lib;
 let
-  secrets = builtins.fromJSON (builtins.readFile ../../secrets/buildtime.json);
   nginxReverseProxySettingsPkg = pkgs.writeText "garuda-proxy-settings.conf" ''
     proxy_redirect          off;
     proxy_connect_timeout   60s;
@@ -450,7 +449,6 @@ in
         ed25519 = "/etc/ssh/ssh_host_ed25519_key";
         rsa = "/etc/ssh/ssh_host_rsa_key";
       };
-      inherit secrets;
       xslt_style = ./static/style.xslt;
       dns = {
         stormwing = "157.180.57.51";

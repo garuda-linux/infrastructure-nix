@@ -5,12 +5,28 @@ keys:
   - &aerialis age1cjuy5mc4fphcc3x4x9uh6puzhetrsuzaa4kn9j3edjvfa0rrcfasjchnkk
   - &nico-yubikey D245D484F3578CB17FD6DA6B67DB29BFF3C96757
 creation_rules:
-  - path_regex: secrets/shared.yaml$
+  - path_regex: secrets/common\.yaml$
     key_groups:
       - age:
           - *tne
           - *nico
           - *stormwing
+          - *aerialis
+        pgp:
+          - *nico-yubikey
+  - path_regex: secrets/stormwing\.yaml$
+    key_groups:
+      - age:
+          - *tne
+          - *nico
+          - *stormwing
+        pgp:
+          - *nico-yubikey
+  - path_regex: secrets/aerialis\.yaml$
+    key_groups:
+      - age:
+          - *tne
+          - *nico
           - *aerialis
         pgp:
           - *nico-yubikey

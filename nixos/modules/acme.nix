@@ -54,6 +54,6 @@ in
       );
     };
 
-    sops.secrets."cloudflare/api_keys" = { };
+    sops.secrets."cloudflare/api_keys".sopsFile = ../../secrets/common.yaml;
   };
 }
