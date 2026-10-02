@@ -69,6 +69,11 @@ in
         enable = true;
         port = mon.ports.cloudflareExporter;
         environmentFile = config.sops.templates."cloudflare-exporter-env".path;
+
+        # Per colocation per host breakdowns peak at ~16k series each
+        extraFlags = [
+          "--metrics_denylist=cloudflare_zone_colocation_visits,cloudflare_zone_colocation_edge_response_bytes,cloudflare_zone_colocation_requests_total"
+        ];
       };
 
       applicationTargets = [

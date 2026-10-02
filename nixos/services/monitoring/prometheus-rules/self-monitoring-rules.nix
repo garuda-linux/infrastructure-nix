@@ -330,9 +330,9 @@
       {
         alert = "PrometheusTimeseriesCardinality";
         expr = "label_replace(count by(__name__) ({__name__=~\".+\", __name__!~\"node_systemd_unit_state\"}), \"name\", \"$1\", \"__name__\", \"(.+)\") > 10000";
-        for = "0m";
+        for = "1h";
         labels = {
-          severity = "warning";
+          severity = "info";
         };
         annotations = {
           summary = "Prometheus timeseries cardinality (instance {{ $labels.instance }})";

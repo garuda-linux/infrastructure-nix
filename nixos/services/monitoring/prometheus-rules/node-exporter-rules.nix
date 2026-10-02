@@ -23,8 +23,8 @@
       }
       {
         alert = "HostMemoryUnderMemoryPressure";
-        expr = "(deriv(node_vmstat_pgmajfault[5m]) > 1000)";
-        for = "0m";
+        expr = "rate(node_vmstat_pgmajfault[5m]) > 1000";
+        for = "10m";
         labels = {
           severity = "warning";
           scope = "host";
@@ -63,7 +63,7 @@
       {
         alert = "HostUnusualNetworkThroughputOut";
         expr = "((rate(node_network_transmit_bytes_total[5m]) / node_network_speed_bytes) > .80) and node_network_speed_bytes > 0";
-        for = "0m";
+        for = "15m";
         labels = {
           severity = "warning";
           scope = "host";
@@ -88,7 +88,7 @@
       }
       {
         alert = "HostOutOfDiskSpace";
-        expr = "(node_filesystem_avail_bytes{fstype!~\"^(fuse.*|tmpfs|cifs|nfs)\"} / node_filesystem_size_bytes < .10 and on (instance, device, mountpoint) node_filesystem_readonly == 0)";
+        expr = "max by (instance, job, device, fstype) (node_filesystem_avail_bytes{fstype!~\"^(fuse.*|tmpfs|ramfs|cifs|nfs)\"} / node_filesystem_size_bytes and on (instance, device, mountpoint) node_filesystem_readonly == 0) < .10";
         for = "2m";
         labels = {
           severity = "critical";
@@ -101,7 +101,7 @@
       }
       {
         alert = "HostDiskMayFillIn24Hours";
-        expr = "predict_linear(node_filesystem_avail_bytes{fstype!~\"^(fuse.*|tmpfs|cifs|nfs)\",job!~\"node-.+-containers\"}[6h], 86400) <= 0 and node_filesystem_avail_bytes{job!~\"node-.+-containers\"} / node_filesystem_size_bytes{job!~\"node-.+-containers\"} < 0.20";
+        expr = "max by (instance, job, device, fstype) (predict_linear(node_filesystem_avail_bytes{fstype!~\"^(fuse.*|tmpfs|ramfs|cifs|nfs)\",job!~\"node-.+-containers\"}[24h], 86400)) <= 0 and max by (instance, job, device, fstype) (node_filesystem_avail_bytes{fstype!~\"^(fuse.*|tmpfs|ramfs|cifs|nfs)\",job!~\"node-.+-containers\"} / node_filesystem_size_bytes) < 0.15";
         for = "1h";
         labels = {
           severity = "warning";
@@ -114,7 +114,7 @@
       }
       {
         alert = "HostOutOfInodes";
-        expr = "(node_filesystem_files_free / node_filesystem_files < .10 and ON (instance, device, mountpoint) node_filesystem_readonly == 0) and node_filesystem_files > 0";
+        expr = "max by (instance, job, device, fstype) (node_filesystem_files_free{fstype!~\"^(fuse.*|tmpfs|ramfs|cifs|nfs)\"} / node_filesystem_files > 0 and on (instance, device, mountpoint) node_filesystem_readonly == 0) < .10";
         for = "2m";
         labels = {
           severity = "critical";
@@ -140,8 +140,8 @@
       }
       {
         alert = "HostInodesMayFillIn24Hours";
-        expr = "predict_linear(node_filesystem_files_free{fstype!~\"^(fuse.*|tmpfs|cifs|nfs)\",job!~\"node-.+-containers\"}[1h], 86400) <= 0 and node_filesystem_files_free{job!~\"node-.+-containers\"} > 0";
-        for = "2m";
+        expr = "max by (instance, job, device, fstype) (predict_linear(node_filesystem_files_free{fstype!~\"^(fuse.*|tmpfs|ramfs|cifs|nfs)\",job!~\"node-.+-containers\"}[6h], 86400)) <= 0 and max by (instance, job, device, fstype) (node_filesystem_files_free{fstype!~\"^(fuse.*|tmpfs|ramfs|cifs|nfs)\",job!~\"node-.+-containers\"} / node_filesystem_files > 0) < 0.20";
+        for = "1h";
         labels = {
           severity = "warning";
           scope = "host";
@@ -230,7 +230,7 @@
       }
       {
         alert = "HostUnusualDiskIO";
-        expr = "rate(node_disk_io_time_seconds_total[5m]) > 0.8";
+        expr = "rate(node_disk_io_time_seconds_total{job!=\"node-chaotic-mirrors\"}[5m]) > 0.8";
         for = "5m";
         labels = {
           severity = "warning";
@@ -270,7 +270,7 @@
       {
         alert = "HostSystemdServiceCrashed";
         expr = "(node_systemd_unit_state{state=\"failed\"} == 1)";
-        for = "0m";
+        for = "15m";
         labels = {
           severity = "warning";
         };

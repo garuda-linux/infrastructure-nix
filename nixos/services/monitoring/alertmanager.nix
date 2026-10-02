@@ -125,13 +125,21 @@ in
           group_interval = "5m";
           repeat_interval = "4h";
           # Host-global alerts keep firing notifications, drop the recovered spam
-          routes = [
-            {
-              matchers = [ ''scope="host"'' ];
-              receiver = "garuda-no-resolved";
-              continue = true;
-            }
-          ];
+          routes =
+            let
+              lowSeverity = {
+                matchers = [ ''severity=~"warning|info"'' ];
+                repeat_interval = "24h";
+              };
+            in
+            [
+              {
+                matchers = [ ''scope="host"'' ];
+                receiver = "garuda-no-resolved";
+                routes = [ lowSeverity ];
+              }
+              lowSeverity
+            ];
         };
         # nspawn containers share the host kernel, so host-global metrics
         # (meminfo, vmstat, /proc/stat, /sys, ...) read identically inside

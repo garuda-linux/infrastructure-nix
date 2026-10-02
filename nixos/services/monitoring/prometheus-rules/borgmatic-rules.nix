@@ -53,7 +53,7 @@
       }
       {
         alert = "BorgmaticRepositoryGrowingFast";
-        expr = "delta(borg_total_size[7d]) > 536870912000"; # 500 GiB per week
+        expr = "delta(borg_total_deduplicated_compressed_size[7d]) > 161061273600"; # 150 GiB per week
         for = "5m";
         labels = {
           severity = "info";
@@ -61,7 +61,7 @@
         };
         annotations = {
           summary = "Borgmatic repository growing fast ({{ $labels.instance }})";
-          description = "Repository {{ $labels.repository }} grew by >500GB in the last week\n  Host: {{ $labels.instance }}\n  Growth: {{ $value | humanize1024 }}B";
+          description = "Repository {{ $labels.repository }} grew by >150GiB (deduplicated) in the last week\n  Host: {{ $labels.instance }}\n  Growth: {{ $value | humanize1024 }}B";
         };
       }
       {
