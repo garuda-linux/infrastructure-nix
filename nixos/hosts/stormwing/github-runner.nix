@@ -14,6 +14,7 @@
     ../../services/compose-runner/compose-runner.nix
     ../../services/mk.nix
     ../../services/monitoring
+    ./github-runner/nixos-runner.nix
   ];
 
   inherit
@@ -23,6 +24,7 @@
       key = keys.pedrohlc;
       units = [
         "compose-runner-github-runner.service"
+        "github-runner-stormwing-nixos.service"
         "docker.service"
       ];
       runners = {

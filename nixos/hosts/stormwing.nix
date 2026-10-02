@@ -45,6 +45,11 @@ in
     exporters = [ "smartctlExporter" ];
   };
 
+  nix.settings = {
+    substituters = [ "https://nyx-cache.chaotic.cx/" ];
+    trusted-public-keys = [ "nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk=" ];
+  };
+
   swapDevices = [
     {
       device = "/data_1/swapfile";
@@ -172,6 +177,12 @@ in
               name = "token";
               hostPath = config.sops.secrets."compose/github-runner".path;
               mountPoint = "/var/.github-runner.env";
+              readOnly = true;
+            }
+            {
+              name = "nixos-runner-token";
+              hostPath = config.sops.secrets."github-runner/stormwing-nixos".path;
+              mountPoint = "/var/.github-runner-nixos.token";
               readOnly = true;
             }
             {
@@ -343,5 +354,8 @@ in
     39252
   ];
 
-  sops.secrets."compose/github-runner" = { };
+  sops.secrets = garuda-lib.mkSecrets [
+    "compose/github-runner"
+    "github-runner/stormwing-nixos"
+  ];
 }
