@@ -72,6 +72,8 @@ let
   };
 
   submoduleOptions.options = (linkDefaults defaultableOptions) // individualOptions;
+
+  containerNetwork = "${config.networking.hostName}-containers";
 in
 {
   options.services.garuda-nspawn = {
@@ -195,6 +197,22 @@ in
 
                 # MOTD inside the container shows the parent host name.
                 config.garuda.motd.parentHost = config.networking.hostName;
+
+                # Container names repeat across hosts (web-front), so prefix the node ids
+                config.topology.id = "${config.networking.hostName}-${name}";
+                config.topology.self.name = name;
+
+                # nix-topology doesn't know about hostBridge veths
+                config.topology.self.interfaces.eth0 = {
+                  network = containerNetwork;
+                  physicalConnections = [
+                    {
+                      node = config.topology.id;
+                      interface = cfg.bridgeInterface;
+                      renderer.reverse = true;
+                    }
+                  ];
+                };
               }
             ]
             ++ lib.lists.optional cont.defaults {
@@ -273,6 +291,17 @@ in
     systemd.tmpfiles.rules = lib.mapAttrsToList (
       name: _value: "d ${cfg.dockerCache}/${name} 1555 root root"
     ) (lib.filterAttrs (_name: value: value.needsDocker) cfg.containers);
+
+    topology = lib.mkIf (cfg.containers != { }) {
+      networks.${containerNetwork} = {
+        name = "${config.networking.hostName} containers";
+        cidrv4 = "${cfg.hostIp}/${toString cfg.networkPrefix}";
+      };
+      self.interfaces.${cfg.bridgeInterface} = {
+        network = containerNetwork;
+        virtual = true;
+      };
+    };
 
     # Bridge setup
     networking = lib.mkIf (cfg.containers != { }) {

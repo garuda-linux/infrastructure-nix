@@ -211,6 +211,29 @@
         "url": "https://github.com/xiota.keys"
       }
     },
+    "nix-topology": {
+      "inputs": {
+        "flake-parts": [
+          "flake-parts"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1782153600,
+        "narHash": "sha256-Vbkgl7/x8+Gg0gMe94EStfIfNC4bHQIbaZrIAxpuQ/w=",
+        "owner": "oddlama",
+        "repo": "nix-topology",
+        "rev": "e61876f548e4f301d63640d30ecc1305c05c3986",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oddlama",
+        "repo": "nix-topology",
+        "type": "github"
+      }
+    },
     "nixos-mailserver": {
       "inputs": {
         "blobs": "blobs",
@@ -247,6 +270,18 @@
       "original": {
         "type": "file",
         "url": "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/499574.patch"
+      }
+    },
+    "nixos-patch-pgadmin4": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-XYArDNuXPJuRgRBNx9KlZ8FwwWUgiQnUz50eMQhBn4I=",
+        "type": "file",
+        "url": "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/569309.patch"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/569309.patch"
       }
     },
     "nixpkgs": {
@@ -319,8 +354,10 @@
         "keys_technetium1": "keys_technetium1",
         "keys_tne": "keys_tne",
         "keys_xiota": "keys_xiota",
+        "nix-topology": "nix-topology",
         "nixos-mailserver": "nixos-mailserver",
         "nixos-patch-nixos-container": "nixos-patch-nixos-container",
+        "nixos-patch-pgadmin4": "nixos-patch-pgadmin4",
         "nixpkgs": "nixpkgs",
         "nixpkgs-stable": "nixpkgs-stable",
         "pre-commit-hooks": "pre-commit-hooks",

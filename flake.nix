@@ -27,6 +27,11 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
 
+    # Infrastructure diagrams
+    nix-topology.url = "github:oddlama/nix-topology";
+    nix-topology.inputs.flake-parts.follows = "flake-parts";
+    nix-topology.inputs.nixpkgs.follows = "nixpkgs";
+
     # Our mailserver
     nixos-mailserver.url = "gitlab:simple-nixos-mailserver/nixos-mailserver/main";
     nixos-mailserver.inputs.flake-compat.follows = "flake-compat";
@@ -91,6 +96,9 @@
     # Patches
     nixos-patch-nixos-container.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/499574.patch";
     nixos-patch-nixos-container.flake = false;
+    # pgadmin4: 9.14 -> 9.18, fixes the import crash with the current psycopg
+    nixos-patch-pgadmin4.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/569309.patch";
+    nixos-patch-pgadmin4.flake = false;
   };
 
   outputs =
@@ -179,6 +187,17 @@
                   '';
                 }
                 {
+                  name = "topology";
+                  help = "Renders the infrastructure diagrams (nix-topology) to docs/src/topology";
+                  command = ''
+                    cd "$PRJ_ROOT"
+                    out="$(nix build --no-link --print-out-paths .#topology.x86_64-linux.config.output "$@")"
+                    mkdir -p docs/src/topology
+                    install -m 644 "$out"/*.svg docs/src/topology/
+                    echo "Updated $(ls docs/src/topology/*.svg | wc -l) diagrams in docs/src/topology"
+                  '';
+                }
+                {
                   name = "buildiso-remote";
                   help = "Spawns a buildiso shell on the iso-runner builder";
                   category = "infra-nix";
@@ -247,6 +266,7 @@
 
             pre-commit-check = inputs.pre-commit-hooks.lib.${system}.run {
               package = pkgs.prek;
+              excludes = [ "\\.svg$" ];
               hooks = {
                 check-json.enable = true;
                 check-yaml.enable = true;
@@ -267,6 +287,8 @@
             };
           };
 
+          topology.modules = [ ./nixos/topology.nix ];
+
           treefmt = {
             build.check = true;
             programs = {
@@ -284,6 +306,7 @@
       imports = [
         ./nixos/flake-module.nix
         inputs.devshell.flakeModule
+        inputs.nix-topology.flakeModule
         inputs.pre-commit-hooks.flakeModule
         inputs.treefmt-nix.flakeModule
       ];

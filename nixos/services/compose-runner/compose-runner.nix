@@ -21,6 +21,132 @@ let
       };
     };
   };
+
+  parseCompose =
+    file:
+    let
+      step =
+        acc: line:
+        let
+          top = builtins.match "([A-Za-z_][A-Za-z0-9_-]*):.*" line;
+          service = builtins.match "  ([A-Za-z0-9_.-]+):[[:space:]]*(#.*)?" line;
+          image = builtins.match "    image:[[:space:]]*['\"]?([^'\" #]+).*" line;
+          ports = builtins.match "    ports:[[:space:]]*\\[(.*)].*" line;
+          update =
+            attrs:
+            acc
+            // {
+              services = acc.services // {
+                ${acc.current} = acc.services.${acc.current} // attrs;
+              };
+            };
+        in
+        if top != null then
+          acc
+          // {
+            inServices = head top == "services";
+            current = null;
+          }
+        else if !acc.inServices then
+          acc
+        else if service != null then
+          acc
+          // {
+            current = head service;
+            services = acc.services // {
+              ${head service} = {
+                image = null;
+                ports = [ ];
+              };
+            };
+          }
+        else if acc.current == null then
+          acc
+        else if image != null then
+          update { image = head image; }
+        else if ports != null then
+          update {
+            ports = map (replaceStrings [ "\"" "'" " " ] [ "" "" "" ]) (splitString "," (head ports));
+          }
+        else
+          acc;
+    in
+    (foldl' step {
+      inServices = false;
+      current = null;
+      services = { };
+    } (splitString "\n" (builtins.readFile file))).services;
+
+  # Icons for images we run, first match on the image name wins
+  icons = pkgs.callPackage ../../topology-icons.nix { };
+  imageIcons = [
+    [
+      "chaotic"
+      "${icons.arch-linux}"
+    ]
+    [
+      "matterbridge"
+      "${icons.matterbridge}"
+    ]
+    [
+      "nextcloud"
+      "services.nextcloud"
+    ]
+    [
+      "vaultwarden"
+      "services.vaultwarden"
+    ]
+    [
+      "syncserver"
+      "services.firefox-syncserver"
+    ]
+    [
+      "searxng"
+      "services.searxng"
+    ]
+    [
+      "redlib"
+      "services.redlib"
+    ]
+    [
+      "whoogle"
+      "${icons.google}"
+    ]
+    [
+      "lingva"
+      "${icons.google-translate}"
+    ]
+    [
+      "privatebin"
+      "${icons.privatebin}"
+    ]
+    [
+      "watchtower"
+      "${icons.watchtower}"
+    ]
+    [
+      "requarks/wiki"
+      "${icons.wikijs}"
+    ]
+    [
+      "redis"
+      "${icons.redis}"
+    ]
+    [
+      "gitlab-runner"
+      "${icons.gitlab}"
+    ]
+    [
+      "github-runner"
+      "${icons.github-light}"
+    ]
+  ];
+  iconFor =
+    image:
+    let
+      matches = filter (pair: image != null && hasInfix (head pair) image) imageIcons;
+    in
+    if matches == [ ] then null else last (head matches);
 in
 {
   options.garuda.services.compose-runner = mkOption {
@@ -123,6 +249,27 @@ in
         }
       )
     ) cfg;
+
+    topology.self.services = mkMerge (
+      mapAttrsToList (
+        stack: value:
+        mapAttrs' (
+          service: spec:
+          nameValuePair "docker-${service}" {
+            name = service;
+            info = if spec.image == null then "" else spec.image;
+            icon = iconFor spec.image;
+            details = {
+              stack.text = "compose-runner-${stack}";
+            }
+            // optionalAttrs (spec.ports != [ ]) {
+              ports.text = concatLines spec.ports;
+            };
+          }
+        ) (parseCompose "${value.source}/compose.yml")
+      ) cfg
+    );
+
     virtualisation.docker.enable = mkIf (cfg != { }) true;
     environment.systemPackages = mkIf (cfg != { }) [ pkgs.docker-compose ];
   };

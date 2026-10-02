@@ -57,6 +57,7 @@ command.
   prek            - Better `pre-commit`, re-engineered in Rust
   restart         - Restarts all physical servers
   sops            - Simple and flexible tool for managing secrets
+  topology        - Renders the infrastructure diagrams (nix-topology) to docs/src/topology
   update          - Bumps flake.lock and deploys it to the servers for the next boot
 
 [infra-nix]

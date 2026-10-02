@@ -4,6 +4,7 @@
 
 - [Introduction](./intro.md)
 - [General information](./general.md)
+- [Infrastructure diagrams](./topology.md)
 - [Common tasks](./common.md)
 - [Important links](./important-links.md)
 

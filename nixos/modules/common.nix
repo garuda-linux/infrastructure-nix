@@ -143,14 +143,13 @@
 
   # Environment
   environment = {
-    # Fix for Ghostty acting weird (https://ghostty.org/docs/help/terminfo)
-    enableAllTerminfo = true;
     # Packages the system needs, individual user packages shall be put into home-manager configurations
     systemPackages = with pkgs; [
       btop
       eza
       fishPlugins.autopair
       fishPlugins.puffer
+      ghostty.terminfo
       git
       goaccess
       htop

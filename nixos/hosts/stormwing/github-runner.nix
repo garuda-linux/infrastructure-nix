@@ -7,10 +7,12 @@
 {
   # No default modules, untrusted container!
   imports = [
+    inputs.nix-topology.nixosModules.default
     inputs.sops-nix.nixosModules.sops
     ../../modules/garuda-lib.nix
     ../../modules/hardening.nix
     ../../modules/motd.nix
+    ../../modules/topology.nix
     ../../services/compose-runner/compose-runner.nix
     ../../services/mk.nix
     ../../services/monitoring

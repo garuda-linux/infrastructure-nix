@@ -40,6 +40,20 @@ A general overview of the folder structure can be found below:
 └── secrets
 ```
 
+## Infrastructure diagrams
+
+[nix-topology](https://github.com/oddlama/nix-topology) renders diagrams of all hosts, containers, networks and services
+from the NixOS configurations. Run `topology` in the devshell to regenerate the SVGs in `docs/src/topology` and commit
+them, they are shown on the [Infrastructure diagrams](./topology.md) page.
+
+Most things are extracted automatically. Additions live in:
+
+- `nixos/topology.nix` for global nodes and networks (Internet, Cloudflare, Tailscale)
+- `nixos/modules/topology.nix` for services nix-topology can't detect (mailserver, redis, runners, tunnels, ...)
+- `nixos/services/compose-runner/compose-runner.nix`, which reads every `compose.yml` and adds its Docker containers
+  with image and ports
+- `nixos/modules/nspawn-containers.nix`, which wires containers to their host bridge
+
 ## Secrets in this repository
 
 Secrets are managed via the sops-nix module, which allows us to encrypt sensitive files and supply them in an encrypted way to our hosts.
