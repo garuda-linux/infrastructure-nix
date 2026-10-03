@@ -121,6 +121,10 @@ in
         };
         route = {
           receiver = "garuda";
+          group_by = [
+            "alertname"
+            "instance"
+          ];
           group_wait = "30s";
           group_interval = "5m";
           repeat_interval = "4h";
@@ -175,7 +179,8 @@ in
                 {{- define "garuda.alert" -}}
                 <b>{{ .Labels.alertname }}</b>{{ with .Labels.instance }}
                 <b>Instance:</b> {{ . }}{{ end }}{{ with .Labels.name }}
-                <b>Name:</b> {{ . }}{{ end }}{{ with .Labels.severity }}
+                <b>Name:</b> {{ . }}{{ end }}{{ with .Labels.device }}
+                <b>Device:</b> {{ . }}{{ end }}{{ with .Labels.severity }}
                 <b>Severity:</b> {{ . }}{{ end }}{{ with .Labels.state }}
                 <b>State:</b> {{ . }}{{ end }}
                 {{ end -}}

@@ -103,6 +103,7 @@
         alert = "HostDiskMayFillIn24Hours";
         expr = "max by (instance, job, device, fstype) (predict_linear(node_filesystem_avail_bytes{fstype!~\"^(fuse.*|tmpfs|ramfs|cifs|nfs)\",job!~\"node-.+-containers\"}[24h], 86400)) <= 0 and max by (instance, job, device, fstype) (node_filesystem_avail_bytes{fstype!~\"^(fuse.*|tmpfs|ramfs|cifs|nfs)\",job!~\"node-.+-containers\"} / node_filesystem_size_bytes) < 0.15";
         for = "1h";
+        keep_firing_for = "6h";
         labels = {
           severity = "warning";
           scope = "host";
