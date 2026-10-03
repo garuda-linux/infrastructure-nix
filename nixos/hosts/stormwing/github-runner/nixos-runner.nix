@@ -8,6 +8,9 @@ let
   # Lives on the persistent cache mount instead of the RAM-backed /run
   workDir = "/var/cache/github-runner/nixos-work";
 in
+# Only meant to run trusted code: nyx's check-pr-trust gate sets allow-unsafe-pr-checkout
+# for fork PRs from collaborators/members/owners, users with write access, or PRs labelled
+# safe-to-test. Actions/checkout refuses other fork PR heads before Nix runs.
 {
   services.github-runners.${name} = {
     enable = true;
@@ -31,6 +34,15 @@ in
       jq
       openssh
     ];
+  };
+
+  # Client-side only. Daemon settings (system-features, max-jobs) come from the host.
+  nix.settings = {
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    accept-flake-config = true;
   };
 
   users = {

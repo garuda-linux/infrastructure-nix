@@ -48,6 +48,15 @@ in
   nix.settings = {
     substituters = [ "https://nyx-cache.chaotic.cx/" ];
     trusted-public-keys = [ "nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk=" ];
+
+    # The i5-13500 handles x86-64-v3, so nyx's v3 derivations may build here without rebuilding
+    # the host itself with gcc.arch. Containers (e.g. the GitHub runner) build through this
+    # daemon's socket, so this covers them too.
+    system-features = [
+      "gccarch-x86-64-v3"
+    ]
+    ++ map (arch: "gccarch-${arch}") lib.systems.architectures.inferiors."x86-64-v3";
+    sandbox-fallback = false;
   };
 
   swapDevices = [
@@ -173,12 +182,6 @@ in
 
         github-runner = {
           mounts = [
-            {
-              name = "token";
-              hostPath = config.sops.secrets."compose/github-runner".path;
-              mountPoint = "/var/.github-runner.env";
-              readOnly = true;
-            }
             {
               name = "nixos-runner-token";
               hostPath = config.sops.secrets."github-runner/stormwing-nixos".path;
@@ -355,7 +358,6 @@ in
   ];
 
   sops.secrets = garuda-lib.mkSecrets [
-    "compose/github-runner"
     "github-runner/stormwing-nixos"
   ];
 }

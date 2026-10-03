@@ -25,15 +25,10 @@
       home = "/home/pedrohlc";
       key = keys.pedrohlc;
       units = [
-        "compose-runner-github-runner.service"
         "github-runner-stormwing-nixos.service"
         "docker.service"
       ];
       runners = {
-        github-runner = {
-          envfile = "/var/.github-runner.env";
-          source = ../../../compose/github-runner;
-        };
         gitlab-runner = {
           source = ../../../compose/gitlab-runner;
         };
