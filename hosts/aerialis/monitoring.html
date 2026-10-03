@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-e434df35.js";
+            window.path_to_searchindex_js = "../../searchindex-4feaf189.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-4ebbbf40.js"></script>
+        <script src="../../toc-9fb0c2dc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -259,6 +259,11 @@ in
         enable = true;
         port = mon.ports.cloudflareExporter;
         environmentFile = config.sops.templates."cloudflare-exporter-env".path;
+
+        # Per colocation per host breakdowns peak at ~16k series each
+        extraFlags = [
+          "--metrics_denylist=cloudflare_zone_colocation_visits,cloudflare_zone_colocation_edge_response_bytes,cloudflare_zone_colocation_requests_total"
+        ];
       };
 
       applicationTargets = [

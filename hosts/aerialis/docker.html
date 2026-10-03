@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-e434df35.js";
+            window.path_to_searchindex_js = "../../searchindex-4feaf189.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-4ebbbf40.js"></script>
+        <script src="../../toc-9fb0c2dc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -181,8 +181,11 @@
                         <h1 id="docker-aerialis"><a class="header" href="#docker-aerialis">docker (aerialis)</a></h1>
 <p>This container runs general-purpose Docker workloads for services that are not packaged natively in NixOS.</p>
 <h2 id="general"><a class="header" href="#general">General</a></h2>
-<p>This container is used to run regular Docker containers.
-Recently, the <code>compose-runner</code> module has been replaced by native Nix expressions.</p>
+<p>This container is used to run regular Docker containers via the <code>compose-runner</code> module.</p>
+<h2 id="restarting-containers"><a class="header" href="#restarting-containers">Restarting containers</a></h2>
+<p>This can happen via the following command:</p>
+<pre><code class="language-bash">sudo systemctl restart compose-runner-docker
+</code></pre>
 <h2 id="nextcloud-aio"><a class="header" href="#nextcloud-aio">Nextcloud AIO</a></h2>
 <p>This container also runs a Nextcloud AIO master container, which administrates its containers by itself.
 Consult its <a href="https://github.com/nextcloud/docker">extensive documentation for more information</a>.

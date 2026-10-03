@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex-e434df35.js";
+            window.path_to_searchindex_js = "searchindex-4feaf189.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-4ebbbf40.js"></script>
+        <script src="toc-9fb0c2dc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -218,16 +218,16 @@ command.</p>
 
 [[general commands]]
 
-  ansible-core    - Radically simple IT automation
-  apply           - Applies the infra-nix configuration pushed to the servers
   clean           - Runs the garbage collection on the servers
-  deploy          - Deploys the local NixOS configuration to the servers
+  colmena         - Simple, stateless NixOS deployment tool
+  deploy          - Builds and switches the servers to the local configuration (args go to colmena apply, e.g. --on aerialis)
+  dnscontrol      - Synchronize your DNS to multiple providers from a simple DSL
   menu            - prints this menu
   prek            - Better `pre-commit`, re-engineered in Rust
   restart         - Restarts all physical servers
-  rsync           - Fast incremental file transfer utility
   sops            - Simple and flexible tool for managing secrets
-  update          - Performs a full system update on the servers bumping flake lock
+  topology        - Renders the infrastructure diagrams (nix-topology) to docs/src/topology
+  update          - Bumps flake.lock and deploys it to the servers for the next boot
 
 [infra-nix]
 

@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-e434df35.js";
+            window.path_to_searchindex_js = "../../searchindex-4feaf189.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-4ebbbf40.js"></script>
+        <script src="../../toc-9fb0c2dc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -180,6 +180,10 @@
                     <main>
                         <h1 id="mastodon-aerialis"><a class="header" href="#mastodon-aerialis">mastodon (aerialis)</a></h1>
 <p>This container runs the Mastodon social network instance for Garuda Linux, providing decentralized microblogging.</p>
+<h2 id="restarting-containers"><a class="header" href="#restarting-containers">Restarting containers</a></h2>
+<p>The Docker stack can be restarted via the following command:</p>
+<pre><code class="language-bash">sudo systemctl restart compose-runner-mastodon
+</code></pre>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <p>Configuration for the <code>mastodon</code> container on aerialis.</p>
 <pre><code class="language-nix">{

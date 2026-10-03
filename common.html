@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex-e434df35.js";
+            window.path_to_searchindex_js = "searchindex-4feaf189.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-4ebbbf40.js"></script>
+        <script src="toc-9fb0c2dc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -209,38 +209,34 @@ deployiso -FSR # sync to Cloudflare R2 and Sourceforge while also updating the l
 deployiso -Sd # to delete the old ISOs on Sourceforge once they aren't needed anymore
 deployiso -FSRd # oneliner for the above-given commands
 </code></pre>
+<h3 id="deploying-configurations"><a class="header" href="#deploying-configurations">Deploying configurations</a></h3>
+<p>Deployments happen via <a href="https://colmena.cli.rs">colmena</a> from a local clone of the
+<a href="https://gitlab.com/garuda-linux/infra-nix">infra-nix</a> repo. The hive is derived from <code>nixosConfigurations</code> in
+<code>nixos/flake-module.nix</code>, so every host added there is deployable automatically. Systems are built locally and the
+closure is copied to the servers, connecting as the <code>deploy</code> user on port 666. Your SSH key needs to be authorized for
+that user (see <code>users.nix</code>).</p>
+<p>All commands below are available in the devshell (<code>nix develop</code>). Arguments are passed through to colmena, so
+<code>--on aerialis</code> (or <code>--on @tag</code>, comma-separated) limits a command to specific hosts:</p>
+<pre><code class="language-sh">deploy                 # build and switch all servers to the local configuration
+deploy --on aerialis   # only one host
+deploy boot            # activate on next boot instead of switching right away
+deploy --build-on-target --on stormwing # build on the server itself instead of locally
+clean                  # garbage collect on all servers
+restart --on stormwing # reboot a server
+</code></pre>
+<p>Plain colmena works too, e.g. <code>colmena build</code> to only build or <code>colmena exec --on aerialis -- uptime</code>.</p>
+<p>Keep in mind that switching restarts every service whose files changed since the last deployment. On our Hetzner
+servers, this includes a restart of every declarative <code>nixos-container</code> if needed, causing a small downtime.</p>
 <h3 id="updating-the-system"><a class="header" href="#updating-the-system">Updating the system</a></h3>
-<p>One needs to have the <a href="https://gitlab.com/garuda-linux/infra-nix">infra-nix</a> repo cloned locally. Then proceed by
-updating the <code>flake.lock</code> file, pushing it to the server &amp; building the configurations:</p>
-<pre><code class="language-sh">nix flake update
-ansible-playbook garuda.yml -l $servername # Eg. aerialis
-deploy # Skip using the above command and use this one in case nix develop was used
+<pre><code class="language-sh">update # nix flake update + colmena apply boot
+restart --on $servername # once ready for the reboot
 </code></pre>
-<p>Then you can either apply it via Ansible or connect to the host to view more details about the process while it runs:</p>
-<pre><code class="language-sh">ansible-playbook apply.yml -l $servername # Ansible
-
-apply # Nix develop shell
-
-ssh -p 666 $user@builds.garudalinux.org
-sudo nixos-rebuild switch
-</code></pre>
-<p>Keep in mind that this will restart every service whose files changed since the last system update. On our Hetzner
-server, this includes a restart of every declarative <code>nixos-container</code> if needed, causing a small downtime.</p>
+<p>The new generation is only activated on the next boot. Use <code>nix flake update &amp;&amp; deploy</code> instead to switch right away.
+Remember to commit the updated <code>flake.lock</code>.</p>
 <h3 id="changing-system-configurations"><a class="header" href="#changing-system-configurations">Changing system configurations</a></h3>
-<p>Most system configurations are contained in individual Nix files in the <code>nix</code> directory of this repo. This means
-changing anything must not be done manually but by editing the corresponding file and pushing/applying the configuration
-afterward.</p>
-<pre><code class="language-sh">ansible-playbook garuda.yml -l $servername # Eg. aerialis
-deploy # In case nix develop is used
-</code></pre>
-<p>As with the system update, one can either apply via Ansible or manually:</p>
-<pre><code class="language-sh">ansible-playbook apply.yml -l $servername # Ansible
-
-apply # Nix develop shell
-
-ssh -p 666 $user@builds.garudalinux.org
-sudo nixos-rebuild switch
-</code></pre>
+<p>Most system configurations are contained in individual Nix files in the <code>nixos</code> directory of this repo. This means
+changing anything must not be done manually but by editing the corresponding file and deploying the configuration
+afterward via <code>deploy</code>.</p>
 <h4 id="adding-a-user"><a class="header" href="#adding-a-user">Adding a user</a></h4>
 <p>Adding users needs to be done in <code>users.nix</code>:</p>
 <ul>
@@ -262,14 +258,20 @@ The deployment is done the same way as with normal system configuration.</p>
 Piped and Searx, where it is often crucial to have the latest build to bypass Google’s restrictions.
 Containers using the <code>latest</code> tag are automatically updated via <a href="https://containrrr.dev/watchtower/">watchtower</a> daily.
 The remaining ones can be updated by changing their version in the corresponding <code>compose.yml</code> and then
-running <code>deploy</code> &amp; <code>apply</code>.
-If containers are to be updated manually, this can be achieved by connecting to the host,
-running <code>nixos-container root-login $containername</code>, and executing:</p>
-<pre><code class="language-sh">cd /var/garuda/compose-runner/$name/ # replace $name with the actual docker-compose.yml or autocomplete via tab
-sudo docker compose pull
-sudo docker compose up -d
+running <code>deploy</code>.</p>
+<p>Every compose stack is managed by a <code>compose-runner-$name</code> systemd service, which syncs the compose files and the <code>.env</code>
+file to <code>/var/garuda/compose-runner/$name</code> and recreates the stack on every start. Don’t run <code>docker compose up</code>/<code>down</code>
+there by hand, as the service won’t notice and the next restart overrides it anyway. To restart a stack, connect to the
+host, run <code>nixos-container root-login $containername</code> and restart its service:</p>
+<pre><code class="language-sh">systemctl restart compose-runner-$name # e.g. compose-runner-docker
+systemctl status compose-runner-$name
+journalctl -u compose-runner-$name -f
 </code></pre>
-<p>The updated containers will be pulled and automatically recreated using the new images.</p>
+<p>To pull newer images for tags that don’t change (like <code>latest</code>) manually, pull first and then restart the service:</p>
+<pre><code class="language-sh">cd /var/garuda/compose-runner/$name
+docker compose pull
+systemctl restart compose-runner-$name
+</code></pre>
 <h3 id="checking-whether-backups-were-successful"><a class="header" href="#checking-whether-backups-were-successful">Checking whether backups were successful</a></h3>
 <p>Backups run through <code>borgmatic</code>, which is configured per host with <code>garuda.backup.borgmatic</code> (see
 <code>nixos/services/backup.nix</code>). To check whether backups to Hetzner are still working as expected, connect to the server
@@ -296,14 +298,14 @@ website) <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/flak
 <pre><code class="language-sh">cd nix
 nix flake lock --update-input src-chaotic-toolbox # toolbox
 </code></pre>
-<p>After that deploy as usual by running <code>deploy</code> and <code>apply</code>. The commit and corresponding hash will be updated and NixOS
+<p>After that deploy as usual by running <code>deploy</code>. The commit and corresponding hash will be updated and NixOS
 will use it to build the toolbox using the new revision automatically.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="general.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="topology.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
@@ -317,7 +319,7 @@ will use it to build the toolbox using the new revision automatically.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="general.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="topology.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Credits - Garuda&#x27;s infra documentation</title>
+        <title>Infrastructure diagrams - Garuda&#x27;s infra documentation</title>
 
 
         <!-- Custom HTML head -->
@@ -178,22 +178,29 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="credits"><a class="header" href="#credits">Credits</a></h1>
-<ul>
-<li><a href="https://github.com/mozilla">https://github.com/mozilla</a></li>
-<li><a href="https://github.com/JetBrains/JetBrainsMono">https://github.com/JetBrains/JetBrainsMono</a></li>
-<li><a href="https://github.com/nix-community/infra">https://github.com/nix-community/infra</a></li>
-<li><a href="https://github.com/BackInBash/RPIPv6">https://github.com/BackInBash/RPIPv6</a></li>
-</ul>
+                        <h1 id="infrastructure-diagrams"><a class="header" href="#infrastructure-diagrams">Infrastructure diagrams</a></h1>
+<p>These diagrams are generated from the NixOS configurations with <a href="https://github.com/oddlama/nix-topology">nix-topology</a>.
+Regenerate them with <code>topology</code> in the devshell after changing hosts, containers or services, and commit the result.
+See <a href="./general.html#infrastructure-diagrams">General information</a> for where the non-detected parts are defined.</p>
+<h2 id="network-view"><a class="header" href="#network-view">Network view</a></h2>
+<p>Hosts, containers and the networks connecting them, including container IPs.</p>
+<p><a href="./topology/network.svg"><img src="./topology/network.svg" alt="Network diagram"></a></p>
+<h2 id="main-view"><a class="header" href="#main-view">Main view</a></h2>
+<p>Every host and container with its services, Docker containers (image and ports) and nginx virtual hosts.
+It is large, open it in a new tab to zoom in.</p>
+<p><a href="./topology/main.svg"><img src="./topology/main.svg" alt="Main diagram"></a></p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="security.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="general.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
+                            <a rel="next prefetch" href="common.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -201,10 +208,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="security.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="general.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
+                    <a rel="next prefetch" href="common.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
             </nav>
 
         </div>

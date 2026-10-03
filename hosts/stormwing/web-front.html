@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-e434df35.js";
+            window.path_to_searchindex_js = "../../searchindex-4feaf189.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-4ebbbf40.js"></script>
+        <script src="../../toc-9fb0c2dc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -183,7 +183,9 @@
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <p>Configuration for the <code>web-front</code> container on stormwing.</p>
 <pre><code class="language-nix">{
+  config,
   garuda-lib,
+  lib,
   sources,
   ...
 }:
@@ -191,6 +193,11 @@ let
   inherit (garuda-lib) allowOnlyCloudflareZerotrust;
   inherit (garuda-lib) mkCatchAllVhost;
   inherit (garuda-lib) mkProxyVhost;
+
+  webFront = garuda-lib.mkWebFront {
+    host = "stormwing";
+    inherit vhosts;
+  };
 
   vhosts = {
     "builds.garudalinux.org" = mkProxyVhost {
@@ -218,7 +225,7 @@ let
         "/" = {
           extraConfig = ''
             proxy_pass http://10.0.5.10:8384;
-            proxy_set_header Authorization "Basic ${garuda-lib.secrets.syncthing.esxi-build.credentials.base64}";
+            include ${config.sops.templates."syncthing-build-auth.conf".path};
           '';
         };
       };
@@ -229,17 +236,23 @@ in
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
-  inherit
-    (garuda-lib.mkWebFront {
-      host = "stormwing";
-      inherit vhosts;
-    })
+  inherit (webFront)
     garuda
     networking
     services
-    sops
     systemd
     ;
+
+  sops = lib.recursiveUpdate webFront.sops {
+    secrets."syncthing/gui_basic_auth" = { };
+    templates."syncthing-build-auth.conf" = {
+      owner = "nginx";
+      content = ''
+        proxy_set_header Authorization "Basic ${config.sops.placeholder."syncthing/gui_basic_auth"}";
+      '';
+      restartUnits = [ "nginx.service" ];
+    };
+  };
 
   system.stateVersion = "25.05";
 }

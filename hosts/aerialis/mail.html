@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-e434df35.js";
+            window.path_to_searchindex_js = "../../searchindex-4feaf189.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-4ebbbf40.js"></script>
+        <script src="../../toc-9fb0c2dc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -303,16 +303,11 @@ in
         hashedPasswordFile = config.sops.secrets."mail/wilburatchaotic".path;
       };
     };
+
+    # Forwards to external addresses live in the sops-rendered "postfix-forwards" map below
     forwards = {
-      "any_@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
-      "coc@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
-      "coffee-machine@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
-      "islandc0der@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.islandc0der ];
       "no-reply@chaotic.cx" = [ ];
       "noreply@chaotic.cx" = [ ];
-      "pedrohlc@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
-      "pgc@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
-      "xstefen@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.xstefen ];
     };
     indexDir = "/var/lib/dovecot/indices";
     systemDomain = "garudalinux.org";
@@ -395,6 +390,29 @@ in
       "zipdownload" # Roundcube internal plugin
     ];
   };
+
+  # texthash maps are read directly, no postmap run needed for the runtime-rendered file
+  services.postfix.settings.main.virtual_alias_maps = [
+    "texthash:${config.sops.templates."postfix-forwards".path}"
+  ];
+  sops.templates."postfix-forwards" = {
+    owner = config.services.postfix.user;
+    content =
+      let
+        inherit (config.sops) placeholder;
+      in
+      ''
+        any_@chaotic.cx ${placeholder."mail/forwards/pedrohlc"}
+        coc@chaotic.cx ${placeholder."mail/forwards/pedrohlc"}
+        coffee-machine@chaotic.cx ${placeholder."mail/forwards/pedrohlc"}
+        islandc0der@chaotic.cx ${placeholder."mail/forwards/islandc0der"}
+        pedrohlc@chaotic.cx ${placeholder."mail/forwards/pedrohlc"}
+        pgc@chaotic.cx ${placeholder."mail/forwards/pedrohlc"}
+        xstefen@chaotic.cx ${placeholder."mail/forwards/xstefen"}
+      '';
+    restartUnits = [ "postfix.service" ];
+  };
+
   services.nginx.virtualHosts."mail.garudalinux.net" = {
     forceSSL = lib.mkForce false;
   };
@@ -409,6 +427,9 @@ in
     "mail/dr460nf1r3atchaotic"
     "mail/dr460nf1r3atgl"
     "mail/filoatgl"
+    "mail/forwards/islandc0der"
+    "mail/forwards/pedrohlc"
+    "mail/forwards/xstefen"
     "mail/gitlabatgl"
     "mail/hatchaotic"
     "mail/mastodonatgl"

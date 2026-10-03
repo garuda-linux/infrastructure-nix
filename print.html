@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex-e434df35.js";
+            window.path_to_searchindex_js = "searchindex-4feaf189.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-4ebbbf40.js"></script>
+        <script src="toc-9fb0c2dc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -219,16 +219,16 @@ command.</p>
 
 [[general commands]]
 
-  ansible-core    - Radically simple IT automation
-  apply           - Applies the infra-nix configuration pushed to the servers
   clean           - Runs the garbage collection on the servers
-  deploy          - Deploys the local NixOS configuration to the servers
+  colmena         - Simple, stateless NixOS deployment tool
+  deploy          - Builds and switches the servers to the local configuration (args go to colmena apply, e.g. --on aerialis)
+  dnscontrol      - Synchronize your DNS to multiple providers from a simple DSL
   menu            - prints this menu
   prek            - Better `pre-commit`, re-engineered in Rust
   restart         - Restarts all physical servers
-  rsync           - Fast incremental file transfer utility
   sops            - Simple and flexible tool for managing secrets
-  update          - Performs a full system update on the servers bumping flake lock
+  topology        - Renders the infrastructure diagrams (nix-topology) to docs/src/topology
+  update          - Bumps flake.lock and deploys it to the servers for the next boot
 
 [infra-nix]
 
@@ -238,12 +238,7 @@ command.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="general-structure"><a class="header" href="#general-structure">General structure</a></h1>
 <p>A general overview of the folder structure can be found below:</p>
-<pre><code class="language-shell">├── ansible
-│   ├── host_vars
-│   │   ├── aerialis
-│   │   └── stormwing
-│   └── playbooks
-├── assets
+<pre><code class="language-shell">├── assets
 ├── compose
 │   ├── chaotic-backend
 │   ├── chaotic-v4
@@ -279,21 +274,40 @@ command.</p>
 ├── scripts
 └── secrets
 </code></pre>
+<h2 id="infrastructure-diagrams"><a class="header" href="#infrastructure-diagrams">Infrastructure diagrams</a></h2>
+<p><a href="https://github.com/oddlama/nix-topology">nix-topology</a> renders diagrams of all hosts, containers, networks and services
+from the NixOS configurations. Run <code>topology</code> in the devshell to regenerate the SVGs in <code>docs/src/topology</code> and commit
+them, they are shown on the <a href="#infrastructure-diagrams-1">Infrastructure diagrams</a> page.</p>
+<p>Most things are extracted automatically. Additions live in:</p>
+<ul>
+<li><code>nixos/topology.nix</code> for global nodes and networks (Internet, Cloudflare, Tailscale)</li>
+<li><code>nixos/modules/topology.nix</code> for services nix-topology can’t detect (mailserver, redis, runners, tunnels, …)</li>
+<li><code>nixos/services/compose-runner/compose-runner.nix</code>, which reads every <code>compose.yml</code> and adds its Docker containers
+with image and ports</li>
+<li><code>nixos/modules/nspawn-containers.nix</code>, which wires containers to their host bridge</li>
+</ul>
 <h2 id="secrets-in-this-repository"><a class="header" href="#secrets-in-this-repository">Secrets in this repository</a></h2>
 <p>Secrets are managed via the sops-nix module, which allows us to encrypt sensitive files and supply them in an encrypted way to our hosts.
 They will then be decrypted at runtime by using the hosts ed25519 SSH host key.
 This is done by using the <code>sops</code> tool, which encrypts files using a key stored in the <code>~/.config/sops/</code> directory.
-The submodule is available in the <code>secrets</code> directory once it has been set up for the first time. It can be initialized by running:</p>
-<pre><code class="language-sh">git submodule init
-git submodule update
-</code></pre>
+The encrypted files live in the <code>secrets</code> directory of this repository, recipients are configured in <code>.sops.yaml</code>:</p>
+<ul>
+<li><code>secrets/&lt;host&gt;.yaml</code> holds the secrets of one host and its containers, and is only decryptable by that host (and the admins).
+It is the default <code>sopsFile</code>, picked via the host name (or <code>garuda.motd.parentHost</code> inside containers).</li>
+<li><code>secrets/common.yaml</code> holds secrets needed on every host, like user password hashes. Secrets from it need
+<code>sopsFile = ../../secrets/common.yaml;</code> (relative to the module) in their <code>sops.secrets</code> declaration.</li>
+</ul>
+<p>A new host needs its age key (<code>ssh-to-age &lt; /etc/ssh/ssh_host_ed25519_key.pub</code>) in <code>.sops.yaml</code>, a creation rule for
+its own file, and an entry in the <code>common.yaml</code> rule.
+Only values are encrypted, so key names are visible to anyone with access to the repository.
+Every secret is consumed at runtime via <code>sops.secrets</code> or <code>sops.templates</code>, nothing secret may be evaluated into the Nix store.</p>
 <p>To view or edit any of these files, one can use the following commands:</p>
-<pre><code class="language-sh">sops secrets/filename.yaml # opens editor for the file
+<pre><code class="language-sh">sops secrets/aerialis.yaml # opens editor for the file
 sops -e secrets/filename.yaml # encrypts the file
 sops -d secrets/filename.yaml # decrypts the file
 </code></pre>
 <p>This assumes a fitting sops key is available in the <code>~/.config/sops/</code> directory.
-It is important to keep the <code>secrets</code> directory in the latest state before deploying a new configuration as misconfigurations might happen otherwise.</p>
+After changing recipients in <code>.sops.yaml</code>, run <code>sops updatekeys secrets/&lt;file&gt;.yaml</code> to re-encrypt the data key.</p>
 <h2 id="passwords-in-general"><a class="header" href="#passwords-in-general">Passwords in general</a></h2>
 <p>Our mission-critical passwords that maintainers and team members need to have access to are stored in our <a href="vault.garudalinux.org">Bitwarden instance</a>.
 After creating an account, maintainers need to be invited to the Garuda Linux organisation in order to access the stored credentials.</p>
@@ -345,6 +359,18 @@ containers directly - stormwing proxies their exporters and relays their logs ov
 repetitive structures.</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div>
+<h1 id="infrastructure-diagrams-1"><a class="header" href="#infrastructure-diagrams-1">Infrastructure diagrams</a></h1>
+<p>These diagrams are generated from the NixOS configurations with <a href="https://github.com/oddlama/nix-topology">nix-topology</a>.
+Regenerate them with <code>topology</code> in the devshell after changing hosts, containers or services, and commit the result.
+See <a href="#infrastructure-diagrams">General information</a> for where the non-detected parts are defined.</p>
+<h2 id="network-view"><a class="header" href="#network-view">Network view</a></h2>
+<p>Hosts, containers and the networks connecting them, including container IPs.</p>
+<p><a href="topology/network.svg"><img src="topology/network.svg" alt="Network diagram"></a></p>
+<h2 id="main-view"><a class="header" href="#main-view">Main view</a></h2>
+<p>Every host and container with its services, Docker containers (image and ports) and nginx virtual hosts.
+It is large, open it in a new tab to zoom in.</p>
+<p><a href="topology/main.svg"><img src="topology/main.svg" alt="Main diagram"></a></p>
+<div style="break-before: page; page-break-before: always;"></div>
 <h1 id="common-tasks"><a href="#common-tasks" class="header">Common tasks</a></h1>
 <h2 id="common-maintenance-tasks"><a class="header" href="#common-maintenance-tasks">Common maintenance tasks</a></h2>
 <h3 id="rebuilding--updating-the-forum-container"><a class="header" href="#rebuilding--updating-the-forum-container">Rebuilding / updating the forum container</a></h3>
@@ -377,38 +403,34 @@ deployiso -FSR # sync to Cloudflare R2 and Sourceforge while also updating the l
 deployiso -Sd # to delete the old ISOs on Sourceforge once they aren't needed anymore
 deployiso -FSRd # oneliner for the above-given commands
 </code></pre>
+<h3 id="deploying-configurations"><a class="header" href="#deploying-configurations">Deploying configurations</a></h3>
+<p>Deployments happen via <a href="https://colmena.cli.rs">colmena</a> from a local clone of the
+<a href="https://gitlab.com/garuda-linux/infra-nix">infra-nix</a> repo. The hive is derived from <code>nixosConfigurations</code> in
+<code>nixos/flake-module.nix</code>, so every host added there is deployable automatically. Systems are built locally and the
+closure is copied to the servers, connecting as the <code>deploy</code> user on port 666. Your SSH key needs to be authorized for
+that user (see <code>users.nix</code>).</p>
+<p>All commands below are available in the devshell (<code>nix develop</code>). Arguments are passed through to colmena, so
+<code>--on aerialis</code> (or <code>--on @tag</code>, comma-separated) limits a command to specific hosts:</p>
+<pre><code class="language-sh">deploy                 # build and switch all servers to the local configuration
+deploy --on aerialis   # only one host
+deploy boot            # activate on next boot instead of switching right away
+deploy --build-on-target --on stormwing # build on the server itself instead of locally
+clean                  # garbage collect on all servers
+restart --on stormwing # reboot a server
+</code></pre>
+<p>Plain colmena works too, e.g. <code>colmena build</code> to only build or <code>colmena exec --on aerialis -- uptime</code>.</p>
+<p>Keep in mind that switching restarts every service whose files changed since the last deployment. On our Hetzner
+servers, this includes a restart of every declarative <code>nixos-container</code> if needed, causing a small downtime.</p>
 <h3 id="updating-the-system"><a class="header" href="#updating-the-system">Updating the system</a></h3>
-<p>One needs to have the <a href="https://gitlab.com/garuda-linux/infra-nix">infra-nix</a> repo cloned locally. Then proceed by
-updating the <code>flake.lock</code> file, pushing it to the server &amp; building the configurations:</p>
-<pre><code class="language-sh">nix flake update
-ansible-playbook garuda.yml -l $servername # Eg. aerialis
-deploy # Skip using the above command and use this one in case nix develop was used
+<pre><code class="language-sh">update # nix flake update + colmena apply boot
+restart --on $servername # once ready for the reboot
 </code></pre>
-<p>Then you can either apply it via Ansible or connect to the host to view more details about the process while it runs:</p>
-<pre><code class="language-sh">ansible-playbook apply.yml -l $servername # Ansible
-
-apply # Nix develop shell
-
-ssh -p 666 $user@builds.garudalinux.org
-sudo nixos-rebuild switch
-</code></pre>
-<p>Keep in mind that this will restart every service whose files changed since the last system update. On our Hetzner
-server, this includes a restart of every declarative <code>nixos-container</code> if needed, causing a small downtime.</p>
+<p>The new generation is only activated on the next boot. Use <code>nix flake update &amp;&amp; deploy</code> instead to switch right away.
+Remember to commit the updated <code>flake.lock</code>.</p>
 <h3 id="changing-system-configurations"><a class="header" href="#changing-system-configurations">Changing system configurations</a></h3>
-<p>Most system configurations are contained in individual Nix files in the <code>nix</code> directory of this repo. This means
-changing anything must not be done manually but by editing the corresponding file and pushing/applying the configuration
-afterward.</p>
-<pre><code class="language-sh">ansible-playbook garuda.yml -l $servername # Eg. aerialis
-deploy # In case nix develop is used
-</code></pre>
-<p>As with the system update, one can either apply via Ansible or manually:</p>
-<pre><code class="language-sh">ansible-playbook apply.yml -l $servername # Ansible
-
-apply # Nix develop shell
-
-ssh -p 666 $user@builds.garudalinux.org
-sudo nixos-rebuild switch
-</code></pre>
+<p>Most system configurations are contained in individual Nix files in the <code>nixos</code> directory of this repo. This means
+changing anything must not be done manually but by editing the corresponding file and deploying the configuration
+afterward via <code>deploy</code>.</p>
 <h4 id="adding-a-user"><a class="header" href="#adding-a-user">Adding a user</a></h4>
 <p>Adding users needs to be done in <code>users.nix</code>:</p>
 <ul>
@@ -430,14 +452,20 @@ The deployment is done the same way as with normal system configuration.</p>
 Piped and Searx, where it is often crucial to have the latest build to bypass Google’s restrictions.
 Containers using the <code>latest</code> tag are automatically updated via <a href="https://containrrr.dev/watchtower/">watchtower</a> daily.
 The remaining ones can be updated by changing their version in the corresponding <code>compose.yml</code> and then
-running <code>deploy</code> &amp; <code>apply</code>.
-If containers are to be updated manually, this can be achieved by connecting to the host,
-running <code>nixos-container root-login $containername</code>, and executing:</p>
-<pre><code class="language-sh">cd /var/garuda/compose-runner/$name/ # replace $name with the actual docker-compose.yml or autocomplete via tab
-sudo docker compose pull
-sudo docker compose up -d
+running <code>deploy</code>.</p>
+<p>Every compose stack is managed by a <code>compose-runner-$name</code> systemd service, which syncs the compose files and the <code>.env</code>
+file to <code>/var/garuda/compose-runner/$name</code> and recreates the stack on every start. Don’t run <code>docker compose up</code>/<code>down</code>
+there by hand, as the service won’t notice and the next restart overrides it anyway. To restart a stack, connect to the
+host, run <code>nixos-container root-login $containername</code> and restart its service:</p>
+<pre><code class="language-sh">systemctl restart compose-runner-$name # e.g. compose-runner-docker
+systemctl status compose-runner-$name
+journalctl -u compose-runner-$name -f
 </code></pre>
-<p>The updated containers will be pulled and automatically recreated using the new images.</p>
+<p>To pull newer images for tags that don’t change (like <code>latest</code>) manually, pull first and then restart the service:</p>
+<pre><code class="language-sh">cd /var/garuda/compose-runner/$name
+docker compose pull
+systemctl restart compose-runner-$name
+</code></pre>
 <h3 id="checking-whether-backups-were-successful"><a class="header" href="#checking-whether-backups-were-successful">Checking whether backups were successful</a></h3>
 <p>Backups run through <code>borgmatic</code>, which is configured per host with <code>garuda.backup.borgmatic</code> (see
 <code>nixos/services/backup.nix</code>). To check whether backups to Hetzner are still working as expected, connect to the server
@@ -464,7 +492,7 @@ website) <a href="https://gitlab.com/garuda-linux/infra-nix/-/blob/main/nix/flak
 <pre><code class="language-sh">cd nix
 nix flake lock --update-input src-chaotic-toolbox # toolbox
 </code></pre>
-<p>After that deploy as usual by running <code>deploy</code> and <code>apply</code>. The commit and corresponding hash will be updated and NixOS
+<p>After that deploy as usual by running <code>deploy</code>. The commit and corresponding hash will be updated and NixOS
 will use it to build the toolbox using the new revision automatically.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="important-links"><a class="header" href="#important-links">Important links</a></h1>
@@ -530,8 +558,8 @@ available <a href="#users-1">here</a>.</p>
 In case of a password being required, its hash needs to be generated as follows:</p>
 <pre><code class="language-sh">nix-shell -p mkpasswd --run 'mkpasswd -sm bcrypt' &gt; /path/to/hashedPasswordFile
 </code></pre>
-<p>The file then needs to be added to our sops file and committed to our <a href="https://gitlab.com/garuda-linux/infra-nix-secrets">secrets</a> repository.
-This one is only available to members of our GitLab org and usually is cloned as git submodule to <code>./secrets</code>.</p>
+<p>The hash then needs to be added to <code>secrets/common.yaml</code> (<code>sops secrets/common.yaml</code>) and committed to this repository.
+The corresponding <code>sops.secrets</code> entry in <code>users.nix</code> needs <code>sopsFile = ../../secrets/common.yaml;</code>.</p>
 <h2 id="onboarding-a-new-admin"><a class="header" href="#onboarding-a-new-admin">Onboarding a new admin</a></h2>
 <p>After confirming the trustworthiness of a new admin, the following actions need to be executed:</p>
 <ul>
@@ -1115,6 +1143,10 @@ in
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="chaotic-backend-aerialis"><a class="header" href="#chaotic-backend-aerialis">chaotic-backend (aerialis)</a></h1>
 <p>This container provides backend services for Chaotic-AUR, including API endpoints and job processing for the repository.</p>
+<h2 id="restarting-containers"><a class="header" href="#restarting-containers">Restarting containers</a></h2>
+<p>The Docker stack can be restarted via the following command:</p>
+<pre><code class="language-bash">sudo systemctl restart compose-runner-chaotic-backend
+</code></pre>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,
@@ -1183,7 +1215,7 @@ in
 <h3 id="docker-containers"><a class="header" href="#docker-containers">Docker containers</a></h3>
 <pre><code class="language-yaml">services:
   chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:2.9.0-pre
+    image: ghcr.io/chaotic-cx/chaotic-next:2.9.0
     container_name: chaotic-backend
     deploy:
       restart_policy:
@@ -1251,8 +1283,11 @@ in
 <h1 id="docker-aerialis"><a class="header" href="#docker-aerialis">docker (aerialis)</a></h1>
 <p>This container runs general-purpose Docker workloads for services that are not packaged natively in NixOS.</p>
 <h2 id="general"><a class="header" href="#general">General</a></h2>
-<p>This container is used to run regular Docker containers.
-Recently, the <code>compose-runner</code> module has been replaced by native Nix expressions.</p>
+<p>This container is used to run regular Docker containers via the <code>compose-runner</code> module.</p>
+<h2 id="restarting-containers-1"><a class="header" href="#restarting-containers-1">Restarting containers</a></h2>
+<p>This can happen via the following command:</p>
+<pre><code class="language-bash">sudo systemctl restart compose-runner-docker
+</code></pre>
 <h2 id="nextcloud-aio"><a class="header" href="#nextcloud-aio">Nextcloud AIO</a></h2>
 <p>This container also runs a Nextcloud AIO master container, which administrates its containers by itself.
 Consult its <a href="https://github.com/nextcloud/docker">extensive documentation for more information</a>.
@@ -1452,7 +1487,7 @@ volumes:
 <li><strong>watchtower</strong>: Automatically updates running containers to the latest image versions.</li>
 <li><strong>autoheal</strong>: Monitors containers and restarts them if they become unhealthy (e.g., Whoogle).</li>
 </ul>
-<h2 id="restarting-containers"><a class="header" href="#restarting-containers">Restarting containers</a></h2>
+<h2 id="restarting-containers-2"><a class="header" href="#restarting-containers-2">Restarting containers</a></h2>
 <p>This can happen via the following command:</p>
 <pre><code class="language-bash">sudo systemctl restart compose-runner-docker-proxied
 </code></pre>
@@ -1662,7 +1697,12 @@ volumes:
 <li><a href="https://github.com/discourse/discourse_docker">Discourse Docker</a></li>
 </ul>
 <h2 id="nix-expression-3"><a class="header" href="#nix-expression-3">Nix expression</a></h2>
-<pre><code class="language-nix">{ garuda-lib, sources, ... }:
+<pre><code class="language-nix">{
+  garuda-lib,
+  pkgs,
+  sources,
+  ...
+}:
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
@@ -1673,6 +1713,12 @@ volumes:
 
   # Enable Docker since we use the official Docker image in /var/discourse
   virtualisation.docker.enable = true;
+
+  topology.self.services.discourse = {
+    name = "Discourse";
+    icon = "${(pkgs.callPackage ../../topology-icons.nix { }).discourse}";
+    info = "https://forum.garudalinux.org";
+  };
 
   # Open required port
   networking.firewall.allowedTCPPorts = [ 80 ];
@@ -1806,16 +1852,11 @@ in
         hashedPasswordFile = config.sops.secrets."mail/wilburatchaotic".path;
       };
     };
+
+    # Forwards to external addresses live in the sops-rendered "postfix-forwards" map below
     forwards = {
-      "any_@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
-      "coc@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
-      "coffee-machine@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
-      "islandc0der@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.islandc0der ];
       "no-reply@chaotic.cx" = [ ];
       "noreply@chaotic.cx" = [ ];
-      "pedrohlc@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
-      "pgc@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.pedrohlc ];
-      "xstefen@chaotic.cx" = [ config.garuda-lib.secrets.mail.forwards.xstefen ];
     };
     indexDir = "/var/lib/dovecot/indices";
     systemDomain = "garudalinux.org";
@@ -1898,6 +1939,29 @@ in
       "zipdownload" # Roundcube internal plugin
     ];
   };
+
+  # texthash maps are read directly, no postmap run needed for the runtime-rendered file
+  services.postfix.settings.main.virtual_alias_maps = [
+    "texthash:${config.sops.templates."postfix-forwards".path}"
+  ];
+  sops.templates."postfix-forwards" = {
+    owner = config.services.postfix.user;
+    content =
+      let
+        inherit (config.sops) placeholder;
+      in
+      ''
+        any_@chaotic.cx ${placeholder."mail/forwards/pedrohlc"}
+        coc@chaotic.cx ${placeholder."mail/forwards/pedrohlc"}
+        coffee-machine@chaotic.cx ${placeholder."mail/forwards/pedrohlc"}
+        islandc0der@chaotic.cx ${placeholder."mail/forwards/islandc0der"}
+        pedrohlc@chaotic.cx ${placeholder."mail/forwards/pedrohlc"}
+        pgc@chaotic.cx ${placeholder."mail/forwards/pedrohlc"}
+        xstefen@chaotic.cx ${placeholder."mail/forwards/xstefen"}
+      '';
+    restartUnits = [ "postfix.service" ];
+  };
+
   services.nginx.virtualHosts."mail.garudalinux.net" = {
     forceSSL = lib.mkForce false;
   };
@@ -1912,6 +1976,9 @@ in
     "mail/dr460nf1r3atchaotic"
     "mail/dr460nf1r3atgl"
     "mail/filoatgl"
+    "mail/forwards/islandc0der"
+    "mail/forwards/pedrohlc"
+    "mail/forwards/xstefen"
     "mail/gitlabatgl"
     "mail/hatchaotic"
     "mail/mastodonatgl"
@@ -1934,6 +2001,10 @@ in
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="mastodon-aerialis"><a class="header" href="#mastodon-aerialis">mastodon (aerialis)</a></h1>
 <p>This container runs the Mastodon social network instance for Garuda Linux, providing decentralized microblogging.</p>
+<h2 id="restarting-containers-3"><a class="header" href="#restarting-containers-3">Restarting containers</a></h2>
+<p>The Docker stack can be restarted via the following command:</p>
+<pre><code class="language-bash">sudo systemctl restart compose-runner-mastodon
+</code></pre>
 <h2 id="nix-expression-5"><a class="header" href="#nix-expression-5">Nix expression</a></h2>
 <p>Configuration for the <code>mastodon</code> container on aerialis.</p>
 <pre><code class="language-nix">{
@@ -2159,6 +2230,11 @@ in
         enable = true;
         port = mon.ports.cloudflareExporter;
         environmentFile = config.sops.templates."cloudflare-exporter-env".path;
+
+        # Per colocation per host breakdowns peak at ~16k series each
+        extraFlags = [
+          "--metrics_denylist=cloudflare_zone_colocation_visits,cloudflare_zone_colocation_edge_response_bytes,cloudflare_zone_colocation_requests_total"
+        ];
       };
 
       applicationTargets = [
@@ -2968,6 +3044,20 @@ in
     exporters = [ "smartctlExporter" ];
   };
 
+  nix.settings = {
+    substituters = [ "https://nyx-cache.chaotic.cx/" ];
+    trusted-public-keys = [ "nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk=" ];
+
+    # The i5-13500 handles x86-64-v3, so nyx's v3 derivations may build here without rebuilding
+    # the host itself with gcc.arch. Containers (e.g. the GitHub runner) build through this
+    # daemon's socket, so this covers them too.
+    system-features = [
+      "gccarch-x86-64-v3"
+    ]
+    ++ map (arch: "gccarch-${arch}") lib.systems.architectures.inferiors."x86-64-v3";
+    sandbox-fallback = false;
+  };
+
   swapDevices = [
     {
       device = "/data_1/swapfile";
@@ -3092,9 +3182,9 @@ in
         github-runner = {
           mounts = [
             {
-              name = "token";
-              hostPath = config.sops.secrets."compose/github-runner".path;
-              mountPoint = "/var/.github-runner.env";
+              name = "nixos-runner-token";
+              hostPath = config.sops.secrets."github-runner/stormwing-nixos".path;
+              mountPoint = "/var/.github-runner-nixos.token";
               readOnly = true;
             }
             {
@@ -3266,7 +3356,9 @@ in
     39252
   ];
 
-  sops.secrets."compose/github-runner" = { };
+  sops.secrets = garuda-lib.mkSecrets [
+    "github-runner/stormwing-nixos"
+  ];
 }
 </code></pre>
 <h2 id="shared-host-configuration-1"><a class="header" href="#shared-host-configuration-1">Shared host configuration</a></h2>
@@ -3534,17 +3626,26 @@ in
       gui = {
         apikey = "garudalinux";
         insecureSkipHostcheck = true;
-        inherit (garuda-lib.secrets.syncthing.esxi-build.credentials) user password;
       };
     };
     guiAddress = "10.0.5.10:8384";
+    guiPasswordFile = config.sops.secrets."syncthing/gui_password".path;
   };
+
+  # The GUI user has no file-based option, patch it in after syncthing-init applied the settings
+  systemd.services.syncthing-init.postStart = ''
+    ${pkgs.curl}/bin/curl -sSf -X PATCH -H "X-API-Key: garudalinux" \
+      --variable "user@${config.sops.secrets."syncthing/gui_user".path}" \
+      --expand-json '{ "user": "{{user:trim:json}}" }' \
+      http://10.0.5.10:8384/rest/config/gui
+  '';
 
   # Auto reset syncthing stuff
   systemd.services.syncthing-reset = {
     serviceConfig.Type = "oneshot";
     script = ''
-      "${pkgs.curl}/bin/curl" -X POST -H "X-API-Key: garudalinux" http://10.0.5.10:8384/rest/db/override?folder=${garuda-lib.secrets.syncthing.folders.chaotic-aur}
+      folder="$(cat "${config.sops.secrets."syncthing/folder_chaotic_aur".path}")"
+      "${pkgs.curl}/bin/curl" -X POST -H "X-API-Key: garudalinux" "http://10.0.5.10:8384/rest/db/override?folder=$folder"
     '';
   };
   systemd.timers.syncthing-reset = {
@@ -3771,12 +3872,17 @@ in
   };
 
   sops.secrets = garuda-lib.mkSecrets [
-    "cloudflare/api_keys"
     "cloudflare/r2_rclone"
     "compose/chaotic-v4"
     "keypairs/syncthing/cert"
     "keypairs/syncthing/private"
-  ];
+    "syncthing/folder_chaotic_aur"
+    "syncthing/gui_password"
+    "syncthing/gui_user"
+  ]
+  // {
+    "cloudflare/api_keys".sopsFile = ../../../secrets/common.yaml;
+  };
 
   system.stateVersion = "25.05";
 }
@@ -3985,10 +4091,12 @@ It is separate from the other GitLab runner to ensure only one build runs at a t
 {
   # No default modules, untrusted container!
   imports = [
+    inputs.nix-topology.nixosModules.default
     inputs.sops-nix.nixosModules.sops
     ../../modules/garuda-lib.nix
     ../../modules/hardening.nix
     ../../modules/motd.nix
+    ../../modules/topology.nix
     ../../services/compose-runner/compose-runner.nix
     ../../services/mk.nix
     ../../services/monitoring
@@ -4042,16 +4150,16 @@ It is separate from the other GitLab runner to ensure only one build runs at a t
 <h1 id="github-runner-stormwing"><a class="header" href="#github-runner-stormwing">github-runner (stormwing)</a></h1>
 <p>This container is a GitHub Actions runner for CI/CD tasks related to Garuda Linux projects.</p>
 <h2 id="general-8"><a class="header" href="#general-8">General</a></h2>
-<p>With this container, we provide a GitHub runner as well as (more recently), a GitLab runner. This container does <strong>not</strong>
+<p>With this container, we provide a native NixOS GitHub runner (<code>services.github-runners</code>) as well as a GitLab runner. This container does <strong>not</strong>
 have the regular Garuda configurations because it is considered untrusted.
 Access needs to happen by running <code>nixos-container root-login</code>
 on <a href="#stormwing">stormwing</a>.</p>
-<h2 id="restarting-containers-1"><a class="header" href="#restarting-containers-1">Restarting containers</a></h2>
+<h2 id="restarting-containers-4"><a class="header" href="#restarting-containers-4">Restarting containers</a></h2>
 <p>This can happen via the following commands:</p>
-<pre><code class="language-bash">sudo systemctl restart compose-runner-github-runner
+<pre><code class="language-bash">sudo systemctl restart github-runner-stormwing-nixos
 sudo systemctl restart compose-runner-gitlab-runner
 </code></pre>
-<p>Watchtower additionally keeps the containers up to date.</p>
+<p>Watchtower additionally keeps the GitLab runner container up to date.</p>
 <h2 id="nix-expression-13"><a class="header" href="#nix-expression-13">Nix expression</a></h2>
 <pre><code class="language-nix">{
   garuda-lib,
@@ -4062,13 +4170,16 @@ sudo systemctl restart compose-runner-gitlab-runner
 {
   # No default modules, untrusted container!
   imports = [
+    inputs.nix-topology.nixosModules.default
     inputs.sops-nix.nixosModules.sops
     ../../modules/garuda-lib.nix
     ../../modules/hardening.nix
     ../../modules/motd.nix
+    ../../modules/topology.nix
     ../../services/compose-runner/compose-runner.nix
     ../../services/mk.nix
     ../../services/monitoring
+    ./github-runner/nixos-runner.nix
   ];
 
   inherit
@@ -4077,14 +4188,10 @@ sudo systemctl restart compose-runner-gitlab-runner
       home = "/home/pedrohlc";
       key = keys.pedrohlc;
       units = [
-        "compose-runner-github-runner.service"
+        "github-runner-stormwing-nixos.service"
         "docker.service"
       ];
       runners = {
-        github-runner = {
-          envfile = "/var/.github-runner.env";
-          source = ../../../compose/github-runner;
-        };
         gitlab-runner = {
           source = ../../../compose/gitlab-runner;
         };
@@ -4102,22 +4209,71 @@ sudo systemctl restart compose-runner-gitlab-runner
   system.stateVersion = "25.05";
 }
 </code></pre>
-<h3 id="docker-containers-github"><a class="header" href="#docker-containers-github">Docker containers (GitHub)</a></h3>
-<pre><code class="language-yaml">services:
-  github-runner:
-    image: myoung34/github-runner:latest
-    container_name: github-runner
-    privileged: true
-    environment:
-      ACCESS_TOKEN: ${ACCESS_TOKEN:-?err}
-      EPHEMERAL: true
-      LABELS: nyxbuilder
-      ORG_NAME: chaotic-cx
-      RUNNER_NAME: immortalis
-      RUNNER_SCOPE: org
-      RUNNER_WORKDIR: /var/cache/github-runner/work
-    volumes: ['/var/cache/github-runner/work:/var/cache/github-runner/work']
-    restart: 'no'
+<h3 id="github-runner-native-nixos"><a class="header" href="#github-runner-native-nixos">GitHub runner (native NixOS)</a></h3>
+<p>Builds go through the host’s Nix daemon (the container bind-mounts its socket), so daemon-side settings such as
+<code>system-features</code> live in <a href="#stormwing">stormwing</a>’s <code>nix.settings</code>.</p>
+<p>This runner is only meant to run trusted code. nyx’s <code>check-pr-trust</code> action allows checking out a fork PR’s head
+only for collaborators, members, owners or users with write access, or when a maintainer added the <code>safe-to-test</code>
+label. For any other fork PR, <code>actions/checkout</code> refuses the checkout before Nix runs anything. Note that the label
+stays on the PR, so commits pushed after labelling are built as well.</p>
+<pre><code class="language-nix">{ pkgs, ... }:
+let
+  name = "stormwing-nixos";
+
+  # Bind-mounted from the host's sops secret github-runner/stormwing-nixos
+  tokenFile = "/var/.github-runner-nixos.token";
+
+  # Lives on the persistent cache mount instead of the RAM-backed /run
+  workDir = "/var/cache/github-runner/nixos-work";
+in
+# Only meant to run trusted code: nyx's check-pr-trust gate sets allow-unsafe-pr-checkout
+# for fork PRs from collaborators/members/owners, users with write access, or PRs labelled
+# safe-to-test. Actions/checkout refuses other fork PR heads before Nix runs.
+{
+  services.github-runners.${name} = {
+    enable = true;
+    inherit name tokenFile workDir;
+    url = "https://github.com/chaotic-cx";
+    tokenType = "access";
+    ephemeral = true;
+    replace = true;
+    user = "github-runner";
+    group = "github-runner";
+    extraLabels = [
+      "nixos"
+      "nyxbuilder"
+    ];
+
+    # nyx's check-pr-trust action still uses the node20 github-script@v7,
+    # but nixpkgs only ships node24 for the runner
+    extraEnvironment.FORCE_JAVASCRIPT_ACTIONS_TO_NODE24 = "true";
+    extraPackages = with pkgs; [
+      curl
+      jq
+      openssh
+    ];
+  };
+
+  # Client-side only. Daemon settings (system-features, max-jobs) come from the host.
+  nix.settings = {
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    accept-flake-config = true;
+  };
+
+  users = {
+    groups.github-runner = { };
+    users.github-runner = {
+      isSystemUser = true;
+      group = "github-runner";
+      home = workDir;
+    };
+  };
+
+  systemd.tmpfiles.rules = [ "d ${workDir} 0750 github-runner github-runner -" ];
+}
 </code></pre>
 <h3 id="docker-containers-gitlab"><a class="header" href="#docker-containers-gitlab">Docker containers (GitLab)</a></h3>
 <pre><code class="language-yaml">services:
@@ -4308,7 +4464,9 @@ in
 <h2 id="nix-expression-16"><a class="header" href="#nix-expression-16">Nix expression</a></h2>
 <p>Configuration for the <code>web-front</code> container on stormwing.</p>
 <pre><code class="language-nix">{
+  config,
   garuda-lib,
+  lib,
   sources,
   ...
 }:
@@ -4316,6 +4474,11 @@ let
   inherit (garuda-lib) allowOnlyCloudflareZerotrust;
   inherit (garuda-lib) mkCatchAllVhost;
   inherit (garuda-lib) mkProxyVhost;
+
+  webFront = garuda-lib.mkWebFront {
+    host = "stormwing";
+    inherit vhosts;
+  };
 
   vhosts = {
     "builds.garudalinux.org" = mkProxyVhost {
@@ -4343,7 +4506,7 @@ let
         "/" = {
           extraConfig = ''
             proxy_pass http://10.0.5.10:8384;
-            proxy_set_header Authorization "Basic ${garuda-lib.secrets.syncthing.esxi-build.credentials.base64}";
+            include ${config.sops.templates."syncthing-build-auth.conf".path};
           '';
         };
       };
@@ -4354,17 +4517,23 @@ in
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
-  inherit
-    (garuda-lib.mkWebFront {
-      host = "stormwing";
-      inherit vhosts;
-    })
+  inherit (webFront)
     garuda
     networking
     services
-    sops
     systemd
     ;
+
+  sops = lib.recursiveUpdate webFront.sops {
+    secrets."syncthing/gui_basic_auth" = { };
+    templates."syncthing-build-auth.conf" = {
+      owner = "nginx";
+      content = ''
+        proxy_set_header Authorization "Basic ${config.sops.placeholder."syncthing/gui_basic_auth"}";
+      '';
+      restartUnits = [ "nginx.service" ];
+    };
+  };
 
   system.stateVersion = "25.05";
 }

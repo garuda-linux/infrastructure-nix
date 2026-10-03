@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-e434df35.js";
+            window.path_to_searchindex_js = "../../searchindex-4feaf189.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-4ebbbf40.js"></script>
+        <script src="../../toc-9fb0c2dc.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -185,7 +185,12 @@
 <li><a href="https://github.com/discourse/discourse_docker">Discourse Docker</a></li>
 </ul>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
-<pre><code class="language-nix">{ garuda-lib, sources, ... }:
+<pre><code class="language-nix">{
+  garuda-lib,
+  pkgs,
+  sources,
+  ...
+}:
 {
   imports = sources.defaultModules ++ [ ../../modules ];
 
@@ -196,6 +201,12 @@
 
   # Enable Docker since we use the official Docker image in /var/discourse
   virtualisation.docker.enable = true;
+
+  topology.self.services.discourse = {
+    name = "Discourse";
+    icon = "${(pkgs.callPackage ../../topology-icons.nix { }).discourse}";
+    info = "https://forum.garudalinux.org";
+  };
 
   # Open required port
   networking.firewall.allowedTCPPorts = [ 80 ];
