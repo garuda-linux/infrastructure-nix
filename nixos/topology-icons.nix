@@ -3,7 +3,11 @@
 # Its renderer inlines SVGs by splitting on the literal "<svg " and prints title/metadata/desc as text,
 # so the opening tag gets normalized and those elements stripped.
 # Add one by prefetching it: nix-prefetch-url <url> | xargs nix hash to-sri --type sha256
-{ fetchurl, runCommand }:
+{
+  fetchurl,
+  perl,
+  runCommand,
+}:
 let
   rev = "f1d048d9885b97a7319e0a51e508217459f212df";
 in
@@ -16,9 +20,11 @@ builtins.mapAttrs
           url = "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/${rev}/svg/${name}.svg";
           inherit hash;
         };
+        nativeBuildInputs = [ perl ];
       }
       ''
-        sed -z -e 's/<svg[[:space:]]\+/<svg /' -e 's|<title[^>]*>[^<]*</title>||g' -e 's|<metadata.*</metadata>||' -e 's|<desc[^>]*>[^<]*</desc>||g' "$src" > "$out"
+        sed -z -e 's/<svg[[:space:]]\+/<svg /' -e 's|<title[^>]*>[^<]*</title>||g' -e 's|<metadata.*</metadata>||' -e 's|<desc[^>]*>[^<]*</desc>||g' "$src" \
+          | perl -0pe 's{<svg ([^>]*)>}{my $a = $1; if ($a =~ /viewBox="[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)"/) { my $w = 96 * $1 / $2; $a =~ s/\s*\b(?:width|height)="[^"]*"//g; $a .= sprintf(q{ width="%g" height="96"}, $w) } "<svg $a>"}e' > "$out"
       ''
   )
   {
