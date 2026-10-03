@@ -215,6 +215,7 @@ in
           };
           defaults = false;
           needsDocker = true;
+          needsKvm = true;
           cpuWeight = 20;
           ioWeight = 20;
         };

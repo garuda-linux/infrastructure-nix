@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 let
   name = "stormwing-nixos";
 
@@ -28,12 +28,23 @@ in
 
     # nyx's check-pr-trust action still uses the node20 github-script@v7,
     # but nixpkgs only ships node24 for the runner
-    extraEnvironment.FORCE_JAVASCRIPT_ACTIONS_TO_NODE24 = "true";
+    extraEnvironment = {
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24 = "true";
+      ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER = "true";
+    };
     extraPackages = with pkgs; [
       curl
+      docker
       jq
       openssh
     ];
+    serviceOverrides = {
+      PrivateUsers = false;
+      ProtectProc = "default";
+      PrivateTmp = false;
+      ProtectControlGroups = false;
+      ProtectSystem = "full";
+    };
   };
 
   # Client-side only. Daemon settings (system-features, max-jobs) come from the host.
@@ -43,6 +54,11 @@ in
       "flakes"
     ];
     accept-flake-config = true;
+    # Mirrors the host daemon, so `nix config show` in here reports what builds can use
+    system-features = [
+      "gccarch-x86-64-v3"
+    ]
+    ++ map (arch: "gccarch-${arch}") lib.systems.architectures.inferiors."x86-64-v3";
   };
 
   users = {
@@ -50,6 +66,7 @@ in
     users.github-runner = {
       isSystemUser = true;
       group = "github-runner";
+      extraGroups = [ "docker" ];
       home = workDir;
     };
   };
