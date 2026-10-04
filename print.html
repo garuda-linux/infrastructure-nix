@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex-4feaf189.js";
+            window.path_to_searchindex_js = "searchindex-e351f988.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-9fb0c2dc.js"></script>
@@ -3044,20 +3044,6 @@ in
     exporters = [ "smartctlExporter" ];
   };
 
-  nix.settings = {
-    substituters = [ "https://nyx-cache.chaotic.cx/" ];
-    trusted-public-keys = [ "nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk=" ];
-
-    # The i5-13500 handles x86-64-v3, so nyx's v3 derivations may build here without rebuilding
-    # the host itself with gcc.arch. Containers (e.g. the GitHub runner) build through this
-    # daemon's socket, so this covers them too.
-    system-features = [
-      "gccarch-x86-64-v3"
-    ]
-    ++ map (arch: "gccarch-${arch}") lib.systems.architectures.inferiors."x86-64-v3";
-    sandbox-fallback = false;
-  };
-
   swapDevices = [
     {
       device = "/data_1/swapfile";
@@ -3182,9 +3168,9 @@ in
         github-runner = {
           mounts = [
             {
-              name = "nixos-runner-token";
-              hostPath = config.sops.secrets."github-runner/stormwing-nixos".path;
-              mountPoint = "/var/.github-runner-nixos.token";
+              name = "token";
+              hostPath = config.sops.secrets."compose/github-runner".path;
+              mountPoint = "/var/.github-runner.env";
               readOnly = true;
             }
             {
@@ -3356,9 +3342,7 @@ in
     39252
   ];
 
-  sops.secrets = garuda-lib.mkSecrets [
-    "github-runner/stormwing-nixos"
-  ];
+  sops.secrets."compose/github-runner" = { };
 }
 </code></pre>
 <h2 id="shared-host-configuration-1"><a class="header" href="#shared-host-configuration-1">Shared host configuration</a></h2>
@@ -4156,10 +4140,10 @@ Access needs to happen by running <code>nixos-container root-login</code>
 on <a href="#stormwing">stormwing</a>.</p>
 <h2 id="restarting-containers-4"><a class="header" href="#restarting-containers-4">Restarting containers</a></h2>
 <p>This can happen via the following commands:</p>
-<pre><code class="language-bash">sudo systemctl restart github-runner-stormwing-nixos
+<pre><code class="language-bash">sudo systemctl restart compose-runner-github-runner
 sudo systemctl restart compose-runner-gitlab-runner
 </code></pre>
-<p>Watchtower additionally keeps the GitLab runner container up to date.</p>
+<p>Watchtower additionally keeps the containers up to date.</p>
 <h2 id="nix-expression-13"><a class="header" href="#nix-expression-13">Nix expression</a></h2>
 <pre><code class="language-nix">{
   garuda-lib,
@@ -4179,7 +4163,6 @@ sudo systemctl restart compose-runner-gitlab-runner
     ../../services/compose-runner/compose-runner.nix
     ../../services/mk.nix
     ../../services/monitoring
-    ./github-runner/nixos-runner.nix
   ];
 
   inherit
@@ -4188,10 +4171,14 @@ sudo systemctl restart compose-runner-gitlab-runner
       home = "/home/pedrohlc";
       key = keys.pedrohlc;
       units = [
-        "github-runner-stormwing-nixos.service"
+        "compose-runner-github-runner.service"
         "docker.service"
       ];
       runners = {
+        github-runner = {
+          envfile = "/var/.github-runner.env";
+          source = ../../../compose/github-runner;
+        };
         gitlab-runner = {
           source = ../../../compose/gitlab-runner;
         };
@@ -4209,71 +4196,22 @@ sudo systemctl restart compose-runner-gitlab-runner
   system.stateVersion = "25.05";
 }
 </code></pre>
-<h3 id="github-runner-native-nixos"><a class="header" href="#github-runner-native-nixos">GitHub runner (native NixOS)</a></h3>
-<p>Builds go through the host’s Nix daemon (the container bind-mounts its socket), so daemon-side settings such as
-<code>system-features</code> live in <a href="#stormwing">stormwing</a>’s <code>nix.settings</code>.</p>
-<p>This runner is only meant to run trusted code. nyx’s <code>check-pr-trust</code> action allows checking out a fork PR’s head
-only for collaborators, members, owners or users with write access, or when a maintainer added the <code>safe-to-test</code>
-label. For any other fork PR, <code>actions/checkout</code> refuses the checkout before Nix runs anything. Note that the label
-stays on the PR, so commits pushed after labelling are built as well.</p>
-<pre><code class="language-nix">{ pkgs, ... }:
-let
-  name = "stormwing-nixos";
-
-  # Bind-mounted from the host's sops secret github-runner/stormwing-nixos
-  tokenFile = "/var/.github-runner-nixos.token";
-
-  # Lives on the persistent cache mount instead of the RAM-backed /run
-  workDir = "/var/cache/github-runner/nixos-work";
-in
-# Only meant to run trusted code: nyx's check-pr-trust gate sets allow-unsafe-pr-checkout
-# for fork PRs from collaborators/members/owners, users with write access, or PRs labelled
-# safe-to-test. Actions/checkout refuses other fork PR heads before Nix runs.
-{
-  services.github-runners.${name} = {
-    enable = true;
-    inherit name tokenFile workDir;
-    url = "https://github.com/chaotic-cx";
-    tokenType = "access";
-    ephemeral = true;
-    replace = true;
-    user = "github-runner";
-    group = "github-runner";
-    extraLabels = [
-      "nixos"
-      "nyxbuilder"
-    ];
-
-    # nyx's check-pr-trust action still uses the node20 github-script@v7,
-    # but nixpkgs only ships node24 for the runner
-    extraEnvironment.FORCE_JAVASCRIPT_ACTIONS_TO_NODE24 = "true";
-    extraPackages = with pkgs; [
-      curl
-      jq
-      openssh
-    ];
-  };
-
-  # Client-side only. Daemon settings (system-features, max-jobs) come from the host.
-  nix.settings = {
-    experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-    accept-flake-config = true;
-  };
-
-  users = {
-    groups.github-runner = { };
-    users.github-runner = {
-      isSystemUser = true;
-      group = "github-runner";
-      home = workDir;
-    };
-  };
-
-  systemd.tmpfiles.rules = [ "d ${workDir} 0750 github-runner github-runner -" ];
-}
+<h3 id="docker-containers-github"><a class="header" href="#docker-containers-github">Docker containers (GitHub)</a></h3>
+<pre><code class="language-yaml">services:
+  github-runner:
+    image: myoung34/github-runner:latest
+    container_name: github-runner
+    privileged: true
+    environment:
+      ACCESS_TOKEN: ${ACCESS_TOKEN:-?err}
+      EPHEMERAL: true
+      LABELS: nyxbuilder
+      ORG_NAME: chaotic-cx
+      RUNNER_NAME: immortalis
+      RUNNER_SCOPE: org
+      RUNNER_WORKDIR: /var/cache/github-runner/work
+    volumes: ['/var/cache/github-runner/work:/var/cache/github-runner/work']
+    restart: 'no'
 </code></pre>
 <h3 id="docker-containers-gitlab"><a class="header" href="#docker-containers-gitlab">Docker containers (GitLab)</a></h3>
 <pre><code class="language-yaml">services:
