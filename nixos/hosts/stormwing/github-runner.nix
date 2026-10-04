@@ -16,7 +16,6 @@
     ../../services/compose-runner/compose-runner.nix
     ../../services/mk.nix
     ../../services/monitoring
-    ./github-runner/nixos-runner.nix
   ];
 
   inherit
@@ -25,10 +24,14 @@
       home = "/home/pedrohlc";
       key = keys.pedrohlc;
       units = [
-        "github-runner-stormwing-nixos.service"
+        "compose-runner-github-runner.service"
         "docker.service"
       ];
       runners = {
+        github-runner = {
+          envfile = "/var/.github-runner.env";
+          source = ../../../compose/github-runner;
+        };
         gitlab-runner = {
           source = ../../../compose/gitlab-runner;
         };

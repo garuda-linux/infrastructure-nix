@@ -14,11 +14,11 @@ on [stormwing](../stormwing.md).
 This can happen via the following commands:
 
 ```bash
-sudo systemctl restart github-runner-stormwing-nixos
+sudo systemctl restart compose-runner-github-runner
 sudo systemctl restart compose-runner-gitlab-runner
 ```
 
-Watchtower additionally keeps the GitLab runner container up to date.
+Watchtower additionally keeps the containers up to date.
 
 ## Nix expression
 
@@ -26,18 +26,10 @@ Watchtower additionally keeps the GitLab runner container up to date.
 {{#include ../../../../nixos/hosts/stormwing/github-runner.nix}}
 ```
 
-### GitHub runner (native NixOS)
+### Docker containers (GitHub)
 
-Builds go through the host's Nix daemon (the container bind-mounts its socket), so daemon-side settings such as
-`system-features` live in [stormwing](../stormwing.md)'s `nix.settings`.
-
-This runner is only meant to run trusted code. nyx's `check-pr-trust` action allows checking out a fork PR's head
-only for collaborators, members, owners or users with write access, or when a maintainer added the `safe-to-test`
-label. For any other fork PR, `actions/checkout` refuses the checkout before Nix runs anything. Note that the label
-stays on the PR, so commits pushed after labelling are built as well.
-
-```nix
-{{#include ../../../../nixos/hosts/stormwing/github-runner/nixos-runner.nix}}
+```yaml
+{{#include ../../../../compose/github-runner/compose.yml}}
 ```
 
 ### Docker containers (GitLab)
