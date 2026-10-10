@@ -43,6 +43,11 @@ in
         port = mon.ports.alertmanager;
         environmentFile = config.sops.templates."alertmanager-env".path;
         telegram.enable = true;
+        fcm = {
+          enable = true;
+          environmentFile = config.sops.templates."alertmanager-fcm-env".path;
+          credentialsFile = config.sops.secrets."monitoring/fcm_service_account".path;
+        };
       };
 
       inherit (mon) smartctlTargets;
@@ -204,6 +209,23 @@ in
     mode = "0400";
     content = ''
       TELEGRAM_BOT_TOKEN=${config.sops.placeholder."monitoring/telegram_bot_token"}
+      FCM_RELAY_SECRET=${config.sops.placeholder."monitoring/fcm_relay_secret"}
+    '';
+  };
+
+  sops.secrets."monitoring/fcm_project_id" = { };
+  sops.secrets."monitoring/fcm_token" = { };
+  sops.secrets."monitoring/fcm_relay_secret" = { };
+  sops.secrets."monitoring/fcm_service_account" = { };
+
+  sops.templates."alertmanager-fcm-env" = {
+    mode = "0400";
+    content = ''
+      FIREBASE_PROJECT_ID=${config.sops.placeholder."monitoring/fcm_project_id"}
+      FCM_TOKENS_JSON='{"${config.garuda.monitoring.prometheus.alertmanager.fcm.source}": "${
+        config.sops.placeholder."monitoring/fcm_token"
+      }"}'
+      RELAY_SECRET=${config.sops.placeholder."monitoring/fcm_relay_secret"}
     '';
   };
 

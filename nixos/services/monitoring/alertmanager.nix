@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -31,6 +32,7 @@ in
         Required variables:
         - TELEGRAM_BOT_TOKEN (if telegram enabled)
         - EMAIL_PASSWORD (if email enabled)
+        - FCM_RELAY_SECRET (if fcm enabled)
       '';
     };
 
@@ -77,6 +79,58 @@ in
       };
     };
 
+    fcm = {
+      enable = mkEnableOption "Enable push notifications via the Alertmanager to FCM relay";
+
+      port = mkOption {
+        default = 8099;
+        type = types.port;
+        description = mdDoc ''
+          The port for the relay to listen on (always 127.0.0.1).
+        '';
+      };
+
+      source = mkOption {
+        default = "garuda";
+        type = types.str;
+        description = mdDoc ''
+          Source name sent with each push. Must be a key of
+          FCM_TOKENS_JSON in the relay's environment file.
+        '';
+      };
+
+      severities = mkOption {
+        default = [
+          "critical"
+          "warning"
+        ];
+        type = types.listOf types.str;
+        description = mdDoc ''
+          Alert severities that are pushed to the watch.
+        '';
+      };
+
+      environmentFile = mkOption {
+        type = types.path;
+        example = "/run/secrets/alertmanager-fcm.env";
+        description = mdDoc ''
+          Environment file for the relay. Required variables:
+          - FIREBASE_PROJECT_ID
+          - FCM_TOKENS_JSON (JSON map of source name to FCM token)
+          - RELAY_SECRET (must match FCM_RELAY_SECRET of Alertmanager)
+        '';
+      };
+
+      credentialsFile = mkOption {
+        type = types.path;
+        example = "/run/secrets/fcm-service-account.json";
+        description = mdDoc ''
+          Firebase service-account JSON key, passed to the relay
+          via systemd LoadCredential.
+        '';
+      };
+    };
+
     email = {
       enable = mkEnableOption "Enable email notifications";
 
@@ -111,6 +165,46 @@ in
   };
 
   config = lib.mkIf (cfg.enable && cfg.prometheus.enable && cfg.prometheus.alertmanager.enable) {
+    systemd.services.alertmanager-fcm = lib.mkIf cfg.prometheus.alertmanager.fcm.enable {
+      description = "Alertmanager to FCM push relay";
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
+      environment = {
+        RELAY_PORT = toString cfg.prometheus.alertmanager.fcm.port;
+        GOOGLE_APPLICATION_CREDENTIALS = "%d/service-account.json";
+      };
+      serviceConfig = {
+        ExecStart = lib.getExe pkgs.alertmanager-fcm;
+        EnvironmentFile = cfg.prometheus.alertmanager.fcm.environmentFile;
+        LoadCredential = "service-account.json:${cfg.prometheus.alertmanager.fcm.credentialsFile}";
+        Restart = "always";
+        RestartSec = 5;
+        DynamicUser = true;
+        CapabilityBoundingSet = "";
+        LockPersonality = true;
+        MemoryDenyWriteExecute = true;
+        NoNewPrivileges = true;
+        PrivateDevices = true;
+        PrivateTmp = true;
+        ProtectClock = true;
+        ProtectControlGroups = true;
+        ProtectHome = true;
+        ProtectHostname = true;
+        ProtectKernelLogs = true;
+        ProtectKernelModules = true;
+        ProtectKernelTunables = true;
+        ProtectSystem = "strict";
+        RestrictAddressFamilies = [
+          "AF_INET"
+          "AF_INET6"
+        ];
+        RestrictNamespaces = true;
+        RestrictRealtime = true;
+        SystemCallArchitectures = "native";
+      };
+    };
+
     services.prometheus.alertmanager = {
       inherit (cfg.prometheus.alertmanager) enable;
       inherit (cfg.prometheus.alertmanager) port;
@@ -136,7 +230,15 @@ in
                 repeat_interval = "24h";
               };
             in
-            [
+            # continue = true lets the alert also reach the Telegram routes below
+            lib.optional cfg.prometheus.alertmanager.fcm.enable {
+              matchers = [
+                ''severity=~"${lib.concatStringsSep "|" cfg.prometheus.alertmanager.fcm.severities}"''
+              ];
+              receiver = "fcm";
+              continue = true;
+            }
+            ++ [
               {
                 matchers = [ ''scope="host"'' ];
                 receiver = "garuda-no-resolved";
@@ -169,45 +271,56 @@ in
                 url = cfg.prometheus.alertmanager.webhookUrl;
                 send_resolved = sendResolved;
               };
-            telegram_configs = lib.optional cfg.prometheus.alertmanager.telegram.enable {
-              bot_token = "$TELEGRAM_BOT_TOKEN";
-              send_resolved = sendResolved;
-              chat_id = cfg.prometheus.alertmanager.telegram.chatId;
-              api_url = cfg.prometheus.alertmanager.telegram.apiUrl;
-              parse_mode = cfg.prometheus.alertmanager.telegram.parseMode;
-              message = ''
-                {{- define "garuda.alert" -}}
-                <b>{{ .Labels.alertname }}</b>{{ with .Labels.instance }}
-                <b>Instance:</b> {{ . }}{{ end }}{{ with .Labels.name }}
-                <b>Name:</b> {{ . }}{{ end }}{{ with .Labels.device }}
-                <b>Device:</b> {{ . }}{{ end }}{{ with .Labels.severity }}
-                <b>Severity:</b> {{ . }}{{ end }}{{ with .Labels.state }}
-                <b>State:</b> {{ . }}{{ end }}
-                {{ end -}}
-                {{ if .Alerts.Firing -}}
-                🚨 <b>Alert Firing:</b>
-                {{ range .Alerts.Firing }}{{ template "garuda.alert" . }}
-                {{ end }}{{ end -}}
-                {{ if .Alerts.Resolved -}}
-                ✅ <b>Recovered:</b>
-                {{ range .Alerts.Resolved }}{{ template "garuda.alert" . }}
-                {{ end }}{{ end -}}
-              '';
+              telegram_configs = lib.optional cfg.prometheus.alertmanager.telegram.enable {
+                bot_token = "$TELEGRAM_BOT_TOKEN";
+                send_resolved = sendResolved;
+                chat_id = cfg.prometheus.alertmanager.telegram.chatId;
+                api_url = cfg.prometheus.alertmanager.telegram.apiUrl;
+                parse_mode = cfg.prometheus.alertmanager.telegram.parseMode;
+                message = ''
+                  {{- define "garuda.alert" -}}
+                  <b>{{ .Labels.alertname }}</b>{{ with .Labels.instance }}
+                  <b>Instance:</b> {{ . }}{{ end }}{{ with .Labels.name }}
+                  <b>Name:</b> {{ . }}{{ end }}{{ with .Labels.device }}
+                  <b>Device:</b> {{ . }}{{ end }}{{ with .Labels.severity }}
+                  <b>Severity:</b> {{ . }}{{ end }}{{ with .Labels.state }}
+                  <b>State:</b> {{ . }}{{ end }}
+                  {{ end -}}
+                  {{ if .Alerts.Firing -}}
+                  🚨 <b>Alert Firing:</b>
+                  {{ range .Alerts.Firing }}{{ template "garuda.alert" . }}
+                  {{ end }}{{ end -}}
+                  {{ if .Alerts.Resolved -}}
+                  ✅ <b>Recovered:</b>
+                  {{ range .Alerts.Resolved }}{{ template "garuda.alert" . }}
+                  {{ end }}{{ end -}}
+                '';
+              };
+              email_configs = lib.optional cfg.prometheus.alertmanager.email.enable {
+                inherit (cfg.prometheus.alertmanager.email) to;
+                send_resolved = sendResolved;
+                inherit (cfg.prometheus.alertmanager.email) from;
+                inherit (cfg.prometheus.alertmanager.email) smarthost;
+                auth_username = cfg.prometheus.alertmanager.email.authUsername;
+                auth_password = "$EMAIL_PASSWORD";
+              };
             };
-            email_configs = lib.optional cfg.prometheus.alertmanager.email.enable {
-              inherit (cfg.prometheus.alertmanager.email) to;
-              send_resolved = sendResolved;
-              inherit (cfg.prometheus.alertmanager.email) from;
-              inherit (cfg.prometheus.alertmanager.email) smarthost;
-              auth_username = cfg.prometheus.alertmanager.email.authUsername;
-              auth_password = "$EMAIL_PASSWORD";
-            };
-          };
           in
           [
             (mkGarudaReceiver "garuda" true)
             (mkGarudaReceiver "garuda-no-resolved" false)
-          ];
+          ]
+          # Resolved notifications are what clear alerts on the fcm receiver
+          ++ lib.optional cfg.prometheus.alertmanager.fcm.enable {
+            name = "fcm";
+            webhook_configs = [
+              {
+                url = "http://127.0.0.1:${toString cfg.prometheus.alertmanager.fcm.port}/hook/${cfg.prometheus.alertmanager.fcm.source}";
+                send_resolved = true;
+                http_config.authorization.credentials = "$FCM_RELAY_SECRET";
+              }
+            ];
+          };
       };
     };
 
