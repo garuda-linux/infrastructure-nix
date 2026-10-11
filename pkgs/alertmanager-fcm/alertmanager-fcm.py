@@ -18,6 +18,7 @@ import http.server
 import json
 import os
 import threading
+import time
 import urllib.error
 import urllib.request
 
@@ -67,6 +68,7 @@ def fcm_send(token: str, source: str, alerts: list) -> tuple[int, str]:
         {
             "message": {
                 "token": token,
+                "android": {"priority": "high"},
                 "data": {
                     "type": "alerts",
                     "source": source,
@@ -115,8 +117,13 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.send_error(400, "invalid JSON")
             return
         alerts = [trim_alert(a) for a in payload.get("alerts", [])]
+        received_at = time.time()
         status, detail = fcm_send(token, source, alerts)
-        print(f"source={source} alerts={len(alerts)} fcm={status} {detail}", flush=True)
+        print(
+            f"source={source} alerts={len(alerts)} fcm={status} "
+            f"relay_lag_ms={int((time.time() - received_at) * 1000)} {detail}",
+            flush=True,
+        )
         body = b'{"ok": true}' if status < 300 else b'{"ok": false}'
         self.send_response(200 if status < 300 else 502)
         self.send_header("Content-Type", "application/json")
