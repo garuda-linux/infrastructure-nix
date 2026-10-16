@@ -17,7 +17,7 @@ pkgs.callPackage ../mk-pnpm-site.nix {
   inherit pkgs src;
   pname = "garuda-startpage";
   version = "0-unstable-${lib.substring 0 7 rev}";
-  pnpmDepsHash = "sha256-dmTSFQuC0ELs1YNYBSdrohxg0vnIxrcSyqTD3R9vZzg=";
+  pnpmDepsHash = "sha256-iTCJcBdb9/nD0tm7NfgCj6CeeAPkGWaOd4rFA6ZdYl8=";
   installPath = "./dist/startpage-v3/browser";
   nxCommands = [ "build" ];
 }

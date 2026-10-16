@@ -96,9 +96,6 @@
     # Patches
     nixos-patch-nixos-container.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/499574.patch";
     nixos-patch-nixos-container.flake = false;
-    # pgadmin4: 9.14 -> 9.18, fixes the import crash with the current psycopg
-    nixos-patch-pgadmin4.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/569309.patch";
-    nixos-patch-pgadmin4.flake = false;
   };
 
   outputs =

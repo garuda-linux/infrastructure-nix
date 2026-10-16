@@ -186,7 +186,7 @@
       builders-use-substitutes = true;
       nix-path = [ "nixpkgs=${inputs.nixpkgs}" ];
     };
-    package = pkgs.lixPackageSets.latest.lix;
+    package = pkgs.nix;
   };
 
   nixpkgs.overlays = [
