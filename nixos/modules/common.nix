@@ -201,10 +201,11 @@
   ];
 
   # Do daily garbage collection
+  # Containers share the read-only host store, the host collects for them
   programs.nh = {
     enable = true;
     clean = {
-      enable = true;
+      enable = !config.boot.isContainer;
       extraArgs = "--keep-since 2d";
       dates = "daily";
     };
