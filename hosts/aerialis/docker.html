@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-e351f988.js";
+            window.path_to_searchindex_js = "../../searchindex-17b3bcba.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-9fb0c2dc.js"></script>
+        <script src="../../toc-601bc003.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -275,7 +275,7 @@ and are included in the offsite system backups.</p>
     restart: always
   # Password vault
   vaultwarden:
-    image: vaultwarden/server:1.37.3-alpine
+    image: vaultwarden/server:1.37.4-alpine
     container_name: vaultwarden
     volumes: ["./bitwarden:/data"]
     ports: ["8081:80"]
@@ -292,15 +292,6 @@ and are included in the offsite system backups.</p>
       WEBSOCKET_ENABLED: true
       YUBICO_CLIENT_ID: ${BW_YUBICO_CLIENT_ID:-?err}
       YUBICO_SECRET_KEY: ${BW_YUBICO_ADMIN_SECRET:-?err}
-    restart: always
-  # Secure pastebin
-  privatebin:
-    image: privatebin/nginx-fpm-alpine:2.0.6
-    container_name: privatebin
-    volumes:
-      - ./privatebin:/srv/data
-      - ./configs/privatebin.cfg.php:/srv/cfg/conf.php
-    ports: ["8082:8080"]
     restart: always
   # WikiJs
   wikijs:
@@ -328,9 +319,9 @@ and are included in the offsite system backups.</p>
         delay: 120s
   # Automated container updates
   watchtower:
-    image: nickfedor/watchtower:1.22.1
+    image: nickfedor/watchtower:1.23.1
     container_name: watchtower
-    command: --cleanup matterbridge wikijs privatebin vaultwarden thelounge syncserver
+    command: --cleanup matterbridge wikijs vaultwarden thelounge syncserver
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
     restart: always
 volumes:

@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex-e351f988.js";
+            window.path_to_searchindex_js = "searchindex-17b3bcba.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-9fb0c2dc.js"></script>
+        <script src="toc-601bc003.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -947,6 +947,16 @@ in
           ];
         };
 
+        privatebin = {
+          mounts = [
+            {
+              name = "privatebin";
+              hostPath = "/data_1/containers/privatebin";
+              mountPoint = "/var/lib/privatebin";
+            }
+          ];
+        };
+
         monitoring = {
           mounts = [
             {
@@ -1215,7 +1225,7 @@ in
 <h3 id="docker-containers"><a class="header" href="#docker-containers">Docker containers</a></h3>
 <pre><code class="language-yaml">services:
   chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:2.9.0
+    image: ghcr.io/chaotic-cx/chaotic-next:2.9.4
     container_name: chaotic-backend
     deploy:
       restart_policy:
@@ -1377,7 +1387,7 @@ and are included in the offsite system backups.</p>
     restart: always
   # Password vault
   vaultwarden:
-    image: vaultwarden/server:1.37.3-alpine
+    image: vaultwarden/server:1.37.4-alpine
     container_name: vaultwarden
     volumes: ["./bitwarden:/data"]
     ports: ["8081:80"]
@@ -1394,15 +1404,6 @@ and are included in the offsite system backups.</p>
       WEBSOCKET_ENABLED: true
       YUBICO_CLIENT_ID: ${BW_YUBICO_CLIENT_ID:-?err}
       YUBICO_SECRET_KEY: ${BW_YUBICO_ADMIN_SECRET:-?err}
-    restart: always
-  # Secure pastebin
-  privatebin:
-    image: privatebin/nginx-fpm-alpine:2.0.6
-    container_name: privatebin
-    volumes:
-      - ./privatebin:/srv/data
-      - ./configs/privatebin.cfg.php:/srv/cfg/conf.php
-    ports: ["8082:8080"]
     restart: always
   # WikiJs
   wikijs:
@@ -1430,9 +1431,9 @@ and are included in the offsite system backups.</p>
         delay: 120s
   # Automated container updates
   watchtower:
-    image: nickfedor/watchtower:1.22.1
+    image: nickfedor/watchtower:1.23.1
     container_name: watchtower
-    command: --cleanup matterbridge wikijs privatebin vaultwarden thelounge syncserver
+    command: --cleanup matterbridge wikijs vaultwarden thelounge syncserver
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
     restart: always
 volumes:
@@ -1672,7 +1673,7 @@ volumes:
     restart: always
   # Automated container updates
   watchtower:
-    image: nickfedor/watchtower:1.22.1
+    image: nickfedor/watchtower:1.23.1
     container_name: watchtower
     command: --cleanup searx lingva whoogle librey redlib
     volumes: ['/var/run/docker.sock:/var/run/docker.sock']
@@ -2204,6 +2205,11 @@ in
         port = mon.ports.alertmanager;
         environmentFile = config.sops.templates."alertmanager-env".path;
         telegram.enable = true;
+        fcm = {
+          enable = true;
+          environmentFile = config.sops.templates."alertmanager-fcm-env".path;
+          credentialsFile = config.sops.secrets."monitoring/fcm_service_account".path;
+        };
       };
 
       inherit (mon) smartctlTargets;
@@ -2365,6 +2371,23 @@ in
     mode = "0400";
     content = ''
       TELEGRAM_BOT_TOKEN=${config.sops.placeholder."monitoring/telegram_bot_token"}
+      FCM_RELAY_SECRET=${config.sops.placeholder."monitoring/fcm_relay_secret"}
+    '';
+  };
+
+  sops.secrets."monitoring/fcm_project_id" = { };
+  sops.secrets."monitoring/fcm_token" = { };
+  sops.secrets."monitoring/fcm_relay_secret" = { };
+  sops.secrets."monitoring/fcm_service_account" = { };
+
+  sops.templates."alertmanager-fcm-env" = {
+    mode = "0400";
+    content = ''
+      FIREBASE_PROJECT_ID=${config.sops.placeholder."monitoring/fcm_project_id"}
+      FCM_TOKENS_JSON='{"${config.garuda.monitoring.prometheus.alertmanager.fcm.source}": "${
+        config.sops.placeholder."monitoring/fcm_token"
+      }"}'
+      RELAY_SECRET=${config.sops.placeholder."monitoring/fcm_relay_secret"}
     '';
   };
 
@@ -2629,13 +2652,72 @@ in
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
+<h1 id="privatebin-aerialis"><a class="header" href="#privatebin-aerialis">privatebin (aerialis)</a></h1>
+<p>This container runs our PrivateBin instance.</p>
+<h2 id="general-5"><a class="header" href="#general-5">General</a></h2>
+<p>The service uses the NixOS <code>services.privatebin</code> module with nginx and php-fpm.
+Pastes are stored in <code>/var/lib/privatebin/data</code>, which is bind-mounted from <code>/data_1/containers/privatebin</code> on the
+host and therefore included in the offsite system backups.</p>
+<h2 id="nix-expression-9"><a class="header" href="#nix-expression-9">Nix expression</a></h2>
+<pre><code class="language-nix">{
+  garuda-lib,
+  sources,
+  ...
+}:
+{
+  imports = sources.defaultModules ++ [
+    ../../modules
+  ];
+
+  garuda = garuda-lib.mkMonitoring {
+    host = "aerialis";
+    units = [
+      "nginx.service"
+      "phpfpm-privatebin.service"
+    ];
+  };
+
+  services.privatebin = {
+    enable = true;
+    enableNginx = true;
+    virtualHost = "bin.garudalinux.org";
+    settings = {
+      main = {
+        name = "Garuda's PrivateBin";
+        basepath = "bin.garudalinux.org";
+        discussion = true;
+        opendiscussion = false;
+        password = true;
+        fileupload = false;
+        burnafterreadingselected = false;
+        defaultformatter = "plaintext";
+        sizelimit = 10485760;
+        template = "bootstrap5";
+        languageselection = false;
+        qrcode = true;
+      };
+      # expire_options and formatter_options are left at PrivateBin's defaults, since
+      # Nix sorts attribute names and would scramble the order of the dropdowns
+      expire.default = "never";
+      traffic.limit = 10;
+      purge = {
+        limit = 300;
+        batchsize = 10;
+      };
+    };
+  };
+
+  system.stateVersion = "26.11";
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
 <h1 id="web-front-aerialis"><a class="header" href="#web-front-aerialis">web-front (aerialis)</a></h1>
 <p>This container acts as the main reverse proxy and web frontend for hosted services on aerialis, handling HTTPS termination and routing.</p>
-<h2 id="general-5"><a class="header" href="#general-5">General</a></h2>
+<h2 id="general-6"><a class="header" href="#general-6">General</a></h2>
 <p>This container is used as a reverse proxy for all of our public facing services.
 It also contains a Cloudflared instance,
 which a few services are only being exposed to, instead of being reverse proxied by Nginx itself.</p>
-<h2 id="nix-expression-9"><a class="header" href="#nix-expression-9">Nix expression</a></h2>
+<h2 id="nix-expression-10"><a class="header" href="#nix-expression-10">Nix expression</a></h2>
 <pre><code class="language-nix">{
   garuda-lib,
   pkgs,
@@ -2764,7 +2846,7 @@ let
       upstream = "http://10.0.5.60:5001";
     };
     "bin.garudalinux.org" = mkProxyVhost {
-      upstream = "http://10.0.5.60:8082";
+      upstream = "http://10.0.5.110";
     };
     "bitwarden.garudalinux.org" = mkProxyVhost {
       upstream = "http://10.0.5.60:8081";
@@ -3471,11 +3553,11 @@ in
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="arch-mirror-stormwing"><a class="header" href="#arch-mirror-stormwing">arch-mirror (stormwing)</a></h1>
 <p>This container mirrors the Arch Linux repositories.</p>
-<h2 id="general-6"><a class="header" href="#general-6">General</a></h2>
+<h2 id="general-7"><a class="header" href="#general-7">General</a></h2>
 <p>The <code>garuda-arch-mirror</code> service syncs the mirror from its configured upstream and serves it through nginx. Synced
 packages are additionally pushed to Cloudflare R2 with rclone, so users can also fetch them from there. The mirror
 directory is shared with <a href="#chaotic-v4-stormwing">chaotic-v4</a>, which serves it as <code>/srv/http/arch-mirror</code> as well.</p>
-<h2 id="nix-expression-10"><a class="header" href="#nix-expression-10">Nix expression</a></h2>
+<h2 id="nix-expression-11"><a class="header" href="#nix-expression-11">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,
   garuda-lib,
@@ -3510,13 +3592,13 @@ directory is shared with <a href="#chaotic-v4-stormwing">chaotic-v4</a>, which s
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="chaotic-v4-stormwing"><a class="header" href="#chaotic-v4-stormwing">chaotic-v4 (stormwing)</a></h1>
 <p>This container is the main Chaotic-AUR builder and repository sync node, responsible for building and distributing packages.</p>
-<h2 id="general-7"><a class="header" href="#general-7">General</a></h2>
+<h2 id="general-8"><a class="header" href="#general-8">General</a></h2>
 <p>This is the nspawn container used to run Chaotic-AUR’s new build system, <code>infra 4.0</code>.</p>
 <p>Restarting the Docker stack, in case it is needed, can happen via <code>sudo chaotic-restart</code>.
 For information on how to use the new build system, please refer to the <a href="hosts/services/chaotic-4.0.html">documentation</a>.</p>
 <p>In general, manual intervention should not be needed,
 as the system is designed to be fully automated via GitLab CI or GitHub actions.</p>
-<h2 id="nix-expression-11"><a class="header" href="#nix-expression-11">Nix expression</a></h2>
+<h2 id="nix-expression-12"><a class="header" href="#nix-expression-12">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,
   garuda-lib,
@@ -4065,7 +4147,7 @@ in
 <h1 id="firedragon-runner-stormwing"><a class="header" href="#firedragon-runner-stormwing">firedragon-runner (stormwing)</a></h1>
 <p>This container is a CI runner for building and testing the Firedragon browser in an isolated environment.
 It is separate from the other GitLab runner to ensure only one build runs at a time, while the others can run in parallel.</p>
-<h2 id="nix-expression-12"><a class="header" href="#nix-expression-12">Nix expression</a></h2>
+<h2 id="nix-expression-13"><a class="header" href="#nix-expression-13">Nix expression</a></h2>
 <pre><code class="language-nix">{
   garuda-lib,
   inputs,
@@ -4133,7 +4215,7 @@ It is separate from the other GitLab runner to ensure only one build runs at a t
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="github-runner-stormwing"><a class="header" href="#github-runner-stormwing">github-runner (stormwing)</a></h1>
 <p>This container is a GitHub Actions runner for CI/CD tasks related to Garuda Linux projects.</p>
-<h2 id="general-8"><a class="header" href="#general-8">General</a></h2>
+<h2 id="general-9"><a class="header" href="#general-9">General</a></h2>
 <p>With this container, we provide a native NixOS GitHub runner (<code>services.github-runners</code>) as well as a GitLab runner. This container does <strong>not</strong>
 have the regular Garuda configurations because it is considered untrusted.
 Access needs to happen by running <code>nixos-container root-login</code>
@@ -4144,7 +4226,7 @@ on <a href="#stormwing">stormwing</a>.</p>
 sudo systemctl restart compose-runner-gitlab-runner
 </code></pre>
 <p>Watchtower additionally keeps the containers up to date.</p>
-<h2 id="nix-expression-13"><a class="header" href="#nix-expression-13">Nix expression</a></h2>
+<h2 id="nix-expression-14"><a class="header" href="#nix-expression-14">Nix expression</a></h2>
 <pre><code class="language-nix">{
   garuda-lib,
   inputs,
@@ -4238,7 +4320,7 @@ sudo systemctl restart compose-runner-gitlab-runner
     restart: 'no'
   # Automated container updates
   watchtower:
-    image: nickfedor/watchtower:1.22.1
+    image: nickfedor/watchtower:1.23.1
     container_name: watchtower
     command: --cleanup watchtower gitlab-runner-chaotic gitlab-runner-garuda gitlab-runner-dind
     volumes: ['/var/run/docker.sock:/var/run/docker.sock']
@@ -4247,7 +4329,7 @@ sudo systemctl restart compose-runner-gitlab-runner
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="gitlab-runner-stormwing"><a class="header" href="#gitlab-runner-stormwing">gitlab-runner (stormwing)</a></h1>
 <p>This container runs GitLab CI runners that build our packages.</p>
-<h2 id="general-9"><a class="header" href="#general-9">General</a></h2>
+<h2 id="general-10"><a class="header" href="#general-10">General</a></h2>
 <p>Two runners are configured on it, <code>stormwing-nix-caching</code> and <code>stormwing-nix-dind</code>. Both make use of the shared Nix
 cache and are allowed to use KVM, which is why the container has <code>/dev/kvm</code> passed through. The main selling point
 of these is obviously the shared Nix store, which is the reason why these should in the long run be preferred over
@@ -4255,7 +4337,7 @@ the other Docker-based runner.</p>
 <p>For these to pick up any builds, the tags <code>nix</code> or <code>nix-dind</code> must be added to the CI configuration.</p>
 <p>Its metrics are exposed on port <code>9252</code> and published on stormwing’s Tailnet IP for Prometheus (see
 <a href="#monitoring-1">Monitoring</a>).</p>
-<h2 id="nix-expression-14"><a class="header" href="#nix-expression-14">Nix expression</a></h2>
+<h2 id="nix-expression-15"><a class="header" href="#nix-expression-15">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,
   garuda-lib,
@@ -4303,11 +4385,11 @@ the other Docker-based runner.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="iso-runner-stormwing"><a class="header" href="#iso-runner-stormwing">iso-runner (stormwing)</a></h1>
 <p>This container is a dedicated builder for Garuda Linux ISO images, providing a reproducible build environment.</p>
-<h2 id="general-10"><a class="header" href="#general-10">General</a></h2>
+<h2 id="general-11"><a class="header" href="#general-11">General</a></h2>
 <p>This container is used to build our ISO via a Docker container.
 It has been used to provide a GitHub runner as well,
 though this one got moved to its <a href="#github-runner-stormwing">own container</a> recently.</p>
-<h2 id="nix-expression-15"><a class="header" href="#nix-expression-15">Nix expression</a></h2>
+<h2 id="nix-expression-16"><a class="header" href="#nix-expression-16">Nix expression</a></h2>
 <pre><code class="language-nix">{
   garuda-lib,
   lib,
@@ -4399,7 +4481,7 @@ in
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="web-front-stormwing"><a class="header" href="#web-front-stormwing">web-front (stormwing)</a></h1>
 <p>This container acts as the reverse proxy and web frontend for services running on stormwing, handling HTTPS and routing.</p>
-<h2 id="nix-expression-16"><a class="header" href="#nix-expression-16">Nix expression</a></h2>
+<h2 id="nix-expression-17"><a class="header" href="#nix-expression-17">Nix expression</a></h2>
 <p>Configuration for the <code>web-front</code> container on stormwing.</p>
 <pre><code class="language-nix">{
   config,
