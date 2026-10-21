@@ -288,6 +288,16 @@ in
           ];
         };
 
+        privatebin = {
+          mounts = [
+            {
+              name = "privatebin";
+              hostPath = "/data_1/containers/privatebin";
+              mountPoint = "/var/lib/privatebin";
+            }
+          ];
+        };
+
         monitoring = {
           mounts = [
             {

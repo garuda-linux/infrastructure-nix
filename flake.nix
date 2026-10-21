@@ -96,6 +96,9 @@
     # Patches
     nixos-patch-nixos-container.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/499574.patch";
     nixos-patch-nixos-container.flake = false;
+    # CVE-2026-109618, CVE-2026-109619
+    nixos-patch-php.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/576853.patch";
+    nixos-patch-php.flake = false;
   };
 
   outputs =

@@ -8,9 +8,6 @@
   # Recommended settings replacing custom configuration
   services.nginx = {
     additionalModules = with pkgs; [ nginxModules.brotli ];
-    appendConfig = ''
-      worker_processes auto;
-    '';
     appendHttpConfig = ''
       map $uri $uri_dirname {
         ~^(?<capture>.*)/ $capture;

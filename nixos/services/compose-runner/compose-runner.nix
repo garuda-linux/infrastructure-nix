@@ -117,10 +117,6 @@ let
       "${icons.google-translate}"
     ]
     [
-      "privatebin"
-      "${icons.privatebin}"
-    ]
-    [
       "watchtower"
       "${icons.watchtower}"
     ]

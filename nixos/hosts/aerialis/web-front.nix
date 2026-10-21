@@ -126,7 +126,7 @@ let
       upstream = "http://10.0.5.60:5001";
     };
     "bin.garudalinux.org" = mkProxyVhost {
-      upstream = "http://10.0.5.60:8082";
+      upstream = "http://10.0.5.110";
     };
     "bitwarden.garudalinux.org" = mkProxyVhost {
       upstream = "http://10.0.5.60:8081";

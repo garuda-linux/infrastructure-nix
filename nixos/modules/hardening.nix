@@ -50,6 +50,12 @@
   # Don't lock kernel modules, this is also enabled by the hardening profile by default
   security.lockKernelModules = false;
 
+  # TODO: remove me when upstream fixes arrived in unstable channel
+  security.pki.caCertificateBlacklist = [
+    "Comodo AAA Services root"
+    "emSign ECC Root CA - G3"
+  ];
+
   # Disable root user login
   users.users.root.hashedPassword = "*";
 

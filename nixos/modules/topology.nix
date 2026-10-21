@@ -67,6 +67,13 @@ in
         info = svc.n8n.environment.N8N_EDITOR_BASE_URL or "";
       };
     })
+    (mkIf svc.privatebin.enable {
+      privatebin = {
+        name = "PrivateBin";
+        icon = "${icons.privatebin}";
+        info = "https://${svc.privatebin.virtualHost}";
+      };
+    })
     (mkIf svc.syncthing.enable {
       syncthing = {
         name = "Syncthing";

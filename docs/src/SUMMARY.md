@@ -25,6 +25,7 @@
   - [monitoring](hosts/aerialis/monitoring.md)
   - [n8n](hosts/aerialis/n8n.md)
   - [postgres](hosts/aerialis/postgres.md)
+  - [privatebin](hosts/aerialis/privatebin.md)
   - [web-front](hosts/aerialis/web-front.md)
 - [stormwing](./hosts/stormwing.md)
   - [arch-mirror](hosts/stormwing/arch-mirror.md)

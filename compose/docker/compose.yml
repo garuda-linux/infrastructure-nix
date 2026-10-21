@@ -56,15 +56,6 @@ services:
       YUBICO_CLIENT_ID: ${BW_YUBICO_CLIENT_ID:-?err}
       YUBICO_SECRET_KEY: ${BW_YUBICO_ADMIN_SECRET:-?err}
     restart: always
-  # Secure pastebin
-  privatebin:
-    image: privatebin/nginx-fpm-alpine:2.0.6
-    container_name: privatebin
-    volumes:
-      - ./privatebin:/srv/data
-      - ./configs/privatebin.cfg.php:/srv/cfg/conf.php
-    ports: ["8082:8080"]
-    restart: always
   # WikiJs
   wikijs:
     image: requarks/wiki:2.5
@@ -93,7 +84,7 @@ services:
   watchtower:
     image: nickfedor/watchtower:1.23.1
     container_name: watchtower
-    command: --cleanup matterbridge wikijs privatebin vaultwarden thelounge syncserver
+    command: --cleanup matterbridge wikijs vaultwarden thelounge syncserver
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
     restart: always
 volumes:
