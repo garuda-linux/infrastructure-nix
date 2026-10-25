@@ -51,16 +51,21 @@ in
         ];
         sourceDirectories = [
           "/data_1/containers"
-          "/data_1/persistent/etc/ssh"
+          "/data_1/persistent/var/lib/nixos"
+          "/data_1/persistent/var/lib/borgmatic"
+          "/data_1/persistent/var/lib/vnstat"
+          "/data_1/persistent/var/lib/tailscale"
+          # Nextcloud AIO config, the rest of the Docker state is not kept
+          "/data_1/dockercache/docker/volumes/nextcloud_aio_mastercontainer"
           "/data_2/backup/nextcloud-aio/"
           "/data_2/containers/chaotic-backend/chaotic/database"
           "/data_2/containers/mastodon"
-          "/data_2/containers/postgres"
         ];
         excludePatterns = [
-          "/data_1/dockercache"
-          "/data_1/dockerdata"
+          # A copy of a live data directory is not restorable, borgmatic dumps the databases instead
+          "/data_1/containers/postgres/data"
         ];
+        postgresqlContainer = "postgres";
       };
     };
 
@@ -235,11 +240,6 @@ in
               name = "data";
               hostPath = "/data_1/containers/postgres/data";
               mountPoint = "/var/lib/postgresql";
-            }
-            {
-              name = "postgres_backup";
-              hostPath = "/data_2/containers/postgres/backup";
-              mountPoint = "/var/garuda/backups/postgres";
             }
             {
               name = "acme";

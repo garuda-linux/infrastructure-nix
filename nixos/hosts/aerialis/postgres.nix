@@ -98,12 +98,7 @@ in
     };
   };
 
-  # Regular backups for our database (every 6h)
-  services.postgresqlBackup = {
-    compression = "zstd";
-    enable = true;
-    location = "/var/garuda/backups/postgres";
-  };
+  # Backups: borgmatic on the host dumps all databases with pg_dumpall (nixos/services/backup.nix)
 
   services.pgadmin = {
     enable = true;

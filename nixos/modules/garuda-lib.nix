@@ -422,6 +422,10 @@ let
         name = "aerialis";
         inherit (bridge) address;
       }
+      {
+        name = "stormwing";
+        address = tailnetHosts.stormwing;
+      }
     ];
   };
 in

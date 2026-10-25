@@ -34,16 +34,56 @@ in
     ./../modules/special/hetzner-ex44.nix
   ];
 
-  garuda = garuda-lib.mkMonitoring {
-    host = "stormwing";
-    lokiAddress = mon.loki.tailnetAddress;
-    hostInfo = true;
-    units = [
-      "sshd.service"
-      "tailscaled.service"
-    ];
-    exporters = [ "smartctlExporter" ];
-  };
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "stormwing";
+      lokiAddress = mon.loki.tailnetAddress;
+      hostInfo = true;
+      units = [
+        "borgmatic.service"
+        "borgmatic.timer"
+        "sshd.service"
+        "tailscaled.service"
+      ];
+      exporters = [
+        "smartctlExporter"
+        "borgmaticExporter"
+      ];
+    }
+    // {
+      backup.borgmatic = {
+        enable = true;
+        name = "stormwing";
+        user = "u342919";
+        host = "u342919.your-storagebox.de";
+        port = 23;
+        label = "hetzner";
+        sshKeySecret = "backup/ssh_stormwing";
+        knownHosts = [
+          {
+            name = "storagebox-ed25519";
+            publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs"; # pragma: allowlist secret
+          }
+        ];
+        sourceDirectories = [
+          "/data_1/persistent/etc"
+          "/data_1/persistent/var/lib/nixos"
+          "/data_1/persistent/var/lib/borgmatic"
+          "/data_1/persistent/var/lib/vnstat"
+          "/data_1/persistent/var/lib/tailscale"
+          "/data_1/containers/web-front/acme"
+          "/data_2/containers/chaotic-v4/syncthing"
+          "/data_2/containers/firedragon-runner"
+          "/data_2/containers/github-runner/gitlab-runner"
+          "/data_2/containers/github-runner/ssh"
+          "/data_2/containers/gitlab-runner/gitlab-runner"
+        ];
+        excludePatterns = [
+          # Syncthing 2.x index database, rebuilt by rescanning, only the config is needed
+          "/data_2/containers/chaotic-v4/syncthing/index-v2"
+        ];
+      };
+    };
 
   swapDevices = [
     {

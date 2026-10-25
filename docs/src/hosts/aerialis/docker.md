@@ -22,8 +22,9 @@ Since this container requires a Nextcloud volume at a fixed place, without being
 included in the regular data directory.
 
 Instead, backups are regularly performed via the inbuilt backup function in the admin interface.
-They can be found at `/var/garuda/compose-runner/docker/nextcloud-aio`
-and are included in the offsite system backups.
+They can be found at `/var/garuda/backups/nextcloud` (host path `/data_2/backup/nextcloud-aio`)
+and are included in the offsite system backups, together with the AIO master container volume.
+See [Disaster recovery](../../procedures/disaster-recovery.md) for restoring.
 
 ## Nix expression
 

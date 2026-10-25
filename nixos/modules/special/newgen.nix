@@ -90,6 +90,7 @@ _: {
       "/home"
       "/var/cache/netdata"
       "/var/cache/tailscale"
+      "/var/lib/borgmatic"
       "/var/lib/netdata"
       "/var/lib/nixos"
       "/var/lib/tailscale"

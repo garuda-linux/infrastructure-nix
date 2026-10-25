@@ -8,6 +8,10 @@
 - [Common tasks](./common.md)
 - [Important links](./important-links.md)
 
+# Procedures
+
+- [Disaster recovery](./procedures/disaster-recovery.md)
+
 # Users
 
 - [Users](./users.md)

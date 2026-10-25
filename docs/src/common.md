@@ -143,7 +143,8 @@ journalctl -u borgmatic
 
 This should yield a successful unit state. The only exception is having an exit code != `0` due to files having changed
 during the run. The "Borg backup age" and "Borg backup count" panels in Grafana are a quicker way to spot a stalled
-backup.
+backup. Failed and missed runs are also reported by email through healthchecks.io. Restoring is described in
+[Disaster recovery](./procedures/disaster-recovery.md).
 
 ### Checking monitoring and alerts
 
