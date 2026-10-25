@@ -21,10 +21,10 @@
 - [Host: aerialis](https://docs.garudalinux.net/hosts/aerialis)
 - [Host: stormwing](https://docs.garudalinux.net/hosts/stormwing)
 
-## Devshell and how to enter it
+## Dev shell and how to enter it
 
-This NixOS flake provides a [devshell](https://github.com/numtide/devshell)
-which contains all deployment tools as well as handy aliases for common tasks.
+This NixOS flake provides a plain `pkgs.mkShell` dev shell
+which contains all deployment tools as well as handy commands for common tasks.
 The only requirement for using it is having the Nix package manager available.
 It can be installed on various distributions via the package manager or the following
 script ([click me for more information](https://zero-to-nix.com/start/install)):
@@ -41,27 +41,16 @@ nix develop # The intended way to use the devshell
 nix-shell # Legacy, non-flakes way if flakes are not available for some reason
 ```
 
-This also sets up pre-commit-hooks and shows the currently implemented tasks, which can be executed by running the
-command.
+This also sets up pre-commit-hooks and lists the available commands, which can be executed by running them.
+The tools `colmena`, `dnscontrol`, `git`, `prek` and `sops` are on the PATH as well.
 
 ```shell
-🔨 Welcome to Garuda's infra-nix shell ❄️
-
-[[general commands]]
-
-  clean           - Runs the garbage collection on the servers
-  colmena         - Simple, stateless NixOS deployment tool
-  deploy          - Builds and switches the servers to the local configuration (args go to colmena apply, e.g. --on aerialis)
-  dnscontrol      - Synchronize your DNS to multiple providers from a simple DSL
-  menu            - prints this menu
-  prek            - Better `pre-commit`, re-engineered in Rust
-  restart         - Restarts all physical servers
-  sops            - Simple and flexible tool for managing secrets
-  topology        - Renders the infrastructure diagrams (nix-topology) to docs/src/topology
-  update          - Bumps flake.lock and deploys it to the servers for the next boot
-
-[infra-nix]
-
-  buildiso-local  - Spawns a local buildiso shell to build to ./buildiso (needs Docker)
-  buildiso-remote - Spawns a buildiso shell on the iso-runner builder
+Welcome to Garuda's infra-nix shell ❄️
+  deploy          Builds and switches the servers to the local configuration (args go to colmena apply, e.g. --on aerialis)
+  clean           Runs the garbage collection on the servers
+  update          Bumps flake.lock and deploys it to the servers for the next boot
+  restart         Restarts all physical servers
+  topology        Renders the infrastructure diagrams (nix-topology) to docs/src/topology
+  buildiso-remote Spawns a buildiso shell on the iso-runner builder
+  buildiso-local  Spawns a local buildiso shell to build to ./buildiso (needs Docker)
 ```

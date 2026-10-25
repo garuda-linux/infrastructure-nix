@@ -2,10 +2,6 @@
   description = "Garuda Linux infrastructure flake ❄️";
 
   inputs = {
-    # Devshell to set up a development environment
-    devshell.url = "github:numtide/devshell";
-    devshell.inputs.nixpkgs.follows = "nixpkgs";
-
     # Used by multiple flakes, have them use the same version
     flake-compat.url = "github:edolstra/flake-compat";
     flake-compat.flake = false;
@@ -124,9 +120,10 @@
               inherit (pkgs') garuda-startpage garuda-website;
             };
 
-          apps.default = self.outputs.devShells.${system}.default.flakeApp;
           devShells =
             let
+              inherit (pkgs) lib;
+
               buildiso = ''
                 if ! command -v docker &>/dev/null; then
                   echo "This command requires docker to be installed. Please install Docker and try again."
@@ -143,38 +140,28 @@
                        -v "./buildiso/logs:/var/cache/garuda-tools/garuda-logs/" \
                        buildiso /bin/bash
               '';
+
               stormwing = "builds.garudalinux.org";
-              makeDevshell = import "${inputs.devshell}/modules" pkgs;
-              mkShell =
-                config:
-                (makeDevshell {
-                  configuration = {
-                    inherit config;
-                    imports = [ ];
-                  };
-                }).shell;
-              shared_commands = [
-                { package = "colmena"; }
-                { package = "dnscontrol"; }
-                { package = "sops"; }
+
+              commands = [
                 {
                   name = "deploy";
                   help = "Builds and switches the servers to the local configuration (args go to colmena apply, e.g. --on aerialis)";
-                  command = ''
+                  text = ''
                     colmena apply "$@"
                   '';
                 }
                 {
                   name = "clean";
                   help = "Runs the garbage collection on the servers";
-                  command = ''
+                  text = ''
                     colmena exec "$@" -- sudo nh clean all
                   '';
                 }
                 {
                   name = "update";
                   help = "Bumps flake.lock and deploys it to the servers for the next boot";
-                  command = ''
+                  text = ''
                     nix flake update
                     colmena apply boot "$@"
                   '';
@@ -182,15 +169,15 @@
                 {
                   name = "restart";
                   help = "Restarts all physical servers";
-                  command = ''
+                  text = ''
                     colmena exec "$@" -- sudo systemctl reboot
                   '';
                 }
                 {
                   name = "topology";
                   help = "Renders the infrastructure diagrams (nix-topology) to docs/src/topology";
-                  command = ''
-                    cd "$PRJ_ROOT"
+                  text = ''
+                    cd "$(git rev-parse --show-toplevel)"
                     out="$(nix build --no-link --print-out-paths .#topology.x86_64-linux.config.output "$@")"
                     mkdir -p docs/src/topology
                     install -m 644 "$out"/*.svg docs/src/topology/
@@ -200,8 +187,7 @@
                 {
                   name = "buildiso-remote";
                   help = "Spawns a buildiso shell on the iso-runner builder";
-                  category = "infra-nix";
-                  command = ''
+                  text = ''
                     # We are assuming the NixOS user is named the same as the one using it
                     ssh -p220 -t ${stormwing} "buildiso"
                   '';
@@ -209,50 +195,48 @@
                 {
                   name = "buildiso-local";
                   help = "Spawns a local buildiso shell to build to ./buildiso (needs Docker)";
-                  category = "infra-nix";
-                  command = buildiso;
+                  text = buildiso;
                 }
               ];
+
+              commandPackages = map (command: pkgs.writeShellScriptBin command.name command.text) commands;
+
+              commandList = lib.concatMapStrings (command: ''
+                printf '  %-15s %s\n' ${lib.escapeShellArg command.name} ${lib.escapeShellArg command.help}
+              '') commands;
+
+              sharedPackages = [
+                pkgs.colmena
+                pkgs.dnscontrol
+                pkgs.git
+                pkgs.sops
+              ]
+              ++ commandPackages;
+
+              env = ''
+                export LC_ALL="C.UTF-8"
+                export NIX_PATH=nixpkgs=${nixpkgs}
+              '';
             in
-            rec {
-              default = infra-nix-shell;
-              infra-nix-shell = mkShell {
-                devshell = {
-                  name = "infra-nix";
-                  startup = {
-                    dnscontrol.text = ''
-                      cd dns && dnscontrol write-types &>/dev/null
-                    '';
-                    infra-nix-shell.text = ''
-                      export LC_ALL="C.UTF-8"
-                      export NIX_PATH=nixpkgs=${nixpkgs}
-                    '';
-                    pre-commit-hooks.text = self.checks.${system}.pre-commit-check.shellHook;
-                  };
-                };
-                commands = [
-                  { package = "prek"; }
-                ]
-                ++ shared_commands;
-                motd = ''
-                  {202}🔨 Welcome to Garuda's infra-nix shell{reset} ❄️
-                  $(type -p menu &>/dev/null && menu)
+            {
+              default = pkgs.mkShell {
+                name = "infra-nix";
+                packages = [ pkgs.prek ] ++ sharedPackages;
+                shellHook = ''
+                  ${env}
+                  (cd dns && dnscontrol write-types &>/dev/null)
+                  ${self.checks.${system}.pre-commit-check.shellHook}
+                  printf "\033[1;35mWelcome to Garuda's infra-nix shell\033[0m ❄️\n"
+                  ${commandList}
                 '';
               };
-              minimal = mkShell {
-                devshell = {
-                  name = "minimal";
-                  startup = {
-                    infra-nix-shell.text = ''
-                      export LC_ALL="C.UTF-8"
-                      export NIX_PATH=nixpkgs=${nixpkgs}
-                    '';
-                  };
-                };
-                commands = shared_commands;
-                motd = ''
-                  {202}🔨 Welcome to Garuda's infra-nix minimal shell{reset} ❄️
-                  $(type -p menu &>/dev/null && menu)
+              minimal = pkgs.mkShell {
+                name = "minimal";
+                packages = sharedPackages;
+                shellHook = ''
+                  ${env}
+                  printf "\033[1;35mWelcome to Garuda's infra-nix minimal shell\033[0m ❄️\n"
+                  ${commandList}
                 '';
               };
             };
@@ -305,7 +289,6 @@
     flake-parts.lib.mkFlake { inherit inputs; } {
       imports = [
         ./nixos/flake-module.nix
-        inputs.devshell.flakeModule
         inputs.nix-topology.flakeModule
         inputs.pre-commit-hooks.flakeModule
         inputs.treefmt-nix.flakeModule
