@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex-5ae99009.js";
+            window.path_to_searchindex_js = "searchindex-732e6e7a.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-01c6e019.js"></script>
@@ -199,9 +199,9 @@ Exemptions are services such as our mail server and parts violating Cloudflares 
 <li><a href="https://docs.garudalinux.net/hosts/aerialis">Host: aerialis</a></li>
 <li><a href="https://docs.garudalinux.net/hosts/stormwing">Host: stormwing</a></li>
 </ul>
-<h2 id="devshell-and-how-to-enter-it"><a class="header" href="#devshell-and-how-to-enter-it">Devshell and how to enter it</a></h2>
-<p>This NixOS flake provides a <a href="https://github.com/numtide/devshell">devshell</a>
-which contains all deployment tools as well as handy aliases for common tasks.
+<h2 id="dev-shell-and-how-to-enter-it"><a class="header" href="#dev-shell-and-how-to-enter-it">Dev shell and how to enter it</a></h2>
+<p>This NixOS flake provides a plain <code>pkgs.mkShell</code> dev shell
+which contains all deployment tools as well as handy commands for common tasks.
 The only requirement for using it is having the Nix package manager available.
 It can be installed on various distributions via the package manager or the following
 script (<a href="https://zero-to-nix.com/start/install">click me for more information</a>):</p>
@@ -212,27 +212,16 @@ sh ./nix-install.sh install --diagnostic-endpoint=""
 <pre><code class="language-shell">nix develop # The intended way to use the devshell
 nix-shell # Legacy, non-flakes way if flakes are not available for some reason
 </code></pre>
-<p>This also sets up pre-commit-hooks and shows the currently implemented tasks, which can be executed by running the
-command.</p>
-<pre><code class="language-shell">🔨 Welcome to Garuda's infra-nix shell ❄️
-
-[[general commands]]
-
-  clean           - Runs the garbage collection on the servers
-  colmena         - Simple, stateless NixOS deployment tool
-  deploy          - Builds and switches the servers to the local configuration (args go to colmena apply, e.g. --on aerialis)
-  dnscontrol      - Synchronize your DNS to multiple providers from a simple DSL
-  menu            - prints this menu
-  prek            - Better `pre-commit`, re-engineered in Rust
-  restart         - Restarts all physical servers
-  sops            - Simple and flexible tool for managing secrets
-  topology        - Renders the infrastructure diagrams (nix-topology) to docs/src/topology
-  update          - Bumps flake.lock and deploys it to the servers for the next boot
-
-[infra-nix]
-
-  buildiso-local  - Spawns a local buildiso shell to build to ./buildiso (needs Docker)
-  buildiso-remote - Spawns a buildiso shell on the iso-runner builder
+<p>This also sets up pre-commit-hooks and lists the available commands, which can be executed by running them.
+The tools <code>colmena</code>, <code>dnscontrol</code>, <code>git</code>, <code>prek</code> and <code>sops</code> are on the PATH as well.</p>
+<pre><code class="language-shell">Welcome to Garuda's infra-nix shell ❄️
+  deploy          Builds and switches the servers to the local configuration (args go to colmena apply, e.g. --on aerialis)
+  clean           Runs the garbage collection on the servers
+  update          Bumps flake.lock and deploys it to the servers for the next boot
+  restart         Restarts all physical servers
+  topology        Renders the infrastructure diagrams (nix-topology) to docs/src/topology
+  buildiso-remote Spawns a buildiso shell on the iso-runner builder
+  buildiso-local  Spawns a local buildiso shell to build to ./buildiso (needs Docker)
 </code></pre>
 
                     </main>
