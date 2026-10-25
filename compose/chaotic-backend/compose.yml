@@ -1,6 +1,6 @@
 services:
   chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:2.9.4
+    image: ghcr.io/chaotic-cx/chaotic-next:2.10.0
     container_name: chaotic-backend
     deploy:
       restart_policy:
@@ -48,6 +48,7 @@ services:
       PG_DATABASE: chaotic-aur
       PG_HOST: 10.0.5.20
       PG_PASSWORD: ${PG_PASSWORD:-?err}
+      PG_PORT: 5432
       PG_USER: chaotic-aur
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
       REDIS_SSH_HOST: host.docker.internal
