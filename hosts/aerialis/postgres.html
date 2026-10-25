@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-17b3bcba.js";
+            window.path_to_searchindex_js = "../../searchindex-5ae99009.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-601bc003.js"></script>
+        <script src="../../toc-01c6e019.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -292,12 +292,7 @@ in
     };
   };
 
-  # Regular backups for our database (every 6h)
-  services.postgresqlBackup = {
-    compression = "zstd";
-    enable = true;
-    location = "/var/garuda/backups/postgres";
-  };
+  # Backups: borgmatic on the host dumps all databases with pg_dumpall (nixos/services/backup.nix)
 
   services.pgadmin = {
     enable = true;

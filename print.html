@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex-17b3bcba.js";
+            window.path_to_searchindex_js = "searchindex-5ae99009.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-601bc003.js"></script>
+        <script src="toc-01c6e019.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -475,7 +475,8 @@ journalctl -u borgmatic
 </code></pre>
 <p>This should yield a successful unit state. The only exception is having an exit code != <code>0</code> due to files having changed
 during the run. The “Borg backup age” and “Borg backup count” panels in Grafana are a quicker way to spot a stalled
-backup.</p>
+backup. Failed and missed runs are also reported by email through healthchecks.io. Restoring is described in
+<a href="#disaster-recovery">Disaster recovery</a>.</p>
 <h3 id="checking-monitoring-and-alerts"><a class="header" href="#checking-monitoring-and-alerts">Checking monitoring and alerts</a></h3>
 <p>The monitoring stack can be reached at:</p>
 <ul>
@@ -548,6 +549,135 @@ will use it to build the toolbox using the new revision automatically.</p>
 <li><a href="https://searx.garudalinux.org">SearxNG</a></li>
 <li><a href="https://search.garudalinux.org">Whoogle</a></li>
 <li><a href="https://wiki.garudalinux.org">WikiJs</a></li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="disaster-recovery"><a class="header" href="#disaster-recovery">Disaster recovery</a></h1>
+<p>This page covers restoring <code>aerialis</code> or <code>stormwing</code> from the offsite borg backups.
+For reinstalling the system disk of aerialis, follow the host rebuild steps first, then continue here.</p>
+<h2 id="learnings-from-the-past"><a class="header" href="#learnings-from-the-past">Learnings from the past</a></h2>
+<ul>
+<li><strong>Have faith in the backups and start the restore immediately.</strong> Do not spend hours trying to rescue a broken disk or
+a half-working system. The backups are checked regularly, so restoring is the faster and safer path.</li>
+<li><strong>Only borgmatic database dumps are restorable.</strong> Databases are restored from the <code>pg_dumpall</code> dump that borgmatic
+streams into every archive.</li>
+<li><strong>Docker images and Docker state are not backed up.</strong> Images are pulled again and Docker stacks need a manual start
+after the restore.</li>
+<li><strong>The system drive has no RAID yet.</strong> A single disk failure means a full restore. Adding RAID needs a reinstall and is
+tracked as an open task.</li>
+</ul>
+<h2 id="what-is-backed-up"><a class="header" href="#what-is-backed-up">What is backed up</a></h2>
+<p>Both hosts back up to the Hetzner storage box <code>u342919.your-storagebox.de</code> (port 23), each into its own repository.
+Configuration: <code>garuda.backup.borgmatic</code> in <code>nixos/hosts/&lt;host&gt;.nix</code>, module <code>nixos/services/backup.nix</code>.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Host</th><th>Repository</th><th>Contents</th></tr>
+</thead>
+<tbody>
+<tr><td>aerialis</td><td><code>./aerialis</code></td><td><code>/data_1/containers</code> (without <code>postgres/data</code>), <code>/data_1/persistent</code>, Nextcloud AIO master volume, Nextcloud AIO backups, chaotic-backend database, Mastodon media, <code>pg_dumpall</code> of the postgres container</td></tr>
+<tr><td>stormwing</td><td><code>./stormwing</code></td><td><code>/data_1/persistent</code>, chaotic-v4 state, web-front certificates, runner configs</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>/data_1/persistent</code> holds the SSH host keys (sops-nix decrypts with them), the Tailscale node state, <code>machine-id</code>,
+<code>vnstat</code>, the NixOS UID/GID map and the borgmatic check state. Left out are <code>/home</code> and the <code>chaotic-v4</code> dir.</p>
+<h2 id="monitoring-of-the-backups"><a class="header" href="#monitoring-of-the-backups">Monitoring of the backups</a></h2>
+<ul>
+<li>borgmatic runs daily (<code>borgmatic.timer</code>) and runs <code>repository</code> and <code>archives</code> checks weekly and a full <code>data</code> check
+monthly.</li>
+<li>Every run pings healthchecks.io (start, finish, fail, with logs). healthchecks.io sends an email when a run fails or
+when no run arrives in time. This works even when the whole server is gone, because the email is sent from outside
+our infrastructure.</li>
+<li>Prometheus alerts (<code>BorgmaticBackupMissed</code>, <code>BorgmaticBackupStale</code>, …) are a second channel, but they run on
+aerialis and fail together with it.</li>
+</ul>
+<h2 id="restore-steps"><a class="header" href="#restore-steps">Restore steps</a></h2>
+<h3 id="1-prepare-credentials"><a class="header" href="#1-prepare-credentials">1. Prepare credentials</a></h3>
+<p>From a workstation with sops access (repo root):</p>
+<pre><code class="language-sh">host=aerialis # or stormwing
+sops -d --extract '["backup"]["ssh_'$host'"]' secrets/$host.yaml &gt; ssh_key
+sops -d --extract '["backup"]["repo_key"]' secrets/$host.yaml &gt; repo_key
+scp ssh_key repo_key root@&lt;server&gt;:/root/
+rm ssh_key repo_key
+</code></pre>
+<h3 id="2-extract-from-borg"><a class="header" href="#2-extract-from-borg">2. Extract from borg</a></h3>
+<p>Run this from the rescue system or the freshly installed host, with the target filesystems mounted below <code>/mnt</code>.</p>
+<pre><code class="language-sh">mkdir -p /root/.ssh
+echo '[u342919.your-storagebox.de]:23 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs' &gt;&gt; /root/.ssh/known_hosts
+export BORG_RSH="ssh -i /root/ssh_key -o IdentitiesOnly=yes"
+export BORG_PASSPHRASE="$(cat /root/repo_key)"
+export BORG_REPO=ssh://u342919@u342919.your-storagebox.de:23/./$host
+
+borg list --last 3
+ARCHIVE=&lt;archive name from the list&gt;
+
+# Shows the archive size, so the duration can be estimated
+borg info ::$ARCHIVE
+
+# --progress shows the current file and percentage
+# --numeric-ids keeps the UIDs/GIDs of the archive, the rescue system has different user names
+# Only extract what was lost, e.g. data_1 after a system disk failure. Never overwrite an intact data_2.
+cd /mnt &amp;&amp; borg extract --progress --numeric-ids ::$ARCHIVE data_1
+</code></pre>
+<p>Borg paths have no leading slash, so always extract from <code>/mnt</code>. Run long extracts inside <code>tmux</code> or <code>screen</code>, so a
+dropped SSH connection does not abort them.</p>
+<h3 id="3-check-permissions"><a class="header" href="#3-check-permissions">3. Check permissions</a></h3>
+<p>Borg restores owner and mode when it runs as root with <code>--numeric-ids</code>. Check the security-relevant paths anyway, a
+wrong mode on the host keys stops sshd and sops-nix:</p>
+<pre><code class="language-sh">chmod 700 /mnt/data_1/persistent/etc/ssh
+chmod 600 /mnt/data_1/persistent/etc/ssh/ssh_host_*_key
+chmod 644 /mnt/data_1/persistent/etc/ssh/ssh_host_*_key.pub
+chown -R 0:0 /mnt/data_1/persistent/etc/ssh
+stat -c '%a %U:%G %n' /mnt/data_1/persistent/etc/ssh/* /mnt/data_1/persistent/var/lib/tailscale
+</code></pre>
+<p><code>/etc</code> itself is generated by NixOS. Only the parts in <code>/data_1/persistent</code> (host keys, <code>machine-id</code>) come from the
+backup. The NixOS UID/GID map in <code>/data_1/persistent/var/lib/nixos</code> must be restored before the first boot, so the
+restored files keep matching users.</p>
+<p>Also ensure that <code>/etc</code> is <em>not</em> 700. This will cause dbus to fail, and logging in via SSH will not be possible. This
+has already costed us too much time once.</p>
+<h3 id="4-install-and-boot"><a class="header" href="#4-install-and-boot">4. Install and boot</a></h3>
+<p>Install NixOS with <code>nixos-install --flake</code>, then boot into the system. sops-nix decrypts the secrets with the restored host key.</p>
+<h3 id="5-restore-the-databases-aerialis"><a class="header" href="#5-restore-the-databases-aerialis">5. Restore the databases (aerialis)</a></h3>
+<p>The postgres container starts with an empty data directory, because the live data directory is not backed up.
+NixOS creates the databases and roles on start. Then load the dump:</p>
+<pre><code class="language-sh"># Stop everything that writes to the database
+systemctl stop container@docker-proxied container@docker container@mastodon container@chaotic-backend
+
+# Shows progress per database with --verbosity 1
+borgmatic restore --archive latest --verbosity 1
+
+systemctl start container@docker-proxied container@docker container@mastodon container@chaotic-backend
+</code></pre>
+<h3 id="6-start-docker-stacks-manually"><a class="header" href="#6-start-docker-stacks-manually">6. Start Docker stacks manually</a></h3>
+<p>Docker images and volumes are not part of the backup. On the first start, every compose stack pulls its images, which
+can hit the start limit of <code>compose-runner-&lt;name&gt;.service</code>. Start each stack manually and watch the pull:</p>
+<pre><code class="language-sh">nixos-container root-login docker
+systemctl reset-failed
+cd /var/garuda/compose-runner/docker &amp;&amp; docker compose pull
+systemctl restart compose-runner-docker
+</code></pre>
+<p>Repeat for <code>docker-proxied</code>, <code>mastodon</code>, <code>chaotic-backend</code> and <code>forum</code> (<code>./launcher rebuild app</code> in <code>/var/discourse</code>).</p>
+<h3 id="7-restore-nextcloud-aio"><a class="header" href="#7-restore-nextcloud-aio">7. Restore Nextcloud AIO</a></h3>
+<p>The AIO master container volume <code>nextcloud_aio_mastercontainer</code> is part of the backup, so the AIO interface on port
+8080 of the docker container keeps its configuration. If the public URL is not working, access it via SSH port forwarding:</p>
+<pre><code class="language-sh">ssh -L 8080:10.0.5.60:8080 aerialis.garudalinux.org -p666
+</code></pre>
+<p>It will then be available in <code>https://localhost:8080</code>. In the AIO interface:</p>
+<ol>
+<li>Start the containers.</li>
+<li>If the data is missing, use “Restore from backup” with the AIO borg backup at <code>/var/garuda/backups/nextcloud</code>
+(host path <code>/data_2/backup/nextcloud-aio</code>) and the AIO backup password shown in the interface before the incident.</li>
+</ol>
+<h3 id="8-verify"><a class="header" href="#8-verify">8. Verify</a></h3>
+<ul>
+<li><code>systemctl --failed</code> on the host and in each container.</li>
+<li><code>tailscale status</code> shows the old node name and IP.</li>
+<li>Grafana shows all targets up, healthchecks.io receives the next ping.</li>
+<li>Run <code>systemctl start borgmatic</code> once to confirm backups work again.</li>
+</ul>
+<h2 id="open-items"><a class="header" href="#open-items">Open items</a></h2>
+<ul>
+<li>RAID for the system drive. Needs a reinstall with a new disk layout.</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="users"><a class="header" href="#users">Users</a></h1>
@@ -710,16 +840,21 @@ in
         ];
         sourceDirectories = [
           "/data_1/containers"
-          "/data_1/persistent/etc/ssh"
+          "/data_1/persistent/var/lib/nixos"
+          "/data_1/persistent/var/lib/borgmatic"
+          "/data_1/persistent/var/lib/vnstat"
+          "/data_1/persistent/var/lib/tailscale"
+          # Nextcloud AIO config, the rest of the Docker state is not kept
+          "/data_1/dockercache/docker/volumes/nextcloud_aio_mastercontainer"
           "/data_2/backup/nextcloud-aio/"
           "/data_2/containers/chaotic-backend/chaotic/database"
           "/data_2/containers/mastodon"
-          "/data_2/containers/postgres"
         ];
         excludePatterns = [
-          "/data_1/dockercache"
-          "/data_1/dockerdata"
+          # A copy of a live data directory is not restorable, borgmatic dumps the databases instead
+          "/data_1/containers/postgres/data"
         ];
+        postgresqlContainer = "postgres";
       };
     };
 
@@ -894,11 +1029,6 @@ in
               name = "data";
               hostPath = "/data_1/containers/postgres/data";
               mountPoint = "/var/lib/postgresql";
-            }
-            {
-              name = "postgres_backup";
-              hostPath = "/data_2/containers/postgres/backup";
-              mountPoint = "/var/garuda/backups/postgres";
             }
             {
               name = "acme";
@@ -1120,6 +1250,7 @@ in
       "/home"
       "/var/cache/netdata"
       "/var/cache/tailscale"
+      "/var/lib/borgmatic"
       "/var/lib/netdata"
       "/var/lib/nixos"
       "/var/lib/tailscale"
@@ -1225,7 +1356,7 @@ in
 <h3 id="docker-containers"><a class="header" href="#docker-containers">Docker containers</a></h3>
 <pre><code class="language-yaml">services:
   chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:2.9.4
+    image: ghcr.io/chaotic-cx/chaotic-next:2.10.0
     container_name: chaotic-backend
     deploy:
       restart_policy:
@@ -1273,6 +1404,7 @@ in
       PG_DATABASE: chaotic-aur
       PG_HOST: 10.0.5.20
       PG_PASSWORD: ${PG_PASSWORD:-?err}
+      PG_PORT: 5432
       PG_USER: chaotic-aur
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
       REDIS_SSH_HOST: host.docker.internal
@@ -1304,8 +1436,9 @@ Consult its <a href="https://github.com/nextcloud/docker">extensive documentatio
 Since this container requires a Nextcloud volume at a fixed place, without being able to change it, it is not
 included in the regular data directory.</p>
 <p>Instead, backups are regularly performed via the inbuilt backup function in the admin interface.
-They can be found at <code>/var/garuda/compose-runner/docker/nextcloud-aio</code>
-and are included in the offsite system backups.</p>
+They can be found at <code>/var/garuda/backups/nextcloud</code> (host path <code>/data_2/backup/nextcloud-aio</code>)
+and are included in the offsite system backups, together with the AIO master container volume.
+See <a href="#disaster-recovery">Disaster recovery</a> for restoring.</p>
 <h2 id="nix-expression-1"><a class="header" href="#nix-expression-1">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,
@@ -2590,12 +2723,7 @@ in
     };
   };
 
-  # Regular backups for our database (every 6h)
-  services.postgresqlBackup = {
-    compression = "zstd";
-    enable = true;
-    location = "/var/garuda/backups/postgres";
-  };
+  # Backups: borgmatic on the host dumps all databases with pg_dumpall (nixos/services/backup.nix)
 
   services.pgadmin = {
     enable = true;
@@ -3115,16 +3243,56 @@ in
     ./../modules/special/hetzner-ex44.nix
   ];
 
-  garuda = garuda-lib.mkMonitoring {
-    host = "stormwing";
-    lokiAddress = mon.loki.tailnetAddress;
-    hostInfo = true;
-    units = [
-      "sshd.service"
-      "tailscaled.service"
-    ];
-    exporters = [ "smartctlExporter" ];
-  };
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "stormwing";
+      lokiAddress = mon.loki.tailnetAddress;
+      hostInfo = true;
+      units = [
+        "borgmatic.service"
+        "borgmatic.timer"
+        "sshd.service"
+        "tailscaled.service"
+      ];
+      exporters = [
+        "smartctlExporter"
+        "borgmaticExporter"
+      ];
+    }
+    // {
+      backup.borgmatic = {
+        enable = true;
+        name = "stormwing";
+        user = "u342919";
+        host = "u342919.your-storagebox.de";
+        port = 23;
+        label = "hetzner";
+        sshKeySecret = "backup/ssh_stormwing";
+        knownHosts = [
+          {
+            name = "storagebox-ed25519";
+            publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs"; # pragma: allowlist secret
+          }
+        ];
+        sourceDirectories = [
+          "/data_1/persistent/etc"
+          "/data_1/persistent/var/lib/nixos"
+          "/data_1/persistent/var/lib/borgmatic"
+          "/data_1/persistent/var/lib/vnstat"
+          "/data_1/persistent/var/lib/tailscale"
+          "/data_1/containers/web-front/acme"
+          "/data_2/containers/chaotic-v4/syncthing"
+          "/data_2/containers/firedragon-runner"
+          "/data_2/containers/github-runner/gitlab-runner"
+          "/data_2/containers/github-runner/ssh"
+          "/data_2/containers/gitlab-runner/gitlab-runner"
+        ];
+        excludePatterns = [
+          # Syncthing 2.x index database, rebuilt by rescanning, only the config is needed
+          "/data_2/containers/chaotic-v4/syncthing/index-v2"
+        ];
+      };
+    };
 
   swapDevices = [
     {
@@ -3523,6 +3691,7 @@ in
       "/home"
       "/var/cache/netdata"
       "/var/cache/tailscale"
+      "/var/lib/borgmatic"
       "/var/lib/netdata"
       "/var/lib/nixos"
       "/var/lib/tailscale"

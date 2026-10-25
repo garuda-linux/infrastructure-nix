@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-17b3bcba.js";
+            window.path_to_searchindex_js = "../../searchindex-5ae99009.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-601bc003.js"></script>
+        <script src="../../toc-01c6e019.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -192,8 +192,9 @@ Consult its <a href="https://github.com/nextcloud/docker">extensive documentatio
 Since this container requires a Nextcloud volume at a fixed place, without being able to change it, it is not
 included in the regular data directory.</p>
 <p>Instead, backups are regularly performed via the inbuilt backup function in the admin interface.
-They can be found at <code>/var/garuda/compose-runner/docker/nextcloud-aio</code>
-and are included in the offsite system backups.</p>
+They can be found at <code>/var/garuda/backups/nextcloud</code> (host path <code>/data_2/backup/nextcloud-aio</code>)
+and are included in the offsite system backups, together with the AIO master container volume.
+See <a href="../../procedures/disaster-recovery.html">Disaster recovery</a> for restoring.</p>
 <h2 id="nix-expression"><a class="header" href="#nix-expression">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,

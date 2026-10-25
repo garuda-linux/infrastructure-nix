@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-17b3bcba.js";
+            window.path_to_searchindex_js = "../../searchindex-5ae99009.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-601bc003.js"></script>
+        <script src="../../toc-01c6e019.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -252,7 +252,7 @@
 <h3 id="docker-containers"><a class="header" href="#docker-containers">Docker containers</a></h3>
 <pre><code class="language-yaml">services:
   chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:2.9.4
+    image: ghcr.io/chaotic-cx/chaotic-next:2.10.0
     container_name: chaotic-backend
     deploy:
       restart_policy:
@@ -300,6 +300,7 @@
       PG_DATABASE: chaotic-aur
       PG_HOST: 10.0.5.20
       PG_PASSWORD: ${PG_PASSWORD:-?err}
+      PG_PORT: 5432
       PG_USER: chaotic-aur
       REDIS_PASSWORD: ${REDIS_PASSWORD:-?err}
       REDIS_SSH_HOST: host.docker.internal
