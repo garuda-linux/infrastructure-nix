@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex-188a583a.js";
+            window.path_to_searchindex_js = "searchindex-1ae7233a.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-11c6aa39.js"></script>
@@ -3406,6 +3406,8 @@ in
           ];
           needsDocker = true;
           needsKvm = true;
+          # Docker userns-remap (unprivileged `nix` runner) needs an unmasked /proc
+          writableApiVfs = true;
           cpuWeight = 20;
           ioWeight = 20;
         };
@@ -4407,11 +4409,20 @@ sudo systemctl restart compose-runner-gitlab-runner
 <h1 id="gitlab-runner-stormwing"><a class="header" href="#gitlab-runner-stormwing">gitlab-runner (stormwing)</a></h1>
 <p>This container runs GitLab CI runners that build our packages.</p>
 <h2 id="general-9"><a class="header" href="#general-9">General</a></h2>
-<p>Two runners are configured on it, <code>stormwing-nix-caching</code> and <code>stormwing-nix-dind</code>. Both make use of the shared Nix
-cache and are allowed to use KVM, which is why the container has <code>/dev/kvm</code> passed through. The main selling point
-of these is obviously the shared Nix store, which is the reason why these should in the long run be preferred over
-the other Docker-based runner.</p>
-<p>For these to pick up any builds, the tags <code>nix</code> or <code>nix-dind</code> must be added to the CI configuration.</p>
+<p>Two runners are configured on it, <code>stormwing-nix-caching</code> and <code>stormwing-nix-privileged</code>. Both make use of the shared
+Nix cache. The main selling point of these is obviously the shared Nix store, which is the reason why these should in
+the long run be preferred over the other Docker-based runner.</p>
+<p>For these to pick up any builds, the tags <code>nix</code> or <code>nix-privileged</code> must be added to the CI configuration.</p>
+<ul>
+<li><code>stormwing-nix-caching</code> (tag <code>nix</code>): unprivileged. Docker remaps job root to an unprivileged uid
+(<code>userns-remap = "dockremap"</code>), so jobs talk to the nix-daemon as untrusted users. No <code>/dev/kvm</code> in the job.</li>
+<li><code>stormwing-nix-privileged</code> (tag <code>nix-privileged</code>): privileged, no user namespace remapping
+(<code>--docker-userns host</code>), with <code>/dev/kvm</code>. Jobs run as root. The runner is protected in GitLab, so only jobs on
+protected branches (<code>main</code>) reach it.</li>
+</ul>
+<p>Builds through the nix-daemon (<code>nix build</code>, <code>nix flake check</code>) still get KVM for NixOS tests on both runners,
+because the daemon runs in this container, which has <code>/dev/kvm</code> passed through. Only jobs that start QEMU or
+<code>nixos-test-driver</code> themselves need the <code>nix-privileged</code> tag.</p>
 <p>Its metrics are exposed on port <code>9252</code> and published on stormwing’s Tailnet IP for Prometheus (see
 <a href="#monitoring-1">Monitoring</a>).</p>
 <h2 id="nix-expression-14"><a class="header" href="#nix-expression-14">Nix expression</a></h2>
@@ -4441,19 +4452,22 @@ the other Docker-based runner.</p>
         authenticationTokenConfigFile =
           config.sops.secrets."gitlab-runner/runners/stormwing-nix-caching".path;
         nix-caching.enable = true;
-        kvm.enable = true;
       };
-      stormwing-nix-dind = {
-        authenticationTokenConfigFile = config.sops.secrets."gitlab-runner/runners/stormwing-nix-dind".path;
-        nix-caching.enable = true;
+
+      # Privileged and root (no userns remap), with /dev/kvm.
+      # Set to "protected" in GitLab, so only main branch jobs reach it.
+      stormwing-nix-privileged = {
+        authenticationTokenConfigFile = config.sops.secrets."gitlab-runner/runners/stormwing-nix-privileged".path;
+        nix-privileged.enable = true;
         kvm.enable = true;
       };
     };
+    volumeCleanup.enable = true;
   };
 
   sops.secrets = garuda-lib.mkSecrets [
     "gitlab-runner/runners/stormwing-nix-caching"
-    "gitlab-runner/runners/stormwing-nix-dind"
+    "gitlab-runner/runners/stormwing-nix-privileged"
   ];
 
   system.stateVersion = "26.11";
