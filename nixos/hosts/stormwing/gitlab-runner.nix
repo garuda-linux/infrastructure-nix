@@ -24,19 +24,22 @@
         authenticationTokenConfigFile =
           config.sops.secrets."gitlab-runner/runners/stormwing-nix-caching".path;
         nix-caching.enable = true;
-        kvm.enable = true;
       };
-      stormwing-nix-dind = {
-        authenticationTokenConfigFile = config.sops.secrets."gitlab-runner/runners/stormwing-nix-dind".path;
-        nix-caching.enable = true;
+
+      # Privileged and root (no userns remap), with /dev/kvm.
+      # Set to "protected" in GitLab, so only main branch jobs reach it.
+      stormwing-nix-privileged = {
+        authenticationTokenConfigFile = config.sops.secrets."gitlab-runner/runners/stormwing-nix-privileged".path;
+        nix-privileged.enable = true;
         kvm.enable = true;
       };
     };
+    volumeCleanup.enable = true;
   };
 
   sops.secrets = garuda-lib.mkSecrets [
     "gitlab-runner/runners/stormwing-nix-caching"
-    "gitlab-runner/runners/stormwing-nix-dind"
+    "gitlab-runner/runners/stormwing-nix-privileged"
   ];
 
   system.stateVersion = "26.11";

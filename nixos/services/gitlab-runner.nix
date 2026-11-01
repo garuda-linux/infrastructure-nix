@@ -7,6 +7,11 @@
 let
   cfg = config.services.garuda-gitlab-runner;
 
+  # renovate: datasource=docker depName=docker
+  dindImage = "docker:29.9.0-cli";
+  # renovate: datasource=docker depName=alpine
+  jobImage = "alpine:3.24.1";
+
   nixVolumes = [
     "/nix/store:/nix/store:ro"
     "/nix/var/nix/db:/nix/var/nix/db:ro"
@@ -55,6 +60,64 @@ let
       )
     }
   '';
+
+  dockerDataRoot = "/var/lib/docker";
+  volumeCleanupScript = pkgs.writeShellApplication {
+    name = "gitlab-runner-volume-cleanup";
+    runtimeInputs = [
+      config.virtualisation.docker.package
+      pkgs.coreutils
+    ];
+    text = ''
+      free_percent() {
+        used=$(df --output=pcent ${dockerDataRoot} | tail -n 1 | tr -dc '0-9')
+        echo $((100 - used))
+      }
+
+      min_free=${toString cfg.volumeCleanup.minFreePercent}
+      target_free=${toString cfg.volumeCleanup.targetFreePercent}
+      cutoff=$(date -d "-${toString cfg.volumeCleanup.maxVolumeAgeDays} days" +%s)
+
+      free=$(free_percent)
+      if [ "$free" -ge "$min_free" ]; then
+        echo "$free% free, at least $min_free% required, nothing to do"
+        exit 0
+      fi
+      echo "$free% free, below $min_free%, removing old volumes oldest first until $target_free% is free"
+
+      # oldest first, so the most recent caches are the last to go
+      docker volume ls -q | while read -r name; do
+        created=$(docker volume inspect --format '{{.CreatedAt}}' "$name")
+        if [ -n "$created" ]; then
+          ts=$(date -d "$created" +%s) || continue
+        else
+          mountpoint=$(docker volume inspect --format '{{.Mountpoint}}' "$name")
+          ts=$(stat -c %Y "$mountpoint") || continue
+        fi
+        echo "$ts $name"
+      done | sort -n | while read -r ts name; do
+        if [ "$ts" -ge "$cutoff" ]; then
+          echo "no volumes left older than ${toString cfg.volumeCleanup.maxVolumeAgeDays} days"
+          break
+        fi
+        free=$(free_percent)
+        if [ "$free" -ge "$target_free" ]; then
+          echo "$free% free, reached $target_free%"
+          break
+        fi
+        if docker volume rm "$name" > /dev/null; then
+          echo "removed $name"
+        else
+          echo "skipped $name, still in use"
+        fi
+      done
+      echo "$(free_percent)% free after cleanup"
+    '';
+  };
+
+  # Privileged jobs can't run in the remapped user namespace.
+  # They opt out with --docker-userns host and stay root, so only protected jobs may use them.
+  isPrivileged = r: r.nix-privileged.enable || r.dind.enable || r.kvm.enable;
 in
 {
   options.services.garuda-gitlab-runner = {
@@ -87,22 +150,52 @@ in
             nix-caching = {
               enable = lib.mkEnableOption "Nix caching for Docker executor";
             };
-            nix-dind = {
-              enable = lib.mkEnableOption "Nix caching with docker:dind image";
+            nix-privileged = {
+              enable = lib.mkEnableOption "Nix caching with docker:dind image, privileged and root (no user namespace remapping)";
             };
             dind = {
               enable = lib.mkEnableOption "Docker-in-Docker support (privileged mode)";
             };
             kvm = {
-              enable = lib.mkEnableOption "KVM passthrough (/dev/kvm, implies privileged)";
+              enable = lib.mkEnableOption "KVM passthrough (/dev/kvm, implies privileged and no user namespace remapping)";
             };
           };
         }
       );
     };
+
+    volumeCleanup = {
+      enable = lib.mkEnableOption "removal of old docker volumes when storage is low, checked every 30 minutes";
+      minFreePercent = lib.mkOption {
+        type = lib.types.ints.between 0 100;
+        default = 15;
+        description = "Start cleaning when less than this percent of the docker data root is free.";
+      };
+      targetFreePercent = lib.mkOption {
+        type = lib.types.ints.between 0 100;
+        default = 25;
+        description = "Stop cleaning once this percent of the docker data root is free again.";
+      };
+      maxVolumeAgeDays = lib.mkOption {
+        type = lib.types.ints.positive;
+        default = 3;
+        description = "Only volumes created more than this many days ago are removed.";
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = cfg.volumeCleanup.targetFreePercent >= cfg.volumeCleanup.minFreePercent;
+        message = "services.garuda-gitlab-runner.volumeCleanup.targetFreePercent must not be below minFreePercent";
+      }
+      {
+        assertion = !cfg.volumeCleanup.enable || config.virtualisation.docker.enable;
+        message = "services.garuda-gitlab-runner.volumeCleanup needs docker, enable a runner with docker support";
+      }
+    ];
+
     nix.settings = {
       experimental-features = [
         "nix-command"
@@ -111,13 +204,35 @@ in
     };
 
     boot.kernel.sysctl."net.ipv4.ip_forward" = lib.mkIf (lib.any (
-      r: r.nix-caching.enable || r.dind.enable || r.nix-dind.enable
+      r: r.nix-caching.enable || r.dind.enable || r.nix-privileged.enable
     ) (lib.attrValues cfg.runners)) true;
 
     virtualisation.docker.enable = lib.mkIf (lib.any (
-      r: r.nix-caching.enable || r.dind.enable || r.nix-dind.enable
+      r: r.nix-caching.enable || r.dind.enable || r.nix-privileged.enable
     ) (lib.attrValues cfg.runners)) true;
     virtualisation.docker.daemon.settings.dns = lib.mkDefault config.networking.nameservers;
+
+    # Container root maps to an unprivileged host uid. Jobs that mount the
+    # nix-daemon socket then connect as untrusted users, not as root.
+    # Privileged runners opt out with --docker-userns host (see isPrivileged).
+    virtualisation.docker.daemon.settings.userns-remap = "dockremap";
+    users.users.dockremap = {
+      isSystemUser = true;
+      group = "dockremap";
+      subUidRanges = [
+        {
+          startUid = 100000;
+          count = 65536;
+        }
+      ];
+      subGidRanges = [
+        {
+          startGid = 100000;
+          count = 65536;
+        }
+      ];
+    };
+    users.groups.dockremap = { };
 
     services.gitlab-runner = {
       enable = true;
@@ -137,11 +252,12 @@ in
           requestConcurrency = 4;
           executor = "docker";
           inherit (r) dockerExtraHosts;
+          registrationFlags = lib.optional (isPrivileged r) "--docker-userns host";
         }
         // (
-          if r.nix-dind.enable then
+          if r.nix-privileged.enable then
             {
-              dockerImage = "docker:29-cli";
+              dockerImage = dindImage;
               dockerPrivileged = true;
               dockerVolumes =
                 nixVolumes
@@ -160,7 +276,7 @@ in
               tagList =
                 if r.authenticationTokenConfigFile == null then
                   [
-                    "nix-dind"
+                    "nix-privileged"
                   ]
                   ++ r.tagList
                 else
@@ -168,7 +284,7 @@ in
             }
           else if r.nix-caching.enable then
             {
-              dockerImage = "alpine";
+              dockerImage = jobImage;
               dockerVolumes = nixVolumes ++ lib.optionals r.kvm.enable [ "/dev/kvm:/dev/kvm" ];
               dockerPrivileged = r.kvm.enable;
               dockerDisableCache = true;
@@ -180,7 +296,7 @@ in
             }
           else
             {
-              dockerImage = if r.dind.enable then "docker:29-cli" else "alpine";
+              dockerImage = if r.dind.enable then dindImage else jobImage;
               dockerPrivileged = r.dind.enable || r.kvm.enable;
               dockerVolumes =
                 if r.dind.enable then
@@ -200,6 +316,24 @@ in
       dates = "daily";
       enable = true;
       flags = [ "prune-volumes" ];
+    };
+
+    systemd.services.gitlab-runner-volume-cleanup = lib.mkIf cfg.volumeCleanup.enable {
+      description = "Remove old docker volumes while storage is low";
+      after = [ "docker.service" ];
+      requires = [ "docker.service" ];
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = lib.getExe volumeCleanupScript;
+      };
+    };
+    systemd.timers.gitlab-runner-volume-cleanup = lib.mkIf cfg.volumeCleanup.enable {
+      description = "Check docker storage every 30 minutes";
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnCalendar = "*:0/30";
+        Persistent = true;
+      };
     };
   };
 }

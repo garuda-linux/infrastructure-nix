@@ -289,6 +289,8 @@ in
           ];
           needsDocker = true;
           needsKvm = true;
+          # Docker userns-remap (unprivileged `nix` runner) needs an unmasked /proc
+          writableApiVfs = true;
           cpuWeight = 20;
           ioWeight = 20;
         };

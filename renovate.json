@@ -46,12 +46,26 @@
       "depNameTemplate": "garuda-startpage",
       "packageNameTemplate": "https://gitlab.com/garuda-linux/website/startpage-v2",
       "datasourceTemplate": "git-refs"
+    },
+    {
+      "customType": "regex",
+      "description": "Image pins in Nix files, marked with a `# renovate: datasource=... depName=...` comment",
+      "managerFilePatterns": [
+        "/\\.nix$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>[a-z-]+) depName=(?<depName>\\S+)\\s+[\\w-]+ = \"[^\":]+:(?<currentValue>[^\"]+)\";"
+      ]
     }
   ],
   "packageRules": [
     {
       "matchManagers": [
         "custom.regex"
+      ],
+      "matchDepNames": [
+        "garuda-website",
+        "garuda-startpage"
       ],
       "postUpgradeTasks": {
         "commands": [

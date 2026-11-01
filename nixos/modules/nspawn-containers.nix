@@ -2,6 +2,7 @@
   config,
   garuda-lib,
   lib,
+  pkgs,
   sources,
   ...
 }:
@@ -49,6 +50,16 @@ let
     needsKvm = lib.mkOption {
       type = lib.types.bool;
       default = false;
+    };
+    writableApiVfs = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = ''
+        Mount /proc and /sys without nspawn's read-only and masking overmounts
+        (SYSTEMD_NSPAWN_API_VFS_WRITABLE=yes), unmount nspawn's boot_id and kmsg
+        file mounts inside the container and mount a full writable sysfs at
+        /run/userns-sysfs.
+      '';
     };
     defaults = lib.mkOption {
       type = lib.types.bool;
@@ -215,6 +226,34 @@ in
                 };
               }
             ]
+            ++ lib.lists.optional cont.writableApiVfs {
+              # The kernel only allows a fresh /proc or sysfs in a nested user namespace if a fully
+              # visible one exists. nspawn always bind-mounts files over /proc (boot_id, kmsg), so
+              # remove them.
+              config.systemd.services.nspawn-userns-apivfs = {
+                description = "Make /proc and sysfs fully visible for nested user namespaces";
+                wantedBy = [
+                  "multi-user.target"
+                  "docker.service"
+                ];
+                before = [ "docker.service" ];
+                serviceConfig = {
+                  Type = "oneshot";
+                  RemainAfterExit = true;
+                };
+                script = ''
+                  for p in /proc/kmsg /proc/sys/kernel/random/boot_id; do
+                    if ${pkgs.util-linux}/bin/mountpoint -q "$p"; then
+                      ${pkgs.util-linux}/bin/umount "$p"
+                    fi
+                  done
+                  mkdir -p /run/userns-sysfs
+                  if ! ${pkgs.util-linux}/bin/mountpoint -q /run/userns-sysfs; then
+                    ${pkgs.util-linux}/bin/mount -t sysfs -o nosuid,nodev,noexec sysfs /run/userns-sysfs
+                  fi
+                '';
+              };
+            }
             ++ lib.lists.optional cont.defaults {
               config.garuda-lib.minimalContainer = true;
               config.garuda-lib.sshkeys = {
@@ -287,6 +326,13 @@ in
         (lib.filterAttrs (_name: hasActiveQuotas) cfg.containers)
       )
     ];
+
+    systemd.services = lib.mapAttrs' (
+      name: _value:
+      lib.nameValuePair "container@${name}" {
+        environment.SYSTEMD_NSPAWN_API_VFS_WRITABLE = "yes";
+      }
+    ) (lib.filterAttrs (_name: value: value.writableApiVfs) cfg.containers);
 
     systemd.tmpfiles.rules = lib.mapAttrsToList (
       name: _value: "d ${cfg.dockerCache}/${name} 1555 root root"
