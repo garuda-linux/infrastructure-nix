@@ -278,16 +278,6 @@ in
           ];
         };
 
-        n8n = {
-          mounts = [
-            {
-              name = "n8n";
-              hostPath = "/data_1/containers/n8n/var-lib";
-              mountPoint = "/var/lib";
-            }
-          ];
-        };
-
         privatebin = {
           mounts = [
             {

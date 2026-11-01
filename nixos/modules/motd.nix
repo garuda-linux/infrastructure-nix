@@ -70,7 +70,7 @@ let
       {
         type = "command";
         key = "Last update";
-        text = "if [ -f /run/systemd/container ]; then exit 0; fi; date -d @$(stat -c %Y /run/current-system 2>/dev/null || date +%s) '+%Y-%m-%d %H:%M";
+        text = "if [ -f /run/systemd/container ]; then exit 0; fi; date -d @$(stat -c %Y /run/current-system 2>/dev/null || date +%s) '+%Y-%m-%d %H:%M'";
       }
     ]
     ++ lib.optional (cfg.parentHost != null) {

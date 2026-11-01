@@ -60,13 +60,6 @@ in
         info = "${svc.prometheus.alertmanager.listenAddress}:${toString svc.prometheus.alertmanager.port}";
       };
     })
-    (mkIf svc.n8n.enable {
-      n8n = {
-        name = "n8n";
-        icon = "${icons.n8n}";
-        info = svc.n8n.environment.N8N_EDITOR_BASE_URL or "";
-      };
-    })
     (mkIf svc.privatebin.enable {
       privatebin = {
         name = "PrivateBin";

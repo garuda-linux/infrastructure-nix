@@ -42,7 +42,6 @@ builtins.mapAttrs
     hetzner = "sha256-rlKblUhqUquy74ECbD8Y+jLJt/kUtNJcJskcmbJfedY=";
     google-translate = "sha256-z5XhmBh6C5H41B2+LFIBgHE+OGPcQhAIq2x3plPFBfc=";
     matterbridge = "sha256-lUYgqihfCwxoG/er+OVwUnq982CBDsyjyvzhPn2wBzk=";
-    n8n = "sha256-RbKCEI9gsS32y6aOP6Yz1Wlw6rTSrGse70OmC16imvU=";
     postfix = "sha256-+RTkVvX482iKxLpxXCOV1j09+cXadaojtyMBcBmr0Q0=";
     privatebin = "sha256-YnhLmXNOxUjRQVMECAbfJLo5XFdB2KcOFmbO/BI4Des=";
     redis = "sha256-nD1KZFgJRoelsDWx2JC4CLPW0GWEYl4MvjgFTSTjuG0=";

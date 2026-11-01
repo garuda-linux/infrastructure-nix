@@ -233,33 +233,6 @@ let
         };
       };
     };
-    "n8n-webhooks.garudalinux.net" = {
-      addSSL = true;
-      locations = {
-        "/" = {
-          return = "404";
-        };
-        "/webhook" = {
-          extraConfig = ''
-            ${garuda-lib.nginxReverseProxySettings}
-
-            proxy_pass http://10.0.5.90:5678;
-          '';
-        };
-      };
-      useACMEHost = "garudalinux.net";
-    };
-    "n8n.garudalinux.net" = allowOnlyCloudflareZerotrust {
-      locations = {
-        "/" = {
-          extraConfig = ''
-            ${garuda-lib.nginxReverseProxySettings}
-
-            proxy_pass http://10.0.5.90:5678;
-          '';
-        };
-      };
-    };
     "wiki.garudalinux.org" = mkProxyVhost {
       upstream = "http://10.0.5.60:3001";
     };

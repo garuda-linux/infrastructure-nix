@@ -150,7 +150,6 @@ let
       docker = "10.0.5.60";
       chaotic-backend = "10.0.5.70";
       mail = "10.0.5.80";
-      n8n = "10.0.5.90";
       monitoring = "10.0.5.100";
       privatebin = "10.0.5.110";
     };

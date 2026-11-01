@@ -27,7 +27,6 @@ The disk layout, SSH configuration, container bridge (`br0`) and impermanence ar
 - [mail](./aerialis/mail.md): Handles mail-related services and relays for the infrastructure.
 - [mastodon](./aerialis/mastodon.md): Runs the Mastodon social network instance.
 - [monitoring](./aerialis/monitoring.md): Runs the monitoring stack (Prometheus, Grafana, Loki, Alertmanager).
-- [n8n](./aerialis/n8n.md): Workflow automation and incoming webhooks.
 - [postgres](./aerialis/postgres.md): Provides PostgreSQL database services for other containers.
 - [web-front](./aerialis/web-front.md): Acts as the main reverse proxy and web frontend for hosted services.
 
