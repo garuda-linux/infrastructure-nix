@@ -58,7 +58,7 @@ services:
     restart: always
   # WikiJs
   wikijs:
-    image: requarks/wiki:2.5
+    image: requarks/wiki:3.0
     container_name: wikijs
     volumes: ["./wikijs/assets:/wiki/assets/favicons"]
     ports: ["3001:3000"]
