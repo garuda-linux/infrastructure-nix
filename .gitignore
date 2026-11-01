@@ -1,7 +1,8 @@
+*.d.ts
 .crates-lsp
 .direnv
+.envrc.local
 .idea
 .pre-commit-config.yaml
 buildiso/**
 result/
-*.d.ts

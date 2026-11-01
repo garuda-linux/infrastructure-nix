@@ -198,6 +198,18 @@
 
               commandPackages = map (command: pkgs.writeShellScriptBin command.name command.text) commands;
 
+              gcxPackages = [
+                (pkgs.writeShellApplication {
+                  name = "gcx";
+                  runtimeInputs = [
+                    pkgs.bitwarden-cli
+                    pkgs.secretspec
+                  ];
+                  runtimeEnv.GCX_BIN = lib.getExe pkgs.gcx;
+                  text = builtins.readFile ./scripts/gcx.sh;
+                })
+              ];
+
               commandList = lib.concatMapStrings (command: ''
                 printf '  %-15s %s\n' ${lib.escapeShellArg command.name} ${lib.escapeShellArg command.help}
               '') commands;
@@ -208,7 +220,8 @@
                 pkgs.git
                 pkgs.sops
               ]
-              ++ commandPackages;
+              ++ commandPackages
+              ++ gcxPackages;
 
               env = ''
                 export LC_ALL="C.UTF-8"
