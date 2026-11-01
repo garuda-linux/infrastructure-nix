@@ -38,7 +38,6 @@ builtins.mapAttrs
     garuda-linux = "sha256-Ri/Bb39LRze1U/B1PXgQThqSon+t8hCQ916PEhUuJ0k=";
     github-light = "sha256-/z0Yv50GoifM/VVpdLL880T4Mz/lKGOlJcvV5D/eoAQ=";
     gitlab = "sha256-9xQtdvrDwjsIrme5mUoG+n3553Z4Hfa1+xugMPmhIRE=";
-    google = "sha256-to4BoN0rDMajvLnWFBnzmnci3YhRe/vykEIUpthKovM=";
     hetzner = "sha256-rlKblUhqUquy74ECbD8Y+jLJt/kUtNJcJskcmbJfedY=";
     google-translate = "sha256-z5XhmBh6C5H41B2+LFIBgHE+OGPcQhAIq2x3plPFBfc=";
     matterbridge = "sha256-lUYgqihfCwxoG/er+OVwUnq982CBDsyjyvzhPn2wBzk=";

@@ -105,14 +105,6 @@ let
       "services.searxng"
     ]
     [
-      "redlib"
-      "services.redlib"
-    ]
-    [
-      "whoogle"
-      "${icons.google}"
-    ]
-    [
       "lingva"
       "${icons.google-translate}"
     ]

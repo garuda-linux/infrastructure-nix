@@ -6,6 +6,7 @@
 }:
 let
   inherit (garuda-lib) allowOnlyCloudflareZerotrust;
+  inherit (garuda-lib) allowOnlyCloudflared;
   inherit (garuda-lib) mkCatchAllVhost;
   inherit (garuda-lib) mkCloudflaredVhost;
   inherit (garuda-lib) mkProxyVhost;
@@ -113,8 +114,9 @@ let
         set_real_ip_from      172.0.0.0/16;
       '';
     };
-    "search.garudalinux.org" = mkCloudflaredVhost {
-      upstream = "http://10.0.5.50:5000";
+    # Whoogle was sunset. Keep old bookmarks and browser search engines working.
+    "search.garudalinux.org" = allowOnlyCloudflared {
+      locations."/".return = "301 https://searx.garudalinux.org$request_uri";
     };
     "searx.garudalinux.org" = mkCloudflaredVhost {
       upstream = "http://10.0.5.50:8080";
@@ -213,9 +215,6 @@ let
     };
     "lingva.garudalinux.org" = mkCloudflaredVhost {
       upstream = "http://10.0.5.50:3002";
-    };
-    "reddit.garudalinux.org" = mkCloudflaredVhost {
-      upstream = "http://10.0.5.50:8082";
     };
     "pgadmin.garudalinux.net" = allowOnlyCloudflareZerotrust {
       locations = {
