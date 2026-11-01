@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-732e6e7a.js";
+            window.path_to_searchindex_js = "../../searchindex-188a583a.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-01c6e019.js"></script>
+        <script src="../../toc-11c6aa39.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -252,7 +252,7 @@
 <h3 id="docker-containers"><a class="header" href="#docker-containers">Docker containers</a></h3>
 <pre><code class="language-yaml">services:
   chaotic-backend:
-    image: ghcr.io/chaotic-cx/chaotic-next:2.10.0
+    image: ghcr.io/chaotic-cx/chaotic-next:2.10.2
     container_name: chaotic-backend
     deploy:
       restart_policy:
@@ -308,6 +308,7 @@
       REPOMANAGER_ABI_DRY_RUN: false
       REPOMANAGER_MIRROR_URL: https://builds.garudalinux.org/arch-mirror
       REPOMANAGER_SIGNAL_SCAN_ENABLED: true
+      REPOMANAGER_STRICT_PLUGIN_OWNERS: kwin
       VIRUSTOTAL_API_KEY: ${VIRUSTOTAL_API_KEY:-?err}
     ports: ["3000:3000"]
     volumes:

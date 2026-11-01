@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-732e6e7a.js";
+            window.path_to_searchindex_js = "../../searchindex-188a583a.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-01c6e019.js"></script>
+        <script src="../../toc-11c6aa39.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -416,33 +416,6 @@ let
             proxy_hide_header Cache-Control;
             proxy_hide_header Expires;
             add_header Cache-Control 'no-store';
-          '';
-        };
-      };
-    };
-    "n8n-webhooks.garudalinux.net" = {
-      addSSL = true;
-      locations = {
-        "/" = {
-          return = "404";
-        };
-        "/webhook" = {
-          extraConfig = ''
-            ${garuda-lib.nginxReverseProxySettings}
-
-            proxy_pass http://10.0.5.90:5678;
-          '';
-        };
-      };
-      useACMEHost = "garudalinux.net";
-    };
-    "n8n.garudalinux.net" = allowOnlyCloudflareZerotrust {
-      locations = {
-        "/" = {
-          extraConfig = ''
-            ${garuda-lib.nginxReverseProxySettings}
-
-            proxy_pass http://10.0.5.90:5678;
           '';
         };
       };
