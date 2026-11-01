@@ -64,6 +64,6 @@ D("garudalinux.org", REG_NONE, CF_MANAGE_COMMENTS, DnsProvider(DNS_CLOUDFLAREAPI
     A("stormwing", "157.180.57.51"),
     TXT("_atproto.tne", "did=did:plc:sqtxwvdumkbyt7uo377ooolp", CF_COMMENT("Bluesky verification for @tne.garudalinux.org")),
     CNAME("vault", "aerialis.garudalinux.org."),
-    CNAME("wiki", "aerialis.garudalinux.org.", CF_PROXY_ON),
+    CNAME("wiki", "wiki-astro-bi8.pages.dev.", CF_PROXY_ON),
     CNAME("www", "aerialis.garudalinux.org.", CF_PROXY_ON),
 );
