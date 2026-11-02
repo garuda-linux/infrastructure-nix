@@ -47,5 +47,4 @@ builtins.mapAttrs
     roundcube = "sha256-g/2/CnGic7OKXwh041ZfCgAK5dADEBW5c9Q6tdpRPaw=";
     syncthing = "sha256-ZdFDD3UivqBQclmSnwAz18YlOdFHV9fG9bYldOtNotM=";
     watchtower = "sha256-khCPmuN3tLNO9LiVN+JMZDLUmyjYznQzw9y1YnPpuJY=";
-    wikijs = "sha256-XWqUpN5/c+edmXgGPAX56vua0NOMN5hwJnZiu6njTFk=";
   }

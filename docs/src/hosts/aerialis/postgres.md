@@ -9,7 +9,6 @@ This container houses our Postgres database. Multiple services access it:
 - Mastodon
 - Matrix
 - Matrix bridges
-- WikiJs
 
 ## Admin interface
 

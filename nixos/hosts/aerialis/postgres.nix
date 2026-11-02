@@ -39,15 +39,10 @@ in
     ensureDatabases = [
       "chaotic-aur"
       "mastodon"
-      "wikijs"
     ];
     ensureUsers = [
       {
         name = "mastodon";
-        ensureDBOwnership = true;
-      }
-      {
-        name = "wikijs";
         ensureDBOwnership = true;
       }
       {

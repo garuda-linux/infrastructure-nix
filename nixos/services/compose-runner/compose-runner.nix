@@ -113,10 +113,6 @@ let
       "${icons.watchtower}"
     ]
     [
-      "requarks/wiki"
-      "${icons.wikijs}"
-    ]
-    [
       "redis"
       "${icons.redis}"
     ]

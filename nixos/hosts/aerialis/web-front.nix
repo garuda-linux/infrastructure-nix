@@ -232,9 +232,6 @@ let
         };
       };
     };
-    "wiki.garudalinux.org" = mkProxyVhost {
-      upstream = "http://10.0.5.60:3001";
-    };
     "backend.chaotic.cx" = {
       addSSL = true;
       http3 = true;

@@ -47,4 +47,3 @@ This is a collection of important links when working with the infrastructure:
 - [Nextcloud](https://cloud.garudalinux.org)
 - [PrivateBin](https://bin.garudalinux.org)
 - [SearxNG](https://searx.garudalinux.org)
-- [WikiJs](https://wiki.garudalinux.org)
