@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex-8a4f9fb2.js";
+            window.path_to_searchindex_js = "searchindex-c0232275.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-11c6aa39.js"></script>
@@ -535,7 +535,6 @@ will use it to build the toolbox using the new revision automatically.</p>
 <li><a href="https://cloud.garudalinux.org">Nextcloud</a></li>
 <li><a href="https://bin.garudalinux.org">PrivateBin</a></li>
 <li><a href="https://searx.garudalinux.org">SearxNG</a></li>
-<li><a href="https://wiki.garudalinux.org">WikiJs</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="disaster-recovery"><a class="header" href="#disaster-recovery">Disaster recovery</a></h1>
@@ -1480,7 +1479,6 @@ See <a href="#disaster-recovery">Disaster recovery</a> for restoring.</p>
       APACHE_PORT: 11000
       APACHE_IP_BINDING: 10.0.5.60
       NEXTCLOUD_DATADIR: /var/garuda/compose-runner/docker/nextcloud-aio/nextcloud_data
-  # Firefox syncserver
   syncserver:
     container_name: syncserver
     image: crazymax/firefox-syncserver:edge # newest, versioned one 3 years old
@@ -1495,7 +1493,6 @@ See <a href="#disaster-recovery">Disaster recovery</a> for restoring.</p>
       FF_SYNCSERVER_SQLURI: sqlite:////data/syncserver.db
       TZ: Europe/Berlin
     restart: always
-  # Password vault
   vaultwarden:
     image: vaultwarden/server:1.37.4-alpine
     container_name: vaultwarden
@@ -1515,21 +1512,6 @@ See <a href="#disaster-recovery">Disaster recovery</a> for restoring.</p>
       YUBICO_CLIENT_ID: ${BW_YUBICO_CLIENT_ID:-?err}
       YUBICO_SECRET_KEY: ${BW_YUBICO_ADMIN_SECRET:-?err}
     restart: always
-  # WikiJs
-  wikijs:
-    image: requarks/wiki:2.5
-    container_name: wikijs
-    volumes: ["./wikijs/assets:/wiki/assets/favicons"]
-    ports: ["3001:3000"]
-    environment:
-      DB_TYPE: postgres
-      DB_HOST: 10.0.5.20
-      DB_PORT: 5432
-      DB_USER: wikijs
-      DB_PASS: ${DB_PASS:-?err}
-      DB_NAME: wikijs
-    restart: always
-  # IRC/Discord/Telegram relay
   matterbridge:
     image: registry.gitlab.com/garuda-linux/tools/matterbridge:latest
     container_name: matterbridge
@@ -1539,11 +1521,10 @@ See <a href="#disaster-recovery">Disaster recovery</a> for restoring.</p>
       restart_policy:
         condition: always
         delay: 120s
-  # Automated container updates
   watchtower:
     image: nickfedor/watchtower:1.23.1
     container_name: watchtower
-    command: --cleanup matterbridge wikijs vaultwarden thelounge syncserver
+    command: --cleanup matterbridge vaultwarden thelounge syncserver
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
     restart: always
 volumes:
@@ -2468,7 +2449,6 @@ in
 <li>Mastodon</li>
 <li>Matrix</li>
 <li>Matrix bridges</li>
-<li>WikiJs</li>
 </ul>
 <h2 id="admin-interface"><a class="header" href="#admin-interface">Admin interface</a></h2>
 <p>The admin interface powered by Pgadmin can be accessed <a href="https://pgadmin.garudalinux.net">here</a>.
@@ -2515,15 +2495,10 @@ in
     ensureDatabases = [
       "chaotic-aur"
       "mastodon"
-      "wikijs"
     ];
     ensureUsers = [
       {
         name = "mastodon";
-        ensureDBOwnership = true;
-      }
-      {
-        name = "wikijs";
         ensureDBOwnership = true;
       }
       {
@@ -2930,9 +2905,6 @@ let
           '';
         };
       };
-    };
-    "wiki.garudalinux.org" = mkProxyVhost {
-      upstream = "http://10.0.5.60:3001";
     };
     "backend.chaotic.cx" = {
       addSSL = true;

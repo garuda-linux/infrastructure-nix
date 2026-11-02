@@ -36,7 +36,7 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-8a4f9fb2.js";
+            window.path_to_searchindex_js = "../../searchindex-c0232275.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc-11c6aa39.js"></script>
@@ -186,7 +186,6 @@
 <li>Mastodon</li>
 <li>Matrix</li>
 <li>Matrix bridges</li>
-<li>WikiJs</li>
 </ul>
 <h2 id="admin-interface"><a class="header" href="#admin-interface">Admin interface</a></h2>
 <p>The admin interface powered by Pgadmin can be accessed <a href="https://pgadmin.garudalinux.net">here</a>.
@@ -233,15 +232,10 @@ in
     ensureDatabases = [
       "chaotic-aur"
       "mastodon"
-      "wikijs"
     ];
     ensureUsers = [
       {
         name = "mastodon";
-        ensureDBOwnership = true;
-      }
-      {
-        name = "wikijs";
         ensureDBOwnership = true;
       }
       {
