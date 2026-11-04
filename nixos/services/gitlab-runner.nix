@@ -8,7 +8,7 @@ let
   cfg = config.services.garuda-gitlab-runner;
 
   # renovate: datasource=docker depName=docker
-  dindImage = "docker:29.9.0-cli";
+  dindImage = "docker:29.9.3-cli";
   # renovate: datasource=docker depName=alpine
   jobImage = "alpine:3.24.1";
 
