@@ -59,7 +59,7 @@ services:
     ports: ['3002:3000']
     restart: always
   watchtower:
-    image: nickfedor/watchtower:1.23.1
+    image: nickfedor/watchtower:1.24.0
     container_name: watchtower
     command: --cleanup searx lingva librey
     volumes: ['/var/run/docker.sock:/var/run/docker.sock']
