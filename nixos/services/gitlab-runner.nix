@@ -10,7 +10,7 @@ let
   # renovate: datasource=docker depName=docker
   dindImage = "docker:29.9.0-cli";
   # renovate: datasource=docker depName=alpine
-  jobImage = "alpine:3.24.1";
+  jobImage = "alpine:3.24.4";
 
   nixVolumes = [
     "/nix/store:/nix/store:ro"
