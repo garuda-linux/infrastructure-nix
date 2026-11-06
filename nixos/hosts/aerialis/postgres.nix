@@ -38,6 +38,7 @@ in
     enable = true;
     ensureDatabases = [
       "chaotic-aur"
+      "chaotic-nyx"
       "mastodon"
     ];
     ensureUsers = [
@@ -57,6 +58,10 @@ in
         ensureDBOwnership = true;
       }
       {
+        name = "chaotic-nyx";
+        ensureDBOwnership = true;
+      }
+      {
         name = "netdata";
         ensureClauses.login = true;
       }
@@ -68,6 +73,7 @@ in
     authentication = lib.mkForce ''
       local all all peer
       hostssl chaotic-aur chaotic-router 0.0.0.0/0 scram-sha-256
+      hostssl chaotic-nyx chaotic-nyx 0.0.0.0/0 scram-sha-256
       host all netdata 10.0.5.1/32 scram-sha-256
       # Reject anything else coming from the outside world somehow someway
       host all all 10.0.5.1/32 reject
@@ -78,8 +84,8 @@ in
       # Block the rest of the internet
       host all all 0.0.0.0/0 reject
     '';
-    # This is publically accessible now through port 5432, however only the chaotic-router user can access
-    # the database through the internet, and only over TLS
+    # This is publically accessible now through port 5432, however only the chaotic-router and chaotic-nyx
+    # users can access their databases through the internet, and only over TLS
     enableTCPIP = true;
     package = pkgs.postgresql_18;
     settings = {
