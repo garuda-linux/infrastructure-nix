@@ -108,9 +108,15 @@ in
         fi
 
         echo "Changes detected, syncing from upstream."
+        # --copy-links turns the repo symlinks into real files, so pool/ would
+        # only hold a second copy of every package. All of these are not used by us.
         rsync_cmd \
           --exclude='*.links.tar.gz*' \
           --exclude='*-debug/' \
+          --exclude='/pool' \
+          --exclude='/*-testing' \
+          --exclude='/*-staging' \
+          --exclude='/*-unstable' \
           --exclude='/other' \
           --exclude='/sources' \
           --exclude='/iso' \
