@@ -51,6 +51,10 @@ let
       type = lib.types.bool;
       default = false;
     };
+    needsLoopPartitions = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
     writableApiVfs = lib.mkOption {
       type = lib.types.bool;
       default = false;
@@ -135,6 +139,12 @@ in
             ++ (lib.lists.optionals cont.needsKvm [
               {
                 node = "/dev/kvm";
+                modifier = "rwm";
+              }
+            ])
+            ++ (lib.lists.optionals cont.needsLoopPartitions [
+              {
+                node = "block-blkext";
                 modifier = "rwm";
               }
             ])

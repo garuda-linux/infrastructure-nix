@@ -147,6 +147,11 @@ in
               default = [ ];
               description = "Custom host-to-IP mappings for Docker executor containers.";
             };
+            dockerExtraVolumes = lib.mkOption {
+              type = lib.types.listOf lib.types.str;
+              default = [ ];
+              description = "Extra volumes for the job containers of a nix-privileged runner.";
+            };
             nix-caching = {
               enable = lib.mkEnableOption "Nix caching for Docker executor";
             };
@@ -265,7 +270,8 @@ in
                   "/certs/client"
                   "/cache"
                 ]
-                ++ lib.optionals r.kvm.enable [ "/dev/kvm:/dev/kvm" ];
+                ++ lib.optionals r.kvm.enable [ "/dev/kvm:/dev/kvm" ]
+                ++ r.dockerExtraVolumes;
               preBuildScript = commonPreBuildScript;
               environmentVariables = nixEnvVars // {
                 DOCKER_TLS_CERTDIR = "/certs";

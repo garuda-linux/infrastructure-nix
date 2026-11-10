@@ -34,6 +34,9 @@ in
     ./../modules/special/hetzner-ex44.nix
   ];
 
+  # ISOs of the image-builder CI, served by chaotic-v4 under /iso/image-builder
+  systemd.tmpfiles.rules = [ "d /data_1/iso/iso/image-builder 0755 root root" ];
+
   garuda =
     garuda-lib.mkMonitoring {
       host = "stormwing";
@@ -280,6 +283,11 @@ in
               hostPath = "/data_2/containers/gitlab-runner/gitlab-runner";
               mountPoint = "/var/lib/private/gitlab-runner";
             }
+            {
+              name = "iso-image-builder";
+              hostPath = "/data_1/iso/iso/image-builder";
+              mountPoint = "/srv/iso/image-builder";
+            }
           ];
           forwardPorts = [
             {
@@ -289,6 +297,8 @@ in
           ];
           needsDocker = true;
           needsKvm = true;
+          # The Lima and VM disk step of image-builder mounts loop partitions
+          needsLoopPartitions = true;
           # Docker userns-remap (unprivileged `nix` runner) needs an unmasked /proc
           writableApiVfs = true;
           cpuWeight = 20;

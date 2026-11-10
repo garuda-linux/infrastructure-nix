@@ -32,6 +32,8 @@
         authenticationTokenConfigFile = config.sops.secrets."gitlab-runner/runners/stormwing-nix-privileged".path;
         nix-privileged.enable = true;
         kvm.enable = true;
+        # The ISO jobs of image-builder publish to iso.builds.garudalinux.org/iso/image-builder
+        dockerExtraVolumes = [ "/srv/iso/image-builder:/publish/iso" ];
       };
     };
     volumeCleanup.enable = true;
