@@ -27,6 +27,7 @@
   - [mail](hosts/aerialis/mail.md)
   - [mastodon](hosts/aerialis/mastodon.md)
   - [monitoring](hosts/aerialis/monitoring.md)
+  - [openqa](hosts/aerialis/openqa.md)
   - [postgres](hosts/aerialis/postgres.md)
   - [privatebin](hosts/aerialis/privatebin.md)
   - [web-front](hosts/aerialis/web-front.md)
