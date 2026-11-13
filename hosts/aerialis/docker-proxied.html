@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-c0232275.js";
+            window.path_to_searchindex_js = "../../searchindex-8bfc5685.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-11c6aa39.js"></script>
+        <script src="../../toc-fe6e4381.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -295,7 +295,7 @@
     ports: ['3002:3000']
     restart: always
   watchtower:
-    image: nickfedor/watchtower:1.23.1
+    image: nickfedor/watchtower:1.24.0
     container_name: watchtower
     command: --cleanup searx lingva librey
     volumes: ['/var/run/docker.sock:/var/run/docker.sock']

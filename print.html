@@ -37,10 +37,10 @@
             const path_to_root = "";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "searchindex-c0232275.js";
+            window.path_to_searchindex_js = "searchindex-8bfc5685.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-11c6aa39.js"></script>
+        <script src="toc-fe6e4381.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -890,6 +890,9 @@ in
     ];
   };
 
+  # Not backed up
+  systemd.tmpfiles.rules = [ "d /data_2/containers/openqa 0755 root root" ];
+
   # Can't set this inside the containers
   boot.kernel.sysctl."vm.overcommit_memory" = "1";
 
@@ -1063,6 +1066,24 @@ in
           ];
         };
 
+        # Low weights keep the web services ahead under contention
+        openqa = {
+          mounts = [
+            {
+              name = "data";
+              hostPath = "/data_2/containers/openqa";
+              mountPoint = "/var/lib/openqa-data";
+            }
+          ];
+          needsDocker = true;
+          needsKvm = true;
+          maxCpu = 8;
+          maxMemorySoft = 18 * 1024 * 1024 * 1024;
+          maxMemoryHard = 20 * 1024 * 1024 * 1024;
+          cpuWeight = 10;
+          ioWeight = 10;
+        };
+
         monitoring = {
           mounts = [
             {
@@ -1107,6 +1128,7 @@ in
         "docker"
         "mastodon"
         "chaotic-backend"
+        "openqa"
       ];
     }
     // {
@@ -1494,7 +1516,7 @@ See <a href="#disaster-recovery">Disaster recovery</a> for restoring.</p>
       TZ: Europe/Berlin
     restart: always
   vaultwarden:
-    image: vaultwarden/server:1.37.4-alpine
+    image: vaultwarden/server:1.37.5-alpine
     container_name: vaultwarden
     volumes: ["./bitwarden:/data"]
     ports: ["8081:80"]
@@ -1522,7 +1544,7 @@ See <a href="#disaster-recovery">Disaster recovery</a> for restoring.</p>
         condition: always
         delay: 120s
   watchtower:
-    image: nickfedor/watchtower:1.23.1
+    image: nickfedor/watchtower:1.24.0
     container_name: watchtower
     command: --cleanup matterbridge vaultwarden thelounge syncserver
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
@@ -1683,7 +1705,7 @@ volumes:
     ports: ['3002:3000']
     restart: always
   watchtower:
-    image: nickfedor/watchtower:1.23.1
+    image: nickfedor/watchtower:1.24.0
     container_name: watchtower
     command: --cleanup searx lingva librey
     volumes: ['/var/run/docker.sock:/var/run/docker.sock']
@@ -2441,9 +2463,216 @@ in
 }
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div>
+<h1 id="openqa-aerialis"><a class="header" href="#openqa-aerialis">openqa (aerialis)</a></h1>
+<h2 id="general-3"><a class="header" href="#general-3">General</a></h2>
+<p><a href="https://open.qa">openQA</a> at <a href="https://openqa.garudalinux.org">openqa.garudalinux.org</a> tests the ISOs of <a href="https://gitlab.com/garuda-linux/tools/image-builder">image-builder</a>.
+The <code>openqa:&lt;edition&gt;</code> job of its ISO pipeline is the gate before <code>publish:&lt;edition&gt;</code>, see <code>docs/ci.md</code> of image-builder.</p>
+<h3 id="container-explanations-1"><a class="header" href="#container-explanations-1">Container explanations</a></h3>
+<ul>
+<li><strong>webui</strong>: the openQA web UI, scheduler, websockets, gru and livehandler with Apache in one container (<code>openqa_webui</code> image without <code>MODE</code>). The database is <code>openqa</code> in the <a href="#postgres-aerialis">postgres</a> container.</li>
+<li><strong>worker</strong>: a single openQA worker, so one test VM runs at a time. The image <code>openqa-worker:latest</code> is built by image-builder (<code>ci/openqa.Containerfile</code> on the upstream <code>openqa_worker</code> image), with <code>Inline::Python</code> for the Python tests and the OVMF files under <code>/usr/share/garuda-openqa/</code>.</li>
+</ul>
+<h2 id="resource-limits"><a class="header" href="#resource-limits">Resource limits</a></h2>
+<p>The web services of aerialis come first. The nspawn container caps web UI, worker and QEMU together:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Setting</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td><code>CPUQuota</code></td><td>8 threads</td></tr>
+<tr><td><code>MemoryHigh</code></td><td>18 GiB</td></tr>
+<tr><td><code>MemoryMax</code></td><td>20 GiB</td></tr>
+<tr><td><code>CPUWeight</code></td><td>10</td></tr>
+<tr><td><code>IOWeight</code></td><td>10</td></tr>
+</tbody>
+</table>
+</div>
+<p>The <code>install</code> scenario uses a VM with 6 GB and 4 vCPUs, <code>live-modes</code> one with 12 GB.</p>
+<h2 id="data"><a class="header" href="#data">Data</a></h2>
+<p><code>/data_2/containers/openqa</code> on the host (<code>/var/lib/openqa-data</code> in the container): <code>factory</code> (ISOs and disk images), <code>testresults</code>, <code>images</code>, <code>tests</code> and the worker <code>pool</code>. Not backed up. The database is in the borgmatic dumps of postgres.</p>
+<p>openQA cleans up after each job (<code>[minion_task_triggers]</code>): results after 90 days, untracked assets after 7 days, assets of a job group above 60 GiB.</p>
+<h2 id="authentication"><a class="header" href="#authentication">Authentication</a></h2>
+<p>openQA accepts any GitLab account. web-front therefore puts <code>/login</code> behind <a href="https://oauth2-proxy.github.io/oauth2-proxy/">oauth2-proxy</a>, which only lets members of the GitLab group <code>garuda-linux</code> through (the same GitLab application, which also needs the scopes <code>openid</code> and <code>email</code> and the callback <code>https://openqa.garudalinux.org/oauth2/callback</code>). Everything else, including <code>/api</code>, stays public.</p>
+<p>The worker and the image-builder pipeline use API keys, created under <em>Manage API keys</em>.</p>
+<h2 id="restarting-containers-4"><a class="header" href="#restarting-containers-4">Restarting containers</a></h2>
+<pre><code class="language-bash">sudo systemctl restart compose-runner-openqa
+</code></pre>
+<h2 id="nix-expression-7"><a class="header" href="#nix-expression-7">Nix expression</a></h2>
+<pre><code class="language-nix">{
+  config,
+  garuda-lib,
+  sources,
+  ...
+}:
+let
+  inherit (garuda-lib.monitoring) aerialisContainers;
+  ph = config.sops.placeholder;
+
+  mkConfig = content: {
+    inherit content;
+    mode = "0444";
+    restartUnits = [ "compose-runner-openqa.service" ];
+  };
+in
+{
+  imports = sources.defaultModules ++ [ ../../modules ];
+
+  garuda =
+    garuda-lib.mkMonitoring {
+      host = "aerialis";
+      units = [
+        "compose-runner-openqa.service"
+        "docker.service"
+      ];
+    }
+    // {
+      services.compose-runner.openqa = {
+        source = ../../../compose/openqa;
+        extraFiles = [
+          {
+            targetFileName = "openqa.ini";
+            file = config.sops.templates."openqa.ini".path;
+          }
+          {
+            targetFileName = "database.ini";
+            file = config.sops.templates."openqa-database.ini".path;
+          }
+          {
+            targetFileName = "client.conf";
+            file = config.sops.templates."openqa-client.conf".path;
+          }
+        ];
+      };
+    };
+
+  # Written by different unprivileged users in webui and worker
+  systemd.tmpfiles.rules = map (dir: "d /var/lib/openqa-data/${dir} 0777 root root") [
+    "factory"
+    "factory/iso"
+    "factory/hdd"
+    "factory/other"
+    "factory/repo"
+    "factory/tmp"
+    "images"
+    "pool"
+    "testresults"
+    "tests"
+  ];
+
+  sops.secrets = {
+    "openqa/api_key" = { };
+    "openqa/api_secret" = { };
+    "openqa/db_password" = { };
+    "openqa/oauth2_key" = { };
+    "openqa/oauth2_secret" = { };
+  };
+
+  sops.templates = {
+    "openqa.ini" = mkConfig ''
+      [global]
+      appname = Garuda Linux openQA
+      branding = plain
+      base_url = https://openqa.garudalinux.org
+      download_domains = iso.builds.garudalinux.org
+      recognized_referers = gitlab.com
+
+      [auth]
+      method = OAuth2
+
+      [oauth2]
+      provider = custom
+      unique_name = gitlab
+      key = ${ph."openqa/oauth2_key"}
+      secret = ${ph."openqa/oauth2_secret"}
+      authorize_url = https://gitlab.com/oauth/authorize?response_type=code
+      token_url = https://gitlab.com/oauth/token
+      user_url = https://gitlab.com/api/v4/user
+      token_scope = read_user
+      token_label = Bearer
+      id_from = id
+      fullname_from = name
+      nickname_from = username
+      email_from = email
+
+      [default_group_limits]
+      asset_size_limit = 60
+      result_storage_duration = 90
+
+      # The gate schedules without a job group
+      [no_group_limits]
+      result_storage_duration = 90
+
+      # No systemd cleanup timers in the container
+      [minion_task_triggers]
+      on_job_done = limit_results_and_logs limit_assets
+
+      [misc_limits]
+      untracked_assets_storage_duration = 7
+    '';
+
+    "openqa-database.ini" = mkConfig ''
+      [production]
+      dsn = DBI:Pg:dbname=openqa;host=${aerialisContainers.postgres}
+      user = openqa
+      password = ${ph."openqa/db_password"}
+    '';
+
+    # Section = HOST in workers.ini
+    "openqa-client.conf" = mkConfig ''
+      [webui]
+      key = ${ph."openqa/api_key"}
+      secret = ${ph."openqa/api_secret"}
+    '';
+  };
+
+  system.stateVersion = "26.11";
+}
+</code></pre>
+<h3 id="docker-containers-3"><a class="header" href="#docker-containers-3">Docker containers</a></h3>
+<pre><code class="language-yaml">services:
+  webui:
+    image: registry.opensuse.org/devel/openqa/containers16.1/openqa_webui:latest
+    container_name: openqa-webui
+    ports: ['80:80']
+    volumes:
+      - ./openqa.ini:/data/conf/openqa.ini:ro
+      - ./database.ini:/data/conf/database.ini:ro
+      - /var/lib/openqa-data/factory:/data/factory
+      - /var/lib/openqa-data/images:/data/images
+      - /var/lib/openqa-data/testresults:/data/testresults
+      - /var/lib/openqa-data/tests:/data/tests
+    # Created empty by the upstream Dockerfile, missing in the pulled image
+    tmpfs: [/srv/www/htdocs, /var/log/apache2]
+    healthcheck:
+      test: [CMD, curl, -f, "http://localhost:9526/login"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    restart: always
+
+  worker:
+    image: registry.gitlab.com/garuda-linux/tools/image-builder/openqa-worker:latest
+    container_name: openqa-worker
+    devices: [/dev/kvm]
+    environment:
+      OPENQA_WORKER_INSTANCE: '1'
+    volumes:
+      - ./workers.ini:/data/conf/workers.ini:ro
+      - ./client.conf:/data/conf/client.conf:ro
+      - /var/lib/openqa-data/factory:/data/factory
+      - /var/lib/openqa-data/tests:/data/tests:ro
+      - /var/lib/openqa-data/pool:/var/lib/openqa/pool
+    depends_on:
+      webui:
+        condition: service_healthy
+    restart: always
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div>
 <h1 id="postgres-aerialis"><a class="header" href="#postgres-aerialis">postgres (aerialis)</a></h1>
 <p>This container provides PostgreSQL database services for other containers and applications on aerialis.</p>
-<h2 id="general-3"><a class="header" href="#general-3">General</a></h2>
+<h2 id="general-4"><a class="header" href="#general-4">General</a></h2>
 <p>This container houses our Postgres database. Multiple services access it:</p>
 <ul>
 <li>Mastodon</li>
@@ -2453,7 +2682,7 @@ in
 <h2 id="admin-interface"><a class="header" href="#admin-interface">Admin interface</a></h2>
 <p>The admin interface powered by Pgadmin can be accessed <a href="https://pgadmin.garudalinux.net">here</a>.
 Authentication happens via Cloudflare Access.</p>
-<h2 id="nix-expression-7"><a class="header" href="#nix-expression-7">Nix expression</a></h2>
+<h2 id="nix-expression-8"><a class="header" href="#nix-expression-8">Nix expression</a></h2>
 <pre><code class="language-nix">{
   garuda-lib,
   pkgs,
@@ -2494,7 +2723,9 @@ in
     enable = true;
     ensureDatabases = [
       "chaotic-aur"
+      "chaotic-nyx"
       "mastodon"
+      "openqa"
     ];
     ensureUsers = [
       {
@@ -2513,8 +2744,16 @@ in
         ensureDBOwnership = true;
       }
       {
+        name = "chaotic-nyx";
+        ensureDBOwnership = true;
+      }
+      {
         name = "netdata";
         ensureClauses.login = true;
+      }
+      {
+        name = "openqa";
+        ensureDBOwnership = true;
       }
     ];
     extensions = with pkgs.postgresql_18.pkgs; [
@@ -2524,6 +2763,7 @@ in
     authentication = lib.mkForce ''
       local all all peer
       hostssl chaotic-aur chaotic-router 0.0.0.0/0 scram-sha-256
+      hostssl chaotic-nyx chaotic-nyx 0.0.0.0/0 scram-sha-256
       host all netdata 10.0.5.1/32 scram-sha-256
       # Reject anything else coming from the outside world somehow someway
       host all all 10.0.5.1/32 reject
@@ -2534,8 +2774,8 @@ in
       # Block the rest of the internet
       host all all 0.0.0.0/0 reject
     '';
-    # This is publically accessible now through port 5432, however only the chaotic-router user can access
-    # the database through the internet, and only over TLS
+    # This is publically accessible now through port 5432, however only the chaotic-router and chaotic-nyx
+    # users can access their databases through the internet, and only over TLS
     enableTCPIP = true;
     package = pkgs.postgresql_18;
     settings = {
@@ -2595,11 +2835,23 @@ in
     group = "postgres";
     mode = "0400";
   };
+  # Shared with the openqa container
+  sops.secrets."openqa/db_password" = {
+    owner = "postgres";
+    group = "postgres";
+    mode = "0400";
+  };
 
   systemd.services.postgresql.postStart = lib.mkAfter ''
     PASS=$(cat ${config.sops.secrets."postgres/netdata".path})
     ${config.services.postgresql.package}/bin/psql -U postgres -c "ALTER USER netdata WITH LOGIN PASSWORD '$PASS'"
     ${config.services.postgresql.package}/bin/psql -U postgres -c "GRANT pg_monitor TO netdata"
+  '';
+
+  # ensureUsers runs here, after postStart
+  systemd.services.postgresql-setup.script = lib.mkAfter ''
+    PASS=$(cat ${config.sops.secrets."openqa/db_password".path})
+    psql -d postgres -v ON_ERROR_STOP=1 -c "ALTER USER openqa WITH LOGIN PASSWORD '$PASS'"
   '';
 
   system.stateVersion = "23.05";
@@ -2608,11 +2860,11 @@ in
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="privatebin-aerialis"><a class="header" href="#privatebin-aerialis">privatebin (aerialis)</a></h1>
 <p>This container runs our PrivateBin instance.</p>
-<h2 id="general-4"><a class="header" href="#general-4">General</a></h2>
+<h2 id="general-5"><a class="header" href="#general-5">General</a></h2>
 <p>The service uses the NixOS <code>services.privatebin</code> module with nginx and php-fpm.
 Pastes are stored in <code>/var/lib/privatebin/data</code>, which is bind-mounted from <code>/data_1/containers/privatebin</code> on the
 host and therefore included in the offsite system backups.</p>
-<h2 id="nix-expression-8"><a class="header" href="#nix-expression-8">Nix expression</a></h2>
+<h2 id="nix-expression-9"><a class="header" href="#nix-expression-9">Nix expression</a></h2>
 <pre><code class="language-nix">{
   garuda-lib,
   sources,
@@ -2667,13 +2919,15 @@ host and therefore included in the offsite system backups.</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="web-front-aerialis"><a class="header" href="#web-front-aerialis">web-front (aerialis)</a></h1>
 <p>This container acts as the main reverse proxy and web frontend for hosted services on aerialis, handling HTTPS termination and routing.</p>
-<h2 id="general-5"><a class="header" href="#general-5">General</a></h2>
+<h2 id="general-6"><a class="header" href="#general-6">General</a></h2>
 <p>This container is used as a reverse proxy for all of our public facing services.
 It also contains a Cloudflared instance,
 which a few services are only being exposed to, instead of being reverse proxied by Nginx itself.</p>
-<h2 id="nix-expression-9"><a class="header" href="#nix-expression-9">Nix expression</a></h2>
+<h2 id="nix-expression-10"><a class="header" href="#nix-expression-10">Nix expression</a></h2>
 <pre><code class="language-nix">{
+  config,
   garuda-lib,
+  lib,
   pkgs,
   sources,
   ...
@@ -2803,6 +3057,10 @@ let
     };
     "bin.garudalinux.org" = mkProxyVhost {
       upstream = "http://10.0.5.110";
+    };
+    "openqa.garudalinux.org" = mkProxyVhost {
+      upstream = "http://10.0.5.120:80";
+      prologue = "client_max_body_size 20M;";
     };
     "bitwarden.garudalinux.org" = mkProxyVhost {
       upstream = "http://10.0.5.60:8081";
@@ -2981,7 +3239,46 @@ let
   };
 in
 {
-  imports = sources.defaultModules ++ [ ../../modules ];
+  imports = sources.defaultModules ++ [
+    ../../modules
+    # openQA accepts any GitLab account, only garuda-linux members may log in
+    {
+      services.oauth2-proxy = {
+        enable = true;
+        provider = "gitlab";
+        oidcIssuerUrl = "https://gitlab.com";
+        redirectURL = "https://openqa.garudalinux.org/oauth2/callback";
+        email.domains = [ "*" ];
+        keyFile = config.sops.templates."oauth2-proxy.env".path;
+        nginx = {
+          domain = "openqa.garudalinux.org";
+          virtualHosts."openqa.garudalinux.org".allowed_groups = [ "garuda-linux" ];
+        };
+      };
+
+      # The module enables it globally, which drops the server-level proxy headers of every vhost
+      services.nginx.recommendedProxySettings = lib.mkForce false;
+      services.nginx.virtualHosts."openqa.garudalinux.org".locations = {
+        "/".extraConfig = lib.mkForce "auth_request off;";
+        "/login".proxyPass = "http://10.0.5.120:80";
+      };
+
+      # The GitLab application of openQA's own login
+      sops.secrets = {
+        "openqa/oauth2_key" = { };
+        "openqa/oauth2_secret" = { };
+        "openqa/oauth2_proxy_cookie_secret" = { };
+      };
+      sops.templates."oauth2-proxy.env" = {
+        content = ''
+          OAUTH2_PROXY_CLIENT_ID=${config.sops.placeholder."openqa/oauth2_key"}
+          OAUTH2_PROXY_CLIENT_SECRET=${config.sops.placeholder."openqa/oauth2_secret"}
+          OAUTH2_PROXY_COOKIE_SECRET=${config.sops.placeholder."openqa/oauth2_proxy_cookie_secret"}
+        '';
+        restartUnits = [ "oauth2-proxy.service" ];
+      };
+    }
+  ];
 
   inherit
     (garuda-lib.mkWebFront {
@@ -3036,6 +3333,13 @@ in
   imports = [
     ../modules
     ./../modules/special/hetzner-ex44.nix
+  ];
+
+  # ISOs of the image-builder CI, served by chaotic-v4 under /iso/image-builder
+  # Staging dirs left by cancelled pipelines
+  systemd.tmpfiles.rules = [
+    "d /data_1/iso/iso/image-builder 0755 root root"
+    "e /data_1/iso/iso/image-builder/*/staging - - - 2d"
   ];
 
   garuda =
@@ -3284,6 +3588,11 @@ in
               hostPath = "/data_2/containers/gitlab-runner/gitlab-runner";
               mountPoint = "/var/lib/private/gitlab-runner";
             }
+            {
+              name = "iso-image-builder";
+              hostPath = "/data_1/iso/iso/image-builder";
+              mountPoint = "/srv/iso/image-builder";
+            }
           ];
           forwardPorts = [
             {
@@ -3293,6 +3602,8 @@ in
           ];
           needsDocker = true;
           needsKvm = true;
+          # The Lima and VM disk step of image-builder mounts loop partitions
+          needsLoopPartitions = true;
           # Docker userns-remap (unprivileged `nix` runner) needs an unmasked /proc
           writableApiVfs = true;
           cpuWeight = 20;
@@ -3519,11 +3830,11 @@ in
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="arch-mirror-stormwing"><a class="header" href="#arch-mirror-stormwing">arch-mirror (stormwing)</a></h1>
 <p>This container mirrors the Arch Linux repositories.</p>
-<h2 id="general-6"><a class="header" href="#general-6">General</a></h2>
+<h2 id="general-7"><a class="header" href="#general-7">General</a></h2>
 <p>The <code>garuda-arch-mirror</code> service syncs the mirror from its configured upstream and serves it through nginx. Synced
 packages are additionally pushed to Cloudflare R2 with rclone, so users can also fetch them from there. The mirror
 directory is shared with <a href="#chaotic-v4-stormwing">chaotic-v4</a>, which serves it as <code>/srv/http/arch-mirror</code> as well.</p>
-<h2 id="nix-expression-10"><a class="header" href="#nix-expression-10">Nix expression</a></h2>
+<h2 id="nix-expression-11"><a class="header" href="#nix-expression-11">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,
   garuda-lib,
@@ -3558,13 +3869,13 @@ directory is shared with <a href="#chaotic-v4-stormwing">chaotic-v4</a>, which s
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="chaotic-v4-stormwing"><a class="header" href="#chaotic-v4-stormwing">chaotic-v4 (stormwing)</a></h1>
 <p>This container is the main Chaotic-AUR builder and repository sync node, responsible for building and distributing packages.</p>
-<h2 id="general-7"><a class="header" href="#general-7">General</a></h2>
+<h2 id="general-8"><a class="header" href="#general-8">General</a></h2>
 <p>This is the nspawn container used to run Chaotic-AUR’s new build system, <code>infra 4.0</code>.</p>
 <p>Restarting the Docker stack, in case it is needed, can happen via <code>sudo chaotic-restart</code>.
 For information on how to use the new build system, please refer to the <a href="hosts/services/chaotic-4.0.html">documentation</a>.</p>
 <p>In general, manual intervention should not be needed,
 as the system is designed to be fully automated via GitLab CI or GitHub actions.</p>
-<h2 id="nix-expression-11"><a class="header" href="#nix-expression-11">Nix expression</a></h2>
+<h2 id="nix-expression-12"><a class="header" href="#nix-expression-12">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,
   garuda-lib,
@@ -3811,6 +4122,13 @@ in
             break;
           '';
         };
+        # Unpublished ISOs for the openQA gate, unlisted
+        locations."~ ^/iso/image-builder/[^/]+/staging/" = {
+          root = "/srv/http/";
+          extraConfig = ''
+            autoindex off;
+          '';
+        };
       };
     };
   };
@@ -3835,11 +4153,6 @@ in
         iso = {
           path = "/srv/http/iso/";
           comment = "ISO downloads";
-          "read only" = "yes";
-        };
-        arch-mirror = {
-          path = "/srv/http/arch-mirror/";
-          comment = "Arch Linux mirror";
           "read only" = "yes";
         };
       };
@@ -3919,7 +4232,7 @@ in
   system.stateVersion = "25.05";
 }
 </code></pre>
-<h3 id="docker-containers-3"><a class="header" href="#docker-containers-3">Docker containers</a></h3>
+<h3 id="docker-containers-4"><a class="header" href="#docker-containers-4">Docker containers</a></h3>
 <pre><code class="language-yaml">services:
   chaotic-builder-1:
     image: registry.gitlab.com/garuda-linux/tools/chaotic-manager/manager:latest
@@ -4113,7 +4426,7 @@ in
 <h1 id="firedragon-runner-stormwing"><a class="header" href="#firedragon-runner-stormwing">firedragon-runner (stormwing)</a></h1>
 <p>This container is a CI runner for building and testing the Firedragon browser in an isolated environment.
 It is separate from the other GitLab runner to ensure only one build runs at a time, while the others can run in parallel.</p>
-<h2 id="nix-expression-12"><a class="header" href="#nix-expression-12">Nix expression</a></h2>
+<h2 id="nix-expression-13"><a class="header" href="#nix-expression-13">Nix expression</a></h2>
 <pre><code class="language-nix">{
   garuda-lib,
   inputs,
@@ -4161,7 +4474,7 @@ It is separate from the other GitLab runner to ensure only one build runs at a t
   system.stateVersion = "25.05";
 }
 </code></pre>
-<h3 id="docker-containers-4"><a class="header" href="#docker-containers-4">Docker containers</a></h3>
+<h3 id="docker-containers-5"><a class="header" href="#docker-containers-5">Docker containers</a></h3>
 <pre><code class="language-yaml">services:
   firedragon-runner:
     image: gitlab/gitlab-runner:alpine
@@ -4181,18 +4494,18 @@ It is separate from the other GitLab runner to ensure only one build runs at a t
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="github-runner-stormwing"><a class="header" href="#github-runner-stormwing">github-runner (stormwing)</a></h1>
 <p>This container is a GitHub Actions runner for CI/CD tasks related to Garuda Linux projects.</p>
-<h2 id="general-8"><a class="header" href="#general-8">General</a></h2>
+<h2 id="general-9"><a class="header" href="#general-9">General</a></h2>
 <p>With this container, we provide a native NixOS GitHub runner (<code>services.github-runners</code>) as well as a GitLab runner. This container does <strong>not</strong>
 have the regular Garuda configurations because it is considered untrusted.
 Access needs to happen by running <code>nixos-container root-login</code>
 on <a href="#stormwing">stormwing</a>.</p>
-<h2 id="restarting-containers-4"><a class="header" href="#restarting-containers-4">Restarting containers</a></h2>
+<h2 id="restarting-containers-5"><a class="header" href="#restarting-containers-5">Restarting containers</a></h2>
 <p>This can happen via the following commands:</p>
 <pre><code class="language-bash">sudo systemctl restart compose-runner-github-runner
 sudo systemctl restart compose-runner-gitlab-runner
 </code></pre>
 <p>Watchtower additionally keeps the containers up to date.</p>
-<h2 id="nix-expression-13"><a class="header" href="#nix-expression-13">Nix expression</a></h2>
+<h2 id="nix-expression-14"><a class="header" href="#nix-expression-14">Nix expression</a></h2>
 <pre><code class="language-nix">{
   garuda-lib,
   inputs,
@@ -4286,7 +4599,7 @@ sudo systemctl restart compose-runner-gitlab-runner
     restart: 'no'
   # Automated container updates
   watchtower:
-    image: nickfedor/watchtower:1.23.1
+    image: nickfedor/watchtower:1.24.0
     container_name: watchtower
     command: --cleanup watchtower gitlab-runner-chaotic gitlab-runner-garuda gitlab-runner-dind
     volumes: ['/var/run/docker.sock:/var/run/docker.sock']
@@ -4295,7 +4608,7 @@ sudo systemctl restart compose-runner-gitlab-runner
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="gitlab-runner-stormwing"><a class="header" href="#gitlab-runner-stormwing">gitlab-runner (stormwing)</a></h1>
 <p>This container runs GitLab CI runners that build our packages.</p>
-<h2 id="general-9"><a class="header" href="#general-9">General</a></h2>
+<h2 id="general-10"><a class="header" href="#general-10">General</a></h2>
 <p>Two runners are configured on it, <code>stormwing-nix-caching</code> and <code>stormwing-nix-privileged</code>. Both make use of the shared
 Nix cache. The main selling point of these is obviously the shared Nix store, which is the reason why these should in
 the long run be preferred over the other Docker-based runner.</p>
@@ -4312,7 +4625,7 @@ because the daemon runs in this container, which has <code>/dev/kvm</code> passe
 <code>nixos-test-driver</code> themselves need the <code>nix-privileged</code> tag.</p>
 <p>Its metrics are exposed on port <code>9252</code> and published on stormwing’s Tailnet IP for Prometheus (see
 <a href="#monitoring-1">Monitoring</a>).</p>
-<h2 id="nix-expression-14"><a class="header" href="#nix-expression-14">Nix expression</a></h2>
+<h2 id="nix-expression-15"><a class="header" href="#nix-expression-15">Nix expression</a></h2>
 <pre><code class="language-nix">{
   config,
   garuda-lib,
@@ -4347,6 +4660,8 @@ because the daemon runs in this container, which has <code>/dev/kvm</code> passe
         authenticationTokenConfigFile = config.sops.secrets."gitlab-runner/runners/stormwing-nix-privileged".path;
         nix-privileged.enable = true;
         kvm.enable = true;
+        # The ISO jobs of image-builder publish to iso.builds.garudalinux.org/iso/image-builder
+        dockerExtraVolumes = [ "/srv/iso/image-builder:/publish/iso" ];
       };
     };
     volumeCleanup.enable = true;
@@ -4363,11 +4678,11 @@ because the daemon runs in this container, which has <code>/dev/kvm</code> passe
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="iso-runner-stormwing"><a class="header" href="#iso-runner-stormwing">iso-runner (stormwing)</a></h1>
 <p>This container is a dedicated builder for Garuda Linux ISO images, providing a reproducible build environment.</p>
-<h2 id="general-10"><a class="header" href="#general-10">General</a></h2>
+<h2 id="general-11"><a class="header" href="#general-11">General</a></h2>
 <p>This container is used to build our ISO via a Docker container.
 It has been used to provide a GitHub runner as well,
 though this one got moved to its <a href="#github-runner-stormwing">own container</a> recently.</p>
-<h2 id="nix-expression-15"><a class="header" href="#nix-expression-15">Nix expression</a></h2>
+<h2 id="nix-expression-16"><a class="header" href="#nix-expression-16">Nix expression</a></h2>
 <pre><code class="language-nix">{
   garuda-lib,
   lib,
@@ -4459,7 +4774,7 @@ in
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="web-front-stormwing"><a class="header" href="#web-front-stormwing">web-front (stormwing)</a></h1>
 <p>This container acts as the reverse proxy and web frontend for services running on stormwing, handling HTTPS and routing.</p>
-<h2 id="nix-expression-16"><a class="header" href="#nix-expression-16">Nix expression</a></h2>
+<h2 id="nix-expression-17"><a class="header" href="#nix-expression-17">Nix expression</a></h2>
 <p>Configuration for the <code>web-front</code> container on stormwing.</p>
 <pre><code class="language-nix">{
   config,

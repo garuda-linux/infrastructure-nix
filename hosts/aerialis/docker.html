@@ -36,10 +36,10 @@
             const path_to_root = "../../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../../searchindex-c0232275.js";
+            window.path_to_searchindex_js = "../../searchindex-8bfc5685.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-11c6aa39.js"></script>
+        <script src="../../toc-fe6e4381.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -274,7 +274,7 @@ See <a href="../../procedures/disaster-recovery.html">Disaster recovery</a> for 
       TZ: Europe/Berlin
     restart: always
   vaultwarden:
-    image: vaultwarden/server:1.37.4-alpine
+    image: vaultwarden/server:1.37.5-alpine
     container_name: vaultwarden
     volumes: ["./bitwarden:/data"]
     ports: ["8081:80"]
@@ -302,7 +302,7 @@ See <a href="../../procedures/disaster-recovery.html">Disaster recovery</a> for 
         condition: always
         delay: 120s
   watchtower:
-    image: nickfedor/watchtower:1.23.1
+    image: nickfedor/watchtower:1.24.0
     container_name: watchtower
     command: --cleanup matterbridge vaultwarden thelounge syncserver
     volumes: ["/var/run/docker.sock:/var/run/docker.sock"]

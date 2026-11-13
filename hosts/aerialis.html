@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../searchindex-c0232275.js";
+            window.path_to_searchindex_js = "../searchindex-8bfc5685.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-11c6aa39.js"></script>
+        <script src="../toc-fe6e4381.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -298,6 +298,9 @@ in
     ];
   };
 
+  # Not backed up
+  systemd.tmpfiles.rules = [ "d /data_2/containers/openqa 0755 root root" ];
+
   # Can't set this inside the containers
   boot.kernel.sysctl."vm.overcommit_memory" = "1";
 
@@ -471,6 +474,24 @@ in
           ];
         };
 
+        # Low weights keep the web services ahead under contention
+        openqa = {
+          mounts = [
+            {
+              name = "data";
+              hostPath = "/data_2/containers/openqa";
+              mountPoint = "/var/lib/openqa-data";
+            }
+          ];
+          needsDocker = true;
+          needsKvm = true;
+          maxCpu = 8;
+          maxMemorySoft = 18 * 1024 * 1024 * 1024;
+          maxMemoryHard = 20 * 1024 * 1024 * 1024;
+          cpuWeight = 10;
+          ioWeight = 10;
+        };
+
         monitoring = {
           mounts = [
             {
@@ -515,6 +536,7 @@ in
         "docker"
         "mastodon"
         "chaotic-backend"
+        "openqa"
       ];
     }
     // {

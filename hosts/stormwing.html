@@ -36,10 +36,10 @@
             const path_to_root = "../";
             const default_light_theme = "mocha";
             const default_dark_theme = "mocha";
-            window.path_to_searchindex_js = "../searchindex-c0232275.js";
+            window.path_to_searchindex_js = "../searchindex-8bfc5685.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-11c6aa39.js"></script>
+        <script src="../toc-fe6e4381.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -215,6 +215,13 @@ in
   imports = [
     ../modules
     ./../modules/special/hetzner-ex44.nix
+  ];
+
+  # ISOs of the image-builder CI, served by chaotic-v4 under /iso/image-builder
+  # Staging dirs left by cancelled pipelines
+  systemd.tmpfiles.rules = [
+    "d /data_1/iso/iso/image-builder 0755 root root"
+    "e /data_1/iso/iso/image-builder/*/staging - - - 2d"
   ];
 
   garuda =
@@ -463,6 +470,11 @@ in
               hostPath = "/data_2/containers/gitlab-runner/gitlab-runner";
               mountPoint = "/var/lib/private/gitlab-runner";
             }
+            {
+              name = "iso-image-builder";
+              hostPath = "/data_1/iso/iso/image-builder";
+              mountPoint = "/srv/iso/image-builder";
+            }
           ];
           forwardPorts = [
             {
@@ -472,6 +484,8 @@ in
           ];
           needsDocker = true;
           needsKvm = true;
+          # The Lima and VM disk step of image-builder mounts loop partitions
+          needsLoopPartitions = true;
           # Docker userns-remap (unprivileged `nix` runner) needs an unmasked /proc
           writableApiVfs = true;
           cpuWeight = 20;
