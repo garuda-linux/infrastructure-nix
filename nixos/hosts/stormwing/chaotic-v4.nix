@@ -244,6 +244,13 @@ in
             break;
           '';
         };
+        # Unpublished ISOs for the openQA gate, unlisted
+        locations."~ ^/iso/image-builder/[^/]+/staging/" = {
+          root = "/srv/http/";
+          extraConfig = ''
+            autoindex off;
+          '';
+        };
       };
     };
   };

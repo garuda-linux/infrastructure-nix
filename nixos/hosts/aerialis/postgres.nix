@@ -40,6 +40,7 @@ in
       "chaotic-aur"
       "chaotic-nyx"
       "mastodon"
+      "openqa"
     ];
     ensureUsers = [
       {
@@ -64,6 +65,10 @@ in
       {
         name = "netdata";
         ensureClauses.login = true;
+      }
+      {
+        name = "openqa";
+        ensureDBOwnership = true;
       }
     ];
     extensions = with pkgs.postgresql_18.pkgs; [
@@ -145,11 +150,23 @@ in
     group = "postgres";
     mode = "0400";
   };
+  # Shared with the openqa container
+  sops.secrets."openqa/db_password" = {
+    owner = "postgres";
+    group = "postgres";
+    mode = "0400";
+  };
 
   systemd.services.postgresql.postStart = lib.mkAfter ''
     PASS=$(cat ${config.sops.secrets."postgres/netdata".path})
     ${config.services.postgresql.package}/bin/psql -U postgres -c "ALTER USER netdata WITH LOGIN PASSWORD '$PASS'"
     ${config.services.postgresql.package}/bin/psql -U postgres -c "GRANT pg_monitor TO netdata"
+  '';
+
+  # ensureUsers runs here, after postStart
+  systemd.services.postgresql-setup.script = lib.mkAfter ''
+    PASS=$(cat ${config.sops.secrets."openqa/db_password".path})
+    psql -d postgres -v ON_ERROR_STOP=1 -c "ALTER USER openqa WITH LOGIN PASSWORD '$PASS'"
   '';
 
   system.stateVersion = "23.05";

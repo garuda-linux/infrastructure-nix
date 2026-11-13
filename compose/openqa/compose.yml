@@ -1,0 +1,38 @@
+services:
+  webui:
+    image: registry.opensuse.org/devel/openqa/containers16.1/openqa_webui:latest
+    container_name: openqa-webui
+    ports: ['80:80']
+    volumes:
+      - ./openqa.ini:/data/conf/openqa.ini:ro
+      - ./database.ini:/data/conf/database.ini:ro
+      - /var/lib/openqa-data/factory:/data/factory
+      - /var/lib/openqa-data/images:/data/images
+      - /var/lib/openqa-data/testresults:/data/testresults
+      - /var/lib/openqa-data/tests:/data/tests
+    # Created empty by the upstream Dockerfile, missing in the pulled image
+    tmpfs: [/srv/www/htdocs, /var/log/apache2]
+    healthcheck:
+      test: [CMD, curl, -f, "http://localhost:9526/login"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    restart: always
+
+  worker:
+    image: registry.gitlab.com/garuda-linux/tools/image-builder/openqa-worker:latest
+    container_name: openqa-worker
+    devices: [/dev/kvm]
+    environment:
+      OPENQA_WORKER_INSTANCE: '1'
+    volumes:
+      - ./workers.ini:/data/conf/workers.ini:ro
+      - ./client.conf:/data/conf/client.conf:ro
+      - /var/lib/openqa-data/factory:/data/factory
+      - /var/lib/openqa-data/tests:/data/tests:ro
+      - /var/lib/openqa-data/pool:/var/lib/openqa/pool
+    depends_on:
+      webui:
+        condition: service_healthy
+    restart: always

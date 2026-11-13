@@ -54,6 +54,7 @@ D("garudalinux.org", REG_NONE, CF_MANAGE_COMMENTS, DnsProvider(DNS_CLOUDFLAREAPI
     CNAME("lingva", "00995e3f-e264-455f-bf49-a4eacbf48e9a.cfargotunnel.com.", CF_PROXY_ON),
     CNAME("mail", "aerialis.garudalinux.org."),
     CNAME("nix", "garuda-nix-subsystem.pages.dev.", CF_PROXY_ON),
+    CNAME("openqa", "aerialis.garudalinux.org.", CF_PROXY_ON),
     CNAME("search", "00995e3f-e264-455f-bf49-a4eacbf48e9a.cfargotunnel.com.", CF_PROXY_ON),
     CNAME("searx", "00995e3f-e264-455f-bf49-a4eacbf48e9a.cfargotunnel.com.", CF_PROXY_ON),
     CNAME("social", "aerialis.garudalinux.org.", CF_PROXY_ON),

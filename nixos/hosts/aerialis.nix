@@ -115,6 +115,9 @@ in
     ];
   };
 
+  # Not backed up
+  systemd.tmpfiles.rules = [ "d /data_2/containers/openqa 0755 root root" ];
+
   # Can't set this inside the containers
   boot.kernel.sysctl."vm.overcommit_memory" = "1";
 
@@ -288,6 +291,24 @@ in
           ];
         };
 
+        # Low weights keep the web services ahead under contention
+        openqa = {
+          mounts = [
+            {
+              name = "data";
+              hostPath = "/data_2/containers/openqa";
+              mountPoint = "/var/lib/openqa-data";
+            }
+          ];
+          needsDocker = true;
+          needsKvm = true;
+          maxCpu = 8;
+          maxMemorySoft = 18 * 1024 * 1024 * 1024;
+          maxMemoryHard = 20 * 1024 * 1024 * 1024;
+          cpuWeight = 10;
+          ioWeight = 10;
+        };
+
         monitoring = {
           mounts = [
             {
@@ -332,6 +353,7 @@ in
         "docker"
         "mastodon"
         "chaotic-backend"
+        "openqa"
       ];
     }
     // {

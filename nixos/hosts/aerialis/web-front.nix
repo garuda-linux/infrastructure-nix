@@ -130,6 +130,10 @@ let
     "bin.garudalinux.org" = mkProxyVhost {
       upstream = "http://10.0.5.110";
     };
+    "openqa.garudalinux.org" = mkProxyVhost {
+      upstream = "http://10.0.5.120:80";
+      prologue = "client_max_body_size 20M;";
+    };
     "bitwarden.garudalinux.org" = mkProxyVhost {
       upstream = "http://10.0.5.60:8081";
       serverAliases = [ "vault.garudalinux.org" ];

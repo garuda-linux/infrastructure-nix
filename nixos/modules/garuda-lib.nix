@@ -152,6 +152,7 @@ let
       mail = "10.0.5.80";
       monitoring = "10.0.5.100";
       privatebin = "10.0.5.110";
+      openqa = "10.0.5.120";
     };
     stormwingContainers = {
       chaotic-v4 = "10.0.5.10";

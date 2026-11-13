@@ -35,7 +35,11 @@ in
   ];
 
   # ISOs of the image-builder CI, served by chaotic-v4 under /iso/image-builder
-  systemd.tmpfiles.rules = [ "d /data_1/iso/iso/image-builder 0755 root root" ];
+  # Staging dirs left by cancelled pipelines
+  systemd.tmpfiles.rules = [
+    "d /data_1/iso/iso/image-builder 0755 root root"
+    "e /data_1/iso/iso/image-builder/*/staging - - - 2d"
+  ];
 
   garuda =
     garuda-lib.mkMonitoring {
