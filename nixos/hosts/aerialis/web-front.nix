@@ -1,5 +1,7 @@
 {
+  config,
   garuda-lib,
+  lib,
   pkgs,
   sources,
   ...
@@ -311,7 +313,46 @@ let
   };
 in
 {
-  imports = sources.defaultModules ++ [ ../../modules ];
+  imports = sources.defaultModules ++ [
+    ../../modules
+    # openQA accepts any GitLab account, only garuda-linux members may log in
+    {
+      services.oauth2-proxy = {
+        enable = true;
+        provider = "gitlab";
+        oidcIssuerUrl = "https://gitlab.com";
+        redirectURL = "https://openqa.garudalinux.org/oauth2/callback";
+        email.domains = [ "*" ];
+        keyFile = config.sops.templates."oauth2-proxy.env".path;
+        nginx = {
+          domain = "openqa.garudalinux.org";
+          virtualHosts."openqa.garudalinux.org".allowed_groups = [ "garuda-linux" ];
+        };
+      };
+
+      # The module enables it globally, which drops the server-level proxy headers of every vhost
+      services.nginx.recommendedProxySettings = lib.mkForce false;
+      services.nginx.virtualHosts."openqa.garudalinux.org".locations = {
+        "/".extraConfig = lib.mkForce "auth_request off;";
+        "/login".proxyPass = "http://10.0.5.120:80";
+      };
+
+      # The GitLab application of openQA's own login
+      sops.secrets = {
+        "openqa/oauth2_key" = { };
+        "openqa/oauth2_secret" = { };
+        "openqa/oauth2_proxy_cookie_secret" = { };
+      };
+      sops.templates."oauth2-proxy.env" = {
+        content = ''
+          OAUTH2_PROXY_CLIENT_ID=${config.sops.placeholder."openqa/oauth2_key"}
+          OAUTH2_PROXY_CLIENT_SECRET=${config.sops.placeholder."openqa/oauth2_secret"}
+          OAUTH2_PROXY_COOKIE_SECRET=${config.sops.placeholder."openqa/oauth2_proxy_cookie_secret"}
+        '';
+        restartUnits = [ "oauth2-proxy.service" ];
+      };
+    }
+  ];
 
   inherit
     (garuda-lib.mkWebFront {
