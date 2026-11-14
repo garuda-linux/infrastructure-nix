@@ -6,6 +6,8 @@ services:
     volumes:
       - ./openqa.ini:/data/conf/openqa.ini:ro
       - ./database.ini:/data/conf/database.ini:ro
+      # Patched upstream start script, caps webui prefork workers at 8
+      - ./run_openqa.sh:/root/run_openqa.sh:ro
       - /var/lib/openqa-data/factory:/data/factory
       - /var/lib/openqa-data/images:/data/images
       - /var/lib/openqa-data/testresults:/data/testresults
