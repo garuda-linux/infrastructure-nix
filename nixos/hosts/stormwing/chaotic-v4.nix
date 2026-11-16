@@ -47,7 +47,7 @@ in
   environment.systemPackages = [ wrapperScript ];
   security.sudo.extraRules = [
     {
-      users = [ "xiota" ];
+      users = [ "xiota" "technetium" ];
       commands = [
         {
           command = "${wrapperScript}/bin/chaotic-restart";
