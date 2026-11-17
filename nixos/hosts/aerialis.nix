@@ -123,6 +123,7 @@ in
 
   services.garuda-nspawn = {
     dockerCache = "/data_1/dockercache/";
+    logDir = "/data_1/container-logs/";
 
     containers = garuda-lib.mkContainers {
       dir = ./aerialis;

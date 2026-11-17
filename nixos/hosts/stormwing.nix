@@ -139,6 +139,7 @@ in
 
   services.garuda-nspawn = {
     dockerCache = "/data_2/dockercache/";
+    logDir = "/data_2/container-logs/";
 
     containers = garuda-lib.mkContainers {
       dir = ./stormwing;

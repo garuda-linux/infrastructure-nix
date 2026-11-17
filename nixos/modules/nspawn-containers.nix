@@ -112,6 +112,10 @@ in
     dockerCache = lib.mkOption {
       type = lib.types.str;
     };
+    logDir = lib.mkOption {
+      type = lib.types.str;
+      description = "Host directory for each container's /var/log, which would otherwise sit in the ephemeral root on the host's /run tmpfs.";
+    };
     defaults = lib.mkOption {
       type = lib.types.submodule { options = defaultableOptions; };
     };
@@ -160,7 +164,16 @@ in
             ]);
           autoStart = true;
           bindMounts = lib.mkMerge (
-            (lib.lists.optional cont.defaults {
+            [
+              {
+                "log" = {
+                  hostPath = "${cfg.logDir}/${name}";
+                  isReadOnly = false;
+                  mountPoint = "/var/log";
+                };
+              }
+            ]
+            ++ (lib.lists.optional cont.defaults {
               "dev-loop0" = {
                 hostPath = "/dev/loop0";
                 mountPoint = "/dev/loop0";
@@ -344,9 +357,11 @@ in
       }
     ) (lib.filterAttrs (_name: value: value.writableApiVfs) cfg.containers);
 
-    systemd.tmpfiles.rules = lib.mapAttrsToList (
-      name: _value: "d ${cfg.dockerCache}/${name} 1555 root root"
-    ) (lib.filterAttrs (_name: value: value.needsDocker) cfg.containers);
+    systemd.tmpfiles.rules =
+      lib.mapAttrsToList (name: _value: "d ${cfg.dockerCache}/${name} 1555 root root") (
+        lib.filterAttrs (_name: value: value.needsDocker) cfg.containers
+      )
+      ++ lib.mapAttrsToList (name: _value: "d ${cfg.logDir}/${name} 0755 root root") cfg.containers;
 
     topology = lib.mkIf (cfg.containers != { }) {
       networks.${containerNetwork} = {
