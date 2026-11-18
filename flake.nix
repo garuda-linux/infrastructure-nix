@@ -92,6 +92,8 @@
     # Patches
     nixos-patch-nixos-container.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/499574.patch";
     nixos-patch-nixos-container.flake = false;
+    nixos-patch-nginx-mainline.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/589961.patch";
+    nixos-patch-nginx-mainline.flake = false;
   };
 
   outputs =

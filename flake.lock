@@ -240,6 +240,18 @@
         "type": "gitlab"
       }
     },
+    "nixos-patch-nginx-mainline": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-rpVpqRiR3wRoDYVz6Bi7Gm3JpcvlGw221BRTnydGYVE=",
+        "type": "file",
+        "url": "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/589961.patch"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/589961.patch"
+      }
+    },
     "nixos-patch-nixos-container": {
       "flake": false,
       "locked": {
@@ -323,6 +335,7 @@
         "keys_xiota": "keys_xiota",
         "nix-topology": "nix-topology",
         "nixos-mailserver": "nixos-mailserver",
+        "nixos-patch-nginx-mainline": "nixos-patch-nginx-mainline",
         "nixos-patch-nixos-container": "nixos-patch-nixos-container",
         "nixpkgs": "nixpkgs",
         "nixpkgs-stable": "nixpkgs-stable",
