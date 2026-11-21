@@ -20,8 +20,7 @@
     impermanence.inputs.nixpkgs.follows = "nixpkgs";
 
     # The single source of truth
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
 
     # Infrastructure diagrams
     nix-topology.url = "github:oddlama/nix-topology";
@@ -92,8 +91,6 @@
     # Patches
     nixos-patch-nixos-container.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/499574.patch";
     nixos-patch-nixos-container.flake = false;
-    nixos-patch-nginx-mainline.url = "https://patch-diff.githubusercontent.com/raw/NixOS/nixpkgs/pull/589961.patch";
-    nixos-patch-nginx-mainline.flake = false;
   };
 
   outputs =

@@ -48,7 +48,6 @@ in
         certDefinitions.${name}
         // {
           dnsProvider = "cloudflare";
-          dnsPropagationCheck = true;
           environmentFile = config.sops.secrets."cloudflare/api_keys".path;
         }
       );
