@@ -172,6 +172,8 @@ in
   # Postmaster alias
   services.postfix.postmasterAlias = "root@garudalinux.org";
 
+  services.postgresql.package = pkgs.postgresql_18;
+
   # Web UI
   services.roundcube = {
     enable = true;

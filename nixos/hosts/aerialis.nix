@@ -231,6 +231,11 @@ in
               mountPoint = "/var/lib/redis-rspamd";
             }
             {
+              name = "postgresql";
+              hostPath = "/data_1/containers/mail/postgresql";
+              mountPoint = "/var/lib/postgresql";
+            }
+            {
               name = "vmail";
               hostPath = "/data_1/containers/mail/vmail";
               mountPoint = "/var/vmail";
