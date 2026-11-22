@@ -4,7 +4,7 @@
   ...
 }:
 let
-  rev = "e4192e76e4914f4a8259dcfe8694dcb7e0e15107"; # main
+  rev = "0d4f70565903836344267d961f127e86a170ee0b"; # main
   srcHash = "sha256-NoPqja2ljWnUNiYgOgmTcS9hf1u1Ie7zEYh0GIkdFaQ=";
   src = pkgs.fetchFromGitLab {
     owner = "garuda-linux/website";
